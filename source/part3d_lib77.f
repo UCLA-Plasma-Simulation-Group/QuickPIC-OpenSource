@@ -252,7 +252,6 @@ c set boundary values
       lnoff = noff(2,m) - 1
 c find interpolation weights
       inpp = npp(m)
-      itemp = npp(m)
       do 10 j = 1, npp(m)
       if (j.gt.inpp) exit
    11 nn = part(1,j,m)
@@ -330,28 +329,34 @@ c comment this line to shut off longitudinal push
 c new position in grid unit
       dx = part(1,j,m) + dx*dtgx
       dy = part(2,j,m) + dy*dtgy
-c new high precision algorithm added
-c modified by Chengkun Huang, 04/25/07
-c comment this line to shut off longitudinal push     
 c      dz = part(3,j,m) + (one_minus_vz - one_minus_vz0)*dtc_over_deltaz 
       dz = part(3,j,m) + one_minus_vz*dtc_over_deltaz 
 c dropping boundary conditions in x and y
       if (ipbc.eq.1) then
          if ((dx.lt.edgelx).or.(dx.ge.edgerx)) then
-            part(:,j,m) = part(:,itemp,m)
-            itemp = itemp - 1
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
             inpp = inpp -1
             goto 11
          endif
          if ((dy.lt.edgely).or.(dy.ge.edgery)) then
-            part(:,j,m) = part(:,itemp,m)
-            itemp = itemp - 1
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
             inpp = inpp -1
             goto 11
          endif
          if ((dz.lt.edgelz).or.(dz.ge.edgerz)) then
-            part(:,j,m) = part(:,itemp,m)
-            itemp = itemp - 1
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
             inpp = inpp -1
             goto 11
          endif

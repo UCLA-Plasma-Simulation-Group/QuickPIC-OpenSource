@@ -1,0 +1,9 @@
+*.h5
+*.txt
+*.py
+*.tar
+*.o
+*.e
+*DS_Store*
+*ELOG*
+*elog*
