@@ -720,7 +720,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(37),istat,ierr)
-            call bexyz%wr(file2d,1,2,sim%diag%jpy0,tag(1),tag(1),id(37))
+            call bexyz%wr(file2d,1,2,sim%diag%ey0,tag(1),tag(1),id(37))
 
             call file2d%new(filename = './FEX-YZ/FEX-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FEX-YZ',units = 'mc\omega_p/e',label = 'FEX-YZ',n = i,&
@@ -729,7 +729,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(38),istat,ierr)
-            call bexyz%wr(file2d,1,1,sim%diag%jpx0,tag(1),tag(1),id(38))
+            call bexyz%wr(file2d,1,1,sim%diag%ex0,tag(1),tag(1),id(38))
 
             call file2d%new(filename = './FEX-XY/FEX-XY_'//trim(stime)//'.h5',&
             &dataname = 'FEX-XY',units = 'mc\omega_p/e',label = 'FEX-XY',n = i,&
@@ -738,7 +738,7 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(39),istat,ierr)
-            call bexyz%wr(file2d,1,3,sim%diag%jpz0,tag(1),tag(1),id(39))
+            call bexyz%wr(file2d,1,3,sim%diag%ez0,tag(1),tag(1),id(39))
 
             call file2d%new(filename = './FEY-XZ/FEY-XZ_'//trim(stime)//'.h5',&
             &dataname = 'FEY-XZ',units = 'mc\omega_p/e',label = 'FEY-XZ',n = i,&
@@ -747,7 +747,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(40),istat,ierr)
-            call bexyz%wr(file2d,2,2,sim%diag%jpy0,tag(1),tag(1),id(40))
+            call bexyz%wr(file2d,2,2,sim%diag%ey0,tag(1),tag(1),id(40))
 
             call file2d%new(filename = './FEY-YZ/FEY-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FEY-YZ',units = 'mc\omega_p/e',label = 'FEY-YZ',n = i,&
@@ -756,7 +756,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(41),istat,ierr)
-            call bexyz%wr(file2d,2,1,sim%diag%jpx0,tag(1),tag(1),id(41))
+            call bexyz%wr(file2d,2,1,sim%diag%ex0,tag(1),tag(1),id(41))
 
             call file2d%new(filename = './FEY-XY/FEY-XY_'//trim(stime)//'.h5',&
             &dataname = 'FEY-XY',units = 'mc\omega_p/e',label = 'FEY-XY',n = i,&
@@ -765,7 +765,7 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(42),istat,ierr)
-            call bexyz%wr(file2d,2,3,sim%diag%jpz0,tag(1),tag(1),id(42))
+            call bexyz%wr(file2d,2,3,sim%diag%ez0,tag(1),tag(1),id(42))
 
             call file2d%new(filename = './FEZ-XZ/FEZ-XZ_'//trim(stime)//'.h5',&
             &dataname = 'FEZ-XZ',units = 'mc\omega_p/e',label = 'FEZ-XZ',n = i,&
@@ -774,7 +774,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(43),istat,ierr)
-            call bexyz%wr(file2d,3,2,sim%diag%jpy0,tag(1),tag(1),id(43))
+            call bexyz%wr(file2d,3,2,sim%diag%ey0,tag(1),tag(1),id(43))
 
             call file2d%new(filename = './FEZ-YZ/FEZ-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FEZ-YZ',units = 'mc\omega_p/e',label = 'FEZ-YZ',n = i,&
@@ -783,7 +783,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(44),istat,ierr)
-            call bexyz%wr(file2d,3,1,sim%diag%jpx0,tag(1),tag(1),id(44))
+            call bexyz%wr(file2d,3,1,sim%diag%ex0,tag(1),tag(1),id(44))
 
             call file2d%new(filename = './FEZ-XY/FEZ-XY_'//trim(stime)//'.h5',&
             &dataname = 'FEZ-XY',units = 'mc\omega_p/e',label = 'FEZ-XY',n = i,&
@@ -792,10 +792,10 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(45),istat,ierr)
-            call bexyz%wr(file2d,3,3,sim%diag%jpz0,tag(1),tag(1),id(45))
+            call bexyz%wr(file2d,3,3,sim%diag%ez0,tag(1),tag(1),id(45))
          end if
 
-         if ((sim%diag%dfeslice > 0) .and. (mod((i-1),sim%diag%dfeslice) == 0)) then
+         if ((sim%diag%dfbslice > 0) .and. (mod((i-1),sim%diag%dfbslice) == 0)) then
             call file2d%new(filename = './FBX-XZ/FBX-XZ_'//trim(stime)//'.h5',&
             &dataname = 'FBX-XZ',units = 'mc\omega_p/e',label = 'FBX-XZ',n = i,&
             &t = i*sim%sim%dt,rank = 2, axisname  = (/'x  ','\xi','x3 '/),&
@@ -803,7 +803,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(46),istat,ierr)
-            call bbxyz%wr(file2d,1,2,sim%diag%jpy0,tag(1),tag(1),id(46))
+            call bbxyz%wr(file2d,1,2,sim%diag%by0,tag(1),tag(1),id(46))
 
             call file2d%new(filename = './FBX-YZ/FBX-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FBX-YZ',units = 'mc\omega_p/e',label = 'FBX-YZ',n = i,&
@@ -812,7 +812,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(47),istat,ierr)
-            call bbxyz%wr(file2d,1,1,sim%diag%jpx0,tag(1),tag(1),id(47))
+            call bbxyz%wr(file2d,1,1,sim%diag%bx0,tag(1),tag(1),id(47))
 
             call file2d%new(filename = './FBX-XY/FBX-XY_'//trim(stime)//'.h5',&
             &dataname = 'FBX-XY',units = 'mc\omega_p/e',label = 'FBX-XY',n = i,&
@@ -821,7 +821,7 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(48),istat,ierr)
-            call bbxyz%wr(file2d,1,3,sim%diag%jpz0,tag(1),tag(1),id(48))
+            call bbxyz%wr(file2d,1,3,sim%diag%bz0,tag(1),tag(1),id(48))
 
             call file2d%new(filename = './FBY-XZ/FBY-XZ_'//trim(stime)//'.h5',&
             &dataname = 'FBY-XZ',units = 'mc\omega_p/e',label = 'FBY-XZ',n = i,&
@@ -830,7 +830,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(49),istat,ierr)
-            call bbxyz%wr(file2d,2,2,sim%diag%jpy0,tag(1),tag(1),id(49))
+            call bbxyz%wr(file2d,2,2,sim%diag%by0,tag(1),tag(1),id(49))
 
             call file2d%new(filename = './FBY-YZ/FBY-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FBY-YZ',units = 'mc\omega_p/e',label = 'FBY-YZ',n = i,&
@@ -839,7 +839,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(50),istat,ierr)
-            call bbxyz%wr(file2d,2,1,sim%diag%jpx0,tag(1),tag(1),id(50))
+            call bbxyz%wr(file2d,2,1,sim%diag%bx0,tag(1),tag(1),id(50))
 
             call file2d%new(filename = './FBY-XY/FBY-XY_'//trim(stime)//'.h5',&
             &dataname = 'FBY-XY',units = 'mc\omega_p/e',label = 'FBY-XY',n = i,&
@@ -848,7 +848,7 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(51),istat,ierr)
-            call bbxyz%wr(file2d,2,3,sim%diag%jpz0,tag(1),tag(1),id(51))
+            call bbxyz%wr(file2d,2,3,sim%diag%bz0,tag(1),tag(1),id(51))
 
             call file2d%new(filename = './FBZ-XZ/FBZ-XZ_'//trim(stime)//'.h5',&
             &dataname = 'FBZ-XZ',units = 'mc\omega_p/e',label = 'FBZ-XZ',n = i,&
@@ -857,7 +857,7 @@
             &axismax = (/sim%sim%lx,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(52),istat,ierr)
-            call bbxyz%wr(file2d,3,2,sim%diag%jpy0,tag(1),tag(1),id(52))
+            call bbxyz%wr(file2d,3,2,sim%diag%by0,tag(1),tag(1),id(52))
 
             call file2d%new(filename = './FBZ-YZ/FBZ-YZ_'//trim(stime)//'.h5',&
             &dataname = 'FBZ-YZ',units = 'mc\omega_p/e',label = 'FBZ-YZ',n = i,&
@@ -867,7 +867,7 @@
             &axismax = (/sim%sim%ly,sim%sim%lz,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(53),istat,ierr)
-            call bbxyz%wr(file2d,3,1,sim%diag%jpx0,tag(1),tag(1),id(53))
+            call bbxyz%wr(file2d,3,1,sim%diag%bx0,tag(1),tag(1),id(53))
 
             call file2d%new(filename = './FBZ-XY/FBZ-XY_'//trim(stime)//'.h5',&
             &dataname = 'FBZ-XY',units = 'mc\omega_p/e',label = 'FBZ-XY',n = i,&
@@ -876,7 +876,7 @@
             &axismax = (/sim%sim%lx,sim%sim%ly,1.0/), axismin = (/0.0,0.0,0.0/))
             tag(1) = ntag()
             call MPI_WAIT(id(54),istat,ierr)
-            call bbxyz%wr(file2d,3,3,sim%diag%jpz0,tag(1),tag(1),id(54))
+            call bbxyz%wr(file2d,3,3,sim%diag%bz0,tag(1),tag(1),id(54))
          end if
 
          if (sim%diag%dump_beam_raw .and. (mod((i-1),sim%diag%dfbeam_raw) == 0)) then
