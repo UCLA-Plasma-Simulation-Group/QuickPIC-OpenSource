@@ -1019,11 +1019,6 @@
                call h5pclose_f(flplID, ierr)
                call h5gclose_f(rootID, ierr)
                call h5fclose_f(file_id, ierr)
-               call h5close_f(ierr)
-               if (des < pp%getnvp()) then
-                 call MPI_ISEND(message,1,pp%getmint(),des,stag,pp%getlworld(),&
-                 &id,ierr)
-               endif
             endif
             if (des < pp%getnvp()) then
                call MPI_ISEND(message,1,pp%getmint(),des,stag,pp%getlworld(),&
