@@ -464,7 +464,7 @@
                &n = i, t = i*sim%sim%dt)
                tag(1) = ntag()
                call MPI_WAIT(id_qep(m),istat,ierr)
-               call qeb%wr(file3d,1,tag(1),tag(1),id_qep(m))
+               call qep(m)%wr(file3d,1,tag(1),tag(1),id_qep(m))
             end do
          end if
 
