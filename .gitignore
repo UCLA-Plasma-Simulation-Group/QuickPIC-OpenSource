@@ -6,4 +6,5 @@
 *.e
 *DS_Store*
 *ELOG*
+*.mod
 *elog*
