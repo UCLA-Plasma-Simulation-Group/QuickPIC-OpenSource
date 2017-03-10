@@ -1,4 +1,4 @@
-# QuickPIC
+#![QUICKPIC](http://exodudus.idre.ucla.edu/repo_images/quckpic.png)
 QuickPIC is a 3D parallel (MPI & OpenMP Hybrid) Quasi-Static PIC code, which is developed based on the framework UPIC. This is the UCLA Plasma Simulation Group's official open-source repository for QuickPIC.
 
 # Upon cloning the repository
