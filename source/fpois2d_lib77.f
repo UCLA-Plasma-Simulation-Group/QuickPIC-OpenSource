@@ -1457,4 +1457,501 @@ c mode numbers kx = 0, nx/2
   240 continue
       return
       end
-      
+!-----------------------------------------------------------------------
+      subroutine MPPOISD22(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,nyv&
+     &,kxp2,nyd)
+! this subroutine solves 2d poisson's equation in fourier space for
+! force/charge (or convolution of electric field over particle shape)
+! with dirichlet boundary conditions (zero potential),
+! using fast sine/cosine transforms for distributed data.
+! for isign = 0,input: isign,ax,ay,affp,nx,ny,kstrt,ny2d,kxp2,nyd
+!               output: ffd
+! for isign /= 0, input: q,ffd,isign,nx,ny,kstrt,ny2d,kxp2,nyd
+!                 output: fxy,we
+! approximate flop count is: 10*nx*ny
+! equation used is:
+! fx(kx,ky) = -kx*g(kx,ky)*s(kx,ky)*q(kx,ky),
+! fy(kx,ky) = -ky*g(kx,ky)*s(kx,ky)*q(kx,ky),
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! modes nx and ny are zeroed out
+! g(kx,ky) = (affp/(kx**2+ky**2))*s(kx,ky),
+! s(kx,ky) = exp(-((kx*ax)**2+(ky*ay)**2)/2)
+! q(k,j) = transformed charge density for fourier mode (jj-1,k-1)
+! fxy(1,k,j) = x component of transformed force/charge,
+! fxy(2,k,j) = y component of transformed force/charge,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! if isign = 0, form factor array is prepared
+! aimag(ffd(k,j)= finite-size particle shape factor s
+! real(ffd(k,j)) = potential green's function g
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! kxp2 = number of data values per block
+! kstrt = starting data block number
+! ax/ay = half-width of particle in x/y direction
+! affp = normalization constant = nx*ny/np, where np=number of particles
+! electric field energy is also calculated, using
+! we = 2*nx*ny*sum((affp/(kx**2+ky**2))*|q(kx,ky)*s(kx,ky)|**2)
+! nx/ny = system length in x/y direction
+! nyv = first dimension of field arrays, must be >= ny+1
+! nyd = first dimension of form factor array, must be >= ny
+      implicit none
+      integer isign, nx, ny, kstrt, nyv, kxp2, nyd
+      real ax, ay, affp, we
+      real q, fxy
+      dimension q(nyv,kxp2+1), fxy(2,nyv,kxp2+1)
+      complex ffd
+      dimension ffd(nyd,kxp2)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real dnx, dny, dkx, dky, at1, at2, at3, at4
+      double precision wp, sum1
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+      dnx = 6.28318530717959/real(nx + nx)
+      dny = 6.28318530717959/real(ny + ny)
+      if (isign.ne.0) go to 30
+! prepare form factor array
+      do 20 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      at1 = dkx*dkx
+      at2 = (dkx*ax)**2
+      do 10 k = 1, ny
+      dky = dny*real(k - 1)
+      at3 = dky*dky + at1
+      at4 = exp(-0.5*((dky*ay)**2 + at2))
+      if (at3.eq.0.0) then
+         ffd(k,j) = cmplx(affp,1.0)
+      else
+         ffd(k,j) = cmplx(affp*at4/at3,at4)
+      endif
+   10 continue
+   20 continue
+      return
+! calculate force/charge and sum field energy
+   30 sum1 = 0.0d0
+      if (kstrt.gt.nx) go to 80
+! mode numbers kx > 0 and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3,wp)
+!$OMP& REDUCTION(+:sum1)
+      do 50 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      wp = 0.0d0
+      if ((j+joff).gt.0) then
+         do 40 k = 2, ny
+         at1 = real(ffd(k,j))*aimag(ffd(k,j))
+         at3 = -at1*q(k,j)
+         at2 = dkx*at3
+         at3 = dny*real(k - 1)*at3
+         fxy(1,k,j) = at2
+         fxy(2,k,j) = at3
+         wp = wp + at1*q(k,j)**2
+   40    continue
+      endif
+! mode numbers ky = 0, ny
+      fxy(1,1,j) = 0.0
+      fxy(2,1,j) = 0.0
+      fxy(1,ny+1,j) = 0.0
+      fxy(2,ny+1,j) = 0.0
+      sum1 = sum1 + wp
+   50 continue
+!$OMP END PARALLEL DO
+! mode number kx = 0
+      if (ks.eq.0) then
+         do 60 k = 2, ny
+         fxy(1,k,1) = 0.0
+         fxy(2,k,1) = 0.0
+   60    continue
+      endif
+! zero out kx = nx mode and unused extra cells
+      do 70 k = 1, ny1
+      fxy(1,k,kxp2s+1) = 0.0
+      fxy(2,k,kxp2s+1) = 0.0
+   70 continue
+   80 continue
+      we = 2.0*real(nx)*real(ny)*sum1
+      return
+      end   
+!-----------------------------------------------------------------------
+      subroutine MPPOISD23(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,nyv&
+     &,kxp2,nyd)
+! this subroutine solves 2-1/2d poisson's equation in fourier space for
+! force/charge (or convolution of electric field over particle shape)
+! with dirichlet boundary conditions (zero potential),
+! using fast sine/cosine transforms for distributed data.
+! Zeros out z component
+! for isign = 0,input: isign,ax,ay,affp,nx,ny,kstrt,ny2d,kxp2,nyd
+!               output: ffd
+! for isign /= 0, input: q,ffd,isign,nx,ny,kstrt,ny2d,kxp2,nyd
+!                 output: fxy,we
+! approximate flop count is: 10*nx*ny
+! equation used is:
+! fx(kx,ky) = -kx*g(kx,ky)*s(kx,ky)*q(kx,ky),
+! fy(kx,ky) = -ky*g(kx,ky)*s(kx,ky)*q(kx,ky),
+! fz(kx,ky) = zero,
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! modes nx and ny are zeroed out
+! g(kx,ky) = (affp/(kx**2+ky**2))*s(kx,ky),
+! s(kx,ky) = exp(-((kx*ax)**2+(ky*ay)**2)/2)
+! q(k,j) = transformed charge density for fourier mode (jj-1,k-1)
+! fxy(1,k,j) = x component of transformed force/charge,
+! fxy(2,k,j) = y component of transformed force/charge,
+! fxy(3,k,j) = zero,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! if isign = 0, form factor array is prepared
+! aimag(ffd(k,j)= finite-size particle shape factor s
+! real(ffd(k,j)) = potential green's function g
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! kxp2 = number of data values per block
+! kstrt = starting data block number
+! ax/ay = half-width of particle in x/y direction
+! affp = normalization constant = nx*ny/np, where np=number of particles
+! electric field energy is also calculated, using
+! we = 2*nx*ny*sum((affp/(kx**2+ky**2))*|q(kx,ky)*s(kx,ky)|**2)
+! nx/ny = system length in x/y direction
+! nyv = first dimension of field arrays, must be >= ny+1
+! nyd = first dimension of form factor array, must be >= ny
+      implicit none
+      integer isign, nx, ny, kstrt, nyv, kxp2, nyd
+      real ax, ay, affp, we
+      real q, fxy
+      dimension q(nyv,kxp2+1), fxy(3,nyv,kxp2+1)
+      complex ffd
+      dimension ffd(nyd,kxp2)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real dnx, dny, dkx, dky, at1, at2, at3, at4
+      double precision wp, sum1
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+      dnx = 6.28318530717959/real(nx + nx)
+      dny = 6.28318530717959/real(ny + ny)
+      if (isign.ne.0) go to 30
+! prepare form factor array
+      do 20 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      at1 = dkx*dkx
+      at2 = (dkx*ax)**2
+      do 10 k = 1, ny
+      dky = dny*real(k - 1)
+      at3 = dky*dky + at1
+      at4 = exp(-0.5*((dky*ay)**2 + at2))
+      if (at3.eq.0.0) then
+         ffd(k,j) = cmplx(affp,1.0)
+      else
+         ffd(k,j) = cmplx(affp*at4/at3,at4)
+      endif
+   10 continue
+   20 continue
+      return
+! calculate force/charge and sum field energy
+   30 sum1 = 0.0d0
+      if (kstrt.gt.nx) go to 80
+! mode numbers kx > 0 and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3,wp)
+!$OMP& REDUCTION(+:sum1)
+      do 50 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      wp = 0.0d0
+      if ((j+joff).gt.0) then
+         do 40 k = 2, ny
+         at1 = real(ffd(k,j))*aimag(ffd(k,j))
+         at3 = -at1*q(k,j)
+         at2 = dkx*at3
+         at3 = dny*real(k - 1)*at3
+         fxy(1,k,j) = at2
+         fxy(2,k,j) = at3
+         fxy(3,k,j) = 0.0
+         wp = wp + at1*q(k,j)**2
+   40    continue
+      endif
+! mode numbers ky = 0, ny
+      fxy(1,1,j) = 0.0
+      fxy(2,1,j) = 0.0
+      fxy(3,1,j) = 0.0
+      fxy(1,ny+1,j) = 0.0
+      fxy(2,ny+1,j) = 0.0
+      fxy(3,ny+1,j) = 0.0
+      sum1 = sum1 + wp
+   50 continue
+!$OMP END PARALLEL DO
+! mode number kx = 0
+      if (ks.eq.0) then
+         do 60 k = 2, ny
+         fxy(1,k,1) = 0.0
+         fxy(2,k,1) = 0.0
+         fxy(3,k,1) = 0.0
+   60    continue
+      endif
+! zero out kx = nx mode and unused extra cells
+      do 70 k = 1, ny1
+      fxy(1,k,kxp2s+1) = 0.0
+      fxy(2,k,kxp2s+1) = 0.0
+      fxy(3,k,kxp2s+1) = 0.0
+   70 continue
+   80 continue
+      we = 2.0*real(nx)*real(ny)*sum1
+      return
+      end         
+!-----------------------------------------------------------------------
+      subroutine MPPOTPD2(q,pot,ffd,we,nx,ny,kstrt,nyv,kxp2,nyd)
+! this subroutine solves 2d poisson's equation in fourier space for
+! potential, with dirichlet boundary conditions (zero potential),
+! using fast sine transforms for distributed data.
+! input: q,ffd,nx,ny,kstrt,nyv,kxp2,nyd, output: pot,we
+! approximate flop count is: 5*nx*ny
+! potential is calculated using the equation:
+! fx(kx,ky) = g(kx,ky)*q(kx,ky)*s(kx,ky)
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! modes nx and ny are zeroed out
+! g(kx,ky) = (affp/(kx**2+ky**2))*s(kx,ky),
+! s(kx,ky) = exp(-((kx*ax)**2+(ky*ay)**2)/2)
+! q(k,j) = transformed charge density for fourier mode (jj-1,k-1)
+! pot(k,j) = transformed potential,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! kxp2 = number of data values per block
+! kstrt = starting data block number
+! aimag(ffd(k,j)= finite-size particle shape factor s
+! real(ffd(k,j)) = potential green's function g
+! electric field energy is also calculated, using
+! we = 2*nx*ny*sum((affp/(kx**2+ky**2))*|q(kx,ky)*s(kx,ky)|**2)
+! where affp = normalization constant = nx*ny/np,
+! where np=number of particles
+! nx/ny = system length in x/y direction
+! nyv = second dimension of field arrays, must be >= ny+1
+! nyd = first dimension of form factor array, must be >= ny
+      implicit none
+      integer nx, ny, kstrt, nyv, kxp2, nyd
+      real we
+      real q, pot
+      dimension q(nyv,kxp2+1), pot(nyv,kxp2+1)
+      complex ffd
+      dimension ffd(nyd,kxp2)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real at1, at2, at3
+      double precision wp, sum1
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+! calculate potential and sum field energy
+      sum1 = 0.0d0
+      if (kstrt.gt.nx) go to 50
+! mode numbers kx > 0 and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,at1,at2,at3,wp)
+!$OMP& REDUCTION(+:sum1)
+      do 20 j = 1, kxp2s
+      wp = 0.0d0
+      if ((j+joff).gt.0) then
+         do 10 k = 2, ny
+         at2 = real(ffd(k,j))
+         at1 = at2*aimag(ffd(k,j))
+         at3 = at2*q(k,j)
+         pot(k,j) = at3
+         wp = wp + at1*q(k,j)**2
+  10     continue
+      endif
+! mode numbers ky = 0, ny
+      pot(1,j) = 0.0
+      pot(ny+1,j) = 0.0
+      sum1 = sum1 + wp
+   20 continue
+!$OMP END PARALLEL DO
+! mode number kx = 0
+      if (ks.eq.0) then
+         do 30 k = 2, ny
+         pot(k,1) = 0.0
+   30    continue
+      endif
+! zero out kx = nx mode and unused extra cells
+      do 40 k = 1, ny1
+      pot(k,kxp2s+1) = 0.0
+   40 continue
+   50 continue
+      we = 2.0*real(nx)*real(ny)*sum1
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine MPPSMOOTHD2(q,qs,ffd,nx,ny,kstrt,nyv,kxp2,nyd)
+! this subroutine provides a 2d scalar smoothing function
+! in fourier space, with dirichlet boundary conditions (zero potential),
+! using fast sine transforms for distributed data.
+! input: q,ffd,nx,ny,kstrt,nyv,kxp2,nyd, output: qs
+! approximate flop count is: 1*nx*ny
+! smoothing is calculated using the equation:
+! qs(kx,ky) = q(kx,ky)*s(kx,ky)
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! modes nx and ny are zeroed out
+! s(kx,ky) = exp(-((kx*ax)**2+(ky*ay)**2)/2)
+! q(k,j) = transformed charge density for fourier mode (jj-1,k-1)
+! qs(k,j) = transformed smoothed charge density,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! kxp2 = number of data values per block
+! kstrt = starting data block number
+! aimag(ffd(k,j)) = finite-size particle shape factor s
+! nx/ny = system length in x/y direction
+! nyv = first dimension of field arrays, must be >= ny+1
+! nyd = first dimension of form factor array, must be >= ny
+      implicit none
+      integer nx, ny, kstrt, nyv, kxp2, nyd
+      real q, qs
+      dimension q(nyv,kxp2+1), qs(nyv,kxp2+1)
+      complex ffd
+      dimension ffd(nyd,kxp2)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real at1, at2
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+! calculate smoothing
+      if (kstrt.gt.nx) return
+! mode numbers kx > 0 and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,at1,at2)
+      do 20 j = 1, kxp2s
+      if ((j+joff).gt.0) then
+         do 10 k = 2, ny
+         at1 = aimag(ffd(k,j))
+         at2 = at1*q(k,j)
+         qs(k,j) = at2
+  10     continue
+      endif
+! mode numbers ky = 0, ny
+      qs(1,j) = 0.0
+      qs(ny+1,j) = 0.0
+   20 continue
+!$OMP END PARALLEL DO
+! mode number kx = 0
+      if (ks.eq.0) then
+         do 30 k = 2, ny
+         qs(k,1) = 0.0
+   30    continue
+      endif
+! zero out kx = nx mode and unused extra cells
+      do 40 k = 1, ny1
+      qs(k,kxp2s+1) = 0.0
+   40 continue
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine MPPBBPOISD23(cu,bxy,ffd,ci,wm,nx,ny,kstrt,nyv,kxp2,nyd)
+! this subroutine solves 2-1/2d poisson's equation in fourier space for
+! smoothed magnetic field (or convolution of magnetic field over 
+! particle shape) with dirichlet boundary conditions (zero potential),
+! using fast sine/cosine transforms for distributed data.
+! input: cu,ffd,ci,nx,ny,kstrt,ny2d,kxp2,nyd, output: bxy,wm
+! approximate flop count is: 20*nx*ny
+! magnetic field is calculated using the equations:
+! bx(kx,ky) = ci*ci**g(kx,ky)*ky*cuz(kx,ky)*s(kx,ky),
+! by(kx,ky) = -ci*ci*sg(kx,ky)*kx*cuz(kx,ky)*s(kx,ky),
+! bz(kx,ky) = ci*ci*g(kx,ky)*(kx*cuy(kx,ky)-ky*cux(kx,ky))*s(kx,ky),
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! modes nx and ny are zeroed out
+! g(kx,ky) = (affp/(kx**2+ky**2))*s(kx,ky),
+! s(kx,ky) = exp(-((kx*ax)**2+(ky*ay)**2)/2)
+! cu(i,k,j) = i-th component of transformed current density and
+! bxy(i,k,j) = i-th component of transformed magnetic field,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! aimag(ffd(k,j)) = finite-size particle shape factor s
+! real(ffd(k,j)) = potential green's function g
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! kxp2 = number of data values per block
+! kstrt = starting data block number=
+! ci = reciprocal of velocity of light
+! magnetic field energy is also calculated, using
+! wm = nx*ny*nz*sum((affp/(kx**2+ky**2+kz**2))*ci*ci
+!    |cu(kx,ky,kz)*s(kx,ky,kz)|**2)
+! where affp = normalization constant = nx*ny/np,
+! where np=number of particles
+! this expression is valid only if the current is divergence-free
+! nx/ny = system length in x/y direction
+! nyv = second dimension of field arrays, must be >= ny+1
+! nyd = first dimension of form factor array, must be >= ny
+      implicit none
+      integer nx, ny, kstrt, nyv, kxp2, nyd
+      real ci, wm
+      real cu, bxy
+      dimension cu(3,nyv,kxp2+1), bxy(3,nyv,kxp2+1)
+      complex ffd
+      dimension ffd(nyd,kxp2)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real dnx, dny, dkx, dky, ci2, at1, at2, at3
+      double precision wp, sum1
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+      dnx = 6.28318530717959/real(nx + nx)
+      dny = 6.28318530717959/real(ny + ny)
+      ci2 = ci*ci
+! calculate smoothed magnetic field and sum field energy
+      sum1 = 0.0d0
+      if (kstrt.gt.nx) go to 50
+! mode numbers kx > 0 and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky,at1,at2,at3,wp)
+!$OMP& REDUCTION(+:sum1)
+      do 20 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      wp = 0.0d0
+      if ((j+joff).gt.0) then
+         do 10 k = 2, ny
+         dky = dny*real(k - 1)
+         at1 = ci2*real(ffd(k,j))*aimag(ffd(k,j))
+         at2 = dky*at1
+         at3 = dkx*at1
+         bxy(1,k,j) = at2*cu(3,k,j)
+         bxy(2,k,j) = -at3*cu(3,k,j)
+         bxy(3,k,j) = at3*cu(2,k,j) - at2*cu(1,k,j)
+         wp = wp + 2.0*at1*(cu(1,k,j)**2 + cu(2,k,j)**2 + cu(3,k,j)**2)
+   10    continue
+! mode numbers ky = 0, ny
+         at1 = ci2*real(ffd(1,j))*aimag(ffd(1,j))
+         at2 = dkx*at1
+         bxy(1,1,j) = 0.0
+         bxy(2,1,j) = 0.0
+         bxy(3,1,j) = at2*cu(2,1,j)
+         wp = wp + at1*(cu(2,1,j)**2 + cu(3,1,j)**2)
+      endif
+      bxy(1,ny+1,j) = 0.0
+      bxy(2,ny+1,j) = 0.0
+      bxy(3,ny+1,j) = 0.0
+      sum1 = sum1 + wp
+   20 continue
+!$OMP END PARALLEL DO
+      wp = 0.0d0
+! mode numbers kx = 0, nx
+      if (ks.eq.0) then
+         do 30 k = 2, ny
+         dky = dny*real(k - 1)
+         at1 = ci2*real(ffd(k,1))*aimag(ffd(k,1))
+         at2 = dky*at1
+         bxy(1,k,1) = 0.0
+         bxy(2,k,1) = 0.0
+         bxy(3,k,1) = -at2*cu(1,k,1)
+         wp = wp + at1*(cu(1,k,1)**2 + cu(3,k,1)**2)
+   30    continue
+         bxy(1,1,1) = 0.0
+         bxy(2,1,1) = 0.0
+         bxy(3,1,1) = 0.0
+      endif
+      sum1 = sum1 + wp
+! zero out kx = nx mode and unused extra cells
+      do 40 k = 1, ny1
+      bxy(1,k,kxp2s+1) = 0.0
+      bxy(2,k,kxp2s+1) = 0.0
+      bxy(3,k,kxp2s+1) = 0.0
+   40 continue
+   50 continue
+      wm = real(nx)*real(ny)*sum1
+      return
+      end      

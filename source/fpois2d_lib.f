@@ -82,4 +82,64 @@
 		 end subroutine
       end interface
 !
+      interface
+         subroutine MPPOISD22(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,&
+     &nyv,kxp2,nyd)
+         implicit none
+         integer, intent(in) :: isign, nx, ny, kstrt, nyv, kxp2, nyd
+         real, intent(in) :: ax, ay, affp
+         real, intent(inout) :: we
+         real, dimension(nyv,kxp2+1), intent(in)  :: q
+         real, dimension(2,nyv,kxp2+1), intent(inout) :: fxy
+         complex, dimension(nyd,kxp2), intent(inout) :: ffd
+         end subroutine
+      end interface
+!
+      interface
+         subroutine MPPOISD23(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,&
+     &nyv,kxp2,nyd)
+         implicit none
+         integer, intent(in) :: isign, nx, ny, kstrt, nyv, kxp2, nyd
+         real, intent(in) :: ax, ay, affp
+         real, intent(inout) :: we
+         real, dimension(nyv,kxp2+1), intent(in)  :: q
+         real, dimension(3,nyv,kxp2+1), intent(inout) :: fxy
+         complex, dimension(nyd,kxp2), intent(inout) :: ffd
+         end subroutine
+      end interface
+!
+      interface
+         subroutine MPPOTPD2(q,pot,ffd,we,nx,ny,kstrt,nyv,kxp2,nyd)
+         implicit none
+         integer, intent(in) :: nx, ny, kstrt, nyv, kxp2, nyd
+         real, intent(inout) :: we
+         real, dimension(nyv,kxp2+1), intent(in)  :: q
+         real, dimension(nyv,kxp2+1), intent(inout) :: pot
+         complex, dimension(nyd,kxp2), intent(in) :: ffd
+         end subroutine
+      end interface
+!
+      interface
+         subroutine MPPSMOOTHD2(q,qs,ffd,nx,ny,kstrt,nyv,kxp2,nyd)
+         implicit none
+         integer, intent(in) :: nx, ny, kstrt, nyv, kxp2, nyd
+         real, dimension(nyv,kxp2+1), intent(in)  :: q
+         real, dimension(nyv,kxp2+1), intent(inout) :: qs
+         complex, dimension(nyd,kxp2), intent(in) :: ffd
+         end subroutine
+      end interface
+!
+      interface
+         subroutine MPPBBPOISD23(cu,bxy,ffd,ci,wm,nx,ny,kstrt,nyv,kxp2, &
+     &nyd)
+         implicit none
+         integer, intent(in) :: nx, ny, kstrt, nyv, kxp2, nyd
+         real, intent(in) :: ci
+         real, intent(inout) :: wm
+         real, dimension(3,nyv,kxp2+1), intent(in) :: cu
+         real, dimension(3,nyv,kxp2+1), intent(inout) :: bxy
+         complex, dimension(nyd,kxp2), intent(in) :: ffd
+         end subroutine
+      end interface
+!
       end module fpois2d_lib

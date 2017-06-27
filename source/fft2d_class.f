@@ -174,32 +174,50 @@
          case (1)
             select case (rspace%getdim())
             case (1)
-               call WPFSST2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSST2RM(f(1,:,:),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSST2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (2)
-               call WPFCST2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCST2RM2(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCST2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (3)
-               call WPFCST2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCST2RM3(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCST2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          case default
             select case (rspace%getdim())
             case (1)
-               call WPFSST2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSST2RM(f(1,:,:),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSST2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (2)
-               call WPFCST2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCST2RM2(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCST2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (3)
-               call WPFCST2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCST2RM3(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCST2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          end select
          deallocate(bs,br)
@@ -263,32 +281,50 @@
          case (1)
             select case (rspace%getdim())
             case (1)
-               call WPFCCT2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCCT2RM(f(1,:,:),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCCT2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (2)
-               call WPFSCT2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSCT2RM2(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSCT2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (3)
-               call WPFSCT2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSCT2RM3(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSCT2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          case default
             select case (rspace%getdim())
             case (1)
-               call WPFCCT2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFCCT2RM(f(1,:,:),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFCCT2R(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (2)
-               call WPFSCT2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSCT2RM2(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSCT2R2(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             case (3)
-               call WPFSCT2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSCT2RM3(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFSCT2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          end select
          deallocate(bs,br)
@@ -353,16 +389,22 @@
          case (1)
             select case (rspace%getdim())
             case (3)
-               call WPFS3T2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSST2RM23(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFS3T2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          case default
             select case (rspace%getdim())
             case (3)
-               call WPFS3T2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
-               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
-               &jblok,kblok,nxhyd,nxyd)
+               call WPPFSST2RM23(f,g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+               &indx,indy,this%p%getlkstrt(),this%p%getlnvp(),nxvh,nyv,kxp2,&
+               &kyp,kypd,kxp2d,nxhyd,nxyd)
+!               call WPFS3T2R3(f(1,1,1),g,bs,br,isign,ntpose,mixup,sctd,ttp,&
+!               &indx,indy,this%p%getlkstrt(),nxvh,nyv,kxp2,kyp,kypd,kxp2d,&
+!               &jblok,kblok,nxhyd,nxyd)
             end select
          end select
          deallocate(bs,br)
@@ -382,7 +424,7 @@
 ! local data
          real, dimension(:,:,:), pointer :: f => null()
          real, dimension(:,:,:), pointer :: df => null()
-         integer :: nx, ny, ndim, nyv, kxp2, j2blok
+         integer :: nx, ny, ndim, nyv, kxp2
          character(len=10), save :: sname = 'ipdivfd2:'
 
          call this%err%werrfl2(class//sname//' started')
@@ -391,9 +433,9 @@
          f => krspace%getrf()
          df => kdspace%getrf()
          ndim = size(f,1)
-         nyv = size(f,2); kxp2 = krspace%getnd2p(); j2blok = 1
+         nyv = size(f,2); kxp2 = size(f,3) - 1;
 ! call the operator
-         call PDIVFD2(f,df(1,:,:),nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2,j2blok)
+         call MPPDIVFD2(f,df(1,:,:),nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine ipdivfd2
@@ -419,9 +461,9 @@
          f => krspace%getrf()
          df => kdspace%getrf()
          ndim = size(df,1)
-         nyv = size(f,2); kxp2 = krspace%getnd2p(); j2blok = 1
+         nyv = size(df,2); kxp2 = size(df,3) - 1;
 ! call the operator
-         call PGRADFD2(f(1,:,:),df,nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2,j2blok)
+         call MPPGRADFD2(f(1,:,:),df,nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine ipgradfd2
@@ -446,13 +488,13 @@
          nx = 2**this%ind(1); ny = 2**this%ind(2)
          pf => krspace%getrf()
          pg => kdspace%getrf()
-         nyv = size(pf,2); kxp2 = krspace%getnd2p(); j2blok = 1
+         nyv = size(pf,2); kxp2 = size(pf,3) - 1; j2blok = 1
 ! choose the proper function
          select case (size(pf,1))
          case (2)
             call PCURLFD22(pf,pg,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok)
          case (3)
-            call PCURLFD2(pf,pg,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok)
+            call MPPCURLFD2(pf,pg,nx,ny,this%p%getlkstrt(),nyv,kxp2)         
          end select
          call this%err%werrfl2(class//sname//' ended')
 

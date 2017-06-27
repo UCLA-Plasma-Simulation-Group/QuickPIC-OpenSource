@@ -225,12 +225,15 @@
       implicit none
       integer, intent(in) :: nth
 ! local data
-      integer :: ncpus, nthreads
+      integer :: ncpus, nthreads, tid
 ! determine how many processors are available
       ncpus = omp_get_num_procs()
       nthreads = omp_get_max_threads()
       if (nth > 0) nthreads = nth
       call omp_set_num_threads(nthreads)
+!$OMP PARALLEL PRIVATE(tid)
+      tid = OMP_GET_THREAD_NUM()
+!$OMP END PARALLEL
       end subroutine init_omp
 !
       subroutine end_parallel(this)

@@ -129,18 +129,19 @@
          integer, intent(in) :: nx, ny, kstrt
          real, intent(in) :: ax, ay, affp
 ! local data
-         integer :: isign = 0, ny2d, kxp2, j2blok, nyd
+         integer :: isign = 0, nyv, kxp2, nyd
          real :: we
          complex, dimension(:,:), pointer:: ffd
-         complex, dimension(1,1,1) :: q, fx, fy
+         real, dimension(1,1)  :: q
+         real, dimension(2,1,1) :: fxy
          character(len=14), save :: sname = 'ippoisd2init:'
 
          call this%err%werrfl2(class//sname//' started')
          ffd => this%ffc
-         ny2d = size(q,1)
-         nyd = size(ffd,1); kxp2 = size(ffd,2); j2blok = 1
-         call PPOISDX2(q,fx,fy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,ny2d,&
-     &kxp2,j2blok,nyd)
+         nyv = size(q,1)
+         nyd = size(ffd,1); kxp2 = size(ffd,2);
+         call MPPOISD22(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,nyv,kxp2,&
+         &nyd)
          call this%err%werrfl2(class//sname//' ended')
          end subroutine ippoisd2init
 !
@@ -186,9 +187,7 @@
          real, intent(inout) :: we
          real, dimension(:,:,:), pointer, intent(inout) :: q, fx
 ! local data
-         integer :: nx, ny, nyv, kxp2, j2blok, nyd
-         real :: ax, ay, affp
-         real, dimension(1,1,1) :: fy
+         integer :: nx, ny, nyv, kxp2, nyd
          complex, dimension(:,:), pointer :: ffc
          character(len=10), save :: sname = 'ippoisd2:'
 
@@ -197,14 +196,14 @@
          ffc => this%ffc
          nx = this%nd(1); ny = this%nd(2)
          nyv = size(q,2); nyd = size(ffc,1)
-         kxp2 = size(ffc,2); j2blok = 1
+         kxp2 = size(q,3)-1;
 
          if (isign==1) then
-            call PPOISD2(q(1,:,:),fx(1,:,:),fy,isign,ffc,ax,ay,affp,we,nx,ny,&
-            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+            call MPPOTPD2(q(1,:,:),fx(1,:,:),ffc,we,nx,ny,this%p%getlkstrt(),&
+            &nyv,kxp2,nyd)
          else if (isign==2) then
-            call PPOISD2(q(1,:,:),fy,fx(1,:,:),isign,ffc,ax,ay,affp,we,nx,ny,&
-            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+            call MPPSMOOTHD2(q(1,:,:),fx(1,:,:),ffc,nx,ny,this%p%getlkstrt(),&
+            &nyv,kxp2,nyd)
          endif
          call this%err%werrfl2(class//sname//' ended')
 
@@ -249,7 +248,7 @@
          class(ufield2d), intent(inout) :: q, fxy
          real, intent(inout) :: we
 ! local data
-         integer :: isign = -1, nx, ny, nyv, kxp2, j2blok, nyd
+         integer :: isign = -1, nx, ny, nyv, kxp2, nyd
          real :: ax, ay, affp
          real, dimension(:,:,:), pointer :: pq
          real, dimension(:,:,:), pointer :: pfxy
@@ -270,25 +269,25 @@
          select case (this%sp%getpsolver())
          case (1)
             nyv = size(pq,2); nyd = size(ffc,1)
-            kxp2 = size(ffc,2); j2blok = 1
+            kxp2 = size(pq,3)-1;
             select case (size(pfxy,1))
             case (2)
-               call PPOISD22(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
-               &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+               call MPPOISD22(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
+               &this%p%getlkstrt(),nyv,kxp2,nyd)
             case (3)
-               call PPOISD23(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
-               &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+               call MPPOISD23(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
+               &this%p%getlkstrt(),nyv,kxp2,nyd)
             end select
          case default
             nyv = size(pq,2); nyd = size(ffc,1)
-            kxp2 = size(ffc,2); j2blok = 1
+            kxp2 = size(ffc,2);
             select case (size(pfxy,1))
             case (2)
-               call PPOISD22(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
-               &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+               call MPPOISD22(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
+               &this%p%getlkstrt(),nyv,kxp2,nyd)
             case (3)
-               call PPOISD23(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
-               &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+               call MPPOISD23(pq(1,:,:),pfxy,isign,ffc,ax,ay,affp,we,nx,ny,&
+               &this%p%getlkstrt(),nyv,kxp2,nyd)
             end select
          end select
          call this%err%werrfl2(class//sname//' ended')
@@ -369,19 +368,11 @@
          ffc => this%ffc
          nx = this%nd(1); ny = this%nd(2)
          nyv = size(cu,2); nyd = size(ffc,1)
-         kxp2 = size(ffc,2); j2blok = 1
+         kxp2 = size(cu,3)-1;
          select case (size(cu,1))
-            case (2)
-               if (isign==(-1)) then
-                  call PBPOISD22(cu,dxy,bxy,isign,ffc,ax,ay,affp,ci,wm,nx,ny,&
-                  &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
-               else
-                  call PBPOISD22(cu,bxy,dxy,isign,ffc,ax,ay,affp,ci,wm,nx,ny,&
-                  &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
-                endif
             case (3)
-               call PBPOISD23(cu,bxy,isign,ffc,ax,ay,affp,ci,wm,nx,ny,&
-               &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
+               call MPPBBPOISD23(cu,bxy,ffc,ci,wm,nx,ny,this%p%getlkstrt(),nyv,&
+               &kxp2,nyd)
          end select
          call this%err%werrfl2(class//sname//' ended')
 
