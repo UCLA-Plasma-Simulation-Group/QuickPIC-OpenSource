@@ -3,7 +3,7 @@ SYS_SFX=GF_OPENMPI
 # precision
 # SGL = single precision, float(4)
 # DBL = double precision, float(8)
-PRECISION = SGL
+PRECISION = DBL
 
 INC_FILE_NAME = make.${SYS_SFX}
 include ./${INC_FILE_NAME} 
