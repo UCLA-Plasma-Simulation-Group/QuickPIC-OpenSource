@@ -9,7 +9,7 @@ Please also feel free to send an email to this address if you would like assista
 
 # Compile QuickPIC
 
-The makefile is setup to use gcc and gfortran with MPI. HDF5-Parallel is also required
+The makefile is set to use gcc and gfortran with MPI. HDF5-Parallel is also required
 for compiling. 
 
 To compile the programs, execute:
