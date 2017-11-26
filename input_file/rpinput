@@ -49,7 +49,8 @@ Parameter_Array(1,:) = (Center_X,Center_Y,Center_Z)
                  = Position of the center of the beam
 Parameter_Array(2,:) =
   Init_Routine=1 :  (Sigma_X, Sigma_Y, Sigma_Z)
-                        Sigma_X(Y) in micron 
+                        Sigma_X(Y,Z) in micron 
+Parameter_Array(3,:) =
   Init_Routine=1 : (EMITTANCE_X, EMITTANCE_Y, ENERGY_DIFF)  
                    Normalized emittance of the beam in unit of 
                    mm*mrad, thermal velocity of the beam = 
@@ -135,7 +136,7 @@ slice to dump.
 ------------------------------------------------------
 &Potential_Diag
  DFPSI=0, 
- DFPSISLICE=1 PSIX0=340,PSIY0=340, PSIZ0=0
+ DFPSISLICE=1, PSIX0=340,PSIY0=340, PSIZ0=0
 /
 
 &Current_Diag
