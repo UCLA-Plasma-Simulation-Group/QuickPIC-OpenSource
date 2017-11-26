@@ -409,23 +409,26 @@
                   call system('mkdir ./RAW-BEAM/'//trim(stime))
                end do
             end if
-            if (sim%res%read_rst_file) then
-               do m = 1, sim%sim%nbeams
-                  call str(m,sn,2)                  
-                  call str(pp%getidproc(),sid,8)
-                  call str(sim%res%rst_timestep,stime,8)                  
-                  call file_rst%new(filename = './RST/RST-'//trim(sn)//'-'//trim(sid)//&
-                  &'_'//trim(stime)//'.h5',dataname = 'RST-'//trim(sn)//'-'//trim(sid)//&
-                  &'_'//trim(stime)//'.h5')
-                  call beam(m)%rrst(file_rst)
-                end do
-                start3d = sim%res%rst_timestep
-            else if (sim%res%dump_rst_file) then
-               call system('mkdir ./RST')
+            if (.not. sim%res%read_rst_file) then
+               if (sim%res%dump_rst_file) then
+                  call system('mkdir ./RST')
+               end if
             end if
-            
-         endif
-         
+         end if
+
+         if (sim%res%read_rst_file) then
+            do m = 1, sim%sim%nbeams
+               call str(m,sn,2)                  
+               call str(pp%getidproc(),sid,8)
+               call str(sim%res%rst_timestep,stime,8)                  
+               call file_rst%new(filename = './RST/RST-'//trim(sn)//'-'//trim(sid)//&
+               &'_'//trim(stime)//'.h5',dataname = 'RST-'//trim(sn)//'-'//trim(sid)//&
+               &'_'//trim(stime))
+               call beam(m)%rrst(file_rst)
+             end do
+             start3d = sim%res%rst_timestep
+         end if
+                  
          call MPI_BARRIER(pp%getlworld(),ierr)
 
          allocate(tag_spe(sim%sim%nspecies),id_spe(sim%sim%nspecies))

@@ -670,8 +670,9 @@
                npx3(i)=npx
                npy3(i)=npy
                npz3(i)=npz
-               ntemp = num_particle*1e12*(2**indz)*(2**indx)*(2&
-               &**indy)/(npx*alx*aly*alz*plasma_density*cwp*cwp*cwp) 
+               ntemp = num_particle*1e12*(2**indz)
+               ntemp = ntemp*(2**indx)
+               ntemp = ntemp*(2**indy)/(npx*alx*aly*alz*plasma_density*cwp*cwp*cwp) 
                ntemp = ntemp/npy
                ntemp = ntemp/npz
                charge3s(i) = ntemp*charge
