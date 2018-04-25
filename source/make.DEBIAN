@@ -1,0 +1,30 @@
+# name of the compiler 
+FC_DEBIAN = h5pfc -fopenmp
+CC_DEBIAN = gcc
+LINKER_DEBIAN = h5pfc -fopenmp -O3
+
+OPTS_DBL_DEBIAN = -O3 -fdefault-real-8 -fdefault-double-8
+OPTS_SGL_DEBIAN = -O3
+
+FORMAT_FREE_DEBIAN = -ffree-form 
+FORMAT_FIXED_DEBIAN = -ffixed-form
+
+# hdf5 libraries 
+
+HDF5_LIB =
+HDF5_INC =
+
+HDF_LIBPATH_DEBIAN =
+HDF_INCLUDE_PATH_DEBIAN =
+
+# other libs
+OTHER_LIBS_DEBIAN = 
+
+# memory options
+MEM_OPTIONS_DEBIAN = 
+
+# options for linking
+# use static libs
+STATIC_LINK_DEBIAN = 
+# use shared libs
+SHARED_LINK_DEBIAN = 

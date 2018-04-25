@@ -29,3 +29,12 @@ By default, OpenMP will use the maximum number of processors it can find
 on the MPI node.  If the user wants to control the number of threads, the
 environment variable 'OMP_NUM_THREADS' may need to be set to the maximum
 number of threads per node expected.
+
+## Compile on Debian (Ubuntu)
+
+To compile QuickPIC on Debian, execute:
+
+make SYS_FX=DEBIAN
+
+This requires that libhdf5-openmpi-dev is installed as it uses the h5pfc compiler wrapper.
+
