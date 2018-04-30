@@ -26,7 +26,7 @@
          integer :: nvp
          integer :: idproc
          integer :: kstrt
-         integer :: mreal, mint, mcplx, mdouble, lworld
+         integer :: mreal, mint, mcplx, mdouble, mchar, lworld
 
          contains
          
@@ -40,6 +40,7 @@
          procedure :: getmint
          procedure :: getmdouble
          procedure :: getmcplx
+         procedure :: getmchar
          procedure, private :: init_parallel
          procedure, private :: end_parallel
                   
@@ -135,6 +136,17 @@
 
       end function getmcplx      
 !
+      function getmchar(this)
+
+         implicit none
+
+         class(parallel), intent(in) :: this
+         integer :: getmchar
+         
+         getmchar = this%mchar
+
+      end function getmchar
+!
       subroutine init_parallel(this)
 
          implicit none
@@ -148,22 +160,23 @@
 
 ! initialize for distributed memory parallel processing using mpi
          call ppinit2(this%idproc,this%nvp,this%lworld,&
-         &this%mint,this%mreal,this%mdouble,this%mcplx)
+         &this%mint,this%mreal,this%mdouble,this%mcplx,this%mchar)
          this%kstrt = this%idproc + 1
          
       end subroutine init_parallel
 !
-      subroutine ppinit2(idproc,nvp,lworld,mint,mreal,mdouble,mcplx)
+      subroutine ppinit2(idproc,nvp,lworld,mint,mreal,mdouble,mcplx,mchar)
 ! this subroutine initializes parallel processing using mpi
       implicit none
 
       integer, intent(inout) :: idproc, nvp
-      integer, intent(inout) :: lworld,mint,mreal,mdouble,mcplx
+      integer, intent(inout) :: lworld,mint,mreal,mdouble,mcplx,mchar
 ! nproc = number of real or virtual processors obtained
 ! mreal = default datatype for reals
 ! mint = default datatype for integers
 ! mcplx = default datatype for complex type
 ! mdouble = default double precision type
+! mchar = default datatype for character type
 ! lworld = MPI_COMM_WORLD communicator
 ! local data
       integer :: ierror, ndprec, idprec
@@ -199,6 +212,7 @@
 ! set default datatypes
       mint = MPI_INTEGER
       mdouble = MPI_DOUBLE_PRECISION
+      mchar = MPI_CHARACTER
 ! single precision real
       if (ndprec==0) then
          mreal = MPI_REAL

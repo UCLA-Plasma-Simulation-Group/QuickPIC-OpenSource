@@ -29,8 +29,8 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
          class(ufield2d), pointer :: rs => null(), ks => null()
-         class(fft2d), pointer :: ft
-         class(fpois2d), pointer :: pt
+         class(fft2d), pointer :: ft => null()
+         class(fpois2d), pointer :: pt => null()
          integer :: state, gcells
                   
          contains

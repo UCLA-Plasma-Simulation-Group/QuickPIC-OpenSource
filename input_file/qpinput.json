@@ -1,0 +1,106 @@
+{
+"simulation" : //note
+{
+    "nodes" : [32,2],  
+    "indx" : 8,
+    "indy" : 8,
+    "indz" : 8,
+    "box" : {
+        "x" : [-5.0,5.0],
+        "y" : [-5.0,5.0],
+        "z" : [-5.0,5.0]},
+    "boundary" : "conducting",
+    "n0" : 1.0e16,
+    "time" : 5.0e2,
+    "dt" : 20.0,
+    "nbeams" : 1,
+    "nspecies" : 1,
+    "dump_restart" : false,
+    "ndump_restart" : 100,
+    "read_restart" : false,
+    "restart_timestep" : 100,
+    "iter" : 1,
+    "verbose" : 0
+},
+
+"beam" :
+[
+    {
+    "evolution" : true,
+    "profile" : 1,
+    "par_per_cell" : [2,2,2],
+    "num_par_max" : 10000000,
+    "rqm" : -1.0,
+    "gamma" : 20000,
+    "quiet_start" : true,
+    "density" : 10.0,
+    "parameter" :
+    [
+        [0.0,0.0,0.0],
+        [0.1,0.1,0.5],
+        [10.0,10.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0]
+    ],
+    "diag" :
+    [
+        {
+        "name" : "charge",
+        "ndump" : 0
+        },
+        {
+        "name" : "charge",
+        "ndump" : 0,
+        "slice" : ["x", 256]
+        },
+        {
+        "name" : "raw",
+        "ndump" : 0,
+        "sample" : 10
+        }
+    ]    
+    }
+],
+
+"species" :
+[
+    {
+    "profile" : 1,
+    "par_per_cell" : [2,2],
+    "rqm" : -1.0,
+    "diag" :
+    [
+        {
+        "name" : "charge",
+        "ndump" : 0
+        },
+        {
+        "name" : "charge",
+        "ndump" : 0,
+        "slice" : ["x", 256]
+        },
+        {
+        "name" : "current",
+        "ndump" : 0
+        }
+    ]    
+    }
+],
+
+"field" :
+{
+    "diag" :
+    [
+        {
+        "name" : "ex",
+        "ndump" : 0
+        },
+        {
+        "name" : "ex",
+        "ndump" : 0,
+        "slice" : ["x", 256]
+        }
+    ]    
+    
+}
+}

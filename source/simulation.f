@@ -1,7 +1,7 @@
-! Main program for QuickPIC Open Source 1.0
-! update: 04/18/2016
+! simulation module for QuickPIC Open Source 1.0
+! update: 01/09/2018
 
-      program quickpic
+      module simulation_class
       
       use parallel_class
       use parallel_pipe_class
@@ -20,28 +20,98 @@
 
       implicit none
       
+      private
       
-      
-      type(input) :: sim
-      type(input_json) :: sim_json
-      class(parallel_pipe),pointer :: pp => null()
-      class(perrors),pointer :: perr => null()
-      class(spect3d), pointer :: psp3 => null()
-      class(spect2d), pointer :: psp2 => null()
+      type simulation
 
-      type(field2d) :: qb, qe, qi, psit, psi, div_vpot, reg
-      type(field2d) :: fxy, bxyz, cu, dcu, amu, epw, epwb
-      type(field2d), dimension(:), allocatable :: qe0, cu0, dcu0, amu0
-      
-      type(field3d) :: bexyz, bbxyz, qeb
-      type(field3d), dimension(:), allocatable :: qep
-      type(field3d), allocatable :: psi3d,cu3d
+         private
+
+!         type(input) :: sim
+         type(input_json) :: sim_json
+         class(parallel_pipe),pointer :: p => null()
+         class(perrors),pointer :: err => null()
+         class(spect3d), pointer :: sp3 => null()
+         class(spect2d), pointer :: sp2 => null()
+         
+         type(sim_fields) :: fields
+         type(sim_beams) :: beams
+         type(sim_species) :: species
+
+         contains
+         
+         generic :: new => init_simulation
+         generic :: del => end_simulation
+         
+         procedure, private :: init_simulation, end_simulation
+
+      end type simulation
+!
+      type sim_fields
+
+         private
+
+         class(parallel_pipe),pointer :: p => null()
+         class(perrors),pointer :: err => null()
+         class(spect3d), pointer :: sp3 => null()
+         class(spect2d), pointer :: sp2 => null()
+         type(field2d), allocatable :: qb, qe, qi, psit, psi, div_vpot, reg
+         type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb         
+         type(field3d), allocatable :: bexyz, bbxyz
+         type(field3d), allocatable :: qeb
+         type(field3d), allocatable :: psi3d
+
+         contains
+         
+         generic :: new => init_sim_fields
+         generic :: del => end_sim_fields
+
+         procedure, private :: init_sim_fields, end_sim_fields
+         
+      end type sim_fields
+!
+      type sim_beams
+
+         private
+
+         class(parallel_pipe),pointer :: p => null()
+         class(perrors),pointer :: err => null()
+         class(spect3d), pointer :: sp3 => null()
+         class(spect2d), pointer :: sp2 => null()
+         type(beam3d), dimension(:), allocatable :: beam
+         integer :: nbeams
+
+         contains
+         
+         generic :: new => init_sim_beams
+         generic :: del => end_sim_beams
+
+         procedure, private :: init_sim_beams, end_sim_beams
+
+      end type sim_beams
+!      
+      type sim_species
+
+         private
+
+         class(parallel_pipe),pointer :: p => null()
+         class(perrors),pointer :: err => null()
+         class(spect3d), pointer :: sp3 => null()
+         class(spect2d), pointer :: sp2 => null()
+         type(fdist2d), dimension(:), allocatable :: pf
+         type(species2d), dimension(:), allocatable :: spe
+
+         contains
+         
+         generic :: new => init_sim_species
+         generic :: del => end_sim_species
+
+         procedure, private :: init_sim_species, end_sim_species
+
+      end type sim_species
+!
+      character(len=10) :: class = 'simulation:'
+      character(len=128) :: erstr
       	
-      type(fdist2d), dimension(:), allocatable :: pf
-      type(species2d), dimension(:), allocatable :: spe
-      type(fdist3d), dimension(:), allocatable :: pf3
-      type(beam3d), dimension(:), allocatable :: beam
-
       type(hdf5file) :: file2d,file3d,filep,file_rst
 
       integer :: ierr, iter, nstep3d, nstep2d, start3d
@@ -55,58 +125,160 @@
       character(len=20) :: stime
       
       real :: dex, dxi, dex2
-      
-      call sim_json%new()
-
-!#include "temp.f"            
-
-      call MPI_FINALIZE(ierr)
-      
-      stop
-      
+            
       contains
 !
-      subroutine initialization()
+      subroutine init_simulation(this)
 
          implicit none
          
-         integer :: i, nd
-         character(len=20) :: sn, sid
+         class(simulation), intent(inout) :: this
+! local data
+         character(len=18), save :: sname = 'init_simulation:'
          
          
-         call sim%new()
-         perr => sim%err
-         pp => sim%pp
-         psp3 => sim%sp
-         psp2 => sim%sp
-         
-         call bexyz%new(pp,perr,psp3,dim=3)
-         call bbxyz%new(pp,perr,psp3,dim=3)
-         call qeb%new(pp,perr,psp3,dim=1)
-         
-         call qb%new(pp,perr,psp2,dim=1,fftflag=.true.,gcells=1)
-         call qe%new(pp,perr,psp2,dim=1,fftflag=.true.)
-         call qi%new(pp,perr,psp2,dim=1,fftflag=.true.,gcells=1)
-         call psit%new(pp,perr,psp2,dim=1,fftflag=.true.)
-         call div_vpot%new(pp,perr,psp2,dim=1,fftflag=.true.)
-         call psi%new(pp,perr,psp2,dim=1,fftflag=.true.)
-         call reg%new(pp,perr,psp2,dim=1,fftflag=.true.)
-         call fxy%new(pp,perr,psp2,dim=2,fftflag=.true.)
-         call cu%new(pp,perr,psp2,dim=3,fftflag=.true.,state=1)
-         call dcu%new(pp,perr,psp2,dim=2,fftflag=.true.)
-         call amu%new(pp,perr,psp2,dim=3,fftflag=.true.)
-         call epw%new(pp,perr,psp2,dim=2,fftflag=.true.,state=1)
-         call epwb%new(pp,perr,psp2,dim=2,fftflag=.true.)
-         call bxyz%new(pp,perr,psp2,dim=3,fftflag=.true.)
+         call this%sim_json%new()
+         this%err => this%sim_json%err
+         this%p => this%sim_json%pp
+         this%sp3 => this%sim_json%sp
+         this%sp2 => this%sim_json%sp
 
-         if ((sim%diag%dfpsi > 0) .or. (sim%diag%dfpsislice > 0)) then
-            allocate(psi3d)
-            call psi3d%new(pp,perr,psp3,dim=1)
-         end if
-         if ((sim%diag%dfjp > 0) .or. (sim%diag%dfjpslice > 0)) then
-            allocate(cu3d)
-            call cu3d%new(pp,perr,psp3,dim=3)
-         end if
+         call this%err%werrfl2(class//sname//' started')
+         
+         call this%fields%new(this%sim_json)
+         call this%beams%new(this%sim_json)
+         call this%species%new(this%sim_json)
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_simulation
+!         
+      subroutine end_simulation(this)
+
+         implicit none
+
+         class(simulation), intent(inout) :: this
+! local data
+         character(len=18), save :: sname = 'end_simulation:'
+         
+         call this%err%werrfl2(class//sname//' started')
+         
+         call this%fields%del()
+         call this%beams%del()
+         call this%species%del()
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine end_simulation
+!
+      subroutine init_sim_fields(this,input)
+
+         implicit none
+
+         class(sim_fields), intent(inout) :: this
+         type(input_json), intent(in) :: input
+! local data
+         character(len=18), save :: sname = 'init_sim_fields:'
+         character(len=20) :: sn
+         character(len=:), allocatable :: ff         
+         integer:: i,n,ndump
+
+         this%err => this%input%err
+         this%p => this%input%pp
+         this%sp3 => this%input%sp
+         this%sp2 => this%input%sp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         allocate(this%qb, this%qe, this%qi, this%psit, this%psi)
+         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
+         allocate(this%dcu, this%amu, this%epw, this%epwb)
+         allocate(this%bexyz, this%bbxyz, this%qeb)
+         
+         call input%info('field.diag',n_children=n)
+         
+         do i = 1, n
+            call str(i,sn,4)
+            call input%get('field.diag('//trim(sn)//').ndump',ndump)
+            if (ndump > 0) then
+               call input%get('field.diag('//trim(sn)//').name',ff)
+               if (ff == 'psi') then
+                  allocate(this%psi3d)
+                  call this%psi3d%new(this%p,this%err,this%sp3,dim=1)
+                  exit
+               end if
+            end if
+         end do
+         
+         call this%bexyz%new(this%p,this%err,this%sp3,dim=3)
+         call this%bbxyz%new(this%p,this%err,this%sp3,dim=3)
+         call this%qeb%new(this%p,this%err,this%sp3,dim=1)         
+         call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
+         call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%qi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
+         call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%div_vpot%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%reg%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.,state=1)
+         call this%dcu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         call this%epw%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.,state=1)
+         call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_sim_fields
+!
+      subroutine end_sim_fields(this)
+
+         implicit none
+
+         class(sim_fields), intent(inout) :: this
+         type(input_json), intent(in) :: input
+! local data
+         character(len=18), save :: sname = 'end_sim_fields:'
+         
+         call this%err%werrfl2(class//sname//' started')
+
+         call this%bexyz%del()
+         call this%bbxyz%del()
+         call this%qeb%del()
+         call this%qb%del()
+         call this%qe%del()
+         call this%qi%del()
+         call this%psit%del()
+         call this%div_vpot%del()
+         call this%psi%del()
+         call this%reg%del()
+         call this%fxy%del()
+         call this%cu%del()
+         call this%dcu%del()
+         call this%amu%del()
+         call this%epw%del()
+         call this%epwb%del()
+         call this%bxyz%del()
+
+         call this%err%werrfl2(class//sname//' ended')
+
+
+      end subroutine end_sim_fields
+!
+      subroutine init_sim_beams(this)
+
+         implicit none
+
+         class(sim_fields), intent(inout) :: this
+         type(input_json), intent(in) :: input
+! local data
+         character(len=18), save :: sname = 'end_sim_fields:'
+         
+         call this%err%werrfl2(class//sname//' started')
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!         
+         
          
          allocate(pf(sim%sim%nspecies),spe(sim%sim%nspecies))
          allocate(pf3(sim%sim%nbeams),beam(sim%sim%nbeams))
@@ -776,4 +948,4 @@
       
       end function ntag
                   
-      end program quickpic
+      end module simulation_class
