@@ -428,7 +428,7 @@
              end do
              start3d = sim%res%rst_timestep
          end if
-         
+
          call MPI_BARRIER(pp%getlworld(),ierr)
 
          allocate(tag_spe(sim%sim%nspecies),id_spe(sim%sim%nspecies))
