@@ -3,7 +3,7 @@ QuickPIC is a 3D parallel (MPI & OpenMP Hybrid) Quasi-Static PIC code, which is 
 
 ## Branch: Cori-Vec
 
-In addition to the MPI-OpenMP hybrid algorithm, this branch contains new 2D particle subroutines (in source/part2d_lib77.f) using vectorization algorithm. The vectorization algorithm is originally from [UPIC Skeleton Code](https://picksc.idre.ucla.edu/software/skeleton-code/). The algorithm in current code is transformed according to the Quasi-Static-Approximation PIC model and modified to enable MPI. A simple profiling tool is added in the code to show the computing time consumed on the interested procedures. The code can be compiled and run on Cori at [NERSC](http://nersc.gov/).
+In addition to the MPI-OpenMP hybrid algorithm, this branch contains new 2D particle subroutines (in source/part2d_lib77.f) using vectorization algorithm. The vectorization algorithm is originally from [UPIC Skeleton Code](https://picksc.idre.ucla.edu/software/skeleton-code/). The algorithm in current code is transformed from the original one to one that solves the Quasi-Static-Approximation PIC model. It also has been modified to enable MPI. A simple profiling tool is added in the code to show the computing time consumed on the interested procedures. The code can be compiled and run on Cori at [NERSC](http://nersc.gov/).
 
 # Upon cloning the repository
 
