@@ -86,7 +86,7 @@
       integer nppmx, idimp, npmax, mx, my, mx1, mxyp1, irc
       integer kpic, npp, noff
       real part, ppart
-      dimension part(idimp,npmax), ppart(idimp,nppmx,mxyp1)
+      dimension part(idimp,npmax), ppart(nppmx,idimp,mxyp1)
       dimension kpic(mxyp1)
 ! local data
       integer i, j, k, n, m, mnoff, ip, ierr
@@ -106,7 +106,7 @@
       ip = kpic(m) + 1
       if (ip.le.nppmx) then
          do 20 i = 1, idimp
-         ppart(i,ip,m) = part(i,j)
+         ppart(ip,i,m) = part(i,j)
    20    continue
       else
          ierr = max(ierr,ip-nppmx)
@@ -140,7 +140,7 @@
       integer noff, nyp, idimp, nppmx, nx, mx, my, mx1, myp1, irc
       real ppart
       integer kpic
-      dimension ppart(idimp,nppmx,mx1*myp1)
+      dimension ppart(nppmx,idimp,mx1*myp1)
       dimension kpic(mx1*myp1)
 ! local data
       integer mxyp1, noffp, moffp, nppp, j, k, ist, nn, mm
@@ -163,8 +163,8 @@
       edgery = noff + moffp + mm
 ! loop over particles in tile
       do 10 j = 1, nppp
-      dx = ppart(1,j,k)
-      dy = ppart(2,j,k)
+      dx = ppart(j,1,k)
+      dy = ppart(j,2,k)
 ! find particles going out of bounds
       ist = 0
       if (dx.lt.edgelx) ist = 1
@@ -180,6 +180,8 @@
 !-----------------------------------------------------------------------
       subroutine PPGPPOST2L(ppart,q,kpic,noff,qm,idimp,nppmx,mx,my,nxv, &
      &nypmx,mx1,mxyp1)
+! vecterization
+! transposed
 ! for 2d code, this subroutine calculates particle charge density
 ! using first-order linear interpolation, periodic boundaries
 ! OpenMP version using guard cells, for distributed data
@@ -212,91 +214,138 @@
       real qm
       real ppart, q
       integer kpic
-      dimension ppart(idimp,nppmx,mxyp1), q(nxv,nypmx), kpic(mxyp1)
+      dimension ppart(nppmx,idimp,mxyp1), q(nxv*nypmx), kpic(mxyp1)
 ! local data
 !      integer MXV, MYV
 !      parameter(MXV=33,MYV=33)
+      integer npblk, lvect
+      parameter(npblk=32,lvect=4)
+      integer ipp, joff, nps, m, lxv
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
       real x, y, dxp, dyp, amx, amy
       real sq
 !     dimension sq(MXV,MYV)
-      dimension sq(mx+1,my+1)
+      dimension sq((mx+1)*(my+1))
+c scratch arrays
+      integer n
+      real s
+      dimension n(npblk), s(npblk,lvect)
+      lxv = mx + 1      
 ! error if local array is too small
 !     if ((mx.ge.MXV).or.(my.ge.MYV)) return
 ! loop over tiles
 !$OMP PARALLEL DO
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,mnoff,nn,mm,x,y,dxp,dyp,amx,amy,
+!$OMP& ipp,joff,nps,n,m,s,
 !$OMP& sq)
-      do 80 k = 1, mxyp1
+      do 110 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
       noffp = mx*(k - mx1*noffp - 1)
       nppp = kpic(k)
-      mnoff = moffp + noff - 1
+      mnoff = moffp + noff
 ! zero out local accumulator
-      do 20 j = 1, my+1
-      do 10 i = 1, mx+1
-      sq(i,j) = 0.0
+      do 10 j = 1, (mx+1)*(my+1)
+      sq(j) = 0.0
    10 continue
-   20 continue
-! loop over particles in tile
-      do 30 j = 1, nppp
+c loop over particles in tile
+      ipp = nppp/npblk
+c outer loop over number of full blocks
+      do 50 m = 1, ipp
+      joff = npblk*(m - 1)
+c inner loop over particles in block
+      do 20 j = 1, npblk
 ! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
+      x = ppart(j+joff,1,k)
+      y = ppart(j+joff,2,k)
       nn = x
       mm = y
       dxp = qm*(x - real(nn))
       dyp = y - real(mm)
-      nn = nn - noffp + 1
-      mm = mm - mnoff
+      n(j) = nn - noffp + lxv*(mm - mnoff)
+      amx = qm - dxp
+      amy = 1.0 - dyp
+      s(j,1) = amx*amy
+      s(j,2) = dxp*amy
+      s(j,3) = amx*dyp
+      s(j,4) = dxp*dyp
+   20 continue
+c deposit charge within tile to local accumulator
+      do 40 j = 1, npblk
+      nn = n(j)
+      mm = nn + lxv - 2
+!dir$ ivdep
+      do 30 i = 1, lvect
+      if (i.gt.2) nn = mm
+      sq(i+nn) = sq(i+nn) + s(j,i)
+   30 continue
+   40 continue
+   50 continue
+      nps = npblk*ipp + 1
+c loop over remaining particles
+      do 60 j = nps, nppp
+c find interpolation weights
+! find interpolation weights
+      x = ppart(j,1,k)
+      y = ppart(j,2,k)
+      nn = x
+      mm = y
+      dxp = qm*(x - real(nn))
+      dyp = y - real(mm)
+      nn = nn - noffp + 1 + lxv*(mm - mnoff)
       amx = qm - dxp
       amy = 1.0 - dyp
 ! deposit charge within tile to local accumulator
-      x = sq(nn,mm) + amx*amy
-      y = sq(nn+1,mm) + dxp*amy
-      sq(nn,mm) = x
-      sq(nn+1,mm) = y
-      x = sq(nn,mm+1) + amx*dyp
-      y = sq(nn+1,mm+1) + dxp*dyp
-      sq(nn,mm+1) = x
-      sq(nn+1,mm+1) = y
-   30 continue
+      x = sq(nn) + amx*amy
+      y = sq(nn+1) + dxp*amy
+      sq(nn) = x
+      sq(nn+1) = y
+      x = sq(nn+lxv) + amx*dyp
+      y = sq(nn+1+lxv) + dxp*dyp
+      sq(nn+lxv) = x
+      sq(nn+1+lxv) = y
+   60 continue
 ! deposit charge to interior points in global array
       nn = min(mx,nxv-noffp)
       mm = min(my,nypmx-moffp)
-      do 50 j = 2, mm
-      do 40 i = 2, nn
-      q(i+noffp,j+moffp) = q(i+noffp,j+moffp) + sq(i,j)
-   40 continue
-   50 continue
-! deposit charge to edge points in global array
-      mm = min(my+1,nypmx-moffp)
-      do 60 i = 2, nn
-!$OMP ATOMIC
-      q(i+noffp,1+moffp) = q(i+noffp,1+moffp) + sq(i,1)
-      if (mm > my) then
-!$OMP ATOMIC
-         q(i+noffp,mm+moffp) = q(i+noffp,mm+moffp) + sq(i,mm)
-      endif
-   60 continue
-      nn = min(mx+1,nxv-noffp)
-      do 70 j = 1, mm
-!$OMP ATOMIC
-      q(1+noffp,j+moffp) = q(1+noffp,j+moffp) + sq(1,j)
-      if (nn > mx) then
-!$OMP ATOMIC
-         q(nn+noffp,j+moffp) = q(nn+noffp,j+moffp) + sq(nn,j)
-      endif
+      do 80 j = 2, mm
+      do 70 i = 2, nn
+      q(i+noffp+nxv*(j+moffp-1)) = q(i+noffp+nxv*(j+moffp-1)) + 
+     1sq(i+lxv*(j-1))
    70 continue
    80 continue
+! deposit charge to edge points in global array
+      mm = min(my+1,nypmx-moffp)
+      do 90 i = 2, nn
+!$OMP ATOMIC
+      q(i+noffp+nxv*moffp) = q(i+noffp+nxv*moffp) + sq(i)
+      if (mm > my) then
+!$OMP ATOMIC
+         q(i+noffp+nxv*(mm+moffp-1)) = q(i+noffp+nxv*(mm+moffp-1)) + 
+     1sq(i+lxv*(mm-1))
+      endif
+   90 continue
+      nn = min(mx+1,nxv-noffp)
+      do 100 j = 1, mm
+!$OMP ATOMIC
+      q(1+noffp+nxv*(j+moffp-1)) = q(1+noffp+nxv*(j+moffp-1)) + 
+     1sq(1+lxv*(j-1))
+      if (nn > mx) then
+!$OMP ATOMIC
+         q(nn+noffp+nxv*(j+moffp-1)) = q(nn+noffp+nxv*(j+moffp-1)) + 
+     1sq(nn+lxv*(j-1))
+      endif
+  100 continue
+  110 continue
 !$OMP END PARALLEL DO
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGRDCJPPOST2L_QP(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,no&
-     &ff,nyp,qm,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+      subroutine PPGRDCJPPOST2L_QP(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,no
+     1ff,nyp,qm,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+! vecterization
+! transposed
 ! for 2-1/2d code, this subroutine calculates particle momentum flux,
 ! acceleration density and current density using first-order spline
 ! interpolation for relativistic particles.
@@ -413,13 +462,16 @@
       real qm, qbm, dt, ci,dex
       real ppart, fxy, bxy, cu, dcu, amu, psit
       integer kpic
-      dimension ppart(idimp,nppmx,mxyp1)
-      dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx), psit(nxv,nypmx)
-      dimension cu(3,nxv,nypmx), dcu(2,nxv,nypmx), amu(3,nxv,nypmx)
+      dimension ppart(nppmx,idimp,mxyp1)
+      dimension fxy(2,nxv*nypmx), bxy(3,nxv*nypmx), psit(nxv*nypmx)
+      dimension cu(3,nxv*nypmx), dcu(2,nxv*nypmx), amu(3,nxv*nypmx)
       dimension kpic(mxyp1)
 ! local data
 !      integer MXV, MYV
 !      parameter(MXV=33,MYV=33)
+      integer npblk, lvect
+      parameter(npblk=32,lvect=4)
+      integer ipp, joff, nps, m, lxv
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
       real qtmh, dti, ci2, gami, qtmg, gh, dxp, dyp, amx, amy
@@ -427,16 +479,22 @@
       real acx, acy, acz, omxt, omyt, omzt, omt, anorm
       real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
       real x, y, vx, vy, vz, p2, v1, v2, v3, v4
-      real sfxy, sbxy, scu, sdcu, samu, spsit
-      dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1)
-      dimension spsit(mx+1,my+1)
-      dimension scu(3,mx+1,my+1), sdcu(2,mx+1,my+1), samu(3,mx+1,my+1)
+      real sfxy, sbxy, scu, sdcu, samu
+      dimension sfxy(3,(mx+1)*(my+1)), sbxy(3,(mx+1)*(my+1))
+      dimension scu(3,(mx+1)*(my+1)), sdcu(2,(mx+1)*(my+1))
+      dimension samu(3,(mx+1)*(my+1))
 !      dimension sfxy(2,MXV,MYV), sbxy(3,MXV,MYV)
 !      dimension spsit(MXV,MYV)
 !      dimension scu(3,MXV,MYV), sdcu(2,MXV,MYV), samu(3,MXV,MYV)
       real qm1, qtmh1,qtmh2,idex,inv_part_7,ddx,ddy,p6,p7
 !     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
 !     dimension scu(3,mx+1,my+1,), sdcu(3,mx+1,my+1), samu(4,mx+1,my+1)
+c scratch arrays
+      integer n
+      real s1, s2, s3, t
+      dimension n(npblk), s1(npblk,lvect), s2(npblk,lvect), t(npblk,4)
+      dimension s3(npblk,lvect)
+      lxv = mx + 1
       qtmh = 0.5*qbm*dt
       dti = 1.0/dt
       ci2 = ci*ci
@@ -447,62 +505,209 @@
 !$OMP PARALLEL DO
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,v1,v2,v3,
 !$OMP& dxp,dyp,amx,amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omzt, 
-!$OMP& omt,anorm,rot1,rot2,spsit,  
+!$OMP& omt,anorm,rot1,rot2,  
 !$OMP& sfxy,sbxy,scu,sdcu,samu,qm1,qtmh1,qtmh2,inv_part_7,ddx,
+!$OMP& m,n,ipp,joff,nps,s1,s2,s3,t,
 !$OMP& ddy,p6,p7)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
       noffp = mx*(k - mx1*noffp - 1)
       nppp = kpic(k)
-      mnoff = moffp + noff - 1
+      mnoff = moffp + noff
 ! load local fields from global arrays
       nn = min(mx,nx-noffp) + 1
       mm = min(my,nyp-moffp) + 1
       do 20 j = 1, mm
       do 10 i = 1, nn
-      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
-      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
+      sfxy(1,i+lxv*(j-1)) = fxy(1,i+noffp+nxv*(j+moffp-1))
+      sfxy(2,i+lxv*(j-1)) = fxy(2,i+noffp+nxv*(j+moffp-1))
+      sfxy(3,i+lxv*(j-1)) = psit(i+noffp+nxv*(j+moffp-1))
    10 continue
    20 continue
       do 40 j = 1, mm
       do 30 i = 1, nn
-      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
-      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
-      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
+      sbxy(1,i+lxv*(j-1)) = bxy(1,i+noffp+nxv*(j+moffp-1))
+      sbxy(2,i+lxv*(j-1)) = bxy(2,i+noffp+nxv*(j+moffp-1))
+      sbxy(3,i+lxv*(j-1)) = bxy(3,i+noffp+nxv*(j+moffp-1))
    30 continue
    40 continue
-      do 46 j = 1, mm
-      do 42 i = 1, nn
-      spsit(i,j) = psit(i+noffp,j+moffp)
-   42 continue
-   46 continue
 ! zero out local accumulators
-      do 60 j = 1, my+1
-      do 50 i = 1, mx+1
-      samu(1,i,j) = 0.0
-      samu(2,i,j) = 0.0
-      samu(3,i,j) = 0.0
-      sdcu(1,i,j) = 0.0
-      sdcu(2,i,j) = 0.0
-      scu(1,i,j) = 0.0
-      scu(2,i,j) = 0.0
-      scu(3,i,j) = 0.0
+      nn = lxv*(my + 1)
+      do 50 i = 1, nn
+      samu(1,i) = 0.0
+      samu(2,i) = 0.0
+      samu(3,i) = 0.0
+      sdcu(1,i) = 0.0
+      sdcu(2,i) = 0.0
+      scu(1,i) = 0.0
+      scu(2,i) = 0.0
+      scu(3,i) = 0.0
    50 continue
-   60 continue
-! loop over particles in tile
-      do 70 j = 1, nppp
+      ipp = nppp/npblk
+c outer loop over number of full blocks
+      do 110 m = 1, ipp
+      joff = npblk*(m - 1)
+c inner loop over particles in block
+      do 60 j = 1, npblk
 ! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
-      p6 = ppart(6,j,k)
-      p7 = ppart(7,j,k)
+      x = ppart(j+joff,1,k)
+      y = ppart(j+joff,2,k)
+      p6 = ppart(j+joff,6,k)
+      p7 = ppart(j+joff,7,k)
       nn = x
       mm = y
       dxp = x - real(nn)
       dyp = y - real(mm)
-      nn = nn - noffp + 1
-      mm = mm - mnoff
+      n(j) = nn - noffp + lxv*(mm - mnoff)
+      amx = 1.0 - dxp
+      amy = 1.0 - dyp
+      
+      inv_part_7 = 1.0 / p7
+      qtmh1 = qtmh * inv_part_7
+      qtmh2 = qtmh1 * p6
+      s2(j,1) = amx*amy
+      s2(j,2) = dxp*amy
+      s2(j,3) = amx*dyp
+      s2(j,4) = dxp*dyp
+      t(j,1) = inv_part_7
+      t(j,2) = qtmh1
+      t(j,3) = qtmh2
+      t(j,4) = p7
+      qm1 = qm*inv_part_7
+      amx = qm1*amx
+      dxp = qm1*dxp
+      s1(j,1) = amx*amy
+      s1(j,2) = dxp*amy
+      s1(j,3) = amx*dyp
+      s1(j,4) = dxp*dyp      
+   60 continue
+      do 70 j = 1, npblk
+      nn = n(j)
+      mm = nn + lxv - 2
+      dx = 0.0
+      dy = 0.0
+      dz = 0.0
+      ox = 0.0
+      oy = 0.0
+      oz = 0.0
+!dir$ ivdep
+      do 65 i = 1, lvect
+      if (i.gt.2) nn = mm
+      dx = dx + sfxy(1,i+nn)*s2(j,i)
+      dy = dy + sfxy(2,i+nn)*s2(j,i)
+      dz = dz + sfxy(3,i+nn)*s2(j,i)
+      ox = ox + sbxy(1,i+nn)*s2(j,i)
+      oy = oy + sbxy(2,i+nn)*s2(j,i)
+      oz = oz + sbxy(3,i+nn)*s2(j,i)
+   65 continue
+      s2(j,1) = dx
+      s2(j,2) = dy
+      s2(j,3) = dz
+      s3(j,1) = ox
+      s3(j,2) = oy
+      s3(j,3) = oz
+   70 continue
+      do 80 j = 1, npblk
+      dx = s2(j,1)
+      dy = s2(j,2)
+      dz = s2(j,3)
+      ox = s3(j,1)
+      oy = s3(j,2)
+      oz = s3(j,3)
+      inv_part_7 = t(j,1)
+      qtmh1 = t(j,2)
+      qtmh2 = t(j,3)
+      p7 = t(j,4)
+! calculate half impulse
+      ddx = (-1.0)*qtmh2*dx + qtmh*oy
+      ddy = (-1.0)*qtmh2*dy - qtmh*ox
+! half acceleration
+      vx = ppart(j+joff,3,k)
+      vy = ppart(j+joff,4,k)
+      acx = vx + ddx
+      acy = vy + ddy
+! find inverse gamma
+! renormalize magnetic field
+! calculate cyclotron frequency
+      omzt = qtmh1*oz
+! calculate rotation matrix
+      omt = omzt*omzt
+      anorm = 2.0/(1.0 + omt)
+      rot1 = 0.5*(1.0 - omt)
+      rot2 = omzt
+! new momentum
+      v1 = (rot1*acx + rot2*acy)*anorm + ddx
+      v2 = (rot1*acy - rot2*acx)*anorm + ddy
+      
+! deposit momentum flux, acceleration density, and current density
+      ox = 0.5*(v1 + vx)
+      oy = 0.5*(v2 + vy)
+      oz = 0.5*(1.0+dex*dex*(ox*ox+oy*oy))*inv_part_7 - 0.5*p7
+
+      ppart(j+joff,6,k) = p7 + oz
+
+      oz = oz*idex
+
+      vx = (v1 - vx)*dti
+      vy = (v2 - vy)*dti
+
+      dz = qbm*(dz + (dx*ox+dy*oy)*dex*dex*inv_part_7)
+
+      v1 = ox*ox*inv_part_7
+      v2 = oy*oy*inv_part_7
+      v3 = ox*oy*inv_part_7
+
+      vx = vx+ox*dz*inv_part_7
+      vy = vy+oy*dz*inv_part_7
+
+      s2(j,1) = v1
+      s2(j,2) = v2
+      s2(j,3) = v3
+      s2(j,4) = vx
+      s3(j,1) = vy
+      s3(j,2) = ox
+      s3(j,3) = oy
+      s3(j,4) = oz
+   80 continue
+      do 90 j = 1, npblk
+      nn = n(j)
+      mm = nn + lxv - 2
+      v1 = s2(j,1)
+      v2 = s2(j,2)
+      v3 = s2(j,3)
+      vx = s2(j,4)
+      vy = s3(j,1)
+      ox = s3(j,2)
+      oy = s3(j,3)
+      oz = s3(j,4)
+!dir$ ivdep
+      do 85 i = 1, lvect
+      if (i.gt.2) nn = mm
+      samu(1,i+nn) = samu(1,i+nn) + v1*s1(j,i)
+      samu(2,i+nn) = samu(2,i+nn) + v2*s1(j,i)
+      samu(3,i+nn) = samu(3,i+nn) + v3*s1(j,i)
+      sdcu(1,i+nn) = sdcu(1,i+nn) + vx*s1(j,i)
+      sdcu(2,i+nn) = sdcu(2,i+nn) + vy*s1(j,i)
+      scu(1,i+nn) = scu(1,i+nn) + ox*s1(j,i)
+      scu(2,i+nn) = scu(2,i+nn) + oy*s1(j,i)
+      scu(3,i+nn) = scu(3,i+nn) + oz*s1(j,i)
+   85 continue
+   90 continue
+  110 continue
+      nps = npblk*ipp + 1
+c loop over remaining particles
+      do 111 j = nps, nppp
+! find interpolation weights
+      x = ppart(j,1,k)
+      y = ppart(j,2,k)
+      p6 = ppart(j,6,k)
+      p7 = ppart(j,7,k)
+      nn = x
+      mm = y
+      dxp = x - real(nn)
+      dyp = y - real(mm)
+      nn = nn - noffp + 1 + lxv*(mm - mnoff)
       amx = 1.0 - dxp
       amy = 1.0 - dyp
       
@@ -511,46 +716,46 @@
       qtmh2 = qtmh1 * p6
       
 ! find electric field
-      dx = amx*sfxy(1,nn,mm)
-      dy = amx*sfxy(2,nn,mm)
-      dz = amx*spsit(nn,mm)
+      dx = amx*sfxy(1,nn)
+      dy = amx*sfxy(2,nn)
+      dz = amx*sfxy(3,nn)
 
-      dx = amy*(dxp*sfxy(1,nn+1,mm) + dx)
-      dy = amy*(dxp*sfxy(2,nn+1,mm) + dy)
-      dz = amy*(dxp*spsit(nn+1,mm) + dz)
+      dx = amy*(dxp*sfxy(1,nn+1) + dx)
+      dy = amy*(dxp*sfxy(2,nn+1) + dy)
+      dz = amy*(dxp*sfxy(3,nn+1) + dz)
 
-      acx = amx*sfxy(1,nn,mm+1)
-      acy = amx*sfxy(2,nn,mm+1)
-      acz = amx*spsit(nn,mm+1)
+      acx = amx*sfxy(1,nn+lxv)
+      acy = amx*sfxy(2,nn+lxv)
+      acz = amx*sfxy(3,nn+lxv)
 
-      dx = dx + dyp*(dxp*sfxy(1,nn+1,mm+1) + acx) 
-      dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
-      dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
+      dx = dx + dyp*(dxp*sfxy(1,nn+1+lxv) + acx) 
+      dy = dy + dyp*(dxp*sfxy(2,nn+1+lxv) + acy)
+      dz = dz + dyp*(dxp*sfxy(3,nn+1+lxv) + acz)
 
 ! find magnetic field
-      ox = amx*sbxy(1,nn,mm)
-      oy = amx*sbxy(2,nn,mm)
-      oz = amx*sbxy(3,nn,mm)
+      ox = amx*sbxy(1,nn)
+      oy = amx*sbxy(2,nn)
+      oz = amx*sbxy(3,nn)
 
-      ox = amy*(dxp*sbxy(1,nn+1,mm) + ox)
-      oy = amy*(dxp*sbxy(2,nn+1,mm) + oy)
-      oz = amy*(dxp*sbxy(3,nn+1,mm) + oz)
+      ox = amy*(dxp*sbxy(1,nn+1) + ox)
+      oy = amy*(dxp*sbxy(2,nn+1) + oy)
+      oz = amy*(dxp*sbxy(3,nn+1) + oz)
 
-      acx = amx*sbxy(1,nn,mm+1)
-      acy = amx*sbxy(2,nn,mm+1)
-      acz = amx*sbxy(3,nn,mm+1)
+      acx = amx*sbxy(1,nn+lxv)
+      acy = amx*sbxy(2,nn+lxv)
+      acz = amx*sbxy(3,nn+lxv)
 
-      ox = ox + dyp*(dxp*sbxy(1,nn+1,mm+1) + acx) 
-      oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
-      oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
+      ox = ox + dyp*(dxp*sbxy(1,nn+1+lxv) + acx) 
+      oy = oy + dyp*(dxp*sbxy(2,nn+1+lxv) + acy)
+      oz = oz + dyp*(dxp*sbxy(3,nn+1+lxv) + acz)
 
 ! calculate half impulse
       ddx = (-1.0)*qtmh2*dx + qtmh*oy
       ddy = (-1.0)*qtmh2*dy - qtmh*ox
 
 ! half acceleration
-      vx = ppart(3,j,k)
-      vy = ppart(4,j,k)
+      vx = ppart(j,3,k)
+      vy = ppart(j,4,k)
 
       acx = vx + ddx
       acy = vy + ddy
@@ -564,8 +769,6 @@
       anorm = 2.0/(1.0 + omt)
       rot1 = 0.5*(1.0 - omt)
       rot2 = omzt
-
-
 ! new momentum
       v1 = (rot1*acx + rot2*acy)*anorm + ddx
       v2 = (rot1*acy - rot2*acx)*anorm + ddy
@@ -580,7 +783,7 @@
       oy = 0.5*(v2 + vy)
       oz = 0.5*(1.0+dex*dex*(ox*ox+oy*oy))*inv_part_7 - 0.5*p7
 
-      ppart(6,j,k) = p7 + oz
+      ppart(j,6,k) = p7 + oz
 
       oz = oz*idex
 
@@ -600,154 +803,176 @@
       vx = vx+ox*dz*inv_part_7
       vy = vy+oy*dz*inv_part_7
 
-      samu(1,nn,mm) = samu(1,nn,mm) + v1*dx
-      samu(2,nn,mm) = samu(2,nn,mm) + v2*dx
-      samu(3,nn,mm) = samu(3,nn,mm) + v3*dx
+      samu(1,nn) = samu(1,nn) + v1*dx
+      samu(2,nn) = samu(2,nn) + v2*dx
+      samu(3,nn) = samu(3,nn) + v3*dx
 
-      sdcu(1,nn,mm) = sdcu(1,nn,mm) + vx*dx
-      sdcu(2,nn,mm) = sdcu(2,nn,mm) + vy*dx
+      sdcu(1,nn) = sdcu(1,nn) + vx*dx
+      sdcu(2,nn) = sdcu(2,nn) + vy*dx
 
-      scu(1,nn,mm) = scu(1,nn,mm) + ox*dx
-      scu(2,nn,mm) = scu(2,nn,mm) + oy*dx
-      scu(3,nn,mm) = scu(3,nn,mm) + oz*dx
+      scu(1,nn) = scu(1,nn) + ox*dx
+      scu(2,nn) = scu(2,nn) + oy*dx
+      scu(3,nn) = scu(3,nn) + oz*dx
 
       dx = amx*dyp
-      samu(1,nn+1,mm) = samu(1,nn+1,mm) + v1*dy
-      samu(2,nn+1,mm) = samu(2,nn+1,mm) + v2*dy
-      samu(3,nn+1,mm) = samu(3,nn+1,mm) + v3*dy
+      samu(1,nn+1) = samu(1,nn+1) + v1*dy
+      samu(2,nn+1) = samu(2,nn+1) + v2*dy
+      samu(3,nn+1) = samu(3,nn+1) + v3*dy
 
-      sdcu(1,nn+1,mm) = sdcu(1,nn+1,mm) + vx*dy
-      sdcu(2,nn+1,mm) = sdcu(2,nn+1,mm) + vy*dy
+      sdcu(1,nn+1) = sdcu(1,nn+1) + vx*dy
+      sdcu(2,nn+1) = sdcu(2,nn+1) + vy*dy
 
-      scu(1,nn+1,mm) = scu(1,nn+1,mm) + ox*dy
-      scu(2,nn+1,mm) = scu(2,nn+1,mm) + oy*dy
-      scu(3,nn+1,mm) = scu(3,nn+1,mm) + oz*dy
+      scu(1,nn+1) = scu(1,nn+1) + ox*dy
+      scu(2,nn+1) = scu(2,nn+1) + oy*dy
+      scu(3,nn+1) = scu(3,nn+1) + oz*dy
 
       dy = dxp*dyp
-      samu(1,nn,mm+1) = samu(1,nn,mm+1) + v1*dx
-      samu(2,nn,mm+1) = samu(2,nn,mm+1) + v2*dx
-      samu(3,nn,mm+1) = samu(3,nn,mm+1) + v3*dx
+      samu(1,nn+lxv) = samu(1,nn+lxv) + v1*dx
+      samu(2,nn+lxv) = samu(2,nn+lxv) + v2*dx
+      samu(3,nn+lxv) = samu(3,nn+lxv) + v3*dx
 
-      sdcu(1,nn,mm+1) = sdcu(1,nn,mm+1) + vx*dx
-      sdcu(2,nn,mm+1) = sdcu(2,nn,mm+1) + vy*dx
+      sdcu(1,nn+lxv) = sdcu(1,nn+lxv) + vx*dx
+      sdcu(2,nn+lxv) = sdcu(2,nn+lxv) + vy*dx
 
-      scu(1,nn,mm+1) = scu(1,nn,mm+1) + ox*dx
-      scu(2,nn,mm+1) = scu(2,nn,mm+1) + oy*dx
-      scu(3,nn,mm+1) = scu(3,nn,mm+1) + oz*dx
+      scu(1,nn+lxv) = scu(1,nn+lxv) + ox*dx
+      scu(2,nn+lxv) = scu(2,nn+lxv) + oy*dx
+      scu(3,nn+lxv) = scu(3,nn+lxv) + oz*dx
 
-      samu(1,nn+1,mm+1) = samu(1,nn+1,mm+1) + v1*dy
-      samu(2,nn+1,mm+1) = samu(2,nn+1,mm+1) + v2*dy
-      samu(3,nn+1,mm+1) = samu(3,nn+1,mm+1) + v3*dy
+      samu(1,nn+1+lxv) = samu(1,nn+1+lxv) + v1*dy
+      samu(2,nn+1+lxv) = samu(2,nn+1+lxv) + v2*dy
+      samu(3,nn+1+lxv) = samu(3,nn+1+lxv) + v3*dy
 
-      sdcu(1,nn+1,mm+1) = sdcu(1,nn+1,mm+1) + vx*dy
-      sdcu(2,nn+1,mm+1) = sdcu(2,nn+1,mm+1) + vy*dy
+      sdcu(1,nn+1+lxv) = sdcu(1,nn+1+lxv) + vx*dy
+      sdcu(2,nn+1+lxv) = sdcu(2,nn+1+lxv) + vy*dy
 
-      scu(1,nn+1,mm+1) = scu(1,nn+1,mm+1) + ox*dy
-      scu(2,nn+1,mm+1) = scu(2,nn+1,mm+1) + oy*dy
-      scu(3,nn+1,mm+1) = scu(3,nn+1,mm+1) + oz*dy
-   70 continue
+      scu(1,nn+1+lxv) = scu(1,nn+1+lxv) + ox*dy
+      scu(2,nn+1+lxv) = scu(2,nn+1+lxv) + oy*dy
+      scu(3,nn+1+lxv) = scu(3,nn+1+lxv) + oz*dy
+  111 continue
 ! deposit currents to interior points in global array
       nn = min(mx,nxv-noffp)
       mm = min(my,nypmx-moffp)
-      do 90 j = 2, mm
-      do 80 i = 2, nn
-      amu(1,i+noffp,j+moffp) = amu(1,i+noffp,j+moffp) + samu(1,i,j)
-      amu(2,i+noffp,j+moffp) = amu(2,i+noffp,j+moffp) + samu(2,i,j)
-      amu(3,i+noffp,j+moffp) = amu(3,i+noffp,j+moffp) + samu(3,i,j)
+      do 113 j = 2, mm
+      do 112 i = 2, nn
+      amu(1,i+noffp+nxv*(j+moffp-1)) = amu(1,i+noffp+nxv*(j+moffp-1)) + 
+     1samu(1,i+lxv*(j-1))
+      amu(2,i+noffp+nxv*(j+moffp-1)) = amu(2,i+noffp+nxv*(j+moffp-1)) + 
+     1samu(2,i+lxv*(j-1))
+      amu(3,i+noffp+nxv*(j+moffp-1)) = amu(3,i+noffp+nxv*(j+moffp-1)) + 
+     1samu(3,i+lxv*(j-1))
 
-      dcu(1,i+noffp,j+moffp) = dcu(1,i+noffp,j+moffp) + sdcu(1,i,j)
-      dcu(2,i+noffp,j+moffp) = dcu(2,i+noffp,j+moffp) + sdcu(2,i,j)
+      dcu(1,i+noffp+nxv*(j+moffp-1)) = dcu(1,i+noffp+nxv*(j+moffp-1)) + 
+     1sdcu(1,i+lxv*(j-1))
+      dcu(2,i+noffp+nxv*(j+moffp-1)) = dcu(2,i+noffp+nxv*(j+moffp-1)) + 
+     1sdcu(2,i+lxv*(j-1))
 
-      cu(1,i+noffp,j+moffp) = cu(1,i+noffp,j+moffp) + scu(1,i,j)
-      cu(2,i+noffp,j+moffp) = cu(2,i+noffp,j+moffp) + scu(2,i,j)
-      cu(3,i+noffp,j+moffp) = cu(3,i+noffp,j+moffp) + scu(3,i,j)
-   80 continue
-   90 continue
+      cu(1,i+noffp+nxv*(j+moffp-1)) = cu(1,i+noffp+nxv*(j+moffp-1)) + 
+     1scu(1,i+lxv*(j-1))
+      cu(2,i+noffp+nxv*(j+moffp-1)) = cu(2,i+noffp+nxv*(j+moffp-1)) + 
+     1scu(2,i+lxv*(j-1))
+      cu(3,i+noffp+nxv*(j+moffp-1)) = cu(3,i+noffp+nxv*(j+moffp-1)) + 
+     1scu(3,i+lxv*(j-1))
+  112 continue
+  113 continue
 ! deposit currents to edge points in global array
       mm = min(my+1,nypmx-moffp)
-      do 100 i = 2, nn
+      do 114 i = 2, nn
 !$OMP ATOMIC
-      amu(1,i+noffp,1+moffp) = amu(1,i+noffp,1+moffp) + samu(1,i,1)
+      amu(1,i+noffp+nxv*moffp) = amu(1,i+noffp+nxv*moffp) + samu(1,i)
 !$OMP ATOMIC
-      amu(2,i+noffp,1+moffp) = amu(2,i+noffp,1+moffp) + samu(2,i,1)
+      amu(2,i+noffp+nxv*moffp) = amu(2,i+noffp+nxv*moffp) + samu(2,i)
 !$OMP ATOMIC
-      amu(3,i+noffp,1+moffp) = amu(3,i+noffp,1+moffp) + samu(3,i,1)
+      amu(3,i+noffp+nxv*moffp) = amu(3,i+noffp+nxv*moffp) + samu(3,i)
 !$OMP ATOMIC
-      dcu(1,i+noffp,1+moffp) = dcu(1,i+noffp,1+moffp) + sdcu(1,i,1)
+      dcu(1,i+noffp+nxv*moffp) = dcu(1,i+noffp+nxv*moffp) + sdcu(1,i)
 !$OMP ATOMIC
-      dcu(2,i+noffp,1+moffp) = dcu(2,i+noffp,1+moffp) + sdcu(2,i,1)
+      dcu(2,i+noffp+nxv*moffp) = dcu(2,i+noffp+nxv*moffp) + sdcu(2,i)
 !$OMP ATOMIC
-      cu(1,i+noffp,1+moffp) = cu(1,i+noffp,1+moffp) + scu(1,i,1)
+      cu(1,i+noffp+nxv*moffp) = cu(1,i+noffp+nxv*moffp) + scu(1,i)
 !$OMP ATOMIC
-      cu(2,i+noffp,1+moffp) = cu(2,i+noffp,1+moffp) + scu(2,i,1)
+      cu(2,i+noffp+nxv*moffp) = cu(2,i+noffp+nxv*moffp) + scu(2,i)
 !$OMP ATOMIC
-      cu(3,i+noffp,1+moffp) = cu(3,i+noffp,1+moffp) + scu(3,i,1)
+      cu(3,i+noffp+nxv*moffp) = cu(3,i+noffp+nxv*moffp) + scu(3,i)
       if (mm > my) then
 !$OMP ATOMIC
-         amu(1,i+noffp,mm+moffp) = amu(1,i+noffp,mm+moffp)              &
-     & + samu(1,i,mm)
+      amu(1,i+noffp+nxv*(mm+moffp-1)) = amu(1,i+noffp+nxv*(mm+moffp-1))
+     1 + samu(1,i+lxv*(mm-1))
 !$OMP ATOMIC
-         amu(2,i+noffp,mm+moffp) = amu(2,i+noffp,mm+moffp)              &
-     & + samu(2,i,mm)
+      amu(2,i+noffp+nxv*(mm+moffp-1)) = amu(2,i+noffp+nxv*(mm+moffp-1))
+     1 + samu(2,i+lxv*(mm-1))
 !$OMP ATOMIC
-         amu(3,i+noffp,mm+moffp) = amu(3,i+noffp,mm+moffp)              &
-     & + samu(3,i,mm)
+      amu(3,i+noffp+nxv*(mm+moffp-1)) = amu(3,i+noffp+nxv*(mm+moffp-1))
+     1 + samu(3,i+lxv*(mm-1))
 !$OMP ATOMIC
-         dcu(1,i+noffp,mm+moffp) = dcu(1,i+noffp,mm+moffp)              &
-     & + sdcu(1,i,mm)
+      dcu(1,i+noffp+nxv*(mm+moffp-1)) = dcu(1,i+noffp+nxv*(mm+moffp-1))
+     1 + sdcu(1,i+lxv*(mm-1))
 !$OMP ATOMIC
-         dcu(2,i+noffp,mm+moffp) = dcu(2,i+noffp,mm+moffp)              &
-     & + sdcu(2,i,mm)
+      dcu(2,i+noffp+nxv*(mm+moffp-1)) = dcu(2,i+noffp+nxv*(mm+moffp-1))
+     1 + sdcu(2,i+lxv*(mm-1))
 !$OMP ATOMIC
-         cu(1,i+noffp,mm+moffp) = cu(1,i+noffp,mm+moffp) + scu(1,i,mm)
+      cu(1,i+noffp+nxv*(mm+moffp-1)) = cu(1,i+noffp+nxv*(mm+moffp-1))
+     1 + scu(1,i+lxv*(mm-1))
 !$OMP ATOMIC
-         cu(2,i+noffp,mm+moffp) = cu(2,i+noffp,mm+moffp) + scu(2,i,mm)
+      cu(2,i+noffp+nxv*(mm+moffp-1)) = cu(2,i+noffp+nxv*(mm+moffp-1))
+     1 + scu(2,i+lxv*(mm-1))
 !$OMP ATOMIC
-         cu(3,i+noffp,mm+moffp) = cu(3,i+noffp,mm+moffp) + scu(3,i,mm)
+      cu(3,i+noffp+nxv*(mm+moffp-1)) = cu(3,i+noffp+nxv*(mm+moffp-1))
+     1 + scu(3,i+lxv*(mm-1))
       endif
-  100 continue
+  114 continue
       nn = min(mx+1,nxv-noffp)
-      do 110 j = 1, mm
+      do 115 j = 1, mm
 !$OMP ATOMIC
-      amu(1,1+noffp,j+moffp) = amu(1,1+noffp,j+moffp) + samu(1,1,j)
+      amu(1,1+noffp+nxv*(j+moffp-1)) = amu(1,1+noffp+nxv*(j+moffp-1)) + 
+     1samu(1,1+lxv*(j-1))
 !$OMP ATOMIC
-      amu(2,1+noffp,j+moffp) = amu(2,1+noffp,j+moffp) + samu(2,1,j)
+      amu(2,1+noffp+nxv*(j+moffp-1)) = amu(2,1+noffp+nxv*(j+moffp-1)) + 
+     1samu(2,1+lxv*(j-1))
 !$OMP ATOMIC
-      amu(3,1+noffp,j+moffp) = amu(3,1+noffp,j+moffp) + samu(3,1,j)
+      amu(3,1+noffp+nxv*(j+moffp-1)) = amu(3,1+noffp+nxv*(j+moffp-1)) + 
+     1samu(3,1+lxv*(j-1))
 !$OMP ATOMIC
-      dcu(1,1+noffp,j+moffp) = dcu(1,1+noffp,j+moffp) + sdcu(1,1,j)
+      dcu(1,1+noffp+nxv*(j+moffp-1)) = dcu(1,1+noffp+nxv*(j+moffp-1)) + 
+     1sdcu(1,1+lxv*(j-1))
 !$OMP ATOMIC
-      dcu(2,1+noffp,j+moffp) = dcu(2,1+noffp,j+moffp) + sdcu(2,1,j)
+      dcu(2,1+noffp+nxv*(j+moffp-1)) = dcu(2,1+noffp+nxv*(j+moffp-1)) + 
+     1sdcu(2,1+lxv*(j-1))
 !$OMP ATOMIC
-      cu(1,1+noffp,j+moffp) = cu(1,1+noffp,j+moffp) + scu(1,1,j)
+      cu(1,1+noffp+nxv*(j+moffp-1)) = cu(1,1+noffp+nxv*(j+moffp-1)) + 
+     1scu(1,1+lxv*(j-1))
 !$OMP ATOMIC
-      cu(2,1+noffp,j+moffp) = cu(2,1+noffp,j+moffp) + scu(2,1,j)
+      cu(2,1+noffp+nxv*(j+moffp-1)) = cu(2,1+noffp+nxv*(j+moffp-1)) + 
+     1scu(2,1+lxv*(j-1))
 !$OMP ATOMIC
-      cu(3,1+noffp,j+moffp) = cu(3,1+noffp,j+moffp) + scu(3,1,j)
+      cu(3,1+noffp+nxv*(j+moffp-1)) = cu(3,1+noffp+nxv*(j+moffp-1)) + 
+     1scu(3,1+lxv*(j-1))
       if (nn > mx) then
 !$OMP ATOMIC
-         amu(1,nn+noffp,j+moffp) = amu(1,nn+noffp,j+moffp)              &
-     & + samu(1,nn,j)
+      amu(1,nn+noffp+nxv*(j+moffp-1)) = amu(1,nn+noffp+nxv*(j+moffp-1))
+     1 + samu(1,nn+lxv*(j-1))
 !$OMP ATOMIC
-         amu(2,nn+noffp,j+moffp) = amu(2,nn+noffp,j+moffp)              &
-     & + samu(2,nn,j)
+      amu(2,nn+noffp+nxv*(j+moffp-1)) = amu(2,nn+noffp+nxv*(j+moffp-1))
+     1 + samu(2,nn+lxv*(j-1))
 !$OMP ATOMIC
-         amu(3,nn+noffp,j+moffp) = amu(3,nn+noffp,j+moffp)              &
-     & + samu(3,nn,j)
+      amu(3,nn+noffp+nxv*(j+moffp-1)) = amu(3,nn+noffp+nxv*(j+moffp-1))
+     1+ samu(3,nn+lxv*(j-1))
 !$OMP ATOMIC
-         dcu(1,nn+noffp,j+moffp) = dcu(1,nn+noffp,j+moffp)              &
-     & + sdcu(1,nn,j)
+      dcu(1,nn+noffp+nxv*(j+moffp-1)) = dcu(1,nn+noffp+nxv*(j+moffp-1))
+     1 + sdcu(1,nn+lxv*(j-1))
 !$OMP ATOMIC
-         dcu(2,nn+noffp,j+moffp) = dcu(2,nn+noffp,j+moffp)              &
-     & + sdcu(2,nn,j)
+      dcu(2,nn+noffp+nxv*(j+moffp-1)) = dcu(2,nn+noffp+nxv*(j+moffp-1))
+     1 + sdcu(2,nn+lxv*(j-1))
 !$OMP ATOMIC
-         cu(1,nn+noffp,j+moffp) = cu(1,nn+noffp,j+moffp) + scu(1,nn,j)
+      cu(1,nn+noffp+nxv*(j+moffp-1)) = cu(1,nn+noffp+nxv*(j+moffp-1)) +
+     1scu(1,nn+lxv*(j-1))
 !$OMP ATOMIC
-         cu(2,nn+noffp,j+moffp) = cu(2,nn+noffp,j+moffp) + scu(2,nn,j)
+      cu(2,nn+noffp+nxv*(j+moffp-1)) = cu(2,nn+noffp+nxv*(j+moffp-1)) + 
+     1scu(2,nn+lxv*(j-1))
 !$OMP ATOMIC
-         cu(3,nn+noffp,j+moffp) = cu(3,nn+noffp,j+moffp) + scu(3,nn,j)
+      cu(3,nn+noffp+nxv*(j+moffp-1)) = cu(3,nn+noffp+nxv*(j+moffp-1)) + 
+     1scu(3,nn+lxv*(j-1))
       endif
-  110 continue
+  115 continue
   120 continue
 !$OMP END PARALLEL DO
       return
@@ -756,6 +981,8 @@
       subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,nof&
      &f,nyp,qbm,dt,dtc,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1&
      &,ntmax,irc,dex)
+! vectorization 
+! transposed
 ! for 2-1/2d code, this subroutine updates particle co-ordinates and
 ! velocities using leap-frog scheme in time and first-order linear
 ! interpolation in space, for relativistic particles with magnetic field
@@ -854,14 +1081,19 @@
       real qbm, dt, dtc, ci, ek, dex
       real ppart, fxy, bxy, psit
       integer kpic, ncl, ihole
-      dimension ppart(idimp,nppmx,mxyp1)
-      dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
-      dimension psit(nxv,nypmx)
+      dimension ppart(nppmx,idimp,mxyp1)
+!      dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
+      dimension fxy(2,nxv*nypmx), bxy(3,nxv*nypmx)
+!      dimension psit(nxv,nypmx)
+      dimension psit(nxv*nypmx)
       dimension kpic(mxyp1), ncl(8,mxyp1)
       dimension ihole(2,ntmax+1,mxyp1)
 ! local data
 !      integer MXV, MYV
 !      parameter(MXV=33,MYV=33)
+      integer npblk, lvect
+      parameter(npblk=32,lvect=4)
+      integer ipp, joff, nps, m, lxv
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, ih, nh, nn, mm
       real qtmh, ci2, dxp, dyp, amx, amy
@@ -869,13 +1101,20 @@
       real omxt, omyt, omzt, omt, anorm
       real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
       real anx, any, edgelx, edgely, edgerx, edgery
-      real x, y
-      real sfxy, sbxy, spsit
-      dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
+      real x, y, vx, vy, vz
+!      real sfxy, sbxy, spsit
+      real sfxy, sbxy
+      dimension sfxy(3,(mx+1)*(my+1)), sbxy(3,(mx+1)*(my+1))
+!      dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
 !     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
+! scratch arrays
+      integer n
+      real s1, s2, t
+      dimension n(npblk), s1(npblk,lvect), s2(npblk,lvect), t(npblk,4)
       double precision sum1, sum2
-      real idex,dtc1,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7
+      real idex,dtc1,qtmh1,qtmh2,p6,p7
       
+      lxv = mx + 1
       idex = 1.0/dex
       qtmh = 0.5*qbm*dt
       ci2 = ci*ci
@@ -889,10 +1128,11 @@
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,
 !$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1,
 !$OMP& rot2,rot3,rot4,rot5,rot6,rot7,rot8,rot9,edgelx,edgely,edgerx,
-!$OMP& edgery,sum1,sfxy,sbxy,spsit,
-!$OMP& ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1)
+!$OMP& edgery,sum1,sfxy,sbxy,vx,vy,vz,
+!$OMP& ipp,joff,nps,n,s1,s2,t,m,
+!$OMP& qtmh1,qtmh2,p6,p7,dtc1)
 !$OMP& REDUCTION(+:sum2)
-      do 70 k = 1, mxyp1
+      do 170 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
       noffp = mx*(k - mx1*noffp - 1)
@@ -905,104 +1145,105 @@
       edgery = noff + moffp + mm
       ih = 0
       nh = 0
-      mnoff = moffp + noff - 1
+      mnoff = moffp + noff
 ! load local fields from global arrays
       do 20 j = 1, mm+1
       do 10 i = 1, nn+1
-      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
-      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
+      sfxy(1,i+lxv*(j-1)) = fxy(1,i+noffp+nxv*(j+moffp-1))
+      sfxy(2,i+lxv*(j-1)) = fxy(2,i+noffp+nxv*(j+moffp-1))
+      sfxy(3,i+lxv*(j-1)) = psit(i+noffp+nxv*(j+moffp-1))
    10 continue
    20 continue
       do 40 j = 1, mm+1
       do 30 i = 1, nn+1
-      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
-      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
-      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
+      sbxy(1,i+lxv*(j-1)) = bxy(1,i+noffp+nxv*(j+moffp-1))
+      sbxy(2,i+lxv*(j-1)) = bxy(2,i+noffp+nxv*(j+moffp-1))
+      sbxy(3,i+lxv*(j-1)) = bxy(3,i+noffp+nxv*(j+moffp-1))
    30 continue
    40 continue
-      do 46 j = 1, mm+1
-      do 42 i = 1, nn+1
-      spsit(i,j) = psit(i+noffp,j+moffp)
-   42 continue
-   46 continue
 ! clear counters
       do 50 j = 1, 8
       ncl(j,k) = 0
    50 continue
       sum1 = 0.0d0
-! loop over particles in tile
-      do 60 j = 1, nppp
+      ipp = nppp/npblk
+c outer loop over number of full blocks
+      do 110 m = 1, ipp
+      joff = npblk*(m - 1)
+c inner loop over particles in block
+      do 60 j = 1, npblk
 ! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
+      x = ppart(j+joff,1,k)
+      y = ppart(j+joff,2,k)
       nn = x
       mm = y
 
-      p6 = ppart(6,j,k)
-      p7 = ppart(7,j,k)
+      p6 = ppart(j+joff,6,k)
+      p7 = ppart(j+joff,7,k)
 
       qtmh1 = qtmh / p7 
       qtmh2 = qtmh1 * p6
+      t(j,3) = qtmh1
+      t(j,4) = qtmh2
 
       dxp = x - real(nn)
       dyp = y - real(mm)
-      nn = nn - noffp + 1
-      mm = mm - mnoff
+      n(j) = nn - noffp + lxv*(mm - mnoff)
       amx = 1.0 - dxp
       amy = 1.0 - dyp
-! find electric field
-      dx = amx*sfxy(1,nn,mm)
-      dy = amx*sfxy(2,nn,mm)
-      dz = amx*spsit(nn,mm)
-      dx = amy*(dxp*sfxy(1,nn+1,mm) + dx)
-      dy = amy*(dxp*sfxy(2,nn+1,mm) + dy)
-      dz = amy*(dxp*spsit(nn+1,mm) + dz)
-      acx = amx*sfxy(1,nn,mm+1)
-      acy = amx*sfxy(2,nn,mm+1)
-      acz = amx*spsit(nn,mm+1)
-      dx = dx + dyp*(dxp*sfxy(1,nn+1,mm+1) + acx) 
-      dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
-      dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
+      s1(j,1) = amx*amy
+      s1(j,2) = dxp*amy
+      s1(j,3) = amx*dyp
+      s1(j,4) = dxp*dyp
+      t(j,1) = x
+      t(j,2) = y
+   60 continue
+c find acceleration
+      do 80 j = 1, npblk
+      nn = n(j)
+      mm = nn + lxv - 2
+      dx = 0.0
+      dy = 0.0
+      dz = 0.0
+      ox = 0.0
+      oy = 0.0
+      oz = 0.0
+      do 70 i = 1, lvect
+      if (i.gt.2) nn = mm
+      dx = dx + sfxy(1,i+nn)*s1(j,i)
+      dy = dy + sfxy(2,i+nn)*s1(j,i)
+      dz = dz + sfxy(3,i+nn)*s1(j,i)
+      ox = ox + sbxy(1,i+nn)*s1(j,i)
+      oy = oy + sbxy(2,i+nn)*s1(j,i)
+      oz = oz + sbxy(3,i+nn)*s1(j,i)
+   70 continue
+      s1(j,1) = dx
+      s1(j,2) = dy
+      s1(j,3) = dz*idex
+      s2(j,1) = ox*dex
+      s2(j,2) = oy*dex
+      s2(j,3) = oz
+   80 continue
+c new velocity
+      do 90 j = 1, npblk
+      x = t(j,1)
+      y = t(j,2)
+      qtmh1 = t(j,3)
+      qtmh2 = t(j,4)
       
-      dz = dz * idex
-
-! find magnetic field
-      ox = amx*sbxy(1,nn,mm)
-      oy = amx*sbxy(2,nn,mm)
-      oz = amx*sbxy(3,nn,mm)
-      ox = amy*(dxp*sbxy(1,nn+1,mm) + ox)
-      oy = amy*(dxp*sbxy(2,nn+1,mm) + oy)
-      oz = amy*(dxp*sbxy(3,nn+1,mm) + oz)
-      acx = amx*sbxy(1,nn,mm+1)
-      acy = amx*sbxy(2,nn,mm+1)
-      acz = amx*sbxy(3,nn,mm+1)
-      ox = ox + dyp*(dxp*sbxy(1,nn+1,mm+1) + acx) 
-      oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
-      oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
-
-      ox = ox * dex
-      oy = oy * dex
-
 ! calculate half impulse
-      dx = qtmh2*dx
-      dy = qtmh2*dy
-      dz = qtmh2*dz
+      dx = qtmh2*s1(j,1)
+      dy = qtmh2*s1(j,2)
+      dz = qtmh2*s1(j,3)
 ! half acceleration
-      acx = ppart(3,j,k) + dx
-      acy = ppart(4,j,k) + dy
-      acz = ppart(5,j,k) + dz
-! find inverse gamma
-!      p2 = acx*acx + acy*acy + acz*acz
-!      gami = 1.0/sqrt(1.0 + p2*ci2)
-! renormalize magnetic field
-!      qtmg = qtmh*gami
-! time-centered kinetic energy
-!      sum1 = sum1 + gami*p2/(1.0 + gami)
-! calculate cyclotron frequency
-      omxt = qtmh1*ox
-      omyt = qtmh1*oy
-      omzt = qtmh1*oz
-! calculate rotation matrix
+      acx = ppart(j+joff,3,k) + dx
+      acy = ppart(j+joff,4,k) + dy
+      acz = ppart(j+joff,5,k) + dz
+c calculate cyclotron frequency
+      omxt = qtmh1*s2(j,1)
+      omyt = qtmh1*s2(j,2)
+      omzt = qtmh1*s2(j,3)
+c calculate rotation matrix
       omt = omxt*omxt + omyt*omyt + omzt*omzt
       anorm = 2.0/(1.0 + omt)
       omt = 0.5*(1.0 - omt)
@@ -1018,21 +1259,24 @@
       rot7 = omyt + rot7
       rot6 = omxt + rot8
       rot8 = -omxt + rot8
-! new momentum
-      dx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
-      dy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
-      dz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
-      ppart(3,j,k) = dx
-      ppart(4,j,k) = dy
-      ppart(5,j,k) = dz
+c new velocity
+      vx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
+      vy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
+      vz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
 ! update inverse gamma
-      dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
-
-!      p2 = dx*dx + dy*dy + dz*dz
-!      dtg = dtc/sqrt(1.0 + p2*ci2)
-! new position
-      dx = x + dx*dtc1
-      dy = y + dy*dtc1
+      dtc1 = dt/(sqrt(1+(vx*vx+vy*vy+vz*vz)*dex*dex)-vz*dex)
+c new position
+      s1(j,1) = x + vx*dtc1
+      s1(j,2) = y + vy*dtc1
+      s2(j,1) = vx
+      s2(j,2) = vy
+      s2(j,3) = vz
+   90 continue
+! check boundary conditions
+!dir$ novector
+      do 100 j = 1, npblk
+      dx = s1(j,1)
+      dy = s1(j,2)
 ! find particles going out of bounds
       mm = 0
 ! count how many particles are going in each direction in ncl
@@ -1070,8 +1314,164 @@
          endif
       endif
 ! set new position
-      ppart(1,j,k) = dx
-      ppart(2,j,k) = dy
+      ppart(j+joff,1,k) = dx
+      ppart(j+joff,2,k) = dy
+c set new velocity
+      ppart(j+joff,3,k) = s2(j,1)
+      ppart(j+joff,4,k) = s2(j,2)
+      ppart(j+joff,5,k) = s2(j,3)
+! increment counters
+      if (mm.gt.0) then
+         ncl(mm,k) = ncl(mm,k) + 1
+         ih = ih + 1
+         if (ih.le.ntmax) then
+            ihole(1,ih+1,k) = j + joff
+            ihole(2,ih+1,k) = mm
+         else
+            nh = 1
+         endif
+      endif
+  100 continue
+  110 continue
+      nps = npblk*ipp + 1
+! loop over remaining particles
+      do 120 j = nps, nppp
+! find interpolation weights
+      x = ppart(j,1,k)
+      y = ppart(j,2,k)
+      nn = x
+      mm = y
+
+      p6 = ppart(j,6,k)
+      p7 = ppart(j,7,k)
+
+      qtmh1 = qtmh / p7 
+      qtmh2 = qtmh1 * p6
+
+      dxp = x - real(nn)
+      dyp = y - real(mm)
+      nn = nn - noffp + 1 + lxv*(mm - mnoff)
+      amx = 1.0 - dxp
+      amy = 1.0 - dyp
+c find electric field
+      dx = amx*sfxy(1,nn)
+      dy = amx*sfxy(2,nn)
+      dz = amx*sfxy(3,nn)
+      dx = amy*(dxp*sfxy(1,nn+1) + dx)
+      dy = amy*(dxp*sfxy(2,nn+1) + dy)
+      dz = amy*(dxp*sfxy(3,nn+1) + dz)
+      acx = amx*sfxy(1,nn+lxv)
+      acy = amx*sfxy(2,nn+lxv)
+      acz = amx*sfxy(3,nn+lxv)
+      dx = dx + dyp*(dxp*sfxy(1,nn+1+lxv) + acx) 
+      dy = dy + dyp*(dxp*sfxy(2,nn+1+lxv) + acy)
+      dz = dz + dyp*(dxp*sfxy(3,nn+1+lxv) + acz)
+      dz = dz * idex
+c find magnetic field
+      ox = amx*sbxy(1,nn)
+      oy = amx*sbxy(2,nn)
+      oz = amx*sbxy(3,nn)
+      ox = amy*(dxp*sbxy(1,nn+1) + ox)
+      oy = amy*(dxp*sbxy(2,nn+1) + oy)
+      oz = amy*(dxp*sbxy(3,nn+1) + oz)
+      acx = amx*sbxy(1,nn+lxv)
+      acy = amx*sbxy(2,nn+lxv)
+      acz = amx*sbxy(3,nn+lxv)
+      ox = ox + dyp*(dxp*sbxy(1,nn+1+lxv) + acx) 
+      oy = oy + dyp*(dxp*sbxy(2,nn+1+lxv) + acy)
+      oz = oz + dyp*(dxp*sbxy(3,nn+1+lxv) + acz)
+      ox = ox * dex
+      oy = oy * dex
+! calculate half impulse
+      dx = qtmh2*dx
+      dy = qtmh2*dy
+      dz = qtmh2*dz
+! half acceleration
+      acx = ppart(j,3,k) + dx
+      acy = ppart(j,4,k) + dy
+      acz = ppart(j,5,k) + dz
+! find inverse gamma
+!      p2 = acx*acx + acy*acy + acz*acz
+!      gami = 1.0/sqrt(1.0 + p2*ci2)
+! renormalize magnetic field
+!      qtmg = qtmh*gami
+! time-centered kinetic energy
+!      sum1 = sum1 + gami*p2/(1.0 + gami)
+! calculate cyclotron frequency
+      omxt = qtmh1*ox
+      omyt = qtmh1*oy
+      omzt = qtmh1*oz
+! calculate rotation matrix
+      omt = omxt*omxt + omyt*omyt + omzt*omzt
+      anorm = 2.0/(1.0 + omt)
+      omt = 0.5*(1.0 - omt)
+      rot4 = omxt*omyt
+      rot7 = omxt*omzt
+      rot8 = omyt*omzt
+      rot1 = omt + omxt*omxt
+      rot5 = omt + omyt*omyt
+      rot9 = omt + omzt*omzt
+      rot2 = omzt + rot4
+      rot4 = -omzt + rot4
+      rot3 = -omyt + rot7
+      rot7 = omyt + rot7
+      rot6 = omxt + rot8
+      rot8 = -omxt + rot8
+! new momentum
+      vx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
+      vy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
+      vz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
+! update inverse gamma
+      dtc1 = dt/(sqrt(1+(vx*vx+vy*vy+vz*vz)*dex*dex)-vz*dex)
+c new position
+      dx = x + vx*dtc1
+      dy = y + vy*dtc1
+
+!      p2 = dx*dx + dy*dy + dz*dz
+!      dtg = dtc/sqrt(1.0 + p2*ci2)
+! find particles going out of bounds
+      mm = 0
+! count how many particles are going in each direction in ncl
+! save their address and destination in ihole
+! use periodic boundary conditions and check for roundoff error
+! mm = direction particle is going
+      if (dx.ge.edgerx) then
+         if (dx.ge.anx) dx = dx - anx
+         mm = 2
+      else if (dx.lt.edgelx) then
+         if (dx.lt.0.0) then
+            dx = dx + anx
+            if (dx.lt.anx) then
+               mm = 1
+            else
+               dx = 0.0
+            endif
+         else
+            mm = 1
+         endif
+      endif
+      if (dy.ge.edgery) then
+         if (dy.ge.any) dy = dy - any
+         mm = mm + 6
+      else if (dy.lt.edgely) then
+         if (dy.lt.0.0) then
+            dy = dy + any
+            if (dy.lt.any) then
+               mm = mm + 3
+            else
+               dy = 0.0
+            endif
+         else
+            mm = mm + 3
+         endif
+      endif
+! set new position
+      ppart(j,1,k) = dx
+      ppart(j,2,k) = dy
+c set new velocity
+      ppart(j,3,k) = vx
+      ppart(j,4,k) = vy
+      ppart(j,5,k) = vz      
 ! increment counters
       if (mm.gt.0) then
          ncl(mm,k) = ncl(mm,k) + 1
@@ -1083,7 +1483,7 @@
             nh = 1
          endif
       endif
-   60 continue
+  120 continue
       sum2 = sum2 + sum1
 ! set error and end of file flag
 ! ihole overflow
@@ -1092,7 +1492,7 @@
          ih = -ih
       endif
       ihole(1,1,k) = ih
-   70 continue
+  170 continue
 !$OMP END PARALLEL DO
 ! normalize kinetic energy
       ek = ek + sum2
@@ -1145,7 +1545,7 @@
       integer ntmax, nbmax, irc
       real ppart, ppbuff, sbufl, sbufr
       integer kpic, ncl, ihole, ncll, nclr
-      dimension ppart(idimp,nppmx,mx1*myp1)
+      dimension ppart(nppmx,idimp,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension sbufl(idimp,nbmax), sbufr(idimp,nbmax)
       dimension kpic(mx1*myp1), ncl(8,mx1*myp1)
@@ -1183,8 +1583,8 @@
    10 continue
 ! loop over particles in tile
       do 20 j = 1, nppp
-      dx = ppart(1,j,k)
-      dy = ppart(2,j,k)
+      dx = ppart(j,1,k)
+      dy = ppart(j,2,k)
 ! find particles going out of bounds
       ist = 0
 ! count how many particles are going in each direction in ncl
@@ -1192,7 +1592,7 @@
 ! use periodic boundary conditions and check for roundoff error
 ! ist = direction particle is going
       if (dx.ge.edgerx) then
-         if (dx.ge.anx) ppart(1,j,k) = dx - anx
+         if (dx.ge.anx) ppart(j,1,k) = dx - anx
          ist = 2
       else if (dx.lt.edgelx) then
          if (dx.lt.0.0) then
@@ -1202,13 +1602,13 @@
             else
                dx = 0.0
             endif
-            ppart(1,j,k) = dx
+            ppart(j,1,k) = dx
          else
             ist = 1
          endif
       endif
       if (dy.ge.edgery) then
-         if (dy.ge.any) ppart(2,j,k) = dy - any
+         if (dy.ge.any) ppart(j,2,k) = dy - any
          ist = ist + 6
       else if (dy.lt.edgely) then
          if (dy.lt.0.0) then
@@ -1218,7 +1618,7 @@
             else
                dy = 0.0
             endif
-            ppart(2,j,k) = dy
+            ppart(j,2,k) = dy
          else
             ist = ist + 3
          endif
@@ -1267,7 +1667,7 @@
       ii = ncl(ist,k) + 1
       if (ii.le.npbmx) then
          do 50 i = 1, idimp
-         ppbuff(i,ii,k) = ppart(i,j1,k)
+         ppbuff(i,ii,k) = ppart(j1,i,k)
    50    continue
       else
          ip = 1
@@ -1380,7 +1780,7 @@
       integer idimp, nppmx, mx1, myp1, npbmx, ntmax, nbmax, irc
       real ppart, ppbuff, sbufl, sbufr
       integer ncl, ihole, ncll, nclr
-      dimension ppart(idimp,nppmx,mx1*myp1)
+      dimension ppart(nppmx,idimp,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension sbufl(idimp,nbmax), sbufr(idimp,nbmax)
       dimension ncl(8,mx1*myp1)
@@ -1412,7 +1812,7 @@
       ii = ncl(ist,k) + 1
       if (ii.le.npbmx) then
          do 20 i = 1, idimp
-         ppbuff(i,ii,k) = ppart(i,j1,k)
+         ppbuff(i,ii,k) = ppart(j1,i,k)
    20    continue
       else
          ip = 1
@@ -1522,7 +1922,7 @@
       integer ntmax, nbmax, irc
       real ppart, ppbuff, rbufl, rbufr
       integer kpic, ncl, ihole, mcll, mclr
-      dimension ppart(idimp,nppmx,mx1*myp1)
+      dimension ppart(nppmx,idimp,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension rbufl(idimp,nbmax), rbufr(idimp,nbmax)
       dimension kpic(mx1*myp1), ncl(8,mx1*myp1)
@@ -1603,15 +2003,15 @@
       if (j1.le.nppmx) then
          if (ks(ii).le.0) then
             do 130 i = 1, idimp
-            ppart(i,j1,k) = rbufl(i,j+noff)
+            ppart(j1,i,k) = rbufl(i,j+noff)
   130       continue
          else if (ks(ii).gt.mxyp1) then
             do 140 i = 1, idimp
-            ppart(i,j1,k) = rbufr(i,j+moff)
+            ppart(j1,i,k) = rbufr(i,j+moff)
   140       continue
          else
             do 150 i = 1, idimp
-            ppart(i,j1,k) = ppbuff(i,j+ncoff,ks(ii))
+            ppart(j1,i,k) = ppbuff(i,j+ncoff,ks(ii))
   150       continue
          endif
       else
@@ -1630,7 +2030,7 @@
          if (j1.gt.j2) then
 ! move particle only if it is below current hole
             do 180 i = 1, idimp
-            ppart(i,j2,k) = ppart(i,j1,k)
+            ppart(j2,i,k) = ppart(j1,i,k)
   180       continue
          endif
   190    continue
@@ -1642,81 +2042,135 @@
       return
       end
 !-----------------------------------------------------------------------
-!-deposit psi on particles
+! deposit psi on particles
       subroutine WPGPSIPOST2L_QP(ppart,psi,kpic,qbm,noff,nyp,idimp,nppmx
      1,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
-
+! vecterization
+! transposed
       implicit none
       integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
       integer mx1, mxyp1
       real dex,qbm
       real ppart, psi
       integer kpic
-      dimension ppart(idimp,nppmx,mxyp1)
-      dimension psi(nxv,nypmx)
+      dimension ppart(nppmx,idimp,mxyp1)
+      dimension psi(nxv*nypmx)
       dimension kpic(mxyp1)
 ! local data
 !      integer MXV, MYV
 !      parameter(MXV=33,MYV=33)
+      integer npblk, lvect
+      parameter(npblk=32,lvect=4)
+      integer ipp, joff, nps, m, lxv
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
       real dxp, dyp, amx, amy, acx
       real dx, dy, dz
       real x, y, vx, vy, vz
       real spsi
-      dimension spsi(mx+1,my+1)
+      dimension spsi((mx+1)*(my+1))
       real dx2
-!     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
-!     dimension scu(3,mx+1,my+1,), sdcu(3,mx+1,my+1), samu(4,mx+1,my+1)
+c scratch arrays
+      integer n
+      real s1, s2, t
+      dimension n(npblk), s1(npblk,lvect), s2(npblk,lvect), t(npblk,2)
+
+      lxv = mx + 1
       dx2 = dex * dex
 ! error if local array is too small
 !     if ((mx.ge.MXV).or.(my.ge.MYV)) return
 ! loop over tiles
 !$OMP PARALLEL DO
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,
+!$OMP& ipp,joff,nps,n,s1,s2,t,m,
 !$OMP& dxp,dyp,amx,amy,dx,acx,spsi)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
       noffp = mx*(k - mx1*noffp - 1)
       nppp = kpic(k)
-      mnoff = moffp + noff - 1
+      mnoff = moffp + noff
 ! load local fields from global arrays
       nn = min(mx,nx-noffp) + 1
       mm = min(my,nyp-moffp) + 1
       do 20 j = 1, mm
       do 10 i = 1, nn
-      spsi(i,j) = psi(i+noffp,j+moffp)
+      spsi(i+lxv*(j-1)) = psi(i+noffp+nxv*(j+moffp-1))
    10 continue
    20 continue
-! loop over particles in tile
-      do 70 j = 1, nppp
+      ipp = nppp/npblk
+c outer loop over number of full blocks
+      do 110 m = 1, ipp
+      joff = npblk*(m - 1)
+c inner loop over particles in block
+      do 60 j = 1, npblk
 ! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
-      vx = ppart(3,j,k)
-      vy = ppart(4,j,k)
+      x = ppart(j+joff,1,k)
+      y = ppart(j+joff,2,k)
+      vx = ppart(j+joff,3,k)
+      vy = ppart(j+joff,4,k)
       nn = x
       mm = y
       dxp = x - real(nn)
       dyp = y - real(mm)
-      nn = nn - noffp + 1
-      mm = mm - mnoff
+      n(j) = nn - noffp + lxv*(mm - mnoff)
+      amx = 1.0 - dxp
+      amy = 1.0 - dyp
+      s1(j,1) = amx*amy
+      s1(j,2) = dxp*amy
+      s1(j,3) = amx*dyp
+      s1(j,4) = dxp*dyp
+      t(j,1) = vx
+      t(j,2) = vy
+   60 continue
+c find acceleration
+      do 80 j = 1, npblk
+      nn = n(j)
+      mm = nn + lxv - 2
+      dx = 0.0
+      do 70 i = 1, lvect
+      if (i.gt.2) nn = mm
+      dx = dx + spsi(i+nn)*s1(j,i)
+   70 continue
+      s1(j,1) = -dx*dx2*qbm
+   80 continue
+      do 90 j = 1, npblk
+      vx = t(j,1)
+      vy = t(j,2)
+      dx = s1(j,1)
+      ppart(j+joff,7,k) = 1.0 + dx
+      ppart(j+joff,6,k) = dx+(dx2*(vx**2+vy**2)-dx**2-2.*dx)/(2.*(1.+dx)&
+     &)+1.0
+   90 continue
+  110 continue
+! loop over particles in tile
+      nps = npblk*ipp + 1
+      do 115 j = nps, nppp
+! find interpolation weights
+      x = ppart(j,1,k)
+      y = ppart(j,2,k)
+      vx = ppart(j,3,k)
+      vy = ppart(j,4,k)
+      nn = x
+      mm = y
+      dxp = x - real(nn)
+      dyp = y - real(mm)
+      nn = nn - noffp + 1 + lxv*(mm - mnoff)
       amx = 1.0 - dxp
       amy = 1.0 - dyp
       
       
 ! find electric field
-      dx = amx*spsi(nn,mm)
-      dx = amy*(dxp*spsi(nn+1,mm) + dx)
-      acx = amx*spsi(nn,mm+1)
-      dx = dx + dyp*(dxp*spsi(nn+1,mm+1) + acx) 
+      dx = amx*spsi(nn)
+      dx = amy*(dxp*spsi(nn+1) + dx)
+      acx = amx*spsi(nn+lxv)
+      dx = dx + dyp*(dxp*spsi(nn+1+lxv) + acx) 
 
       dx = - dx*dx2*qbm
       
-      ppart(7,j,k) = 1.0 + dx
-      ppart(6,j,k) = dx+(dx2*(vx**2+vy**2)-dx**2-2.*dx)/(2.*(1.+dx))+1.0
-   70 continue
+      ppart(j,7,k) = 1.0 + dx
+      ppart(j,6,k) = dx+(dx2*(vx**2+vy**2)-dx**2-2.*dx)/(2.*(1.+dx))+1.0
+  115 continue
   120 continue
 !$OMP END PARALLEL DO
       return
@@ -1741,7 +2195,7 @@
       integer npp, npmax, nppmx, idimp, mxyp1, irc
       real part, ppart
       integer kpic
-      dimension part(idimp,npmax), ppart(idimp,nppmx,mxyp1)
+      dimension part(idimp,npmax), ppart(nppmx,idimp,mxyp1)
       dimension kpic(mxyp1)
 ! local data
       integer i, j, k, npoff, nppp, ne, ierr
@@ -1756,7 +2210,7 @@
 ! loop over particles in tile
       do 20 j = 1, nppp
       do 10 i = 1, idimp
-      part(i,j+npoff) = ppart(i,j,k)
+      part(i,j+npoff) = ppart(j,i,k)
    10 continue
    20 continue
       npoff = npoff + nppp

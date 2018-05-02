@@ -1,0 +1,30 @@
+# name of the compiler 
+FC_CORI_VEC = ftn -O3 
+CC_CORI_VEC = cc 
+LINKER_CORI_VEC = ftn -qopenmp -r8 -O3 -qopt-report=5 -qopt-report-phase=vec
+
+OPTS_DBL_CORI_VEC = -qopenmp -r8 -qopt-report=5 -qopt-report-phase=vec  
+OPTS_SGL_CORI_VEC = -qopenmp -qopt-report=5 -qopt-report-phase=vec
+
+FORMAT_FREE_CORI_VEC = -free 
+FORMAT_FIXED_CORI_VEC = -fixed
+
+# hdf5 libraries 
+
+HDF5_LIB =
+HDF5_INC =
+
+HDF_LIBPATH_CORI_VEC= 
+HDF_INCLUDE_PATH_CORI_VEC= 
+
+# other libs
+OTHER_LIBS_CORI_VEC = 
+
+# memory options
+MEM_OPTIONS_CORI_VEC = 
+
+# options for linking
+# use static libs
+STATIC_LINK_CORI_VEC = 
+# use shared libs
+SHARED_LINK_CORI_VEC = 

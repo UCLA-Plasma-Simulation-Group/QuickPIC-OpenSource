@@ -123,7 +123,7 @@
 ! rspace, krspace = ufield2d of input and output data
 ! isign = sign for transform (-1 = real to fourier, 1 = fourier to real)
          implicit none
-         class(fft2d), intent(in) :: this
+         class(fft2d), intent(inout) :: this
          class(ufield2d), intent(inout) :: rspace, krspace
          integer, intent(in) :: isign
 ! local data
@@ -230,7 +230,7 @@
 ! rspace, krspace = ufield2d of input and output data
 ! isign = sign for transform (-1 = real to fourier, 1 = fourier to real)
          implicit none
-         class(fft2d), intent(in) :: this
+         class(fft2d), intent(inout) :: this
          class(ufield2d), intent(inout) :: rspace, krspace
          integer, intent(in) :: isign
 ! local data
@@ -337,7 +337,7 @@
 ! rspace, krspace = ufield2d of input and output data
 ! isign = sign for transform (-1 = real to fourier, 1 = fourier to real)
          implicit none
-         class(fft2d), intent(in) :: this
+         class(fft2d), intent(inout) :: this
          class(ufield2d), intent(inout) :: rspace, krspace
          integer, intent(in) :: isign
 ! local data

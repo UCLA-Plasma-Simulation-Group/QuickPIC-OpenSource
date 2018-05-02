@@ -5,7 +5,7 @@
 Number of stages in the pipeline
 ------------------------------------------------------
 &Pipeline
- Num_Stages = 2  
+ Num_Stages = 1  
 /
 
 --------------Simulation System-----------------------
@@ -16,7 +16,7 @@ Total beam particles = NPX * NPY * NPZ
 ------------------------------------------------------
 &Simulation_Sys
  Box_X=680, Box_Y=680, Box_Z=545,
- INDX =  8 , INDY = 8, INDZ = 8 
+ INDX =  9 , INDY = 9, INDZ = 9 
 /
 
 --------------Boundary Condition----------------------
@@ -70,8 +70,8 @@ Parameter_Array(5,:) =
 
 &Beam
  BEAM_EVOLUTION = .true.
- MIN_BEAM_PARTICLE = 10000000 
- NPX =  256, NPY = 256, NPZ = 256
+ MIN_BEAM_PARTICLE = 4000000 
+ NPX =  64, NPY = 64, NPZ = 128
  Charge = -1.0
  Mass = 1.0
  Gamma = 20000, 
@@ -105,7 +105,7 @@ Profile_type: 1 - uniform, density = 1
                   (nomalized to the Plasma_Density)
 ------------------------------------------------------
 &Species
- NP2 = 512 
+ NP2 = 3072 
  Charge = -1.0
  Mass = 1.0
  Profile_type=1
@@ -116,7 +116,7 @@ TEND = Total time, DT = TimeStep
 In unit of 1/Omega_p.
 ------------------------------------------------------
 &Simulation_time
- TEND =20.2, DT = 10.0  ,
+ TEND =10.2, DT = 10.0  ,
 / 
 
 ------------ Diagnostic ------------------------------

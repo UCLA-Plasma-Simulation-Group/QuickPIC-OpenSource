@@ -43,6 +43,7 @@
          integer :: npmax, nbmax, np, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null()
          real, dimension(:,:,:), pointer :: ppart => null()
+!dir$ attributes align: 64:: ppart
          integer :: nppmx, nppmx0, nbmaxp, ntmaxp, npbmx, irc = 0
          integer, dimension(:,:), pointer :: ncl => null()
          integer, dimension(:,:,:), pointer :: ihole => null()
@@ -159,7 +160,7 @@
          this%ntmaxp = xtras*this%nppmx
          this%npbmx = xtras*this%nppmx
          this%nbmaxp = 0.25*mx1*this%npbmx
-         allocate(this%ppart(xdim,this%nppmx0,mxyp1))
+         allocate(this%ppart(this%nppmx0,xdim,mxyp1))
          allocate(this%ncl(8,mxyp1))
          allocate(this%ihole(2,this%ntmaxp+1,mxyp1))
 !
@@ -328,7 +329,7 @@
       
          implicit none
          
-         class(part2d), intent(in) :: this
+         class(part2d), intent(inout) :: this
          class(ufield2d), target, intent(inout) :: q
          character(len=18), save :: sname = 'qdeposit:'
 ! local data
@@ -336,6 +337,7 @@
          integer :: noff, nxv, nypmx
                   
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('qdeposit_start')
          
          pq => q%getrf()
          noff = q%getnoff()
@@ -345,6 +347,7 @@
          call PPGPPOST2L(this%ppart,pq(1,:,:),this%kpic,noff,this%qm,&
          &this%xdim,this%nppmx0,mx,my,nxv,nypmx,mx1,mxyp1)         
          
+         call this%err%add_profile('qdeposit_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine qdeposit
@@ -366,6 +369,7 @@
          integer :: noff, nyp, nx, nxv, nypmx
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('amjdeposit_start')
          
          pef => ef%getrf(); pbf => bf%getrf()
          ppsit => psit%getrf(); pcu => cu%getrf()
@@ -378,6 +382,7 @@
          &pamu,this%kpic,noff,nyp,this%qm,this%qbm, this%dt,this%ci,this%xdim,&
          &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          
+         call this%err%add_profile('amjdeposit_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine amjdeposit
@@ -397,6 +402,7 @@
          real :: ek
          
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('push_start')
 
          pef => ef%getrf(); pbf => bf%getrf()
          ppsit => psit%getrf()
@@ -409,6 +415,7 @@
          &this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,this%ntmaxp,&
          &this%irc,dex)
 
+         call this%err%add_profile('push_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine partpush
@@ -431,6 +438,7 @@
          logical :: list = .true.
          
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('2dpmove_start')
          
          noff = fd%getnoff(); ny = fd%getnd2()
          nx = fd%getnd1(); nyp = fd%getnd2p()
@@ -504,6 +512,7 @@
 
          this%irc = irc
 
+         call this%err%add_profile('2dpmove_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine pmove
@@ -521,6 +530,7 @@
          integer :: noff, nyp, nx, nxv, nypmx
          
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('extractpsi_start')
 
          ppsi => psi%getrf(); noff = psi%getnoff()
          nyp = psi%getnd2p(); nx = psi%getnd1()
@@ -529,6 +539,7 @@
          call WPGPSIPOST2L_QP(this%ppart,ppsi(1,:,:),this%kpic,this%qbm,noff,&
          &nyp,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
 
+         call this%err%add_profile('extractpsi_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine extractpsi

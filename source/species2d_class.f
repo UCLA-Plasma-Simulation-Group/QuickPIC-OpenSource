@@ -134,7 +134,7 @@
       
          implicit none
          
-         class(species2d), intent(in) :: this
+         class(species2d), intent(inout) :: this
          class(field2d), intent(inout) :: q
 ! local data
          character(len=18), save :: sname = 'qdp_species2d:'
