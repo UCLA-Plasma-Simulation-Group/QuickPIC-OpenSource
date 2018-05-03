@@ -81,3 +81,7 @@ Before using FORD, keep in mind that you must make sure the QuickPIC source code
 ```
 ford FORD_DOC.md
 ```
+
+# Online documentation
+
+Visit http://ucla-plasma-simulation-group.github.io/quickpic-dev/ to see the documentation. The current documentation is in writing but the developers can still learn the overall code framework, including the dependency and inheritance among derived-types, subroutines, functions and modules. Detailed code description and documentation for users will be added in the future.
