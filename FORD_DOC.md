@@ -61,10 +61,10 @@ make SYS_FX=DEBIAN
 ```
 This requires that libhdf5-openmpi-dev is installed as it uses the h5pfc compiler wrapper.
 
-@Note
-You can include any notes (or bugs, warnings, or todos) like so.
+<!-- @Note -->
+<!-- You can include any notes (or bugs, warnings, or todos) like so. -->
 
-@Bug
+<!-- @Bug
 No bug found in current version.
-@endbug
+@endbug -->
 
