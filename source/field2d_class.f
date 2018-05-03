@@ -161,6 +161,7 @@
          character(len=18), save :: sname = 'fftrk_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('fft_start')
          
          if (this%state /= 0) then 
             call this%err%equit(class//sname//'data is in ks')
@@ -183,7 +184,7 @@
          end select
          
          this%state = 1
-         
+         call this%err%add_profile('fft_end')         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine fftrk_field2d
@@ -197,6 +198,7 @@
          character(len=18), save :: sname = 'fftkr_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('fft_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -220,6 +222,7 @@
          
          call this%rs%cg()
                   
+         call this%err%add_profile('fft_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine fftkr_field2d
@@ -232,6 +235,7 @@
          character(len=18), save :: sname = 'divf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -242,6 +246,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine divf_field2d      
@@ -254,6 +259,7 @@
          character(len=18), save :: sname = 'gradf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -264,6 +270,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine gradf_field2d      
@@ -276,6 +283,7 @@
          character(len=18), save :: sname = 'curlf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -286,6 +294,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine curlf_field2d      
@@ -299,6 +308,7 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -309,6 +319,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine potential_field2d      
@@ -322,6 +333,7 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -332,6 +344,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine smoothf_field2d      
@@ -345,6 +358,7 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -355,6 +369,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine elfield_field2d      
@@ -368,6 +383,7 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('solve_start')
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -378,6 +394,7 @@
 
          that%state = 1
          
+         call this%err%add_profile('solve_end')
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine bfield_field2d      
@@ -392,6 +409,7 @@
          real :: we
 
          call cu%err%werrfl2(class//sname//' started')
+         call cu%err%add_profile('solve_start')
          
          if ((cu%state /= 1).or.(dcu%state /= 1).or.(amu%state /= 1))  then 
             call cu%err%equit(class//sname//'data is in rs')
@@ -402,6 +420,7 @@
 
          bxy%state = 1
          
+         call cu%err%add_profile('solve_end')
          call cu%err%werrfl2(class//sname//' ended')
          
       end subroutine bfield_qp_field2d      
@@ -500,12 +519,14 @@
          character(len=18), save :: sname = 'asc:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          call this%rs%as(value)         
          
          this%state = 0
          this%gcells = 1
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine asc
@@ -523,11 +544,13 @@
          class(ufield3d), pointer :: rs3d
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('cp_start')         
          
          rs3d => that%getrs()
          
          call rs3d%cp(this%rs,lpos,sdim,ddim)
                   
+         call this%err%add_profile('cp_end')         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyto
@@ -546,6 +569,7 @@
 
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('cp_start')         
          
          rs3d => that%getrs()
          
@@ -554,6 +578,7 @@
          this%gcells = 1
          this%state = 0
                   
+         call this%err%add_profile('cp_end')         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyfrom
@@ -566,6 +591,7 @@
          character(len=18), save :: sname = 'asc:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (that%state == 0) then
             call this%rs%as(that%rs)         
@@ -576,6 +602,7 @@
          this%state = that%state
          this%gcells = that%gcells
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine asa
@@ -589,6 +616,7 @@
          character(len=18), save :: sname = 'sum:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -607,6 +635,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine sum1
@@ -621,6 +650,7 @@
          character(len=18), save :: sname = 'sum:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -639,6 +669,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine sum2
@@ -652,6 +683,7 @@
          character(len=18), save :: sname = 'minus:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -670,6 +702,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine minus1
@@ -684,6 +717,7 @@
          character(len=18), save :: sname = 'minus:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -702,6 +736,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine minus2
@@ -716,6 +751,7 @@
          character(len=18), save :: sname = 'multiply1:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state == 0) then
             call this%rs%mult(a1%rs,value)
@@ -726,6 +762,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine multiply1
@@ -741,6 +778,7 @@
          character(len=18), save :: sname = 'multiply2:'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile('arith_start')
          
          if (a1%state == 0) then
             call this%rs%mult(a1%rs,dim,dim1,value)
@@ -751,6 +789,7 @@
             this%state = 1         
          endif
          
+         call this%err%add_profile('arith_end')
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine multiply2

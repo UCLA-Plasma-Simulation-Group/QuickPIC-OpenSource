@@ -53,11 +53,10 @@
       
       real :: dex, dxi, dex2
       
-      
       call initialization()                  
       
       do i = start3d, nstep3d
-
+         
          write (erstr,*) '3D step:', i        
          call perr%werrfl0(erstr)
          
@@ -102,7 +101,8 @@
                call qe0(m)%cb(qep(m),1,(/1/),(/1/))         
             end do
          end if
-                  
+         
+         call perr%add_profile('2d_start')         
          do j = 1, nstep2d
             write (erstr,*) '2D step:', j
             call perr%werrfl0(erstr)
@@ -196,6 +196,8 @@
             call bxyz%mult(bxyz,(/1,2/),(/1,2/),(/dex,dex/))
             call bxyz%cb(bbxyz,j+1,(/1,2,3/),(/1,2,3/))
          enddo
+         call perr%add_profile('2d_end')         
+
          
          do m = 1, sim%sim%nspecies                       
             call spe(m)%psend(tag_spe(m),id_spe(m))
@@ -227,7 +229,7 @@
          end do
                           
       enddo
-      
+      call perr%wprof()
       call MPI_FINALIZE(ierr)
       
       stop

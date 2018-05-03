@@ -1281,6 +1281,7 @@ c calculate magnetic field and sum field energy
       do 90 l = 1, j2blok
 c mode numbers 0 < kx < nx and 0 < ky < ny
       joff = kxp2*(l + ks) - 1
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky,at1,at2,at3)
       do 60 j = 1, kxp2
       dkx = dnx*float(j + joff)
       if ((j+joff).gt.0) then
@@ -1290,16 +1291,17 @@ c mode numbers 0 < kx < nx and 0 < ky < ny
          at2 = dky*at1
          at3 = dkx*at1
          bz(k,j,l) = at3*cu(2,k,j,l) - at2*cu(1,k,j,l)
-         wp = wp + 2.0*at1*(cu(1,k,j,l)**2 + cu(2,k,j,l)**2)
+c         wp = wp + 2.0*at1*(cu(1,k,j,l)**2 + cu(2,k,j,l)**2)
    50    continue
 c mode numbers ky = 0, ny
          at1 = ci2*real(ffd(1,j,l))*aimag(ffd(1,j,l))
          at2 = dkx*at1
          bz(1,j,l) = at2*cu(2,1,j,l)
-         wp = wp + at1*cu(2,1,j,l)**2
+c         wp = wp + at1*cu(2,1,j,l)**2
       endif
       bz(ny+1,j,l) = 0.
    60 continue
+!$OMP END PARALLEL DO     
 c mode numbers kx = 0, nx/2
       if ((l+ks).eq.0) then
          do 70 k = 2, ny
@@ -1325,6 +1327,7 @@ c calculate vector potential and sum field energy
       do 160 l = 1, j2blok
 c mode numbers 0 < kx < nx and 0 < ky < ny
       joff = kxp2*(l + ks) - 1
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky,aat1,aat2,at1,at2,at3)
       do 130 j = 1, kxp2
       dkx = dnx*float(j + joff)
       if ((j+joff).gt.0) then
@@ -1352,7 +1355,7 @@ c-------------------------------------------------------
          at1 = at2*aimag(ffd(k,j,l))
          bxy(1,k,j,l) = at1*aat1+aa*at2*bxy(1,k,j,l)
          bxy(2,k,j,l) = at1*aat2+aa*at2*bxy(2,k,j,l)
-         wp = wp + 2.0*at1*(dcu(1,k,j,l)**2 + dcu(2,k,j,l)**2)
+c         wp = wp + 2.0*at1*(dcu(1,k,j,l)**2 + dcu(2,k,j,l)**2)
   120    continue
 c mode numbers ky = 0, ny
 c-----------------------------------------------------------------
@@ -1376,11 +1379,12 @@ c-----------------------------------------------------------------
          at1 = at2*aimag(ffd(1,j,l))
          bxy(1,1,j,l) = 0.
          bxy(2,1,j,l) = at1*dcu(2,1,j,l)+aa*at2*bxy(2,1,j,l)
-         wp = wp + at1*dcu(2,1,j,l)**2
+c         wp = wp + at1*dcu(2,1,j,l)**2
       endif
       bxy(1,ny+1,j,l) = 0.
       bxy(2,ny+1,j,l) = 0.
   130 continue
+!$OMP END PARALLEL DO  
 c mode numbers kx = 0, nx/2
       if ((l+ks).eq.0) then
          do 140 k = 2, ny
@@ -1533,11 +1537,10 @@ c mode numbers kx = 0, nx/2
    30 sum1 = 0.0d0
       if (kstrt.gt.nx) go to 80
 ! mode numbers kx > 0 and 0 < ky < ny
-!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3,wp)
-!$OMP& REDUCTION(+:sum1)
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3)
       do 50 j = 1, kxp2s
       dkx = dnx*real(j + joff)
-      wp = 0.0d0
+c      wp = 0.0d0
       if ((j+joff).gt.0) then
          do 40 k = 2, ny
          at1 = real(ffd(k,j))*aimag(ffd(k,j))
@@ -1546,7 +1549,7 @@ c mode numbers kx = 0, nx/2
          at3 = dny*real(k - 1)*at3
          fxy(1,k,j) = at2
          fxy(2,k,j) = at3
-         wp = wp + at1*q(k,j)**2
+c         wp = wp + at1*q(k,j)**2
    40    continue
       endif
 ! mode numbers ky = 0, ny
@@ -1554,7 +1557,7 @@ c mode numbers kx = 0, nx/2
       fxy(2,1,j) = 0.0
       fxy(1,ny+1,j) = 0.0
       fxy(2,ny+1,j) = 0.0
-      sum1 = sum1 + wp
+c      sum1 = sum1 + wp
    50 continue
 !$OMP END PARALLEL DO
 ! mode number kx = 0
@@ -1652,11 +1655,10 @@ c mode numbers kx = 0, nx/2
    30 sum1 = 0.0d0
       if (kstrt.gt.nx) go to 80
 ! mode numbers kx > 0 and 0 < ky < ny
-!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3,wp)
-!$OMP& REDUCTION(+:sum1)
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,at1,at2,at3)
       do 50 j = 1, kxp2s
       dkx = dnx*real(j + joff)
-      wp = 0.0d0
+c      wp = 0.0d0
       if ((j+joff).gt.0) then
          do 40 k = 2, ny
          at1 = real(ffd(k,j))*aimag(ffd(k,j))
@@ -1666,7 +1668,7 @@ c mode numbers kx = 0, nx/2
          fxy(1,k,j) = at2
          fxy(2,k,j) = at3
          fxy(3,k,j) = 0.0
-         wp = wp + at1*q(k,j)**2
+c         wp = wp + at1*q(k,j)**2
    40    continue
       endif
 ! mode numbers ky = 0, ny
@@ -1676,7 +1678,7 @@ c mode numbers kx = 0, nx/2
       fxy(1,ny+1,j) = 0.0
       fxy(2,ny+1,j) = 0.0
       fxy(3,ny+1,j) = 0.0
-      sum1 = sum1 + wp
+c      sum1 = sum1 + wp
    50 continue
 !$OMP END PARALLEL DO
 ! mode number kx = 0
@@ -1744,23 +1746,22 @@ c mode numbers kx = 0, nx/2
       sum1 = 0.0d0
       if (kstrt.gt.nx) go to 50
 ! mode numbers kx > 0 and 0 < ky < ny
-!$OMP PARALLEL DO PRIVATE(j,k,at1,at2,at3,wp)
-!$OMP& REDUCTION(+:sum1)
+!$OMP PARALLEL DO PRIVATE(j,k,at1,at2,at3)
       do 20 j = 1, kxp2s
-      wp = 0.0d0
+c      wp = 0.0d0
       if ((j+joff).gt.0) then
          do 10 k = 2, ny
          at2 = real(ffd(k,j))
          at1 = at2*aimag(ffd(k,j))
          at3 = at2*q(k,j)
          pot(k,j) = at3
-         wp = wp + at1*q(k,j)**2
+c         wp = wp + at1*q(k,j)**2
   10     continue
       endif
 ! mode numbers ky = 0, ny
       pot(1,j) = 0.0
       pot(ny+1,j) = 0.0
-      sum1 = sum1 + wp
+c      sum1 = sum1 + wp
    20 continue
 !$OMP END PARALLEL DO
 ! mode number kx = 0
@@ -1898,8 +1899,7 @@ c mode numbers kx = 0, nx/2
       sum1 = 0.0d0
       if (kstrt.gt.nx) go to 50
 ! mode numbers kx > 0 and 0 < ky < ny
-!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky,at1,at2,at3,wp)
-!$OMP& REDUCTION(+:sum1)
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky,at1,at2,at3)
       do 20 j = 1, kxp2s
       dkx = dnx*real(j + joff)
       wp = 0.0d0
@@ -1912,7 +1912,7 @@ c mode numbers kx = 0, nx/2
          bxy(1,k,j) = at2*cu(3,k,j)
          bxy(2,k,j) = -at3*cu(3,k,j)
          bxy(3,k,j) = at3*cu(2,k,j) - at2*cu(1,k,j)
-         wp = wp + 2.0*at1*(cu(1,k,j)**2 + cu(2,k,j)**2 + cu(3,k,j)**2)
+c         wp = wp + 2.0*at1*(cu(1,k,j)**2 + cu(2,k,j)**2 + cu(3,k,j)**2)
    10    continue
 ! mode numbers ky = 0, ny
          at1 = ci2*real(ffd(1,j))*aimag(ffd(1,j))
@@ -1920,12 +1920,12 @@ c mode numbers kx = 0, nx/2
          bxy(1,1,j) = 0.0
          bxy(2,1,j) = 0.0
          bxy(3,1,j) = at2*cu(2,1,j)
-         wp = wp + at1*(cu(2,1,j)**2 + cu(3,1,j)**2)
+c         wp = wp + at1*(cu(2,1,j)**2 + cu(3,1,j)**2)
       endif
       bxy(1,ny+1,j) = 0.0
       bxy(2,ny+1,j) = 0.0
       bxy(3,ny+1,j) = 0.0
-      sum1 = sum1 + wp
+c      sum1 = sum1 + wp
    20 continue
 !$OMP END PARALLEL DO
       wp = 0.0d0

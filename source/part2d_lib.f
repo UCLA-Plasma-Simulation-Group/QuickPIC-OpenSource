@@ -32,7 +32,7 @@
          integer, intent(in) :: npp, noff
          integer, intent(inout) :: irc
          real, dimension(idimp,npmax), intent(in) :: part
-         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mxyp1), intent(inout) :: ppart
          integer, dimension(mxyp1), intent(inout) :: kpic
          end subroutine
       end interface
@@ -44,7 +44,7 @@
          integer, intent(in) :: idimp, nppmx, nx, mx, my, mx1, myp1
          integer, intent(in) :: noff, nyp
          integer, intent(inout) :: irc
-         real, dimension(idimp,nppmx,mx1*myp1), intent(in) :: ppart
+         real, dimension(nppmx,idimp,mx1*myp1), intent(in) :: ppart
          integer, dimension(mx1*myp1), intent(in) :: kpic
          end subroutine
       end interface
@@ -57,7 +57,7 @@
          integer, intent(in) :: mx1, mxyp1
          integer, intent(in) :: noff
          real, intent(in) :: qm
-         real, dimension(idimp,nppmx,mxyp1), intent(in) :: ppart
+         real, dimension(nppmx,idimp,mxyp1), intent(in) :: ppart
          real, dimension(nxv,nypmx), intent(inout) :: q
          integer, dimension(mxyp1), intent(in) :: kpic
          end subroutine
@@ -70,7 +70,7 @@
          integer, intent(in) :: noff, nyp, idimp, nppmx, nx, mx, my
          integer, intent(in) :: nxv, nypmx, mx1, mxyp1
          real, intent(in) ::  qm, qbm, dt, ci
-         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mxyp1), intent(inout) :: ppart
          real, dimension(2,nxv,nypmx), intent(in) :: fxy
          real, dimension(3,nxv,nypmx), intent(in) :: bxy
          real, dimension(nxv,nypmx), intent(in) :: psit
@@ -92,7 +92,7 @@
          real qbm, dt, dtc, ci, ek, dex
          real ppart, fxy, bxy, psit
          integer kpic, ncl, ihole
-         dimension ppart(idimp,nppmx,mxyp1)
+         dimension ppart(nppmx,idimp,mxyp1)
          dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
          dimension psit(nxv,nypmx)
          dimension kpic(mxyp1), ncl(8,mxyp1)
@@ -108,7 +108,7 @@
          integer, intent(in) :: idimp, nppmx, nx, ny, mx, my, mx1, myp1
          integer, intent(in) :: npbmx, ntmax, nbmax, noff, nyp
          integer, intent(inout) :: irc
-         real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(inout) :: ppbuff
          real, dimension(idimp,nbmax), intent(inout) :: sbufl, sbufr
          integer, dimension(mx1*myp1), intent(in) :: kpic
@@ -125,7 +125,7 @@
          integer, intent(in) :: idimp, nppmx, mx1, myp1, npbmx, ntmax
          integer, intent(in) :: nbmax
          integer, intent(inout) :: irc
-         real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(inout) :: ppbuff
          real, dimension(idimp,nbmax), intent(inout) :: sbufl, sbufr
          integer, dimension(8,mx1*myp1), intent(inout) :: ncl
@@ -141,7 +141,7 @@
          integer, intent(in) :: idimp, nppmx, mx1, myp1, npbmx, ntmax
          integer, intent(in) :: nbmax
          integer, intent(inout) :: irc
-         real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(in) :: ppbuff
          real, dimension(idimp,nbmax), intent(in) :: rbufl, rbufr
          integer, dimension(mx1*myp1), intent(inout) :: kpic
@@ -158,7 +158,7 @@
          integer, intent(in) :: noff, nyp, idimp, nppmx, nx, mx, my
          integer, intent(in) :: mx1, mxyp1, nxv, nypmx
          real, intent(in) :: dex,qbm
-         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
+         real, dimension(nppmx,idimp,mxyp1), intent(inout) :: ppart
          real, dimension(nxv,nypmx), intent(in) :: psi
          integer, dimension(mxyp1), intent(in) :: kpic
          end subroutine
@@ -171,7 +171,7 @@
          integer, intent(in) :: npmax, nppmx, idimp, mxyp1
          integer, intent(inout) :: npp, irc
          real, dimension(idimp,npmax), intent(inout) :: part
-         real, dimension(idimp,nppmx,mxyp1), intent(in) :: ppart
+         real, dimension(nppmx,idimp,mxyp1), intent(in) :: ppart
          integer, dimension(mxyp1), intent(in) :: kpic
          end subroutine
       end interface
