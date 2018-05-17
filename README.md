@@ -9,7 +9,7 @@ Please feel free to join in our email list [quickpic-users-developers](https://g
 
 # Documentation
 
-Visit [here](http://ucla-plasma-simulation-group.github.io/quickpic-dev) for the documentaion.
+Visit [here](https://ucla-plasma-simulation-group.github.io/QuickPIC-OpenSource/) for the documentaion.
 
 # Compile QuickPIC
 

@@ -38,4 +38,4 @@ ford quickpic_ford.md
 
 # Online documentation
 
-Visit [here](http://ucla-plasma-simulation-group.github.io/quickpic-dev/) to see the documentation.
+Visit [here](https://ucla-plasma-simulation-group.github.io/QuickPIC-OpenSource/) to see the documentation.
