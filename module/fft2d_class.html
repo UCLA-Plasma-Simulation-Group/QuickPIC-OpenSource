@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>fft2d_class &ndash; QuickPIC</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+				
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+		 aria-expanded="false">Contents <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+				
+				
+            <li><a href="../lists/modules.html">Modules</a></li>
+				
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+				
+								
+            <li><a href="../lists/types.html">Derived Types</a></li>
+				
+				
+            <li><a href="../program/quickpic.html">Program</a></li>
+	    
+            </ul>
+            </li>
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>fft2d_class 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+	  data-placement="bottom" data-html="true"
+	  title=" 5.3% of total for modules and submodules.">394 statements</a>
+     </li> 
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/fft2d_class.f03"> Source File</a></li>
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+     <li><a href='../sourcefile/fft2d_class.f03.html'>fft2d_class.f03</a></li>
+  
+     <li class="active">fft2d_class</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-class%7E2">class</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-erstr%7E2">erstr</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-numtables">numtables</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-table_list">table_list</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-0">Derived Types</a></h3></div>
+  <div id="types-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#type-fft2d">fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#type-fft2d_link">fft2d_link</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-get_fft2table">get_fft2table</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-init_fft2d">init_fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-end_fft2d">end_fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfsst2r">iwpfsst2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfcct2r">iwpfcct2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfs3t2r">iwpfs3t2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipdivfd2">ipdivfd2</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipgradfd2">ipgradfd2</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipcurlfd2">ipcurlfd2</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+	<ul class="list-inline">
+	  
+	  <li><a href='../module/perrors_class.html'>perrors_class</a></li>
+	  
+	  <li><a href='../module/parallel_pipe_class.html'>parallel_pipe_class</a></li>
+	  
+	  <li><a href='../module/spect2d_class.html'>spect2d_class</a></li>
+	  
+	  <li><a href='../module/ufield2d_class.html'>ufield2d_class</a></li>
+	  
+	  <li><a href='../module/fft2d_lib.html'>fft2d_lib</a></li>
+	  
+	</ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~fft2d_class~~UsesGraph Pages: 1 -->
+<svg id="modulefft2d_classUsesGraph" width="638pt" height="236pt"
+ viewBox="0.00 0.00 638.01 236.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~fft2d_class~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 232.0015)">
+<title>module~~fft2d_class~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-232.0015 634.0103,-232.0015 634.0103,4 -4,4"/>
+<!-- module~fft2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_node1" class="node">
+<title>module~fft2d_class</title>
+<polygon fill="none" stroke="#000000" points="630.0144,-138.7594 567.9978,-138.7594 567.9978,-116.7486 630.0144,-116.7486 630.0144,-138.7594"/>
+<text text-anchor="middle" x="599.0061" y="-124.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">fft2d_class</text>
+</g>
+<!-- module~perrors_class -->
+<g id="module~~fft2d_class~~UsesGraph_node2" class="node">
+<title>module~perrors_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node2"><a xlink:href=".././module/perrors_class.html" xlink:title="perrors_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="289.7889,-215.7594 214.7479,-215.7594 214.7479,-193.7486 289.7889,-193.7486 289.7889,-215.7594"/>
+<text text-anchor="middle" x="252.2684" y="-201.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge1" class="edge">
+<title>module~fft2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-204.754C459.2654,-213.6003 451.7825,-220.2718 417.4592,-224.754 382.8475,-229.2738 373.603,-228.7044 338.9216,-224.754 326.0909,-223.2925 312.3944,-220.6511 299.7675,-217.7568"/>
+<polygon fill="#000000" stroke="#000000" points="300.447,-214.3206 289.9072,-215.399 298.8191,-221.1287 300.447,-214.3206"/>
+</g>
+<!-- module~ufield2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_node3" class="node">
+<title>module~ufield2d_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node3"><a xlink:href=".././module/ufield2d_class.html" xlink:title="ufield2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="531.7746,-138.7594 453.6865,-138.7594 453.6865,-116.7486 531.7746,-116.7486 531.7746,-138.7594"/>
+<text text-anchor="middle" x="492.7306" y="-124.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge2" class="edge">
+<title>module~fft2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M567.9811,-127.754C559.8786,-127.754 550.9412,-127.754 542.1408,-127.754"/>
+<polygon fill="#000000" stroke="#000000" points="541.9311,-124.2541 531.931,-127.754 541.931,-131.2541 541.9311,-124.2541"/>
+</g>
+<!-- module~spect2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_node4" class="node">
+<title>module~spect2d_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node4"><a xlink:href=".././module/spect2d_class.html" xlink:title="spect2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="417.2294,-215.7594 339.1515,-215.7594 339.1515,-193.7486 417.2294,-193.7486 417.2294,-215.7594"/>
+<text text-anchor="middle" x="378.1904" y="-201.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge3" class="edge">
+<title>module~fft2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-204.754C471.7613,-210.297 447.8681,-211.1167 427.349,-210.2317"/>
+<polygon fill="#000000" stroke="#000000" points="427.4527,-206.732 417.2682,-209.6517 427.0506,-213.7204 427.4527,-206.732"/>
+</g>
+<!-- module~fft2d_lib -->
+<g id="module~~fft2d_class~~UsesGraph_node5" class="node">
+<title>module~fft2d_lib</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node5"><a xlink:href=".././module/fft2d_lib.html" xlink:title="fft2d_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="519.7306,-57.7594 465.7306,-57.7594 465.7306,-35.7486 519.7306,-35.7486 519.7306,-57.7594"/>
+<text text-anchor="middle" x="492.7306" y="-43.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d_lib</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~fft2d_lib -->
+<g id="module~~fft2d_class~~UsesGraph_edge4" class="edge">
+<title>module~fft2d_class&#45;&gt;module~fft2d_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M584.2289,-116.4913C566.3834,-102.89 536.1782,-79.8684 515.3842,-64.0199"/>
+<polygon fill="#000000" stroke="#000000" points="517.4572,-61.1992 507.3822,-57.921 513.2139,-66.7665 517.4572,-61.1992"/>
+</g>
+<!-- module~parallel_pipe_class -->
+<g id="module~~fft2d_class~~UsesGraph_node6" class="node">
+<title>module~parallel_pipe_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node6"><a xlink:href=".././module/parallel_pipe_class.html" xlink:title="parallel_pipe_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="303.0753,-174.7594 201.4616,-174.7594 201.4616,-152.7486 303.0753,-152.7486 303.0753,-174.7594"/>
+<text text-anchor="middle" x="252.2684" y="-160.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge5" class="edge">
+<title>module~fft2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589.2601,-138.8492C572.0459,-157.4118 534.1429,-193.807 492.7306,-204.754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-204.754C433.4271,-220.4304 439.5148,-129.1585 378.1904,-127.754"/>
+</g>
+<!-- mpi -->
+<g id="module~~fft2d_class~~UsesGraph_node8" class="node">
+<title>mpi</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node8"><a xlink:href="http://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node410.htm" xlink:title="mpi">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-94.7594 0,-94.7594 0,-72.7486 54,-72.7486 54,-94.7594"/>
+<text text-anchor="middle" x="27" y="-80.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">mpi</text>
+</a>
+</g>
+</g>
+<!-- module~perrors_class&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge6" class="edge">
+<title>module~perrors_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4248,-208.568C179.4285,-210.1952 127.3403,-207.6171 90,-183.754 74.7453,-174.0051 50.5881,-130.1843 37.0488,-103.894"/>
+<polygon fill="#000000" stroke="#000000" points="40.0703,-102.1139 32.4204,-94.7839 33.8296,-105.2846 40.0703,-102.1139"/>
+</g>
+<!-- module~parallel_class -->
+<g id="module~~fft2d_class~~UsesGraph_node9" class="node">
+<title>module~parallel_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node9"><a xlink:href=".././module/parallel_class.html" xlink:title="parallel_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="165.4238,-174.7594 90.1914,-174.7594 90.1914,-152.7486 165.4238,-152.7486 165.4238,-174.7594"/>
+<text text-anchor="middle" x="127.8076" y="-160.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_class</text>
+</a>
+</g>
+</g>
+<!-- module~perrors_class&#45;&gt;module~parallel_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge7" class="edge">
+<title>module~perrors_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M218.5875,-193.6588C204.0599,-188.8731 186.882,-183.2143 171.3997,-178.1142"/>
+<polygon fill="#000000" stroke="#000000" points="172.1085,-174.6627 161.5154,-174.8581 169.9182,-181.3112 172.1085,-174.6627"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge10" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M458.2782,-138.7862C415.6019,-152.4519 342.8398,-175.7515 296.194,-190.6883"/>
+<polygon fill="#000000" stroke="#000000" points="295.1131,-187.3593 286.6569,-193.7422 297.2479,-194.0258 295.1131,-187.3593"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge11" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M476.9892,-138.8845C461.8416,-149.5341 438.2389,-165.9688 417.4592,-179.754 413.3006,-182.5128 408.8634,-185.3953 404.524,-188.1813"/>
+<polygon fill="#000000" stroke="#000000" points="402.4265,-185.3676 395.8747,-193.6937 406.1887,-191.2707 402.4265,-185.3676"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge13" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M453.4968,-128.1978C431.3781,-128.3367 403.2395,-128.3277 378.1904,-127.754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M378.1904,-127.754C361.597,-127.3739 322.9752,-139.136 292.8473,-149.3145"/>
+<polygon fill="#000000" stroke="#000000" points="291.327,-146.1355 282.9997,-152.6858 293.5943,-152.7581 291.327,-146.1355"/>
+</g>
+<!-- module~ufield2d_lib -->
+<g id="module~~fft2d_class~~UsesGraph_node7" class="node">
+<title>module~ufield2d_lib</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node7"><a xlink:href=".././module/ufield2d_lib.html" xlink:title="ufield2d_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="160.4332,-55.7594 95.182,-55.7594 95.182,-33.7486 160.4332,-33.7486 160.4332,-55.7594"/>
+<text text-anchor="middle" x="127.8076" y="-41.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_lib</text>
+</a>
+</g>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~ufield2d_lib -->
+<g id="module~~fft2d_class~~UsesGraph_edge12" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~ufield2d_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M252.2684,-45.754C225.237,-47.752 194.814,-47.5519 170.8131,-46.8281"/>
+<polygon fill="#000000" stroke="#000000" points="170.726,-43.3232 160.6117,-46.4778 170.4857,-50.319 170.726,-43.3232"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M482.2271,-116.4713C468.6887,-102.7131 443.7461,-79.9167 417.4592,-68.754 349.2298,-39.7804 326.1931,-40.2899 252.2684,-45.754"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge8" class="edge">
+<title>module~ufield2d_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M127.8076,-83.754C106.8782,-82.4696 83.4585,-82.3875 64.4639,-82.6635"/>
+<polygon fill="#000000" stroke="#000000" points="64.3445,-79.165 54.4105,-82.8484 64.4732,-86.1639 64.3445,-79.165"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M252.2684,-45.754C194.4655,-47.7291 185.5357,-87.2966 127.8076,-83.754"/>
+</g>
+<!-- module~hdf5io_class -->
+<g id="module~~fft2d_class~~UsesGraph_node10" class="node">
+<title>module~hdf5io_class</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node10"><a xlink:href=".././module/hdf5io_class.html" xlink:title="hdf5io_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="413.5618,-99.7594 342.8191,-99.7594 342.8191,-77.7486 413.5618,-77.7486 413.5618,-99.7594"/>
+<text text-anchor="middle" x="378.1904" y="-85.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hdf5io_class</text>
+</a>
+</g>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge9" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M460.2144,-116.6825C447.8815,-112.4833 433.6523,-107.6383 420.5437,-103.1749"/>
+<polygon fill="#000000" stroke="#000000" points="421.3824,-99.7633 410.788,-99.8532 419.1261,-106.3897 421.3824,-99.7633"/>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge14" class="edge">
+<title>module~spect2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.0382,-204.754C326.7332,-204.754 313.0053,-204.754 300.1654,-204.754"/>
+<polygon fill="#000000" stroke="#000000" points="300.1026,-201.2541 290.1025,-204.754 300.1025,-208.2541 300.1026,-201.2541"/>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge15" class="edge">
+<title>module~spect2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M344.1141,-193.6588C329.2759,-188.8275 311.7051,-183.1065 295.9253,-177.9686"/>
+<polygon fill="#000000" stroke="#000000" points="296.9643,-174.6261 286.372,-174.8581 294.797,-181.2822 296.9643,-174.6261"/>
+</g>
+<!-- module~fft2d_lib&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge16" class="edge">
+<title>module~fft2d_lib&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M465.5856,-37.7506C398.8419,-17.1774 222.5253,27.6123 90,-24.754 69.9185,-32.689 52.4838,-50.3836 41.0786,-64.3372"/>
+<polygon fill="#000000" stroke="#000000" points="38.1668,-62.3799 34.7866,-72.4211 43.6908,-66.6794 38.1668,-62.3799"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge17" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M221.5959,-152.6664C214.8389,-149.7806 207.8441,-146.4345 201.6152,-142.754 165.4593,-121.3901 169.7378,-86.1048 127.8076,-83.754"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;module~parallel_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge18" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.2863,-163.754C192.791,-163.754 184.0064,-163.754 175.5944,-163.754"/>
+<polygon fill="#000000" stroke="#000000" points="175.5631,-160.2541 165.563,-163.754 175.563,-167.2541 175.5631,-160.2541"/>
+</g>
+<!-- module~ufield2d_lib&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge19" class="edge">
+<title>module~ufield2d_lib&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M99.1898,-55.8255C88.1847,-60.0831 75.4636,-65.0046 63.7946,-69.5191"/>
+<polygon fill="#000000" stroke="#000000" points="62.3643,-66.3196 54.3008,-73.192 64.89,-72.848 62.3643,-66.3196"/>
+</g>
+<!-- module~parallel_class&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge21" class="edge">
+<title>module~parallel_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M113.7907,-152.6303C96.9386,-139.2566 68.4666,-116.6615 48.7516,-101.0158"/>
+<polygon fill="#000000" stroke="#000000" points="50.9067,-98.2579 40.8978,-94.7832 46.5552,-103.7411 50.9067,-98.2579"/>
+</g>
+<!-- omp_lib -->
+<g id="module~~fft2d_class~~UsesGraph_node11" class="node">
+<title>omp_lib</title>
+<g id="a_module~~fft2d_class~~UsesGraph_node11"><a xlink:href="https://gcc.gnu.org/onlinedocs/gcc-4.4.3/libgomp/Runtime-Library-Routines.html" xlink:title="omp_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-174.7594 0,-174.7594 0,-152.7486 54,-152.7486 54,-174.7594"/>
+<text text-anchor="middle" x="27" y="-160.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">omp_lib</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_class&#45;&gt;omp_lib -->
+<g id="module~~fft2d_class~~UsesGraph_edge20" class="edge">
+<title>module~parallel_class&#45;&gt;omp_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.9838,-163.754C81.5773,-163.754 72.6722,-163.754 64.2874,-163.754"/>
+<polygon fill="#000000" stroke="#000000" points="64.0219,-160.2541 54.0218,-163.754 64.0218,-167.2541 64.0219,-160.2541"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;module~perrors_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge24" class="edge">
+<title>module~hdf5io_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M371.9433,-99.9439C360.5589,-119.4267 334.6566,-159.7843 302.9216,-183.754 300.3389,-185.7048 297.5486,-187.5078 294.6517,-189.1679"/>
+<polygon fill="#000000" stroke="#000000" points="293.0511,-186.0553 285.7411,-193.7244 296.2381,-192.2878 293.0511,-186.0553"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fft2d_class~~UsesGraph_edge25" class="edge">
+<title>module~hdf5io_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M359.9265,-99.7919C353.2131,-104.0022 345.6187,-108.9473 338.9216,-113.754 322.2301,-125.7339 320.5905,-132.269 302.9216,-142.754 299.519,-144.7732 295.8861,-146.6903 292.1873,-148.4852"/>
+<polygon fill="#000000" stroke="#000000" points="290.6064,-145.3591 282.9513,-152.6837 293.5032,-151.7316 290.6064,-145.3591"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;mpi -->
+<g id="module~~fft2d_class~~UsesGraph_edge22" class="edge">
+<title>module~hdf5io_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M342.9146,-88.8497C294.4131,-88.7987 204.4258,-88.0497 127.8076,-83.754"/>
+</g>
+<!-- HDF5 -->
+<g id="module~~fft2d_class~~UsesGraph_node12" class="node">
+<title>HDF5</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="279.2684,-133.7594 225.2684,-133.7594 225.2684,-111.7486 279.2684,-111.7486 279.2684,-133.7594"/>
+<text text-anchor="middle" x="252.2684" y="-119.604" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">HDF5</text>
+</g>
+<!-- module~hdf5io_class&#45;&gt;HDF5 -->
+<g id="module~~fft2d_class~~UsesGraph_edge23" class="edge">
+<title>module~hdf5io_class&#45;&gt;HDF5</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M342.779,-98.3154C326.1526,-102.8046 306.3334,-108.156 289.4854,-112.7051"/>
+<polygon fill="#000000" stroke="#000000" points="288.1761,-109.4332 279.4342,-115.419 290.0008,-116.1912 288.1761,-109.4332"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+	
+	
+	<li class="list-group-item">
+	  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~fft2d_class~~UsedByGraph Pages: 1 -->
+<svg id="modulefft2d_classUsedByGraph" width="394pt" height="50pt"
+ viewBox="0.00 0.00 393.75 49.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~fft2d_class~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 45.5)">
+<title>module~~fft2d_class~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-45.5 389.7542,-45.5 389.7542,4 -4,4"/>
+<!-- module~fft2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_node1" class="node">
+<title>module~fft2d_class</title>
+<polygon fill="none" stroke="#000000" points="62.0125,-41.2554 -.0042,-41.2554 -.0042,-19.2446 62.0125,-19.2446 62.0125,-41.2554"/>
+<text text-anchor="middle" x="31.0042" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">fft2d_class</text>
+</g>
+<!-- module~field2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_node2" class="node">
+<title>module~field2d_class</title>
+<g id="a_module~~fft2d_class~~UsedByGraph_node2"><a xlink:href=".././module/field2d_class.html" xlink:title="field2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="170.5636,-41.2554 98.1561,-41.2554 98.1561,-19.2446 170.5636,-19.2446 170.5636,-41.2554"/>
+<text text-anchor="middle" x="134.3599" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fft2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_edge1" class="edge">
+<title>module~field2d_class&#45;&gt;module~fft2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M97.9205,-30.25C89.6568,-30.25 80.8221,-30.25 72.3709,-30.25"/>
+<polygon fill="#000000" stroke="#000000" points="72.3167,-26.7501 62.3167,-30.25 72.3167,-33.7501 72.3167,-26.7501"/>
+</g>
+<!-- module~species2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_node3" class="node">
+<title>module~species2d_class</title>
+<g id="a_module~~fft2d_class~~UsedByGraph_node3"><a xlink:href=".././module/species2d_class.html" xlink:title="species2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="295.7755,-22.2554 206.6901,-22.2554 206.6901,-.2446 295.7755,-.2446 295.7755,-22.2554"/>
+<text text-anchor="middle" x="251.2328" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~species2d_class&#45;&gt;module~field2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_edge2" class="edge">
+<title>module~species2d_class&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M206.3809,-18.5416C197.9602,-19.9105 189.141,-21.3442 180.6767,-22.7203"/>
+<polygon fill="#000000" stroke="#000000" points="179.8875,-19.3026 170.5787,-24.3619 181.0108,-26.2118 179.8875,-19.3026"/>
+</g>
+<!-- program~quickpic -->
+<g id="module~~fft2d_class~~UsedByGraph_node4" class="node">
+<title>program~quickpic</title>
+<g id="a_module~~fft2d_class~~UsedByGraph_node4"><a xlink:href=".././program/quickpic.html" xlink:title="quickpic">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="385.7542,-41.2554 331.7542,-41.2554 331.7542,-19.2446 385.7542,-19.2446 385.7542,-41.2554"/>
+<text text-anchor="middle" x="358.7542" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">quickpic</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~field2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_edge3" class="edge">
+<title>program~quickpic&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M331.4665,-30.7775C320.3846,-30.9672 307.4584,-31.1571 295.7542,-31.25 256.1809,-31.5641 246.285,-31.5235 206.7114,-31.25 198.4058,-31.1926 189.5643,-31.0982 181.0177,-30.9896"/>
+<polygon fill="#000000" stroke="#000000" points="180.8411,-27.487 170.7948,-30.8518 180.7467,-34.4864 180.8411,-27.487"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~species2d_class -->
+<g id="module~~fft2d_class~~UsedByGraph_edge4" class="edge">
+<title>program~quickpic&#45;&gt;module~species2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M331.622,-25.4555C323.7571,-24.0657 314.8749,-22.4961 305.9574,-20.9203"/>
+<polygon fill="#000000" stroke="#000000" points="306.3831,-17.4414 295.9266,-19.1478 305.1649,-24.3346 306.3831,-17.4414"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+	</li>
+	
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-class%7E2">class</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-erstr%7E2">erstr</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-numtables">numtables</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#variable-table_list">table_list</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-1">Derived Types</a></h3></div>
+  <div id="types-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#type-fft2d">fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#type-fft2d_link">fft2d_link</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-get_fft2table">get_fft2table</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-init_fft2d">init_fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-end_fft2d">end_fft2d</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfsst2r">iwpfsst2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfcct2r">iwpfcct2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-iwpfs3t2r">iwpfs3t2r</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipdivfd2">ipdivfd2</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipgradfd2">ipgradfd2</a>
+      
+      <a class="list-group-item" href="../module/fft2d_class.html#proc-ipcurlfd2">ipcurlfd2</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    <section>
+    <h2>Variables</h2>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-class%7E2"></span>character(len=10),</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>class</strong></td><td> =</td><td>'fft2d:'</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-erstr%7E2"></span>character(len=128),</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>erstr</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-numtables"></span>integer,</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>numtables</strong></td><td> =</td><td>0</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-table_list"></span>type(<a href='../type/fft2d_link.html'>fft2d_link</a>),</td>
+  
+  <td>private,</td>
+  <td>target, save</td><td>::</td>
+  <td><strong>table_list</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+    
+    
+    
+
+    
+    
+    
+    <section>
+     <h2>Derived Types</h2>
+	 
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-fft2d"></span><h3>type, public :: <a href='../type/fft2d.html'>fft2d</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sp%7E2"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>sp</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-err%7E3"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>err</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-p%7E4"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>p</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ind"></span>integer,</td>
+  
+  <td>private,</td>
+  <td>dimension(2)</td><td>::</td>
+  <td><strong>ind</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nrc"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>nrc</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-mixup"></span>integer,</td>
+  
+  <td>private,</td>
+  <td>dimension(:), pointer</td><td>::</td>
+  <td><strong>mixup</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sct"></span>complex,</td>
+  
+  <td>private,</td>
+  <td>dimension(:), pointer</td><td>::</td>
+  <td><strong>sct</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+     <h4>Type-Bound Procedures</h4>
+      <table class="table table-striped varlist">
+      <tbody>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-new%7E4'>new</a></strong>  => init_fft2d </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-del%7E3'>del</a></strong>  => end_fft2d </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-fsst'>fsst</a></strong>  => iwpfsst2r </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-fcct'>fcct</a></strong>  => iwpfcct2r </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-fs3t'>fs3t</a></strong>  => iwpfs3t2r </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-divf'>divf</a></strong>  => ipdivfd2 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-gradf'>gradf</a></strong>  => ipgradfd2 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fft2d.html#boundprocedure-curlf'>curlf</a></strong>  => ipcurlfd2 </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-init_fft2d'>init_fft2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-end_fft2d'>end_fft2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-iwpfs3t2r'>iwpfs3t2r</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-iwpfcct2r'>iwpfcct2r</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-iwpfsst2r'>iwpfsst2r</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-ipcurlfd2'>ipcurlfd2</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-ipgradfd2'>ipgradfd2</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fft2d.html#boundprocedure-ipdivfd2'>ipdivfd2</a></strong>  </td>
+       <td></td></tr>
+      
+       </tbody>
+       </table>
+     
+  </div>
+</div>
+
+     
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-fft2d_link"></span><h3>type, private :: <a href='../type/fft2d_link.html'>fft2d_link</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-next"></span>type(<a href='../type/fft2d_link.html'>fft2d_link</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>next</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-table"></span>type(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>table</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-refcount"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>refcount</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+  </div>
+</div>
+
+     
+    </section>
+	<br>
+    
+    
+     
+    <section>
+    <h2>Functions</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_fft2table"></span><h3>
+public function <a href='../proc/get_fft2table.html'>get_fft2table</a>(pp, perr, psp, indx, indy) result(table)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>pp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>perr</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>psp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indy</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>type(<a href='../type/fft2d.html'>fft2d</a>),
+  pointer</small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    </section>
+    <br>
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-init_fft2d"></span><h3>
+private subroutine <a href='../proc/init_fft2d.html'>init_fft2d</a>(this, pp, perr, psp, indx, indy, nrc)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>pp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>perr</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>psp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>nrc</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-end_fft2d"></span><h3>
+private subroutine <a href='../proc/end_fft2d.html'>end_fft2d</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-iwpfsst2r"></span><h3>
+private subroutine <a href='../proc/iwpfsst2r.html'>iwpfsst2r</a>(this, rspace, krspace, isign)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>isign</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-iwpfcct2r"></span><h3>
+private subroutine <a href='../proc/iwpfcct2r.html'>iwpfcct2r</a>(this, rspace, krspace, isign)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>isign</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-iwpfs3t2r"></span><h3>
+private subroutine <a href='../proc/iwpfs3t2r.html'>iwpfs3t2r</a>(this, rspace, krspace, isign)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>isign</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ipdivfd2"></span><h3>
+private subroutine <a href='../proc/ipdivfd2.html'>ipdivfd2</a>(this, krspace, kdspace)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>kdspace</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ipgradfd2"></span><h3>
+private subroutine <a href='../proc/ipgradfd2.html'>ipgradfd2</a>(this, krspace, kdspace)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>kdspace</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ipcurlfd2"></span><h3>
+private subroutine <a href='../proc/ipcurlfd2.html'>ipcurlfd2</a>(this, krspace, kdspace)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fft2d.html'>fft2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>krspace</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>kdspace</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

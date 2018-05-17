@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>fpois2d_class &ndash; QuickPIC</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+				
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+		 aria-expanded="false">Contents <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+				
+				
+            <li><a href="../lists/modules.html">Modules</a></li>
+				
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+				
+								
+            <li><a href="../lists/types.html">Derived Types</a></li>
+				
+				
+            <li><a href="../program/quickpic.html">Program</a></li>
+	    
+            </ul>
+            </li>
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>fpois2d_class 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+	  data-placement="bottom" data-html="true"
+	  title=" 4.9% of total for modules and submodules.">364 statements</a>
+     </li> 
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/fpois2d_class.f03"> Source File</a></li>
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+     <li><a href='../sourcefile/fpois2d_class.f03.html'>fpois2d_class.f03</a></li>
+  
+     <li class="active">fpois2d_class</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-class%7E13">class</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-erstr%7E13">erstr</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-numtables%7E2">numtables</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-table_list%7E2">table_list</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-0">Derived Types</a></h3></div>
+  <div id="types-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#type-fpois2d">fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#type-fpois2d_link">fpois2d_link</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-get_pois2table">get_pois2table</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-init_fpois2d">init_fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-end_fpois2d">end_fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd2init">ippoisd2init</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ipotd2">ipotd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd2">ippoisd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ismoothfd2">ismoothfd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd23">ippoisd23</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ibfieldd2">ibfieldd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-jpbpoisd23">jpbpoisd23</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-jpbpoisd23n_qp">jpbpoisd23n_qp</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+	<ul class="list-inline">
+	  
+	  <li><a href='../module/perrors_class.html'>perrors_class</a></li>
+	  
+	  <li><a href='../module/parallel_pipe_class.html'>parallel_pipe_class</a></li>
+	  
+	  <li><a href='../module/spect2d_class.html'>spect2d_class</a></li>
+	  
+	  <li><a href='../module/ufield2d_class.html'>ufield2d_class</a></li>
+	  
+	  <li><a href='../module/fpois2d_lib.html'>fpois2d_lib</a></li>
+	  
+	</ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~fpois2d_class~~UsesGraph Pages: 1 -->
+<svg id="modulefpois2d_classUsesGraph" width="641pt" height="257pt"
+ viewBox="0.00 0.00 641.00 257.27" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~fpois2d_class~~UsesGraph" class="graph" transform="scale(.9837 .9837) rotate(0) translate(4 257.5349)">
+<title>module~~fpois2d_class~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-257.5349 647.6223,-257.5349 647.6223,4 -4,4"/>
+<!-- module~fpois2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node1" class="node">
+<title>module~fpois2d_class</title>
+<polygon fill="none" stroke="#000000" points="643.4334,-214.2904 568.1908,-214.2904 568.1908,-192.2795 643.4334,-192.2795 643.4334,-214.2904"/>
+<text text-anchor="middle" x="605.8121" y="-200.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">fpois2d_class</text>
+</g>
+<!-- module~fpois2d_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_node2" class="node">
+<title>module~fpois2d_lib</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node2"><a xlink:href=".././module/fpois2d_lib.html" xlink:title="fpois2d_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="523.934,-253.2904 461.5271,-253.2904 461.5271,-231.2795 523.934,-231.2795 523.934,-253.2904"/>
+<text text-anchor="middle" x="492.7306" y="-239.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d_lib</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~fpois2d_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_edge1" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~fpois2d_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M573.71,-214.3564C561.3261,-218.6274 547.0053,-223.5664 533.8818,-228.0925"/>
+<polygon fill="#000000" stroke="#000000" points="532.4439,-224.886 524.1315,-231.4552 534.7263,-231.5035 532.4439,-224.886"/>
+</g>
+<!-- module~ufield2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node3" class="node">
+<title>module~ufield2d_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node3"><a xlink:href=".././module/ufield2d_class.html" xlink:title="ufield2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="531.7746,-137.2904 453.6865,-137.2904 453.6865,-115.2795 531.7746,-115.2795 531.7746,-137.2904"/>
+<text text-anchor="middle" x="492.7306" y="-123.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge3" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589.6103,-192.2527C570.7166,-179.3875 539.2836,-157.984 517.3633,-143.058"/>
+<polygon fill="#000000" stroke="#000000" points="519.138,-140.032 508.9024,-137.2967 515.1982,-145.818 519.138,-140.032"/>
+</g>
+<!-- module~perrors_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node4" class="node">
+<title>module~perrors_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node4"><a xlink:href=".././module/perrors_class.html" xlink:title="perrors_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="289.7889,-197.2904 214.7479,-197.2904 214.7479,-175.2795 289.7889,-175.2795 289.7889,-197.2904"/>
+<text text-anchor="middle" x="252.2684" y="-183.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge2" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-203.2849C458.1159,-203.2849 451.7825,-218.8027 417.4592,-223.2849 382.8475,-227.8048 373.1191,-230.2804 338.9216,-223.2849 318.6924,-219.1468 297.345,-210.094 280.9002,-201.9792"/>
+<polygon fill="#000000" stroke="#000000" points="282.3284,-198.7787 271.8298,-197.3539 279.1484,-205.0148 282.3284,-198.7787"/>
+</g>
+<!-- module~spect2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node5" class="node">
+<title>module~spect2d_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node5"><a xlink:href=".././module/spect2d_class.html" xlink:title="spect2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="417.2294,-214.2904 339.1515,-214.2904 339.1515,-192.2795 417.2294,-192.2795 417.2294,-214.2904"/>
+<text text-anchor="middle" x="378.1904" y="-200.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge4" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-203.2849C471.3941,-203.2849 447.822,-203.2849 427.6364,-203.2849"/>
+<polygon fill="#000000" stroke="#000000" points="427.4191,-199.785 417.4191,-203.2849 427.4191,-206.785 427.4191,-199.785"/>
+</g>
+<!-- module~parallel_pipe_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node6" class="node">
+<title>module~parallel_pipe_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node6"><a xlink:href=".././module/parallel_pipe_class.html" xlink:title="parallel_pipe_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="303.0753,-156.2904 201.4616,-156.2904 201.4616,-134.2795 303.0753,-134.2795 303.0753,-156.2904"/>
+<text text-anchor="middle" x="252.2684" y="-142.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge5" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.7306,-203.2849C458.1265,-202.4295 451.0578,-191.6105 417.4592,-183.2849 382.6635,-174.6626 343.5786,-165.6418 312.1652,-158.5541"/>
+<polygon fill="#000000" stroke="#000000" points="312.7752,-155.1039 302.2508,-156.3237 311.2388,-161.9332 312.7752,-155.1039"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M568.117,-203.5043C546.1285,-203.5774 517.8581,-203.5774 492.7306,-203.2849"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge8" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M378.1904,-126.2849C340.948,-131.9891 337.081,-149.3893 302.9216,-165.2849 298.5657,-167.3119 293.9585,-169.3559 289.3686,-171.3313"/>
+<polygon fill="#000000" stroke="#000000" points="287.9083,-168.1486 280.0571,-175.2626 290.631,-174.5974 287.9083,-168.1486"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge9" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M476.3198,-137.3171C457.1824,-150.1823 425.3439,-171.5858 403.1409,-186.5119"/>
+<polygon fill="#000000" stroke="#000000" points="400.9172,-183.7894 394.5708,-192.2732 404.8225,-189.5987 400.9172,-183.7894"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge11" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M378.1904,-126.2849C356.9681,-129.5354 333.727,-133.0538 313.0525,-136.1692"/>
+<polygon fill="#000000" stroke="#000000" points="312.4969,-132.7133 303.1295,-137.6633 313.5392,-139.6353 312.4969,-132.7133"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M453.5423,-123.3613C431.3148,-122.4319 403.0556,-122.4765 378.1904,-126.2849"/>
+</g>
+<!-- module~ufield2d_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_node7" class="node">
+<title>module~ufield2d_lib</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node7"><a xlink:href=".././module/ufield2d_lib.html" xlink:title="ufield2d_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="160.4332,-38.2904 95.182,-38.2904 95.182,-16.2795 160.4332,-16.2795 160.4332,-38.2904"/>
+<text text-anchor="middle" x="127.8076" y="-24.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_lib</text>
+</a>
+</g>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~ufield2d_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_edge10" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~ufield2d_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M252.2684,-27.2849C225.246,-25.1809 194.8231,-25.1387 170.8201,-25.6431"/>
+<polygon fill="#000000" stroke="#000000" points="170.527,-22.1492 160.6176,-25.8979 170.7019,-29.147 170.527,-22.1492"/>
+</g>
+<!-- mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_node8" class="node">
+<title>mpi</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node8"><a xlink:href="http://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node410.htm" xlink:title="mpi">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-58.2904 0,-58.2904 0,-36.2795 54,-36.2795 54,-58.2904"/>
+<text text-anchor="middle" x="27" y="-44.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">mpi</text>
+</a>
+</g>
+</g>
+<!-- module~ufield2d_class&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge6" class="edge">
+<title>module~ufield2d_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M481.5541,-114.9503C467.7193,-101.572 442.8613,-79.5927 417.4592,-67.2849 349.4786,-34.3469 327.5803,-33.1489 252.2684,-27.2849"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M252.2684,-27.2849C180.7221,-14.5833 159.7776,12.9955 90,-7.2849 74.7325,-11.7223 59.6255,-21.0972 48.0334,-29.6562"/>
+<polygon fill="#000000" stroke="#000000" points="45.6733,-27.057 39.9096,-35.9469 49.9592,-32.5916 45.6733,-27.057"/>
+</g>
+<!-- module~hdf5io_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node10" class="node">
+<title>module~hdf5io_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node10"><a xlink:href=".././module/hdf5io_class.html" xlink:title="hdf5io_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="413.5618,-98.2904 342.8191,-98.2904 342.8191,-76.2795 413.5618,-76.2795 413.5618,-98.2904"/>
+<text text-anchor="middle" x="378.1904" y="-84.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hdf5io_class</text>
+</a>
+</g>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge7" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M460.2144,-115.2134C447.8815,-111.0142 433.6523,-106.1692 420.5437,-101.7059"/>
+<polygon fill="#000000" stroke="#000000" points="421.3824,-98.2942 410.788,-98.3841 419.1261,-104.9206 421.3824,-98.2942"/>
+</g>
+<!-- module~perrors_class&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge12" class="edge">
+<title>module~perrors_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M218.437,-175.2549C212.5157,-172.5094 206.6478,-169.2035 201.6152,-165.2849 158.3122,-131.5669 179.6039,-84.4289 127.8076,-66.2849"/>
+</g>
+<!-- module~parallel_class -->
+<g id="module~~fpois2d_class~~UsesGraph_node9" class="node">
+<title>module~parallel_class</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node9"><a xlink:href=".././module/parallel_class.html" xlink:title="parallel_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="165.4238,-156.2904 90.1914,-156.2904 90.1914,-134.2795 165.4238,-134.2795 165.4238,-156.2904"/>
+<text text-anchor="middle" x="127.8076" y="-142.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_class</text>
+</a>
+</g>
+</g>
+<!-- module~perrors_class&#45;&gt;module~parallel_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge13" class="edge">
+<title>module~perrors_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M218.5875,-175.1897C204.0599,-170.404 186.882,-164.7453 171.3997,-159.6451"/>
+<polygon fill="#000000" stroke="#000000" points="172.1085,-156.1936 161.5154,-156.389 169.9182,-162.8421 172.1085,-156.1936"/>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge14" class="edge">
+<title>module~spect2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.0382,-197.9992C326.7332,-196.338 313.0053,-194.4846 300.1654,-192.7512"/>
+<polygon fill="#000000" stroke="#000000" points="300.4809,-189.2621 290.1025,-191.3927 299.5443,-196.1992 300.4809,-189.2621"/>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge15" class="edge">
+<title>module~spect2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M356.626,-192.2288C341.6706,-184.6738 321.2286,-174.5692 302.9216,-166.2849 298.4929,-164.2808 293.8157,-162.2407 289.1653,-160.2587"/>
+<polygon fill="#000000" stroke="#000000" points="290.3207,-156.9479 279.7455,-156.3021 287.6098,-163.4017 290.3207,-156.9479"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge16" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M221.8852,-134.2724C215.0447,-131.3627 207.9415,-127.9876 201.6152,-124.2849 165.609,-103.2111 167.1817,-80.0775 127.8076,-66.2849"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;module~parallel_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge17" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.2863,-145.2849C192.791,-145.2849 184.0064,-145.2849 175.5944,-145.2849"/>
+<polygon fill="#000000" stroke="#000000" points="175.5631,-141.785 165.563,-145.2849 175.563,-148.785 175.5631,-141.785"/>
+</g>
+<!-- module~ufield2d_lib&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge18" class="edge">
+<title>module~ufield2d_lib&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M95.0783,-33.7783C85.1611,-35.7459 74.1988,-37.9208 64.0213,-39.94"/>
+<polygon fill="#000000" stroke="#000000" points="63.3008,-36.5146 54.1731,-41.8938 64.6631,-43.3808 63.3008,-36.5146"/>
+</g>
+<!-- module~parallel_class&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge20" class="edge">
+<title>module~parallel_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M116.2437,-134.0431C99.0011,-117.2807 66.3717,-85.5601 45.7064,-65.4703"/>
+<polygon fill="#000000" stroke="#000000" points="48.039,-62.8566 38.4291,-58.3957 43.1596,-67.8758 48.039,-62.8566"/>
+</g>
+<!-- omp_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_node11" class="node">
+<title>omp_lib</title>
+<g id="a_module~~fpois2d_class~~UsesGraph_node11"><a xlink:href="https://gcc.gnu.org/onlinedocs/gcc-4.4.3/libgomp/Runtime-Library-Routines.html" xlink:title="omp_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-156.2904 0,-156.2904 0,-134.2795 54,-134.2795 54,-156.2904"/>
+<text text-anchor="middle" x="27" y="-142.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">omp_lib</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_class&#45;&gt;omp_lib -->
+<g id="module~~fpois2d_class~~UsesGraph_edge19" class="edge">
+<title>module~parallel_class&#45;&gt;omp_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.9838,-145.2849C81.5773,-145.2849 72.6722,-145.2849 64.2874,-145.2849"/>
+<polygon fill="#000000" stroke="#000000" points="64.0219,-141.785 54.0218,-145.2849 64.0218,-148.785 64.0219,-141.785"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;module~perrors_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge23" class="edge">
+<title>module~hdf5io_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M357.4657,-98.2914C351.1152,-102.2173 344.3728,-106.9935 338.9216,-112.2849 318.4891,-132.1187 324.9994,-147.3006 302.9216,-165.2849 300.6728,-167.1168 298.2417,-168.8101 295.7037,-170.3719"/>
+<polygon fill="#000000" stroke="#000000" points="293.9144,-167.3602 286.7716,-175.1852 297.2351,-173.5224 293.9144,-167.3602"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~fpois2d_class~~UsesGraph_edge24" class="edge">
+<title>module~hdf5io_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M356.626,-98.341C341.6706,-105.8961 321.2286,-116.0006 302.9216,-124.2849 298.4929,-126.289 293.8157,-128.3291 289.1653,-130.3111"/>
+<polygon fill="#000000" stroke="#000000" points="287.6098,-127.1682 279.7455,-134.2677 290.3207,-133.622 287.6098,-127.1682"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;mpi -->
+<g id="module~~fpois2d_class~~UsesGraph_edge21" class="edge">
+<title>module~hdf5io_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M127.8076,-66.2849C107.2913,-59.0981 83.4215,-54.4452 64.0605,-51.5437"/>
+<polygon fill="#000000" stroke="#000000" points="64.494,-48.0703 54.1041,-50.1445 63.5197,-55.0022 64.494,-48.0703"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M342.7733,-85.3016C278.5285,-81.5585 147.5688,-73.2072 127.8076,-66.2849"/>
+</g>
+<!-- HDF5 -->
+<g id="module~~fpois2d_class~~UsesGraph_node12" class="node">
+<title>HDF5</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="279.2684,-115.2904 225.2684,-115.2904 225.2684,-93.2795 279.2684,-93.2795 279.2684,-115.2904"/>
+<text text-anchor="middle" x="252.2684" y="-101.1349" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">HDF5</text>
+</g>
+<!-- module~hdf5io_class&#45;&gt;HDF5 -->
+<g id="module~~fpois2d_class~~UsesGraph_edge22" class="edge">
+<title>module~hdf5io_class&#45;&gt;HDF5</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M342.779,-92.0656C326.1526,-94.3102 306.3334,-96.9859 289.4854,-99.2605"/>
+<polygon fill="#000000" stroke="#000000" points="288.876,-95.8109 279.4342,-100.6174 289.8126,-102.748 288.876,-95.8109"/>
+</g>
+</g>
+</svg>
+</div><script>var panmodulefpois2d_classUsesGraph = svgPanZoom('#modulefpois2d_classUsesGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+	
+	
+	<li class="list-group-item">
+	  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~fpois2d_class~~UsedByGraph Pages: 1 -->
+<svg id="modulefpois2d_classUsedByGraph" width="407pt" height="50pt"
+ viewBox="0.00 0.00 407.37 49.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~fpois2d_class~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 45.5)">
+<title>module~~fpois2d_class~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-45.5 403.3662,-45.5 403.3662,4 -4,4"/>
+<!-- module~fpois2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_node1" class="node">
+<title>module~fpois2d_class</title>
+<polygon fill="none" stroke="#000000" points="75.4315,-41.2554 .1889,-41.2554 .1889,-19.2446 75.4315,-19.2446 75.4315,-41.2554"/>
+<text text-anchor="middle" x="37.8102" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">fpois2d_class</text>
+</g>
+<!-- module~field2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_node2" class="node">
+<title>module~field2d_class</title>
+<g id="a_module~~fpois2d_class~~UsedByGraph_node2"><a xlink:href=".././module/field2d_class.html" xlink:title="field2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="184.1757,-41.2554 111.7682,-41.2554 111.7682,-19.2446 184.1757,-19.2446 184.1757,-41.2554"/>
+<text text-anchor="middle" x="147.9719" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fpois2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_edge1" class="edge">
+<title>module~field2d_class&#45;&gt;module~fpois2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M111.5955,-30.25C103.3073,-30.25 94.3778,-30.25 85.6914,-30.25"/>
+<polygon fill="#000000" stroke="#000000" points="85.659,-26.7501 75.659,-30.25 85.6589,-33.7501 85.659,-26.7501"/>
+</g>
+<!-- module~species2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_node3" class="node">
+<title>module~species2d_class</title>
+<g id="a_module~~fpois2d_class~~UsedByGraph_node3"><a xlink:href=".././module/species2d_class.html" xlink:title="species2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="309.3876,-22.2554 220.3021,-22.2554 220.3021,-.2446 309.3876,-.2446 309.3876,-22.2554"/>
+<text text-anchor="middle" x="264.8448" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~species2d_class&#45;&gt;module~field2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_edge2" class="edge">
+<title>module~species2d_class&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M219.993,-18.5416C211.5722,-19.9105 202.7531,-21.3442 194.2888,-22.7203"/>
+<polygon fill="#000000" stroke="#000000" points="193.4995,-19.3026 184.1908,-24.3619 194.6228,-26.2118 193.4995,-19.3026"/>
+</g>
+<!-- program~quickpic -->
+<g id="module~~fpois2d_class~~UsedByGraph_node4" class="node">
+<title>program~quickpic</title>
+<g id="a_module~~fpois2d_class~~UsedByGraph_node4"><a xlink:href=".././program/quickpic.html" xlink:title="quickpic">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="399.3662,-41.2554 345.3662,-41.2554 345.3662,-19.2446 399.3662,-19.2446 399.3662,-41.2554"/>
+<text text-anchor="middle" x="372.3662" y="-27.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">quickpic</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~field2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_edge3" class="edge">
+<title>program~quickpic&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M345.0786,-30.7775C333.9966,-30.9672 321.0704,-31.1571 309.3662,-31.25 269.7929,-31.5641 259.8971,-31.5235 220.3235,-31.25 212.0179,-31.1926 203.1764,-31.0982 194.6298,-30.9896"/>
+<polygon fill="#000000" stroke="#000000" points="194.4532,-27.487 184.4069,-30.8518 194.3587,-34.4864 194.4532,-27.487"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~species2d_class -->
+<g id="module~~fpois2d_class~~UsedByGraph_edge4" class="edge">
+<title>program~quickpic&#45;&gt;module~species2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M345.234,-25.4555C337.3691,-24.0657 328.487,-22.4961 319.5695,-20.9203"/>
+<polygon fill="#000000" stroke="#000000" points="319.9952,-17.4414 309.5386,-19.1478 318.777,-24.3346 319.9952,-17.4414"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+	</li>
+	
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-class%7E13">class</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-erstr%7E13">erstr</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-numtables%7E2">numtables</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#variable-table_list%7E2">table_list</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-1">Derived Types</a></h3></div>
+  <div id="types-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#type-fpois2d">fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#type-fpois2d_link">fpois2d_link</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-get_pois2table">get_pois2table</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-init_fpois2d">init_fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-end_fpois2d">end_fpois2d</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd2init">ippoisd2init</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ipotd2">ipotd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd2">ippoisd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ismoothfd2">ismoothfd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ippoisd23">ippoisd23</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-ibfieldd2">ibfieldd2</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-jpbpoisd23">jpbpoisd23</a>
+      
+      <a class="list-group-item" href="../module/fpois2d_class.html#proc-jpbpoisd23n_qp">jpbpoisd23n_qp</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    <section>
+    <h2>Variables</h2>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-class%7E13"></span>character(len=10),</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>class</strong></td><td> =</td><td>'fpois2d:'</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-erstr%7E13"></span>character(len=128),</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>erstr</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-numtables%7E2"></span>integer,</td>
+  
+  <td>private,</td>
+  <td>save</td><td>::</td>
+  <td><strong>numtables</strong></td><td> =</td><td>0</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-table_list%7E2"></span>type(<a href='../type/fpois2d_link.html'>fpois2d_link</a>),</td>
+  
+  <td>private,</td>
+  <td>target, save</td><td>::</td>
+  <td><strong>table_list</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+    
+    
+    
+
+    
+    
+    
+    <section>
+     <h2>Derived Types</h2>
+	 
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-fpois2d"></span><h3>type, public :: <a href='../type/fpois2d.html'>fpois2d</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sp%7E13"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>sp</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-err%7E14"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>err</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-p%7E15"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>p</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nd"></span>integer,</td>
+  
+  <td>private,</td>
+  <td>dimension(2)</td><td>::</td>
+  <td><strong>nd</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-a"></span>real,</td>
+  
+  <td>private,</td>
+  <td>dimension(2)</td><td>::</td>
+  <td><strong>a</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-anorm"></span>real,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>anorm</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ffc"></span>complex,</td>
+  
+  <td>private,</td>
+  <td>dimension(:,:), pointer</td><td>::</td>
+  <td><strong>ffc</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ffg"></span>real,</td>
+  
+  <td>private,</td>
+  <td>dimension(:,:,:), pointer</td><td>::</td>
+  <td><strong>ffg</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+     <h4>Type-Bound Procedures</h4>
+      <table class="table table-striped varlist">
+      <tbody>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-new%7E19'>new</a></strong>  => init_fpois2d </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-del%7E17'>del</a></strong>  => end_fpois2d </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-potential'>potential</a></strong>  => ipotd2 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-smoothf'>smoothf</a></strong>  => ismoothfd2 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-elfield'>elfield</a></strong>  => ippoisd23 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-bfield'>bfield</a></strong>  => ibfieldd2 </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/fpois2d.html#boundprocedure-bfield_qp'>bfield_qp</a></strong>  => jpbpoisd23n_qp </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-init_fpois2d'>init_fpois2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-end_fpois2d'>end_fpois2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-ibfieldd2'>ibfieldd2</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-ippoisd23'>ippoisd23</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-ismoothfd2'>ismoothfd2</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-ipotd2'>ipotd2</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/fpois2d.html#boundprocedure-jpbpoisd23n_qp'>jpbpoisd23n_qp</a></strong>  </td>
+       <td></td></tr>
+      
+       </tbody>
+       </table>
+     
+  </div>
+</div>
+
+     
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-fpois2d_link"></span><h3>type, private :: <a href='../type/fpois2d_link.html'>fpois2d_link</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-next%7E2"></span>type(<a href='../type/fpois2d_link.html'>fpois2d_link</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>next</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-table%7E2"></span>type(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>table</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-refcount%7E2"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>refcount</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+  </div>
+</div>
+
+     
+    </section>
+	<br>
+    
+    
+     
+    <section>
+    <h2>Functions</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-get_pois2table"></span><h3>
+public function <a href='../proc/get_pois2table.html'>get_pois2table</a>(pp, perr, psp, ax, ay, affp) result(table)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>pp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>perr</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>psp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ax</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ay</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>affp</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>type(<a href='../type/fpois2d.html'>fpois2d</a>),
+  pointer</small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    </section>
+    <br>
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-init_fpois2d"></span><h3>
+private subroutine <a href='../proc/init_fpois2d.html'>init_fpois2d</a>(this, pp, perr, psp, nx, ny, ax, ay, affp)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>pp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>perr</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>psp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>nx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ny</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ax</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ay</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>affp</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-end_fpois2d"></span><h3>
+private subroutine <a href='../proc/end_fpois2d.html'>end_fpois2d</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ippoisd2init"></span><h3>
+private subroutine <a href='../proc/ippoisd2init.html'>ippoisd2init</a>(this, ax, ay, affp, nx, ny, kstrt)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ax</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ay</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>affp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>nx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ny</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>kstrt</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ipotd2"></span><h3>
+private subroutine <a href='../proc/ipotd2.html'>ipotd2</a>(this, q, fx, we)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>q</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>fx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>we</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ippoisd2"></span><h3>
+private subroutine <a href='../proc/ippoisd2.html'>ippoisd2</a>(this, q, fx, isign, we)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>dimension(:,:,:), pointer</td><td>::</td>
+  <td><strong>q</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>dimension(:,:,:), pointer</td><td>::</td>
+  <td><strong>fx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>isign</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>we</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ismoothfd2"></span><h3>
+private subroutine <a href='../proc/ismoothfd2.html'>ismoothfd2</a>(this, f, fs)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>f</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>fs</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ippoisd23"></span><h3>
+private subroutine <a href='../proc/ippoisd23.html'>ippoisd23</a>(this, q, fxy, we)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>q</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>fxy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>we</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-ibfieldd2"></span><h3>
+private subroutine <a href='../proc/ibfieldd2.html'>ibfieldd2</a>(this, cu, bxy, ci, wm)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>cu</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>bxy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ci</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>wm</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-jpbpoisd23"></span><h3>
+private subroutine <a href='../proc/jpbpoisd23.html'>jpbpoisd23</a>(this, cu, bxy, isign, ci, wm)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>dimension(:,:,:), pointer</td><td>::</td>
+  <td><strong>cu</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>dimension(:,:,:), pointer</td><td>::</td>
+  <td><strong>bxy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>isign</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ci</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>wm</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-jpbpoisd23n_qp"></span><h3>
+private subroutine <a href='../proc/jpbpoisd23n_qp.html'>jpbpoisd23n_qp</a>(this, cu, dcu, amu, bxy, ci, c, dex, wm)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/fpois2d.html'>fpois2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>cu</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>dcu</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>amu</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>bxy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ci</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>c</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>dex</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>wm</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>perrors_class.f03 &ndash; QuickPIC</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+				
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+		 aria-expanded="false">Contents <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+				
+				
+            <li><a href="../lists/modules.html">Modules</a></li>
+				
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+				
+								
+            <li><a href="../lists/types.html">Derived Types</a></li>
+				
+				
+            <li><a href="../program/quickpic.html">Program</a></li>
+	    
+            </ul>
+            </li>
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>perrors_class.f03
+    <small>Source File</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+	  data-placement="bottom" data-html="true"
+	  title=" 0.6% of total for source files.">120 statements</a>
+     </li> 
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/perrors_class.f03"> Source File</a></li>
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+     <li class="active">perrors_class.f03</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-0">Modules</a></h3></div>
+  <div id="mods-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/perrors_class.html">perrors_class</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/perrors_class.f03.html#src">perrors_class.f03</a>
+  </div>
+</div>
+
+
+
+</div>
+
+    </div>
+    <div class="col-md-9" id='text'>
+      
+      <br>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">This file depends on</h3>
+      </div>
+      <div class="panel-body">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: sourcefile~~perrors_class.f03~~EfferentGraph Pages: 1 -->
+<svg id="sourcefileperrors_classf03EfferentGraph" width="230pt" height="31pt"
+ viewBox="0.00 0.00 229.66 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~perrors_class.f03~~EfferentGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>sourcefile~~perrors_class.f03~~EfferentGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 225.6631,-26.5 225.6631,4 -4,4"/>
+<!-- sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~EfferentGraph_node1" class="node">
+<title>sourcefile~perrors_class.f03</title>
+<polygon fill="none" stroke="#000000" points="221.4313,-22.2554 129.3606,-22.2554 129.3606,-.2446 221.4313,-.2446 221.4313,-22.2554"/>
+<text text-anchor="middle" x="175.396" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">perrors_class.f03</text>
+</g>
+<!-- sourcefile~parallel_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~EfferentGraph_node2" class="node">
+<title>sourcefile~parallel_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~EfferentGraph_node2"><a xlink:href=".././sourcefile/parallel_class.f03.html" xlink:title="parallel_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="93.1934,-22.2554 -.0645,-22.2554 -.0645,-.2446 93.1934,-.2446 93.1934,-22.2554"/>
+<text text-anchor="middle" x="46.5645" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~perrors_class.f03&#45;&gt;sourcefile~parallel_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~EfferentGraph_edge1" class="edge">
+<title>sourcefile~perrors_class.f03&#45;&gt;sourcefile~parallel_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.2487,-11.25C120.8419,-11.25 111.9824,-11.25 103.311,-11.25"/>
+<polygon fill="#000000" stroke="#000000" points="103.2564,-7.7501 93.2563,-11.25 103.2563,-14.7501 103.2564,-7.7501"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="186pt" height="31pt"
+ viewBox="0.00 0.00 186.41 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 182.4064,-26.5 182.4064,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="65.1576,-22.2554 -.0526,-22.2554 -.0526,-.2446 65.1576,-.2446 65.1576,-22.2554"/>
+<text text-anchor="middle" x="32.5525" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="178.2607,-22.2554 82.8443,-22.2554 82.8443,-.2446 178.2607,-.2446 178.2607,-22.2554"/>
+<text text-anchor="middle" x="130.5525" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a file to a file which it depends on. A file
+    is dependent upon another if the latter must be compiled before the former
+    can be.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    
+      
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Files dependent on this one</h3>
+      </div>
+      <div class="panel-body">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: sourcefile~~perrors_class.f03~~AfferentGraph Pages: 1 -->
+<svg id="sourcefileperrors_classf03AfferentGraph" width="641pt" height="495pt"
+ viewBox="0.00 0.00 641.00 494.67" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph" class="graph" transform="scale(.6483 .6483) rotate(0) translate(4 758.9871)">
+<title>sourcefile~~perrors_class.f03~~AfferentGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-758.9871 984.6917,-758.9871 984.6917,4 -4,4"/>
+<!-- sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node1" class="node">
+<title>sourcefile~perrors_class.f03</title>
+<polygon fill="none" stroke="#000000" points="92.3024,-310.7425 .2317,-310.7425 .2317,-288.7316 92.3024,-288.7316 92.3024,-310.7425"/>
+<text text-anchor="middle" x="46.2671" y="-296.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">perrors_class.f03</text>
+</g>
+<!-- sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node2" class="node">
+<title>sourcefile~ufield2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node2"><a xlink:href=".././sourcefile/ufield2d_class.f03.html" xlink:title="ufield2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="356.6701,-291.7425 260.5572,-291.7425 260.5572,-269.7316 356.6701,-269.7316 356.6701,-291.7425"/>
+<text text-anchor="middle" x="308.6136" y="-277.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge1" class="edge">
+<title>sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M260.4977,-289.3464C235.5446,-293.3822 204.5144,-297.7363 176.5598,-299.7371"/>
+</g>
+<!-- sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node8" class="node">
+<title>sourcefile~spect2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node8"><a xlink:href=".././sourcefile/spect2d_class.f03.html" xlink:title="spect2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="224.6111,-176.7425 128.5085,-176.7425 128.5085,-154.7316 224.6111,-154.7316 224.6111,-176.7425"/>
+<text text-anchor="middle" x="176.5598" y="-162.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge40" class="edge">
+<title>sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M295.9518,-269.7104C273.1357,-249.8408 224.9266,-207.8576 197.255,-183.7596"/>
+<polygon fill="#000000" stroke="#000000" points="199.2172,-180.8273 189.3774,-176.8993 194.6201,-186.1061 199.2172,-180.8273"/>
+</g>
+<!-- sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node17" class="node">
+<title>sourcefile~hdf5io_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node17"><a xlink:href=".././sourcefile/hdf5io_class.f03.html" xlink:title="hdf5io_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="220.4439,-369.7425 132.6757,-369.7425 132.6757,-347.7316 220.4439,-347.7316 220.4439,-369.7425"/>
+<text text-anchor="middle" x="176.5598" y="-355.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hdf5io_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge59" class="edge">
+<title>sourcefile~ufield2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M286.4099,-291.8091C278.2134,-296.023 268.8999,-300.9618 260.5854,-305.7371 240.5209,-317.2608 218.4103,-331.2617 201.9083,-341.9788"/>
+<polygon fill="#000000" stroke="#000000" points="199.8245,-339.1594 193.3662,-347.5583 203.6525,-345.02 199.8245,-339.1594"/>
+</g>
+<!-- sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node3" class="node">
+<title>sourcefile~spect3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node3"><a xlink:href=".././sourcefile/spect3d_class.f03.html" xlink:title="spect3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="356.6649,-562.7425 260.5624,-562.7425 260.5624,-540.7316 356.6649,-540.7316 356.6649,-562.7425"/>
+<text text-anchor="middle" x="308.6136" y="-548.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~spect3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge2" class="edge">
+<title>sourcefile~spect3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M286.1722,-540.6247C259.1111,-526.788 212.7546,-501.67 176.5598,-474.7371"/>
+</g>
+<!-- sourcefile~spect3d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge41" class="edge">
+<title>sourcefile~spect3d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M304.539,-540.6371C295.9766,-517.1678 275.6632,-460.7217 260.5854,-412.7371 242.9985,-356.7668 243.5107,-341.2691 224.5854,-285.7371 212.4788,-250.2127 195.6925,-209.8866 185.5087,-186.1957"/>
+<polygon fill="#000000" stroke="#000000" points="188.6433,-184.6265 181.4579,-176.8406 182.2196,-187.408 188.6433,-184.6265"/>
+</g>
+<!-- sourcefile~fdist2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node4" class="node">
+<title>sourcefile~fdist2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node4"><a xlink:href=".././sourcefile/fdist2d_class.f03.html" xlink:title="fdist2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="353.8256,-98.7425 263.4017,-98.7425 263.4017,-76.7316 353.8256,-76.7316 353.8256,-98.7425"/>
+<text text-anchor="middle" x="308.6136" y="-84.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~fdist2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge5" class="edge">
+<title>sourcefile~fdist2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M263.3735,-92.8978C236.0202,-97.89 201.6967,-107.6629 176.5598,-126.7371"/>
+</g>
+<!-- sourcefile~fdist2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge42" class="edge">
+<title>sourcefile~fdist2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M285.1719,-98.8659C277.1943,-102.9324 268.3388,-107.7621 260.5854,-112.7371 243.5256,-123.6836 241.6451,-129.7903 224.5854,-140.7371 219.7398,-143.8463 214.4638,-146.8989 209.2405,-149.7439"/>
+<polygon fill="#000000" stroke="#000000" points="207.2187,-146.8528 200.0003,-154.6081 210.4795,-153.047 207.2187,-146.8528"/>
+</g>
+<!-- sourcefile~field3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node5" class="node">
+<title>sourcefile~field3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node5"><a xlink:href=".././sourcefile/field3d_class.f03.html" xlink:title="field3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="615.0237,-446.7425 524.5896,-446.7425 524.5896,-424.7316 615.0237,-424.7316 615.0237,-446.7425"/>
+<text text-anchor="middle" x="569.8066" y="-432.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~field3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge3" class="edge">
+<title>sourcefile~field3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M548.3911,-446.9393C484.5358,-478.6243 292.6957,-561.1552 176.5598,-474.7371"/>
+</g>
+<!-- sourcefile~field3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge23" class="edge">
+<title>sourcefile~field3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M546.4471,-446.878C539.1762,-450.8112 531.3322,-455.5576 524.6982,-460.7371 481.5638,-494.414 492.5785,-533.4101 440.67,-550.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-550.7371C417.3687,-558.515 390.4398,-559.9574 367.0016,-559.0052"/>
+<polygon fill="#000000" stroke="#000000" points="367.0284,-555.5013 356.8486,-558.4379 366.6378,-562.4904 367.0284,-555.5013"/>
+</g>
+<!-- sourcefile~ufield3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node6" class="node">
+<title>sourcefile~ufield3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node6"><a xlink:href=".././sourcefile/ufield3d_class.f03.html" xlink:title="ufield3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="488.7265,-408.7425 392.6136,-408.7425 392.6136,-386.7316 488.7265,-386.7316 488.7265,-408.7425"/>
+<text text-anchor="middle" x="440.67" y="-394.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~field3d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge38" class="edge">
+<title>sourcefile~field3d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M532.1078,-424.6437C518.3167,-420.5855 502.535,-415.9416 488.0087,-411.667"/>
+<polygon fill="#000000" stroke="#000000" points="488.7738,-408.2438 478.1925,-408.7785 486.7977,-414.9591 488.7738,-408.2438"/>
+</g>
+<!-- sourcefile~field3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge60" class="edge">
+<title>sourcefile~field3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M561.0514,-424.5982C541.4581,-401.1131 491.7703,-349.4128 440.67,-358.7371"/>
+</g>
+<!-- sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge4" class="edge">
+<title>sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5598,-474.7371C118.7846,-431.7458 74.9607,-356.0874 56.2324,-319.9966"/>
+<polygon fill="#000000" stroke="#000000" points="59.2744,-318.2568 51.6248,-310.9264 53.0335,-321.4272 59.2744,-318.2568"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-398.7371C241.0703,-403.5762 230.8861,-515.162 176.5598,-474.7371"/>
+</g>
+<!-- sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge18" class="edge">
+<title>sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M431.1988,-386.4121C412.9559,-364.7644 373.2784,-318.5238 356.6418,-305.7371 352.4634,-302.5256 347.8118,-299.5217 343.0945,-296.7885"/>
+<polygon fill="#000000" stroke="#000000" points="344.5084,-293.5738 334.0494,-291.8828 341.1711,-299.7271 344.5084,-293.5738"/>
+</g>
+<!-- sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge24" class="edge">
+<title>sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M431.1729,-408.8124C408.9148,-434.7691 353.154,-499.7955 325.1731,-532.426"/>
+<polygon fill="#000000" stroke="#000000" points="322.2337,-530.4771 318.3811,-540.3466 327.5475,-535.0337 322.2337,-530.4771"/>
+</g>
+<!-- sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge61" class="edge">
+<title>sourcefile~ufield3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M392.6258,-396.6266C367.5561,-396.42 336.3989,-396.7464 308.6136,-398.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-398.7371C272.0119,-401.3594 231.9299,-386.5206 205.6387,-374.1788"/>
+<polygon fill="#000000" stroke="#000000" points="207.1315,-371.0129 196.6084,-369.7818 204.067,-377.3064 207.1315,-371.0129"/>
+</g>
+<!-- sourcefile~beam3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node7" class="node">
+<title>sourcefile~beam3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node7"><a xlink:href=".././sourcefile/beam3d_class.f03.html" xlink:title="beam3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="748.2456,-524.7425 650.8047,-524.7425 650.8047,-502.7316 748.2456,-502.7316 748.2456,-524.7425"/>
+<text text-anchor="middle" x="699.5251" y="-510.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">beam3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge6" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M694.9903,-524.9968C684.549,-549.5492 656.475,-608.2959 614.915,-640.7371 507.2468,-724.7814 427.0966,-733.6907 308.6136,-665.7371"/>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge25" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-626.7371C485.9336,-665.5332 377.4971,-601.0524 331.1887,-568.6245"/>
+<polygon fill="#000000" stroke="#000000" points="333.2022,-565.7615 323.0325,-562.7903 329.1297,-571.4549 333.2022,-565.7615"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.8678,-524.7653C671.8312,-548.1214 623.7129,-602.4206 569.8066,-626.7371"/>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~field3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge33" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~field3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M676.5102,-502.5171C668.3295,-498.3678 659.1178,-493.5092 650.915,-488.7371 631.4683,-477.4236 610.2021,-463.4646 594.3259,-452.7127"/>
+<polygon fill="#000000" stroke="#000000" points="595.8887,-449.5419 585.6556,-446.797 591.9434,-455.3242 595.8887,-449.5419"/>
+</g>
+<!-- sourcefile~fdist3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node13" class="node">
+<title>sourcefile~fdist3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node13"><a xlink:href=".././sourcefile/fdist3d_class.f03.html" xlink:title="fdist3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="485.882,-676.7425 395.4581,-676.7425 395.4581,-654.7316 485.882,-654.7316 485.882,-676.7425"/>
+<text text-anchor="middle" x="440.67" y="-662.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~fdist3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge55" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~fdist3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-626.7371C546.3721,-637.5769 519.1712,-646.3135 495.7945,-652.7479"/>
+<polygon fill="#000000" stroke="#000000" points="494.7854,-649.3948 486.0322,-655.364 496.5973,-656.1562 494.7854,-649.3948"/>
+</g>
+<!-- sourcefile~part3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node14" class="node">
+<title>sourcefile~part3d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node14"><a xlink:href=".././sourcefile/part3d_class.f03.html" xlink:title="part3d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614.3545,-562.7425 525.2588,-562.7425 525.2588,-540.7316 614.3545,-540.7316 614.3545,-562.7425"/>
+<text text-anchor="middle" x="569.8066" y="-548.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part3d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~part3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge57" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~part3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M661.6565,-524.8304C647.8032,-528.8886 631.9504,-533.5325 617.3586,-537.8071"/>
+<polygon fill="#000000" stroke="#000000" points="616.1109,-534.5254 607.4981,-540.6956 618.0788,-541.2431 616.1109,-534.5254"/>
+</g>
+<!-- sourcefile~beam3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge62" class="edge">
+<title>sourcefile~beam3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M650.7534,-508.0952C567.9005,-497.3034 395.5244,-469.5786 260.5854,-412.7371 238.2026,-403.3085 215.1598,-388.0327 198.8792,-376.1303"/>
+<polygon fill="#000000" stroke="#000000" points="200.6821,-373.1082 190.5772,-369.9235 196.4906,-378.7146 200.6821,-373.1082"/>
+</g>
+<!-- sourcefile~spect2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge7" class="edge">
+<title>sourcefile~spect2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M165.4511,-177.1618C142.8381,-200.4183 91.2952,-253.4277 63.9945,-281.5052"/>
+<polygon fill="#000000" stroke="#000000" points="61.4433,-279.1084 56.9814,-288.7179 66.462,-283.9882 61.4433,-279.1084"/>
+</g>
+<!-- sourcefile~species2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node9" class="node">
+<title>sourcefile~species2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node9"><a xlink:href=".././sourcefile/species2d_class.f03.html" xlink:title="species2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="890.4708,-271.7425 784.3561,-271.7425 784.3561,-249.7316 890.4708,-249.7316 890.4708,-271.7425"/>
+<text text-anchor="middle" x="837.4135" y="-257.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge8" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M826.6213,-249.5354C792.063,-215.0083 679.9418,-113.2763 569.8066,-125.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-125.7371C526.7525,-124.9143 526.5647,-93.2424 488.6982,-72.7371 451.4807,-52.5831 349.1833,1.3225 308.6136,-10.7371"/>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~fdist2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge30" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~fdist2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-125.7371C510.273,-132.8269 500.4727,-90.9992 440.67,-86.7371"/>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge43" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-165.7371C284.6869,-162.4199 258.0863,-161.8333 235.0659,-162.2914"/>
+<polygon fill="#000000" stroke="#000000" points="234.6653,-158.8009 224.7634,-162.5694 234.8541,-165.7983 234.6653,-158.8009"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-125.7371C532.9392,-130.1276 525.2514,-139.2295 488.6982,-145.7371 409.4152,-159.8517 388.3804,-176.7957 308.6136,-165.7371"/>
+</g>
+<!-- sourcefile~field2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node11" class="node">
+<title>sourcefile~field2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node11"><a xlink:href=".././sourcefile/field2d_class.f03.html" xlink:title="field2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="744.7422,-407.7425 654.3081,-407.7425 654.3081,-385.7316 744.7422,-385.7316 744.7422,-407.7425"/>
+<text text-anchor="middle" x="699.5251" y="-393.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~field2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge51" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~field2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M826.1295,-271.8665C802.4949,-295.1774 747.5748,-349.3454 718.4487,-378.0727"/>
+<polygon fill="#000000" stroke="#000000" points="715.627,-375.9398 710.965,-385.4538 720.5425,-380.9235 715.627,-375.9398"/>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge63" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-358.7371C368.8418,-371.8435 284.184,-368.645 230.4482,-364.3545"/>
+<polygon fill="#000000" stroke="#000000" points="230.7134,-360.8646 220.4556,-363.5155 230.1277,-367.84 230.7134,-360.8646"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-125.7371C468.7382,-137.172 560.0998,-267.298 488.6982,-339.7371 472.5838,-356.0857 463.1177,-353.9352 440.67,-358.7371"/>
+</g>
+<!-- sourcefile~part2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node18" class="node">
+<title>sourcefile~part2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node18"><a xlink:href=".././sourcefile/part2d_class.f03.html" xlink:title="part2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="485.2179,-136.7425 396.1222,-136.7425 396.1222,-114.7316 485.2179,-114.7316 485.2179,-136.7425"/>
+<text text-anchor="middle" x="440.67" y="-122.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~species2d_class.f03&#45;&gt;sourcefile~part2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge68" class="edge">
+<title>sourcefile~species2d_class.f03&#45;&gt;sourcefile~part2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-125.7371C545.5782,-128.6224 518.611,-129.0545 495.6124,-128.5977"/>
+<polygon fill="#000000" stroke="#000000" points="495.4365,-125.092 485.3489,-128.3309 495.2545,-132.0897 495.4365,-125.092"/>
+</g>
+<!-- sourcefile~input_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node10" class="node">
+<title>sourcefile~input_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node10"><a xlink:href=".././sourcefile/input_class.f03.html" xlink:title="input_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="481.7145,-754.7425 399.6256,-754.7425 399.6256,-732.7316 481.7145,-732.7316 481.7145,-754.7425"/>
+<text text-anchor="middle" x="440.67" y="-740.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">input_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~input_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge9" class="edge">
+<title>sourcefile~input_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M418.4663,-732.665C410.2698,-728.4511 400.9564,-723.5123 392.6418,-718.7371 354.3533,-696.747 346.9153,-687.7043 308.6136,-665.7371"/>
+</g>
+<!-- sourcefile~input_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge26" class="edge">
+<title>sourcefile~input_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M430.6431,-732.5376C420.593,-721.1081 404.8953,-702.6901 392.6418,-685.7371 364.4192,-646.6902 335.4121,-598.223 319.9526,-571.5894"/>
+<polygon fill="#000000" stroke="#000000" points="322.9245,-569.7367 314.8966,-562.8228 316.8608,-573.2339 322.9245,-569.7367"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge10" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-202.7371C404.2631,-188.8552 394.0184,-216.7295 356.6418,-227.7371 335.3133,-234.0184 329.9806,-235.5876 308.6136,-241.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5598,-299.7371C152.3959,-301.4665 125.6465,-301.7489 102.704,-301.4924"/>
+<polygon fill="#000000" stroke="#000000" points="102.5047,-297.9891 92.4537,-301.3398 102.4004,-304.9883 102.5047,-297.9891"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-241.7371C286.5536,-248.0859 281.6782,-251.6788 260.5854,-260.7371 222.7551,-276.9832 217.626,-296.7979 176.5598,-299.7371"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge20" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-319.7371C504.3606,-290.9417 421.7233,-282.7565 367.1264,-280.7569"/>
+<polygon fill="#000000" stroke="#000000" points="367.0347,-277.2525 356.9318,-280.4435 366.8195,-284.2492 367.0347,-277.2525"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~field3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge34" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~field3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M662.7,-407.8086C648.3221,-412.1313 631.6682,-417.1383 616.4659,-421.7089"/>
+<polygon fill="#000000" stroke="#000000" points="615.2927,-418.4068 606.7239,-424.6379 617.3082,-425.1104 615.2927,-418.4068"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge36" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M654.1398,-396.9124C611.0476,-397.0789 546.0575,-397.3299 499.11,-397.5113"/>
+<polygon fill="#000000" stroke="#000000" points="499.0693,-394.0113 489.0829,-397.55 499.0964,-401.0113 499.0693,-394.0113"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge45" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M683.844,-385.6425C660.1305,-369.2878 613.2898,-338.611 569.8066,-319.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-202.7371C383.7177,-181.0214 368.9881,-174.1072 308.6136,-165.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-319.7371C517.9434,-297.2257 534.4468,-254.9579 488.6982,-221.7371 470.1235,-208.2488 462.1192,-210.9155 440.67,-202.7371"/>
+</g>
+<!-- sourcefile~fft2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node12" class="node">
+<title>sourcefile~fft2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node12"><a xlink:href=".././sourcefile/fft2d_class.f03.html" xlink:title="fft2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="480.1934,-330.7425 401.1466,-330.7425 401.1466,-308.7316 480.1934,-308.7316 480.1934,-330.7425"/>
+<text text-anchor="middle" x="440.67" y="-316.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~fft2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge53" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~fft2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-319.7371C545.0972,-308.8652 515.063,-308.2206 490.1796,-310.5875"/>
+<polygon fill="#000000" stroke="#000000" points="489.7566,-307.113 480.2151,-311.7185 490.5461,-314.0683 489.7566,-307.113"/>
+</g>
+<!-- sourcefile~fpois2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node15" class="node">
+<title>sourcefile~fpois2d_class.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node15"><a xlink:href=".././sourcefile/fpois2d_class.f03.html" xlink:title="fpois2d_class.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="487.3042,-252.7425 394.0359,-252.7425 394.0359,-230.7316 487.3042,-230.7316 487.3042,-252.7425"/>
+<text text-anchor="middle" x="440.67" y="-238.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d_class.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~fpois2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge58" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~fpois2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-319.7371C530.3912,-302.3948 525.8663,-288.4827 488.6982,-266.7371 483.5005,-263.696 477.8965,-260.6114 472.4151,-257.6955"/>
+<polygon fill="#000000" stroke="#000000" points="473.8834,-254.5138 463.3994,-252.985 470.6418,-260.718 473.8834,-254.5138"/>
+</g>
+<!-- sourcefile~field2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge64" class="edge">
+<title>sourcefile~field2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-319.7371C542.3081,-307.8013 470.1603,-353.356 440.67,-358.7371"/>
+</g>
+<!-- sourcefile~fft2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge11" class="edge">
+<title>sourcefile~fft2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-319.7371C251.7541,-302.6904 235.7683,-295.4994 176.5598,-299.7371"/>
+</g>
+<!-- sourcefile~fft2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge21" class="edge">
+<title>sourcefile~fft2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M403.1812,-308.6655C388.5442,-304.3428 371.5902,-299.3358 356.1138,-294.7652"/>
+<polygon fill="#000000" stroke="#000000" points="356.7781,-291.312 346.1962,-291.8363 354.7954,-298.0253 356.7781,-291.312"/>
+</g>
+<!-- sourcefile~fft2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge46" class="edge">
+<title>sourcefile~fft2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-319.7371C286.6251,-313.1448 278.2109,-315.4442 260.5854,-300.7371 222.6404,-269.0746 196.6759,-215.68 184.4912,-186.4297"/>
+<polygon fill="#000000" stroke="#000000" points="187.6088,-184.8013 180.629,-176.8306 181.1148,-187.4143 187.6088,-184.8013"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M401.0974,-325.5841C374.4044,-328.1228 338.6999,-328.757 308.6136,-319.7371"/>
+</g>
+<!-- sourcefile~fdist3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge13" class="edge">
+<title>sourcefile~fdist3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M395.2882,-676.4691C368.3765,-680.3314 334.5671,-680.6222 308.6136,-665.7371"/>
+</g>
+<!-- sourcefile~fdist3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge27" class="edge">
+<title>sourcefile~fdist3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M415.2877,-654.5213C407.6856,-650.6453 399.5421,-645.9503 392.6418,-640.7371 365.3186,-620.0936 339.0974,-590.1721 323.4182,-570.8341"/>
+<polygon fill="#000000" stroke="#000000" points="326.1506,-568.6469 317.1806,-563.0087 320.6768,-573.0101 326.1506,-568.6469"/>
+</g>
+<!-- sourcefile~part3d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge14" class="edge">
+<title>sourcefile~part3d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-665.7371C219.0902,-614.3926 257.5068,-538.755 176.5598,-474.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-588.7371C374.2893,-603.2104 367.5489,-699.5382 308.6136,-665.7371"/>
+</g>
+<!-- sourcefile~part3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge28" class="edge">
+<title>sourcefile~part3d_class.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-588.7371C404.2056,-596.6876 362.8856,-581.0299 336.3274,-567.694"/>
+<polygon fill="#000000" stroke="#000000" points="337.7289,-564.477 327.2471,-562.9339 334.4788,-570.6768 337.7289,-564.477"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M535.8533,-562.7627C509.9852,-570.8451 473.3684,-581.6077 440.67,-588.7371"/>
+</g>
+<!-- sourcefile~part3d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge37" class="edge">
+<title>sourcefile~part3d_class.f03&#45;&gt;sourcefile~ufield3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M560.5195,-540.6618C538.7535,-514.7051 484.2256,-449.6786 456.8633,-417.0481"/>
+<polygon fill="#000000" stroke="#000000" points="459.3288,-414.5411 450.2215,-409.1275 453.965,-419.0389 459.3288,-414.5411"/>
+</g>
+<!-- sourcefile~part3d_class.f03&#45;&gt;sourcefile~fdist3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge54" class="edge">
+<title>sourcefile~part3d_class.f03&#45;&gt;sourcefile~fdist3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M556.9524,-563.0846C534.5201,-582.8875 488.0548,-623.9064 461.1469,-647.6604"/>
+<polygon fill="#000000" stroke="#000000" points="458.6527,-645.1935 453.4723,-654.4354 463.2854,-650.4412 458.6527,-645.1935"/>
+</g>
+<!-- sourcefile~part3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge65" class="edge">
+<title>sourcefile~part3d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M527.1511,-540.7064C453.3794,-521.1561 305.5437,-479.7564 260.5854,-450.7371 230.6641,-431.4236 204.4759,-398.901 189.5944,-378.1471"/>
+<polygon fill="#000000" stroke="#000000" points="192.351,-375.9814 183.7552,-369.7876 186.6123,-379.9899 192.351,-375.9814"/>
+</g>
+<!-- sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge17" class="edge">
+<title>sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M393.9557,-235.5106C368.284,-233.6252 336.1538,-233.811 308.6136,-241.7371"/>
+</g>
+<!-- sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge22" class="edge">
+<title>sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M403.1812,-252.8086C388.5442,-257.1313 371.5902,-262.1383 356.1138,-266.7089"/>
+<polygon fill="#000000" stroke="#000000" points="354.7954,-263.4488 346.1962,-269.6379 356.7781,-270.1621 354.7954,-263.4488"/>
+</g>
+<!-- sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge48" class="edge">
+<title>sourcefile~fpois2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M418.5106,-230.5871C410.3189,-226.3648 400.9971,-221.4405 392.6418,-216.7371 354.573,-195.3068 351.8861,-171.7362 308.6136,-165.7371"/>
+</g>
+<!-- sourcefile~main.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_node16" class="node">
+<title>sourcefile~main.f03</title>
+<g id="a_sourcefile~~perrors_class.f03~~AfferentGraph_node16"><a xlink:href=".././sourcefile/main.f03.html" xlink:title="main.f03">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="980.6917,-271.7425 926.6917,-271.7425 926.6917,-249.7316 980.6917,-249.7316 980.6917,-271.7425"/>
+<text text-anchor="middle" x="953.6917" y="-257.5871" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">main.f03</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge15" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M939.0953,-249.4249C906.5909,-224.7514 825.0374,-165.6773 748.1353,-132.7371 672.8955,-100.5089 650.8216,-98.4094 569.8066,-86.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-10.7371C286.8849,-17.1085 279.2277,-14.884 260.5854,-27.7371 213.0721,-60.4954 222.5339,-91.8513 176.5598,-126.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-86.7371C525.92,-75.2158 529.1901,-45.2113 488.6982,-24.7371 468.8563,-14.7042 462.4929,-14.9944 440.67,-10.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-10.7371C383.0643,.5011 364.934,5.7775 308.6136,-10.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5598,-126.7371C158.2739,-140.6126 145.663,-130.4561 128.5342,-145.7371 87.0777,-182.7212 62.8142,-245.6846 52.3748,-278.4709"/>
+<polygon fill="#000000" stroke="#000000" points="48.9308,-277.7656 49.3596,-288.3517 55.626,-279.8087 48.9308,-277.7656"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~spect3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge29" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~spect3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5251,-474.7371C583.5904,-444.146 554.404,-512.7729 440.67,-550.7371"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~fdist2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge32" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~fdist2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-86.7371C415.5694,-84.9481 387.7176,-84.877 364.0878,-85.3795"/>
+<polygon fill="#000000" stroke="#000000" points="363.8058,-81.8854 353.8973,-85.6366 363.9824,-88.8832 363.8058,-81.8854"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.8066,-86.7371C512.9992,-78.5524 497.9189,-90.8171 440.67,-86.7371"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~field3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge35" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~field3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5251,-474.7371C670.82,-467.1628 638.8808,-457.5747 613.8777,-449.8009"/>
+<polygon fill="#000000" stroke="#000000" points="614.8999,-446.4535 604.3111,-446.81 612.8111,-453.1346 614.8999,-446.4535"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~beam3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge39" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~beam3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M837.4135,-493.7371C815.3128,-510.713 785.1781,-516.4601 758.7164,-517.647"/>
+<polygon fill="#000000" stroke="#000000" points="758.3134,-514.1555 748.4002,-517.8941 758.4812,-521.1535 758.3134,-514.1555"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge47" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M440.67,-10.7371C420.0781,-6.6802 276.5074,-54.063 260.5854,-67.7371 233.142,-91.306 249.8848,-114.88 224.5854,-140.7371 221.393,-143.9998 217.6836,-146.9244 213.7682,-149.5216"/>
+<polygon fill="#000000" stroke="#000000" points="211.8314,-146.6002 204.9884,-154.6886 215.3819,-152.633 211.8314,-146.6002"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~species2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge49" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~species2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M926.4296,-260.7371C918.6262,-260.7371 909.7774,-260.7371 900.7602,-260.7371"/>
+<polygon fill="#000000" stroke="#000000" points="900.5546,-257.2371 890.5546,-260.7371 900.5546,-264.2371 900.5546,-257.2371"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~input_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge50" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~input_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5251,-702.7371C637.0171,-743.828 548.0363,-749.0509 492.3645,-747.5279"/>
+<polygon fill="#000000" stroke="#000000" points="492.1507,-744.0181 482.0316,-747.1572 491.8996,-751.0136 492.1507,-744.0181"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~field2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge52" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~field2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M837.4135,-493.7371C815.1724,-510.8208 748.9608,-447.9712 717.0731,-415.2881"/>
+<polygon fill="#000000" stroke="#000000" points="719.5678,-412.833 710.106,-408.066 714.5299,-417.693 719.5678,-412.833"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M951.683,-271.9306C944.2572,-309.8504 914.6764,-434.3901 837.4135,-493.7371"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~fdist3d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge56" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~fdist3d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M837.4135,-493.7371C749.1599,-561.526 797.5147,-649.9916 699.5251,-702.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5251,-702.7371C624.7938,-742.9632 521.1628,-704.7045 470.6964,-681.1396"/>
+<polygon fill="#000000" stroke="#000000" points="472.1538,-677.9569 461.6233,-676.7914 469.1286,-684.2695 472.1538,-677.9569"/>
+</g>
+<!-- sourcefile~main.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge66" class="edge">
+<title>sourcefile~main.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M837.4135,-493.7371C788.3531,-531.4211 759.6149,-489.4417 699.5251,-474.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5251,-474.7371C654.9948,-463.8399 655.9422,-436.1937 614.915,-415.7371 541.9963,-379.3788 520.348,-341.6929 440.67,-358.7371"/>
+</g>
+<!-- sourcefile~hdf5io_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge16" class="edge">
+<title>sourcefile~hdf5io_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M152.0527,-347.6396C131.6703,-338.4099 102.4509,-325.1786 79.8836,-314.9595"/>
+<polygon fill="#000000" stroke="#000000" points="81.2176,-311.7215 70.6643,-310.7847 78.33,-318.0982 81.2176,-311.7215"/>
+</g>
+<!-- sourcefile~part2d_class.f03&#45;&gt;sourcefile~perrors_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge12" class="edge">
+<title>sourcefile~part2d_class.f03&#45;&gt;sourcefile~perrors_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-126.7371C250.0974,-131.257 223.3138,-91.2595 176.5598,-126.7371"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M395.9828,-124.5347C370.3717,-124.231 337.6446,-124.4946 308.6136,-126.7371"/>
+</g>
+<!-- sourcefile~part2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge19" class="edge">
+<title>sourcefile~part2d_class.f03&#45;&gt;sourcefile~ufield2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M431.2519,-136.9513C421.1311,-149.2524 404.8554,-169.7744 392.6418,-188.7371 374.3374,-217.1564 380.7012,-231.9912 356.6418,-255.7371 353.3541,-258.9819 349.5589,-261.9022 345.5722,-264.503"/>
+<polygon fill="#000000" stroke="#000000" points="343.5442,-261.6335 336.6613,-269.6881 347.0648,-267.6838 343.5442,-261.6335"/>
+</g>
+<!-- sourcefile~part2d_class.f03&#45;&gt;sourcefile~fdist2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge31" class="edge">
+<title>sourcefile~part2d_class.f03&#45;&gt;sourcefile~fdist2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M402.1189,-114.6437C387.8803,-110.5465 371.5669,-105.8522 356.5945,-101.5438"/>
+<polygon fill="#000000" stroke="#000000" points="357.5624,-98.1804 346.9844,-98.7785 355.6266,-104.9074 357.5624,-98.1804"/>
+</g>
+<!-- sourcefile~part2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge44" class="edge">
+<title>sourcefile~part2d_class.f03&#45;&gt;sourcefile~spect2d_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.6136,-126.7371C274.7992,-129.349 237.9061,-141.0442 211.7323,-150.9526"/>
+<polygon fill="#000000" stroke="#000000" points="210.3051,-147.7522 202.2546,-154.6399 212.8431,-154.2759 210.3051,-147.7522"/>
+</g>
+<!-- sourcefile~part2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03 -->
+<g id="sourcefile~~perrors_class.f03~~AfferentGraph_edge67" class="edge">
+<title>sourcefile~part2d_class.f03&#45;&gt;sourcefile~hdf5io_class.f03</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M421.9739,-136.8197C387.3896,-157.9183 312.2488,-206.6075 260.5854,-260.7371 240.9248,-281.3362 243.0882,-292.0919 224.5854,-313.7371 216.4001,-323.3125 206.3577,-332.9866 197.5758,-340.8984"/>
+<polygon fill="#000000" stroke="#000000" points="195.1425,-338.3776 189.9547,-347.6154 199.771,-343.629 195.1425,-338.3776"/>
+</g>
+</g>
+</svg>
+</div><script>var pansourcefileperrors_classf03AfferentGraph = svgPanZoom('#sourcefileperrors_classf03AfferentGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="186pt" height="31pt"
+ viewBox="0.00 0.00 186.41 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 182.4064,-26.5 182.4064,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="65.1576,-22.2554 -.0526,-22.2554 -.0526,-.2446 65.1576,-.2446 65.1576,-22.2554"/>
+<text text-anchor="middle" x="32.5525" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="178.2607,-22.2554 82.8443,-22.2554 82.8443,-.2446 178.2607,-.2446 178.2607,-22.2554"/>
+<text text-anchor="middle" x="130.5525" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a file to a file which it depends on. A file
+    is dependent upon another if the latter must be compiled before the former
+    can be.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+      
+      <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-1">Modules</a></h3></div>
+  <div id="mods-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/perrors_class.html">perrors_class</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/perrors_class.f03.html#src">perrors_class.f03</a>
+  </div>
+</div>
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    <section>
+      <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl"><pre><span></span><a name="ln-1"></a><span class="c">! Perrors class for QuickPIC Open Source 1.0</span>
+<a name="ln-2"></a><span class="c">! update: 04/18/2016</span>
+<a name="ln-3"></a>
+<a name="ln-4"></a>      <span class="k">module </span><span class="n">perrors_class</span>
+<a name="ln-5"></a>
+<a name="ln-6"></a>      <span class="k">use </span><span class="n">mpi</span>
+<a name="ln-7"></a>      <span class="k">use </span><span class="n">parallel_class</span>
+<a name="ln-8"></a>      
+<a name="ln-9"></a>      <span class="k">implicit none</span>
+<a name="ln-10"></a>
+<a name="ln-11"></a><span class="k">      private</span>
+<a name="ln-12"></a>
+<a name="ln-13"></a><span class="k">      public</span> <span class="kd">::</span> <span class="n">perrors</span>
+<a name="ln-14"></a>
+<a name="ln-15"></a>      <span class="k">type </span><span class="n">perrors</span>
+<a name="ln-16"></a>      
+<a name="ln-17"></a>         <span class="k">private</span>
+<a name="ln-18"></a><span class="k">         </span>
+<a name="ln-19"></a><span class="k">         class</span><span class="p">(</span><span class="n">parallel</span><span class="p">),</span> <span class="k">pointer</span><span class="p">,</span> <span class="k">public</span> <span class="kd">::</span> <span class="n">p</span> <span class="o">=&gt;</span> <span class="nb">null</span><span class="p">()</span>
+<a name="ln-20"></a>         <span class="kt">integer</span> <span class="kd">::</span> <span class="n">eunit</span> <span class="o">=</span> <span class="mi">2</span>
+<a name="ln-21"></a>         <span class="kt">integer</span> <span class="kd">::</span> <span class="n">monitor</span> <span class="o">=</span> <span class="mi">0</span>
+<a name="ln-22"></a>         
+<a name="ln-23"></a>         <span class="k">contains</span>
+<a name="ln-24"></a><span class="k">         </span>
+<a name="ln-25"></a><span class="k">         generic</span> <span class="kd">::</span> <span class="n">new</span> <span class="o">=&gt;</span> <span class="n">init_perrors</span>
+<a name="ln-26"></a>         <span class="k">generic</span> <span class="kd">::</span> <span class="n">del</span> <span class="o">=&gt;</span> <span class="n">end_perrors</span>
+<a name="ln-27"></a>         <span class="k">procedure</span><span class="p">,</span> <span class="k">private</span> <span class="kd">::</span> <span class="n">init_perrors</span>
+<a name="ln-28"></a>         <span class="k">procedure</span><span class="p">,</span> <span class="k">private</span> <span class="kd">::</span> <span class="n">end_perrors</span>
+<a name="ln-29"></a>         <span class="k">procedure</span> <span class="kd">::</span> <span class="n">equit</span>
+<a name="ln-30"></a>         <span class="k">procedure</span> <span class="kd">::</span> <span class="n">werrfl0</span>
+<a name="ln-31"></a>         <span class="k">procedure</span> <span class="kd">::</span> <span class="n">werrfl1</span>
+<a name="ln-32"></a>         <span class="k">procedure</span> <span class="kd">::</span> <span class="n">werrfl2</span>
+<a name="ln-33"></a>         <span class="k">procedure</span> <span class="kd">::</span> <span class="n">setmonitor</span>
+<a name="ln-34"></a>
+<a name="ln-35"></a>      <span class="k">end type </span><span class="n">perrors</span>
+<a name="ln-36"></a>
+<a name="ln-37"></a>      <span class="kt">integer</span><span class="p">,</span> <span class="k">dimension</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="k">save</span> <span class="kd">::</span> <span class="nb">itime</span>
+<a name="ln-38"></a><span class="nb">      </span><span class="kt">double precision</span><span class="p">,</span> <span class="k">save</span> <span class="kd">::</span> <span class="nb">dtime</span>
+<a name="ln-39"></a><span class="nb">                  </span>
+<a name="ln-40"></a><span class="nb">      </span><span class="k">contains</span>
+<a name="ln-41"></a><span class="c">!</span>
+<a name="ln-42"></a>      <span class="k">subroutine </span><span class="n">init_perrors</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">prl</span><span class="p">,</span><span class="n">eunit</span><span class="p">,</span><span class="n">monitor</span><span class="p">)</span>
+<a name="ln-43"></a>         
+<a name="ln-44"></a>         <span class="k">implicit none</span>
+<a name="ln-45"></a><span class="k">         </span>
+<a name="ln-46"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-47"></a>         <span class="k">class</span><span class="p">(</span><span class="n">parallel</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span> <span class="k">pointer</span> <span class="kd">::</span> <span class="n">prl</span>
+<a name="ln-48"></a>         <span class="kt">integer</span><span class="p">,</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">eunit</span><span class="p">,</span> <span class="n">monitor</span>
+<a name="ln-49"></a><span class="c">! local data</span>
+<a name="ln-50"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="kd">::</span> <span class="n">str</span>
+<a name="ln-51"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span> <span class="kd">::</span> <span class="n">cn</span>
+<a name="ln-52"></a>         <span class="kt">integer</span> <span class="kd">::</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span>
+<a name="ln-53"></a>         <span class="kt">integer</span> <span class="kd">::</span> <span class="n">ierror</span>
+<a name="ln-54"></a>
+<a name="ln-55"></a>         <span class="k">write</span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="o">*</span><span class="p">)</span> <span class="n">prl</span><span class="p">%</span><span class="n">getidproc</span><span class="p">()</span>
+<a name="ln-56"></a>         <span class="n">cn</span> <span class="o">=</span> <span class="s1">&#39;00000000&#39;</span>
+<a name="ln-57"></a>         <span class="n">str</span> <span class="o">=</span> <span class="nb">trim</span><span class="p">(</span><span class="nb">adjustl</span><span class="p">(</span><span class="n">str</span><span class="p">))</span>
+<a name="ln-58"></a>         <span class="n">l</span> <span class="o">=</span> <span class="nb">len_trim</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+<a name="ln-59"></a>         <span class="n">k</span> <span class="o">=</span> <span class="mi">8</span>
+<a name="ln-60"></a>         <span class="n">cn</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">l</span><span class="p">:</span><span class="n">k</span><span class="p">)</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">l</span><span class="p">)</span>
+<a name="ln-61"></a>                                   
+<a name="ln-62"></a>         <span class="n">this</span><span class="p">%</span><span class="n">p</span> <span class="o">=&gt;</span> <span class="n">prl</span>
+<a name="ln-63"></a>         <span class="n">this</span><span class="p">%</span><span class="n">eunit</span> <span class="o">=</span> <span class="n">eunit</span>
+<a name="ln-64"></a>         <span class="n">this</span><span class="p">%</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">monitor</span>
+<a name="ln-65"></a>         
+<a name="ln-66"></a>         <span class="k">if</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">p</span><span class="p">%</span><span class="n">getidproc</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">then</span>
+<a name="ln-67"></a><span class="k">            </span>
+<a name="ln-68"></a><span class="k">            call </span><span class="nb">system</span><span class="p">(</span><span class="s1">&#39;mkdir ./ELOG&#39;</span><span class="p">)</span>
+<a name="ln-69"></a>            
+<a name="ln-70"></a>         <span class="n">endif</span>
+<a name="ln-71"></a>         
+<a name="ln-72"></a>         <span class="k">call </span><span class="n">MPI_BARRIER</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">p</span><span class="p">%</span><span class="n">getlworld</span><span class="p">(),</span><span class="n">ierror</span><span class="p">)</span>
+<a name="ln-73"></a>         
+<a name="ln-74"></a>         <span class="k">call </span><span class="n">set_ename</span><span class="p">(</span><span class="n">eunit</span><span class="p">,</span><span class="s1">&#39;./ELOG/elog-&#39;</span><span class="o">//</span><span class="n">cn</span><span class="p">)</span>
+<a name="ln-75"></a>         <span class="k">call </span><span class="n">dtimer</span><span class="p">(</span><span class="nb">dtime</span><span class="p">,</span><span class="nb">itime</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<a name="ln-76"></a>               
+<a name="ln-77"></a>      <span class="k">end subroutine </span><span class="n">init_perrors</span>      
+<a name="ln-78"></a><span class="c">!</span>
+<a name="ln-79"></a>      <span class="k">subroutine </span><span class="n">set_ename</span><span class="p">(</span><span class="n">eunit</span><span class="p">,</span><span class="n">ename</span><span class="p">)</span>
+<a name="ln-80"></a>         
+<a name="ln-81"></a>         <span class="k">implicit none</span>
+<a name="ln-82"></a>         
+<a name="ln-83"></a><span class="c">! this subroutine sets the name of the error file and opens it</span>
+<a name="ln-84"></a><span class="c">! ename = new error file name</span>
+<a name="ln-85"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">ename</span>
+<a name="ln-86"></a>         <span class="kt">integer</span><span class="p">,</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">eunit</span>
+<a name="ln-87"></a>         
+<a name="ln-88"></a>         <span class="k">open</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">eunit</span><span class="p">,</span><span class="k">file</span><span class="o">=</span><span class="nb">trim</span><span class="p">(</span><span class="n">ename</span><span class="p">),</span><span class="n">form</span><span class="o">=</span><span class="s1">&#39;formatted&#39;</span><span class="p">,</span><span class="n">status</span><span class="o">=</span><span class="s1">&#39;repla&amp;</span>
+<a name="ln-89"></a><span class="s1">         &amp;ce&#39;</span><span class="p">)</span>
+<a name="ln-90"></a>
+<a name="ln-91"></a>      <span class="k">end subroutine </span><span class="n">set_ename</span>
+<a name="ln-92"></a><span class="c">!      </span>
+<a name="ln-93"></a>      <span class="k">subroutine </span><span class="n">end_perrors</span><span class="p">(</span><span class="n">this</span><span class="p">)</span>
+<a name="ln-94"></a>      
+<a name="ln-95"></a>         <span class="k">implicit none</span>
+<a name="ln-96"></a><span class="k">         </span>
+<a name="ln-97"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-98"></a>         
+<a name="ln-99"></a>         <span class="k">close</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">)</span>
+<a name="ln-100"></a>      
+<a name="ln-101"></a>      <span class="k">end subroutine </span><span class="n">end_perrors</span>
+<a name="ln-102"></a><span class="c">!</span>
+<a name="ln-103"></a>      <span class="k">subroutine </span><span class="n">equit</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">estr</span><span class="p">)</span>
+<a name="ln-104"></a><span class="c">! this subroutine handles errors and optionally logs error message</span>
+<a name="ln-105"></a><span class="c">! if estr is present, prepends the node number to the output string</span>
+<a name="ln-106"></a><span class="c">! how = keyword on how to handle error</span>
+<a name="ln-107"></a><span class="c">! estr = optional error message string to be logged in error file</span>
+<a name="ln-108"></a>         <span class="k">implicit none</span>
+<a name="ln-109"></a>
+<a name="ln-110"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-111"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span> <span class="k">optional</span> <span class="kd">::</span> <span class="n">estr</span>      
+<a name="ln-112"></a><span class="c">! loccal data</span>
+<a name="ln-113"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="kd">::</span> <span class="n">tstr</span>
+<a name="ln-114"></a>         <span class="kt">integer</span> <span class="kd">::</span> <span class="n">ierror</span>
+<a name="ln-115"></a>
+<a name="ln-116"></a>         <span class="k">call </span><span class="n">dtimer</span><span class="p">(</span><span class="nb">dtime</span><span class="p">,</span><span class="nb">itime</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<a name="ln-117"></a>         <span class="k">write</span> <span class="p">(</span><span class="n">tstr</span><span class="p">,</span><span class="s1">&#39;(f12.3)&#39;</span><span class="p">)</span> <span class="nb">dtime</span>
+<a name="ln-118"></a><span class="nb">         </span><span class="k">if</span> <span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">estr</span><span class="p">))</span> <span class="k">write</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">,</span><span class="o">*</span><span class="p">)</span> <span class="nb">trim</span><span class="p">(</span><span class="n">tstr</span><span class="p">)</span><span class="o">//</span><span class="s2">&quot; : &quot;</span><span class="o">//</span><span class="nb">trim</span><span class="p">(</span><span class="nb">adjustl</span><span class="p">(</span><span class="n">estr</span><span class="p">))</span>
+<a name="ln-119"></a>         <span class="nb">flush</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">)</span>
+<a name="ln-120"></a>         <span class="k">call </span><span class="n">MPI_ABORT</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">p</span><span class="p">%</span><span class="n">getlworld</span><span class="p">(),</span><span class="mi">1</span><span class="p">,</span><span class="n">ierror</span><span class="p">)</span>
+<a name="ln-121"></a><span class="c">!         call MPI_FINALIZE(ierror)</span>
+<a name="ln-122"></a>         <span class="k">print</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;Error!&#39;</span>
+<a name="ln-123"></a>         <span class="k">stop</span>
+<a name="ln-124"></a>
+<a name="ln-125"></a><span class="k">      end subroutine </span><span class="n">equit</span>
+<a name="ln-126"></a><span class="c">!      </span>
+<a name="ln-127"></a>      <span class="k">subroutine </span><span class="n">werrfl0</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">estr</span><span class="p">)</span>
+<a name="ln-128"></a><span class="c">! this subroutine handles error message on level 0</span>
+<a name="ln-129"></a>         <span class="k">implicit none</span>
+<a name="ln-130"></a>
+<a name="ln-131"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-132"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">estr</span>
+<a name="ln-133"></a><span class="c">! local data</span>
+<a name="ln-134"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="kd">::</span> <span class="n">tstr</span>
+<a name="ln-135"></a>                  
+<a name="ln-136"></a>         <span class="k">call </span><span class="n">dtimer</span><span class="p">(</span><span class="nb">dtime</span><span class="p">,</span><span class="nb">itime</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<a name="ln-137"></a>         <span class="k">write</span> <span class="p">(</span><span class="n">tstr</span><span class="p">,</span><span class="s1">&#39;(f12.3)&#39;</span><span class="p">)</span> <span class="nb">dtime</span>
+<a name="ln-138"></a><span class="nb">         </span><span class="k">write</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">,</span><span class="o">*</span><span class="p">)</span> <span class="nb">trim</span><span class="p">(</span><span class="n">tstr</span><span class="p">)</span><span class="o">//</span><span class="s2">&quot; : &quot;</span><span class="o">//</span><span class="nb">trim</span><span class="p">(</span><span class="nb">adjustl</span><span class="p">(</span><span class="n">estr</span><span class="p">))</span>
+<a name="ln-139"></a>         <span class="nb">flush</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">)</span>
+<a name="ln-140"></a>         
+<a name="ln-141"></a>      <span class="k">end subroutine </span><span class="n">werrfl0</span>
+<a name="ln-142"></a><span class="c">!      </span>
+<a name="ln-143"></a>      <span class="k">subroutine </span><span class="n">werrfl1</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">estr</span><span class="p">)</span>
+<a name="ln-144"></a><span class="c">! this subroutine handles error message on level 1</span>
+<a name="ln-145"></a>         <span class="k">implicit none</span>
+<a name="ln-146"></a>
+<a name="ln-147"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-148"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">estr</span>
+<a name="ln-149"></a><span class="c">! local data</span>
+<a name="ln-150"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="kd">::</span> <span class="n">tstr</span>
+<a name="ln-151"></a>
+<a name="ln-152"></a>         <span class="k">if</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">monitor</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">then</span>
+<a name="ln-153"></a><span class="k">            </span>
+<a name="ln-154"></a><span class="k">            return</span>
+<a name="ln-155"></a><span class="k">            </span>
+<a name="ln-156"></a><span class="k">         else</span>
+<a name="ln-157"></a><span class="k">					   </span>
+<a name="ln-158"></a><span class="k">            call </span><span class="n">dtimer</span><span class="p">(</span><span class="nb">dtime</span><span class="p">,</span><span class="nb">itime</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<a name="ln-159"></a>            <span class="k">write</span> <span class="p">(</span><span class="n">tstr</span><span class="p">,</span><span class="s1">&#39;(f12.3)&#39;</span><span class="p">)</span> <span class="nb">dtime</span>
+<a name="ln-160"></a><span class="nb">            </span><span class="k">write</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">,</span><span class="o">*</span><span class="p">)</span> <span class="nb">trim</span><span class="p">(</span><span class="n">tstr</span><span class="p">)</span><span class="o">//</span><span class="s2">&quot; : &quot;</span><span class="o">//</span><span class="nb">trim</span><span class="p">(</span><span class="nb">adjustl</span><span class="p">(</span><span class="n">estr</span><span class="p">))</span>
+<a name="ln-161"></a>            <span class="nb">flush</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">)</span>
+<a name="ln-162"></a>         
+<a name="ln-163"></a>         <span class="n">endif</span>
+<a name="ln-164"></a>         
+<a name="ln-165"></a>      <span class="k">end subroutine </span><span class="n">werrfl1</span>
+<a name="ln-166"></a><span class="c">!      </span>
+<a name="ln-167"></a>      <span class="k">subroutine </span><span class="n">werrfl2</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">estr</span><span class="p">)</span>
+<a name="ln-168"></a><span class="c">! this subroutine handles error message on level 2</span>
+<a name="ln-169"></a>         <span class="k">implicit none</span>
+<a name="ln-170"></a>
+<a name="ln-171"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-172"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">estr</span>
+<a name="ln-173"></a><span class="c">! local data</span>
+<a name="ln-174"></a>         <span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span> <span class="kd">::</span> <span class="n">tstr</span>
+<a name="ln-175"></a>
+<a name="ln-176"></a>         <span class="k">if</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">monitor</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">then</span>
+<a name="ln-177"></a><span class="k">            </span>
+<a name="ln-178"></a><span class="k">            return</span>
+<a name="ln-179"></a><span class="k">            </span>
+<a name="ln-180"></a><span class="k">         else</span>
+<a name="ln-181"></a><span class="k">					   </span>
+<a name="ln-182"></a><span class="k">   	        call </span><span class="n">dtimer</span><span class="p">(</span><span class="nb">dtime</span><span class="p">,</span><span class="nb">itime</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<a name="ln-183"></a>            <span class="k">write</span> <span class="p">(</span><span class="n">tstr</span><span class="p">,</span><span class="s1">&#39;(f12.3)&#39;</span><span class="p">)</span> <span class="nb">dtime</span>
+<a name="ln-184"></a><span class="nb">            </span><span class="k">write</span> <span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">,</span><span class="o">*</span><span class="p">)</span> <span class="nb">trim</span><span class="p">(</span><span class="n">tstr</span><span class="p">)</span><span class="o">//</span><span class="s2">&quot; : &quot;</span><span class="o">//</span><span class="nb">trim</span><span class="p">(</span><span class="nb">adjustl</span><span class="p">(</span><span class="n">estr</span><span class="p">))</span>
+<a name="ln-185"></a>            <span class="nb">flush</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">eunit</span><span class="p">)</span>
+<a name="ln-186"></a>         
+<a name="ln-187"></a>         <span class="n">endif</span>
+<a name="ln-188"></a>         
+<a name="ln-189"></a>      <span class="k">end subroutine </span><span class="n">werrfl2</span>
+<a name="ln-190"></a><span class="c">!      </span>
+<a name="ln-191"></a>      <span class="k">subroutine </span><span class="n">setmonitor</span><span class="p">(</span><span class="n">this</span><span class="p">,</span><span class="n">moniter</span><span class="p">)</span>
+<a name="ln-192"></a> 
+<a name="ln-193"></a>         <span class="k">implicit none</span>
+<a name="ln-194"></a>
+<a name="ln-195"></a><span class="k">         class</span><span class="p">(</span><span class="n">perrors</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
+<a name="ln-196"></a>         <span class="kt">integer</span><span class="p">,</span> <span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span> <span class="kd">::</span> <span class="n">moniter</span>
+<a name="ln-197"></a>         
+<a name="ln-198"></a>         <span class="n">this</span><span class="p">%</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">moniter</span>
+<a name="ln-199"></a>      
+<a name="ln-200"></a>      <span class="k">end subroutine</span>
+<a name="ln-201"></a><span class="c">!</span>
+<a name="ln-202"></a>      <span class="k">end module </span><span class="n">perrors_class</span>
+</pre></div>
+
+    </section>
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

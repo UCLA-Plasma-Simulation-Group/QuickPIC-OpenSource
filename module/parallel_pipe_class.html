@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>parallel_pipe_class &ndash; QuickPIC</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+				
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+		 aria-expanded="false">Contents <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+				
+				
+            <li><a href="../lists/modules.html">Modules</a></li>
+				
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+				
+								
+            <li><a href="../lists/types.html">Derived Types</a></li>
+				
+				
+            <li><a href="../program/quickpic.html">Program</a></li>
+	    
+            </ul>
+            </li>
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>parallel_pipe_class 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+	  data-placement="bottom" data-html="true"
+	  title=" 1.3% of total for modules and submodules.">93 statements</a>
+     </li> 
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/parallel_pipe_class.f03"> Source File</a></li>
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+     <li><a href='../sourcefile/parallel_pipe_class.f03.html'>parallel_pipe_class.f03</a></li>
+  
+     <li class="active">parallel_pipe_class</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading
+  text-left"><h3 class="panel-title"><a data-toggle="collapse"
+  href="#common-0">Common Blocks</a></h3></div>
+  <div id="common-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#common-pparms%7E4">PPARMS</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-0">Derived Types</a></h3></div>
+  <div id="types-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#type-parallel_pipe">parallel_pipe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlidproc">getlidproc</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlkstrt">getlkstrt</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlgrp">getlgrp</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlnvp">getlnvp</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getnstage">getnstage</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getstageid">getstageid</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-init_parallel_pipe">init_parallel_pipe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+	<ul class="list-inline">
+	  
+	  <li><a href="http://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node410.htm">mpi</a></li>
+	  
+	  <li><a href='../module/parallel_class.html'>parallel_class</a></li>
+	  
+	</ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~parallel_pipe_class~~UsesGraph Pages: 1 -->
+<svg id="moduleparallel_pipe_classUsesGraph" width="311pt" height="72pt"
+ viewBox="0.00 0.00 310.92 71.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~parallel_pipe_class~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 67.5)">
+<title>module~~parallel_pipe_class~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-67.5 306.9216,-67.5 306.9216,4 -4,4"/>
+<!-- module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsesGraph_node1" class="node">
+<title>module~parallel_pipe_class</title>
+<polygon fill="none" stroke="#000000" points="303.0753,-43.2554 201.4616,-43.2554 201.4616,-21.2446 303.0753,-21.2446 303.0753,-43.2554"/>
+<text text-anchor="middle" x="252.2684" y="-29.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">parallel_pipe_class</text>
+</g>
+<!-- mpi -->
+<g id="module~~parallel_pipe_class~~UsesGraph_node2" class="node">
+<title>mpi</title>
+<g id="a_module~~parallel_pipe_class~~UsesGraph_node2"><a xlink:href="http://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node410.htm" xlink:title="mpi">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-63.2554 0,-63.2554 0,-41.2446 54,-41.2446 54,-63.2554"/>
+<text text-anchor="middle" x="27" y="-49.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">mpi</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;mpi -->
+<g id="module~~parallel_pipe_class~~UsesGraph_edge1" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.4329,-36.7633C159.6805,-40.4702 101.5188,-45.634 64.0601,-48.9597"/>
+<polygon fill="#000000" stroke="#000000" points="63.7259,-45.4755 54.0747,-49.8462 64.345,-52.4481 63.7259,-45.4755"/>
+</g>
+<!-- module~parallel_class -->
+<g id="module~~parallel_pipe_class~~UsesGraph_node3" class="node">
+<title>module~parallel_class</title>
+<g id="a_module~~parallel_pipe_class~~UsesGraph_node3"><a xlink:href=".././module/parallel_class.html" xlink:title="parallel_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="165.4238,-24.2554 90.1914,-24.2554 90.1914,-2.2446 165.4238,-2.2446 165.4238,-24.2554"/>
+<text text-anchor="middle" x="127.8076" y="-10.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_class</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;module~parallel_class -->
+<g id="module~~parallel_pipe_class~~UsesGraph_edge2" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.2863,-24.4672C192.791,-23.1703 184.0064,-21.8292 175.5944,-20.5451"/>
+<polygon fill="#000000" stroke="#000000" points="175.9767,-17.063 165.563,-19.0137 174.9203,-23.9828 175.9767,-17.063"/>
+</g>
+<!-- module~parallel_class&#45;&gt;mpi -->
+<g id="module~~parallel_pipe_class~~UsesGraph_edge4" class="edge">
+<title>module~parallel_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M99.1898,-24.3215C88.1847,-28.5792 75.4636,-33.5006 63.7946,-38.0151"/>
+<polygon fill="#000000" stroke="#000000" points="62.3643,-34.8156 54.3008,-41.688 64.89,-41.344 62.3643,-34.8156"/>
+</g>
+<!-- omp_lib -->
+<g id="module~~parallel_pipe_class~~UsesGraph_node4" class="node">
+<title>omp_lib</title>
+<g id="a_module~~parallel_pipe_class~~UsesGraph_node4"><a xlink:href="https://gcc.gnu.org/onlinedocs/gcc-4.4.3/libgomp/Runtime-Library-Routines.html" xlink:title="omp_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">omp_lib</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_class&#45;&gt;omp_lib -->
+<g id="module~~parallel_pipe_class~~UsesGraph_edge3" class="edge">
+<title>module~parallel_class&#45;&gt;omp_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.9838,-12.4996C81.5773,-12.3328 72.6722,-12.1561 64.2874,-11.9898"/>
+<polygon fill="#000000" stroke="#000000" points="64.0893,-8.4852 54.0218,-11.7861 63.9504,-15.4839 64.0893,-8.4852"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+	
+	
+	<li class="list-group-item">
+	  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~parallel_pipe_class~~UsedByGraph Pages: 1 -->
+<svg id="moduleparallel_pipe_classUsedByGraph" width="641pt" height="470pt"
+ viewBox="0.00 0.00 641.00 470.49" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~parallel_pipe_class~~UsedByGraph" class="graph" transform="scale(.7183 .7183) rotate(0) translate(4 650.9962)">
+<title>module~~parallel_pipe_class~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-650.9962 888.3818,-650.9962 888.3818,4 -4,4"/>
+<!-- module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node1" class="node">
+<title>module~parallel_pipe_class</title>
+<polygon fill="none" stroke="#000000" points="101.4601,-318.6112 -.1537,-318.6112 -.1537,-296.6004 101.4601,-296.6004 101.4601,-318.6112"/>
+<text text-anchor="middle" x="50.6532" y="-304.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">parallel_pipe_class</text>
+</g>
+<!-- module~input_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node2" class="node">
+<title>module~input_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node2"><a xlink:href=".././module/input_class.html" xlink:title="input_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="437.6905,-496.6112 373.6256,-496.6112 373.6256,-474.6004 437.6905,-474.6004 437.6905,-496.6112"/>
+<text text-anchor="middle" x="405.6581" y="-482.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">input_class</text>
+</a>
+</g>
+</g>
+<!-- module~input_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge1" class="edge">
+<title>module~input_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5752,-640.6058C114.7836,-616.5581 68.1173,-398.912 54.627,-329.0719"/>
+<polygon fill="#000000" stroke="#000000" points="57.9886,-328.0132 52.6855,-318.8411 51.1114,-329.3183 57.9886,-328.0132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M373.1314,-495.3862C349.9633,-502.6646 318.2507,-513.2652 291.1154,-524.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-524.6058C273.2255,-532.0825 266.9115,-531.4026 251.844,-543.6058 209.4392,-577.9495 227.4278,-660.3963 176.5752,-640.6058"/>
+</g>
+<!-- module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node8" class="node">
+<title>module~spect3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node8"><a xlink:href=".././module/spect3d_class.html" xlink:title="spect3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="330.1543,-299.6112 252.0764,-299.6112 252.0764,-277.6004 330.1543,-277.6004 330.1543,-299.6112"/>
+<text text-anchor="middle" x="291.1154" y="-285.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~input_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge37" class="edge">
+<title>module~input_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M396.4774,-474.2186C387.7516,-462.9417 374.7532,-444.9022 366.3867,-427.6058 343.2502,-379.7747 362.7485,-355.7463 330.3867,-313.6058 328.2038,-310.7633 325.5989,-308.1555 322.7835,-305.7862"/>
+<polygon fill="#000000" stroke="#000000" points="324.6154,-302.7909 314.468,-299.7444 320.5007,-308.454 324.6154,-302.7909"/>
+</g>
+<!-- module~fdist2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node3" class="node">
+<title>module~fdist2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node3"><a xlink:href=".././module/fdist2d_class.html" xlink:title="fdist2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="327.314,-574.6112 254.9167,-574.6112 254.9167,-552.6004 327.314,-552.6004 327.314,-574.6112"/>
+<text text-anchor="middle" x="291.1154" y="-560.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fdist2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge3" class="edge">
+<title>module~fdist2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M273.4298,-574.6659C266.643,-578.962 258.8484,-583.9592 251.844,-588.6058 217.9619,-611.0828 214.4666,-655.3522 176.5752,-640.6058"/>
+</g>
+<!-- module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node12" class="node">
+<title>module~spect2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node12"><a xlink:href=".././module/spect2d_class.html" xlink:title="spect2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="215.6141,-476.6112 137.5362,-476.6112 137.5362,-454.6004 215.6141,-454.6004 215.6141,-476.6112"/>
+<text text-anchor="middle" x="176.5752" y="-462.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fdist2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge53" class="edge">
+<title>module~fdist2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M277.9761,-552.364C258.212,-535.4539 220.6557,-503.3209 197.2125,-483.2629"/>
+<polygon fill="#000000" stroke="#000000" points="199.435,-480.5583 189.5612,-476.7165 194.8842,-485.8772 199.435,-480.5583"/>
+</g>
+<!-- module~field3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node4" class="node">
+<title>module~field3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node4"><a xlink:href=".././module/field3d_class.html" xlink:title="field3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="553.4847,-223.6112 481.0773,-223.6112 481.0773,-201.6004 553.4847,-201.6004 553.4847,-223.6112"/>
+<text text-anchor="middle" x="517.281" y="-209.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~field3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge16" class="edge">
+<title>module~field3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5752,-307.6058C155.4423,-307.6673 132.3142,-307.6824 111.7112,-307.6773"/>
+<polygon fill="#000000" stroke="#000000" points="111.508,-304.1773 101.5066,-307.6731 111.5051,-311.1773 111.508,-304.1773"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M480.9025,-207.2561C427.3522,-201.1798 325.6773,-196.6261 251.844,-235.6058 210.9055,-257.219 222.8685,-307.4711 176.5752,-307.6058"/>
+</g>
+<!-- module~ufield3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node6" class="node">
+<title>module~ufield3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node6"><a xlink:href=".././module/ufield3d_class.html" xlink:title="ufield3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="444.7021,-261.6112 366.614,-261.6112 366.614,-239.6004 444.7021,-239.6004 444.7021,-261.6112"/>
+<text text-anchor="middle" x="405.6581" y="-247.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~field3d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge26" class="edge">
+<title>module~field3d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M484.695,-223.6991C473.1181,-227.6403 459.9184,-232.1339 447.6659,-236.305"/>
+<polygon fill="#000000" stroke="#000000" points="446.4302,-233.0284 438.0917,-239.5644 448.6861,-239.6549 446.4302,-233.0284"/>
+</g>
+<!-- module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node7" class="node">
+<title>module~hdf5io_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node7"><a xlink:href=".././module/hdf5io_class.html" xlink:title="hdf5io_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="211.9465,-270.6112 141.2039,-270.6112 141.2039,-248.6004 211.9465,-248.6004 211.9465,-270.6112"/>
+<text text-anchor="middle" x="176.5752" y="-256.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hdf5io_class</text>
+</a>
+</g>
+</g>
+<!-- module~field3d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge34" class="edge">
+<title>module~field3d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M500.9898,-201.4127C494.7174,-197.1002 487.4882,-192.1266 480.9294,-187.6058 447.4512,-164.5299 444.2543,-148.3974 405.6581,-135.6058"/>
+</g>
+<!-- module~field3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge42" class="edge">
+<title>module~field3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-289.6058C384.4181,-293.0706 360.6673,-293.4274 340.3238,-292.6847"/>
+<polygon fill="#000000" stroke="#000000" points="340.4838,-289.1885 330.3331,-292.2238 340.1611,-296.181 340.4838,-289.1885"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M507.6518,-223.8848C489.9081,-243.4776 449.8053,-282.4042 405.6581,-289.6058"/>
+</g>
+<!-- program~quickpic -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node5" class="node">
+<title>program~quickpic</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node5"><a xlink:href=".././program/quickpic.html" xlink:title="quickpic">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="884.3818,-339.6112 830.3818,-339.6112 830.3818,-317.6004 884.3818,-317.6004 884.3818,-339.6112"/>
+<text text-anchor="middle" x="857.3818" y="-325.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">quickpic</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge4" class="edge">
+<title>program~quickpic&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-640.6058C242.8927,-624.2941 223.7506,-659.7364 176.5752,-640.6058"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~input_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge18" class="edge">
+<title>program~quickpic&#45;&gt;module~input_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.8605,-289.6058C708.5215,-273.4991 704.4264,-321.4541 669.3391,-348.6058 596.939,-404.6313 498.2123,-448.8139 444.4459,-470.6517"/>
+<polygon fill="#000000" stroke="#000000" points="442.9213,-467.4922 434.9462,-474.4671 445.5302,-473.9879 442.9213,-467.4922"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~fdist2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge21" class="edge">
+<title>program~quickpic&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-640.6058C365.818,-634.0894 328.8066,-602.8005 308.156,-582.1676"/>
+<polygon fill="#000000" stroke="#000000" points="310.5431,-579.6015 301.0707,-574.8554 305.5159,-584.4726 310.5431,-579.6015"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M850.3044,-339.8502C811.7213,-399.5896 620.5901,-675.7608 405.6581,-640.6058"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~field3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge23" class="edge">
+<title>program~quickpic&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.8605,-289.6058C700.0108,-270.1831 682.2567,-298.4074 629.4858,-289.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.4858,-289.6058C590.2244,-283.0574 554.0426,-251.7787 533.8916,-231.1564"/>
+<polygon fill="#000000" stroke="#000000" points="536.3944,-228.709 526.9804,-223.8482 531.3084,-233.5187 536.3944,-228.709"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge28" class="edge">
+<title>program~quickpic&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-57.6058C500.4889,-53.3909 496.7684,-50.5963 480.9294,-43.6058 464.5639,-36.383 462.3395,-29.7158 444.9294,-25.6058 410.9554,-17.5856 399.7772,-15.4258 366.3867,-25.6058 307.7116,-43.4945 291.9677,-56.2068 251.844,-102.6058 215.6058,-144.5116 192.6757,-206.8872 182.5728,-238.9424"/>
+<polygon fill="#000000" stroke="#000000" points="179.2037,-237.9916 179.6377,-248.5775 185.8999,-240.0315 179.2037,-237.9916"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M830.3241,-319.1055C808.5187,-311.3739 777.111,-300.0675 749.8605,-289.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.8605,-289.6058C669.9321,-258.9207 732.0359,-172.9087 669.3391,-114.6058 616.4863,-65.457 588.5391,-69.0644 517.281,-57.6058"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge38" class="edge">
+<title>program~quickpic&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.4858,-289.6058C580.2965,-281.4016 564.8895,-274.7624 517.281,-289.6058"/>
+</g>
+<!-- module~fdist3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node9" class="node">
+<title>module~fdist3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node9"><a xlink:href=".././module/fdist3d_class.html" xlink:title="fdist3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="441.8567,-69.6112 369.4595,-69.6112 369.4595,-47.6004 441.8567,-47.6004 441.8567,-69.6112"/>
+<text text-anchor="middle" x="405.6581" y="-55.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~fdist3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge45" class="edge">
+<title>program~quickpic&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-57.6058C496.3124,-52.3426 472.4226,-51.8563 452.1392,-52.9831"/>
+<polygon fill="#000000" stroke="#000000" points="451.6257,-49.5104 441.8956,-53.7026 452.1163,-56.4932 451.6257,-49.5104"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge54" class="edge">
+<title>program~quickpic&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-640.6058C355.075,-634.8648 339.3391,-656.9179 291.1154,-640.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-640.6058C223.8607,-617.8564 192.5235,-527.7704 181.4713,-486.4793"/>
+<polygon fill="#000000" stroke="#000000" points="184.8326,-485.4953 178.9832,-476.6617 178.0472,-487.2151 184.8326,-485.4953"/>
+</g>
+<!-- module~species2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node13" class="node">
+<title>module~species2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node13"><a xlink:href=".././module/species2d_class.html" xlink:title="species2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="794.4032,-339.6112 705.3177,-339.6112 705.3177,-317.6004 794.4032,-317.6004 794.4032,-339.6112"/>
+<text text-anchor="middle" x="749.8605" y="-325.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~species2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge62" class="edge">
+<title>program~quickpic&#45;&gt;module~species2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M830.2497,-328.6058C822.3848,-328.6058 813.5026,-328.6058 804.5851,-328.6058"/>
+<polygon fill="#000000" stroke="#000000" points="804.5543,-325.1059 794.5543,-328.6058 804.5542,-332.1059 804.5543,-325.1059"/>
+</g>
+<!-- module~beam3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node15" class="node">
+<title>module~beam3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node15"><a xlink:href=".././module/beam3d_class.html" xlink:title="beam3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="669.1929,-145.6112 589.7788,-145.6112 589.7788,-123.6004 669.1929,-123.6004 669.1929,-145.6112"/>
+<text text-anchor="middle" x="629.4858" y="-131.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">beam3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~beam3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge64" class="edge">
+<title>program~quickpic&#45;&gt;module~beam3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.8605,-289.6058C686.5342,-264.9323 717.2594,-207.7997 669.3391,-159.6058 666.3589,-156.6086 662.955,-153.8015 659.4205,-151.2302"/>
+<polygon fill="#000000" stroke="#000000" points="661.3392,-148.3029 651.0742,-145.6798 657.4629,-154.1317 661.3392,-148.3029"/>
+</g>
+<!-- module~field2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node18" class="node">
+<title>module~field2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node18"><a xlink:href=".././module/field2d_class.html" xlink:title="field2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="665.6896,-339.6112 593.2821,-339.6112 593.2821,-317.6004 665.6896,-317.6004 665.6896,-339.6112"/>
+<text text-anchor="middle" x="629.4858" y="-325.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~field2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge68" class="edge">
+<title>program~quickpic&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.8605,-289.6058C733.6068,-283.273 691.1935,-299.8065 661.3325,-313.2728"/>
+<polygon fill="#000000" stroke="#000000" points="659.7516,-310.1473 652.1276,-317.5043 662.6754,-316.5075 659.7516,-310.1473"/>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge5" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-249.6058C234.6117,-257.5634 233.6362,-307.7719 176.5752,-307.6058"/>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge29" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M366.5036,-247.4038C344.2865,-246.3006 316.0261,-246.0976 291.1154,-249.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-249.6058C268.3535,-252.8114 242.8928,-255.1565 221.767,-256.7667"/>
+<polygon fill="#000000" stroke="#000000" points="221.4928,-253.2773 211.7752,-257.4986 222.0043,-260.2586 221.4928,-253.2773"/>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge39" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M372.2197,-261.6991C360.3399,-265.6403 346.795,-270.1339 334.222,-274.305"/>
+<polygon fill="#000000" stroke="#000000" points="332.7865,-271.0936 324.3973,-277.5644 334.9907,-277.7375 332.7865,-271.0936"/>
+</g>
+<!-- module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node11" class="node">
+<title>module~ufield2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node11"><a xlink:href=".././module/ufield2d_class.html" xlink:title="ufield2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="330.1594,-377.6112 252.0713,-377.6112 252.0713,-355.6004 330.1594,-355.6004 330.1594,-377.6112"/>
+<text text-anchor="middle" x="291.1154" y="-363.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge48" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M398.2644,-261.6351C385.7555,-279.7642 358.9738,-316.3654 330.3867,-341.6058 327.1151,-344.4945 323.4763,-347.2768 319.7708,-349.8692"/>
+<polygon fill="#000000" stroke="#000000" points="317.5824,-347.119 311.1451,-355.534 321.425,-352.9701 317.5824,-347.119"/>
+</g>
+<!-- module~hdf5io_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge6" class="edge">
+<title>module~hdf5io_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M147.6861,-270.618C130.3731,-277.2175 108.1414,-285.692 89.327,-292.8638"/>
+<polygon fill="#000000" stroke="#000000" points="87.9414,-289.6463 79.8439,-296.4787 90.4347,-296.1872 87.9414,-289.6463"/>
+</g>
+<!-- module~spect3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge7" class="edge">
+<title>module~spect3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M251.8889,-298.4415C229.8938,-303.1146 201.8723,-307.6794 176.5752,-307.6058"/>
+</g>
+<!-- module~spect3d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge55" class="edge">
+<title>module~spect3d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M283.4833,-299.6559C275.4936,-311.275 262.6332,-330.123 251.844,-346.6058 229.2514,-381.1208 203.7383,-421.8403 188.9719,-445.5871"/>
+<polygon fill="#000000" stroke="#000000" points="185.8169,-444.0332 183.5162,-454.3753 191.7641,-447.7253 185.8169,-444.0332"/>
+</g>
+<!-- module~fdist3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge8" class="edge">
+<title>module~fdist3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M395.3748,-47.505C375.8498,-27.837 331.7237,9.9317 291.1154,-2.6058"/>
+</g>
+<!-- module~fdist3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge40" class="edge">
+<title>module~fdist3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M381.4928,-69.7124C375.7709,-73.3881 370.2237,-78.005 366.3867,-83.6058 320.2771,-150.9104 376.4963,-196.3013 330.3867,-263.6058 328.4682,-266.4062 326.1222,-268.9606 323.5405,-271.2744"/>
+<polygon fill="#000000" stroke="#000000" points="321.1603,-268.6855 315.2806,-277.4992 325.3732,-274.2758 321.1603,-268.6855"/>
+</g>
+<!-- module~fft2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node10" class="node">
+<title>module~fft2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node10"><a xlink:href=".././module/fft2d_class.html" xlink:title="fft2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="436.6664,-377.6112 374.6498,-377.6112 374.6498,-355.6004 436.6664,-355.6004 436.6664,-377.6112"/>
+<text text-anchor="middle" x="405.6581" y="-363.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge10" class="edge">
+<title>module~fft2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M380.7798,-355.5835C357.9704,-346.0994 322.9956,-333.1028 291.1154,-327.6058"/>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge49" class="edge">
+<title>module~fft2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M374.3588,-366.6058C364.0132,-366.6058 352.2331,-366.6058 340.8564,-366.6058"/>
+<polygon fill="#000000" stroke="#000000" points="340.5746,-363.1059 330.5745,-366.6058 340.5745,-370.1059 340.5746,-363.1059"/>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge56" class="edge">
+<title>module~fft2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M383.2528,-377.7223C377.6346,-380.7432 371.697,-384.1424 366.3867,-387.6058 330.7837,-410.8265 333.2801,-441.2298 291.1154,-446.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-446.6058C269.5626,-449.3538 245.8533,-453.1561 225.6245,-456.6377"/>
+<polygon fill="#000000" stroke="#000000" points="224.9472,-453.2029 215.6968,-458.3682 226.1493,-460.0989 224.9472,-453.2029"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge11" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.9585,-355.5153C242.1302,-338.4342 186.9206,-307.6359 176.5752,-307.6058"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge30" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M280.0819,-355.5219C265.5772,-341.0402 239.1957,-315.0072 215.844,-293.6058 209.9936,-288.2441 203.5252,-282.5509 197.555,-277.3878"/>
+<polygon fill="#000000" stroke="#000000" points="199.6956,-274.6127 189.8274,-270.7566 195.137,-279.925 199.6956,-274.6127"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge57" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M277.9761,-377.9624C258.212,-395.045 220.6557,-427.5059 197.2125,-447.7685"/>
+<polygon fill="#000000" stroke="#000000" points="194.8381,-445.1945 189.5612,-454.3817 199.4156,-450.4905 194.8381,-445.1945"/>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge12" class="edge">
+<title>module~spect2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.7206,-454.4956C146.5482,-427.9296 92.7777,-360.4614 66.1207,-327.0136"/>
+<polygon fill="#000000" stroke="#000000" points="68.6362,-324.5541 59.6666,-318.9153 63.162,-328.9169 68.6362,-324.5541"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge13" class="edge">
+<title>module~species2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-602.6058C336.7116,-608.3938 320.0433,-614.9452 251.844,-626.6058 218.3042,-632.3404 208.285,-652.9465 176.5752,-640.6058"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~fdist2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge19" class="edge">
+<title>module~species2d_class&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-563.6058C464.7299,-563.6058 458.0249,-598.2096 405.6581,-602.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-602.6058C374.3366,-605.2352 340.4995,-591.4683 317.787,-579.5732"/>
+<polygon fill="#000000" stroke="#000000" points="319.2269,-576.3714 308.774,-574.6432 315.8677,-582.5128 319.2269,-576.3714"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge31" class="edge">
+<title>module~species2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-135.6058C356.6747,-119.3717 334.7031,-88.9829 291.1154,-116.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-173.6058C470.4696,-150.0452 455.4034,-152.0924 405.6581,-135.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M728.6378,-317.5339C721.1317,-313.3985 712.7231,-308.5108 705.3391,-303.6058 688.455,-292.3901 685.5774,-287.7377 669.3391,-275.6058 618.6389,-237.7268 607.5225,-225.7902 553.6326,-192.6058 538.1096,-183.047 533.5648,-181.8016 517.281,-173.6058"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge58" class="edge">
+<title>module~species2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M745.5159,-339.6251C726.3991,-386.0855 644.9995,-563.6058 517.281,-563.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-563.6058C499.7689,-567.6005 381.5172,-515.2856 366.3867,-505.6058 330.581,-482.6989 333.2196,-440.7746 291.1154,-446.6058"/>
+</g>
+<!-- module~part2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node14" class="node">
+<title>module~part2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node14"><a xlink:href=".././module/part2d_class.html" xlink:title="part2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="441.1938,-574.6112 370.1224,-574.6112 370.1224,-552.6004 441.1938,-552.6004 441.1938,-574.6112"/>
+<text text-anchor="middle" x="405.6581" y="-560.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~species2d_class&#45;&gt;module~part2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge63" class="edge">
+<title>module~species2d_class&#45;&gt;module~part2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-563.6058C495.6628,-563.6058 471.6896,-563.6058 451.5188,-563.6058"/>
+<polygon fill="#000000" stroke="#000000" points="451.35,-560.1059 441.35,-563.6058 451.3499,-567.1059 451.35,-560.1059"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~field2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge67" class="edge">
+<title>module~species2d_class&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M705.0374,-328.6058C695.5142,-328.6058 685.441,-328.6058 675.8613,-328.6058"/>
+<polygon fill="#000000" stroke="#000000" points="675.7093,-325.1059 665.7093,-328.6058 675.7093,-332.1059 675.7093,-325.1059"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge14" class="edge">
+<title>module~part2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M384.0888,-552.472C355.915,-538.5842 308.1718,-517.4774 291.1154,-524.6058"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~fdist2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge20" class="edge">
+<title>module~part2d_class&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M370.0439,-563.6058C359.7918,-563.6058 348.4539,-563.6058 337.6454,-563.6058"/>
+<polygon fill="#000000" stroke="#000000" points="337.4976,-560.1059 327.4976,-563.6058 337.4975,-567.1059 337.4976,-560.1059"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge32" class="edge">
+<title>module~part2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M387.4372,-552.5057C380.7281,-548.2888 373.125,-543.3552 366.3867,-538.6058 349.8188,-526.9281 346.8493,-522.4315 330.3867,-510.6058 313.3858,-498.3935 306.985,-498.2559 291.1154,-484.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-484.6058C221.9411,-425.1062 268.3576,-368.2222 215.844,-293.6058 211.6595,-287.6601 206.2157,-282.0871 200.721,-277.2417"/>
+<polygon fill="#000000" stroke="#000000" points="202.721,-274.3549 192.7747,-270.7048 198.2738,-279.7608 202.721,-274.3549"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge50" class="edge">
+<title>module~part2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M397.3584,-552.3502C389.0622,-540.8772 376.1668,-522.426 366.3867,-505.6058 348.203,-474.3329 347.6491,-464.3966 330.3867,-432.6058 321.7854,-416.7654 311.317,-399.2498 303.352,-386.2456"/>
+<polygon fill="#000000" stroke="#000000" points="306.2863,-384.3357 298.0573,-377.6624 300.3286,-388.0109 306.2863,-384.3357"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge59" class="edge">
+<title>module~part2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-484.6058C273.4374,-469.4003 248.3479,-464.0571 226.1547,-462.768"/>
+<polygon fill="#000000" stroke="#000000" points="225.9766,-459.2606 215.8693,-462.4375 225.7517,-466.257 225.9766,-459.2606"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge15" class="edge">
+<title>module~beam3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M176.5752,-78.6058C109.1652,-138.098 70.665,-242.7005 56.7091,-286.9299"/>
+<polygon fill="#000000" stroke="#000000" points="53.3355,-285.9934 53.7551,-296.58 60.0289,-288.0424 53.3355,-285.9934"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M623.7224,-123.4509C612.9018,-103.7447 587.545,-63.0234 553.6326,-43.6058 532.3181,-31.4016 308.3474,2.7145 291.1154,-2.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-2.6058C274.2937,-5.1247 198.9942,-58.8201 176.5752,-78.6058"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~field3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge22" class="edge">
+<title>module~beam3d_class&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M613.5278,-145.8072C598.1944,-156.558 574.3613,-173.2365 553.6326,-187.6058 549.8478,-190.2295 545.8356,-192.9997 541.9117,-195.703"/>
+<polygon fill="#000000" stroke="#000000" points="539.8401,-192.8799 533.5849,-201.4311 543.8075,-198.6471 539.8401,-192.8799"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge33" class="edge">
+<title>module~beam3d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-116.6058C242.5481,-148.7941 204.8408,-208.1327 187.3179,-239.2879"/>
+<polygon fill="#000000" stroke="#000000" points="184.0915,-237.8921 182.3497,-248.3428 190.2285,-241.2594 184.0915,-237.8921"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M593.9018,-123.5904C571.6072,-116.3579 542.4332,-106.2858 517.281,-95.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-95.6058C499.4611,-88.0392 496.191,-83.5174 480.9294,-71.6058 463.8191,-58.2512 465.158,-46.4744 444.9294,-38.6058 412.3962,-25.9509 398.5172,-24.9606 366.3867,-38.6058 322.0436,-57.4374 331.2727,-89.9913 291.1154,-116.6058"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge41" class="edge">
+<title>module~beam3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-289.6058C469.9194,-304.3722 454.6211,-281.6187 405.6581,-289.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M626.3705,-145.8097C616.7198,-177.842 583.8821,-268.8409 517.281,-289.6058"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~fdist3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge44" class="edge">
+<title>module~beam3d_class&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-95.6058C496.1254,-86.6228 471.99,-78.3852 451.5869,-71.9746"/>
+<polygon fill="#000000" stroke="#000000" points="452.4877,-68.5897 441.9,-68.979 450.4196,-75.2772 452.4877,-68.5897"/>
+</g>
+<!-- module~part3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node17" class="node">
+<title>module~part3d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node17"><a xlink:href=".././module/part3d_class.html" xlink:title="part3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="552.8167,-145.6112 481.7453,-145.6112 481.7453,-123.6004 552.8167,-123.6004 552.8167,-145.6112"/>
+<text text-anchor="middle" x="517.281" y="-131.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~part3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge66" class="edge">
+<title>module~beam3d_class&#45;&gt;module~part3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589.6107,-134.6058C581.0086,-134.6058 571.8496,-134.6058 563.0428,-134.6058"/>
+<polygon fill="#000000" stroke="#000000" points="562.9207,-131.1059 552.9206,-134.6058 562.9206,-138.1059 562.9207,-131.1059"/>
+</g>
+<!-- module~fpois2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_node16" class="node">
+<title>module~fpois2d_class</title>
+<g id="a_module~~parallel_pipe_class~~UsedByGraph_node16"><a xlink:href=".././module/fpois2d_class.html" xlink:title="fpois2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="443.2794,-418.6112 368.0368,-418.6112 368.0368,-396.6004 443.2794,-396.6004 443.2794,-418.6112"/>
+<text text-anchor="middle" x="405.6581" y="-404.4558" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge9" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M367.8662,-409.2568C335.394,-409.1358 288.1993,-405.1937 251.844,-386.6058 208.6643,-364.5287 225.0712,-307.7469 176.5752,-307.6058"/>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge51" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M374.6612,-396.5106C361.4185,-391.7705 345.7831,-386.1739 331.6412,-381.1118"/>
+<polygon fill="#000000" stroke="#000000" points="332.7316,-377.7847 322.137,-377.7099 330.3725,-384.3753 332.7316,-377.7847"/>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge60" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M382.1952,-418.7208C359.5003,-428.7111 323.8314,-442.4345 291.1154,-446.6058"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge17" class="edge">
+<title>module~part3d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-97.6058C304.7994,-81.3254 255.0957,-13.2448 176.5752,-78.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M490.2783,-123.4966C467.9879,-114.8554 435.3141,-103.3933 405.6581,-97.6058"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge27" class="edge">
+<title>module~part3d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M506.5781,-145.7284C487.3752,-165.6843 446.8927,-207.7543 423.4548,-232.1113"/>
+<polygon fill="#000000" stroke="#000000" points="420.9044,-229.7139 416.4926,-239.3465 425.9484,-234.5676 420.9044,-229.7139"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge35" class="edge">
+<title>module~part3d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-97.6058C354.714,-89.3825 334.1295,-88.0979 291.1154,-116.6058"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge43" class="edge">
+<title>module~part3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.498,-145.6903C467.9466,-162.5757 410.9799,-196.4036 366.3867,-230.6058 349.1641,-243.8153 347.6076,-250.3939 330.3867,-263.6058 326.6795,-266.45 322.6439,-269.2845 318.6173,-271.9688"/>
+<polygon fill="#000000" stroke="#000000" points="316.4613,-269.1941 309.9477,-277.5502 320.2505,-275.0799 316.4613,-269.1941"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~fdist3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge46" class="edge">
+<title>module~part3d_class&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M500.9394,-123.485C494.6607,-119.1815 487.4405,-114.195 480.9294,-109.6058 464.7974,-98.2354 461.2611,-94.6878 444.9294,-83.6058 440.8791,-80.8574 436.5473,-78.0102 432.2938,-75.2649"/>
+<polygon fill="#000000" stroke="#000000" points="434.101,-72.2662 423.7884,-69.8368 430.3351,-78.1669 434.101,-72.2662"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge2" class="edge">
+<title>module~field2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M291.1154,-327.6058C240.1899,-318.8249 228.2513,-307.9066 176.5752,-307.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-327.6058C354.9286,-323.3471 341.2829,-336.256 291.1154,-327.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-366.6058C466.2765,-379.2612 458.0249,-332.002 405.6581,-327.6058"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M601.2821,-339.6191C578.8218,-348.0317 546.4248,-359.3745 517.281,-366.6058"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~field3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge24" class="edge">
+<title>module~field2d_class&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M607.3003,-317.4562C601.0909,-313.6388 594.6697,-308.9595 589.6326,-303.6058 566.7362,-279.2706 576.0105,-262.4185 553.6326,-237.6058 551.1254,-234.8258 548.2505,-232.1961 545.2398,-229.7606"/>
+<polygon fill="#000000" stroke="#000000" points="547.2451,-226.891 537.112,-223.7975 543.1043,-232.5349 547.2451,-226.891"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge25" class="edge">
+<title>module~field2d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M610.9812,-317.5356C604.1712,-313.3219 596.4579,-308.3828 589.6326,-303.6058 573.026,-291.9831 572.1883,-283.7636 553.6326,-275.6058 522.483,-261.9112 484.6034,-255.6829 454.9678,-252.8671"/>
+<polygon fill="#000000" stroke="#000000" points="455.1144,-249.367 444.8537,-252.0068 454.521,-256.3418 455.1144,-249.367"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~hdf5io_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge36" class="edge">
+<title>module~field2d_class&#45;&gt;module~hdf5io_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M605.8162,-317.5034C599.8652,-313.785 593.9507,-309.1459 589.6326,-303.6058 557.7492,-262.7007 587.0991,-232.2261 553.6326,-192.6058 541.869,-178.6792 533.5648,-181.8016 517.281,-173.6058"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fft2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge47" class="edge">
+<title>module~field2d_class&#45;&gt;module~fft2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-366.6058C494.5531,-372.5082 468.3327,-372.8231 447.0181,-371.5175"/>
+<polygon fill="#000000" stroke="#000000" points="447.2195,-368.0229 436.9854,-370.7638 446.6951,-375.0032 447.2195,-368.0229"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge52" class="edge">
+<title>module~field2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.6581,-327.6058C374.3366,-324.9764 340.4995,-338.7433 317.787,-350.6384"/>
+<polygon fill="#000000" stroke="#000000" points="315.8677,-347.6989 308.774,-355.5685 319.2269,-353.8402 315.8677,-347.6989"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge61" class="edge">
+<title>module~field2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-366.6058C498.5428,-371.4721 495.8445,-378.263 480.9294,-390.6058 463.2533,-405.2336 465.4781,-417.3994 444.9294,-427.6058 383.2387,-458.2473 359.4436,-437.8939 291.1154,-446.6058"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fpois2d_class -->
+<g id="module~~parallel_pipe_class~~UsedByGraph_edge65" class="edge">
+<title>module~field2d_class&#45;&gt;module~fpois2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.281,-366.6058C491.1154,-373.401 462.5128,-383.9718 440.8121,-392.6778"/>
+<polygon fill="#000000" stroke="#000000" points="439.3023,-389.5134 431.3607,-396.5264 441.9423,-395.9966 439.3023,-389.5134"/>
+</g>
+</g>
+</svg>
+</div><script>var panmoduleparallel_pipe_classUsedByGraph = svgPanZoom('#moduleparallel_pipe_classUsedByGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+	</li>
+	
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading
+  text-left"><h3 class="panel-title"><a data-toggle="collapse"
+  href="#common-1">Common Blocks</a></h3></div>
+  <div id="common-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#common-pparms%7E4">PPARMS</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-1">Derived Types</a></h3></div>
+  <div id="types-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#type-parallel_pipe">parallel_pipe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlidproc">getlidproc</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlkstrt">getlkstrt</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlgrp">getlgrp</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getlnvp">getlnvp</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getnstage">getnstage</a>
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-getstageid">getstageid</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/parallel_pipe_class.html#proc-init_parallel_pipe">init_parallel_pipe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+    <section>
+      <h2>Common Blocks</h2>
+      
+      
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="common-pparms%7E4"></span><h3>
+      <a data-toggle="popover" data-html="true" tabindex="0" 
+	   data-trigger="focus"
+	 data-content="<h4>Used Elsewhere:</h4><a href='../module/fft2d_lib.html#common-pparms%7E2'>fft2d_lib</a> (module)<br><a href='../module/part2d_lib.html#common-pparms%7E3'>part2d_lib</a> (module)<br><a href='../proc/prtpose.html#common-pparms'>PRTPOSE</a> (subroutine)<br><a href='../proc/pr2tpose.html#common-pparms%7E5'>PR2TPOSE</a> (subroutine)<br><a href='../proc/pr3tpose.html#common-pparms%7E6'>PR3TPOSE</a> (subroutine)<br><a href='../proc/pwrite2.html#common-pparms%7E7'>PWRITE2</a> (subroutine)<br><a href='../proc/pcguard32l.html#common-pparms%7E8'>PCGUARD32L</a> (subroutine)<br><a href='../proc/pacguard32l.html#common-pparms%7E9'>PACGUARD32L</a> (subroutine)<br><a href='../proc/paguard32l.html#common-pparms%7E10'>PAGUARD32L</a> (subroutine)<br><a href='../proc/pmove32.html#common-pparms%7E11'>PMOVE32</a> (subroutine)<br>">common /PPARMS/</a>
+      
+  </h3></div>
+  <div class="panel-body">
+    
+    
+    
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nproc%7E10"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>nproc</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lgrp%7E13"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>lgrp</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-mreal%7E14"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>mreal</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-mint%7E12"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>mint</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-mcplx%7E12"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>mcplx</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-mdouble%7E12"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>mdouble</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lworld%7E12"></span>integer</td>
+  
+  
+  <td></td><td>::</td>
+  <td><strong>lworld</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    
+</div>
+</div>
+
+      
+    </section>
+    <br>
+    <script>
+    $(function () {
+    $('[data-toggle="popover"]').popover()
+    })
+    </script>
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    <section>
+     <h2>Derived Types</h2>
+	 
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-parallel_pipe"></span><h3>type, public, extends(<a href='../type/parallel.html'>parallel</a>) :: <a href='../type/parallel_pipe.html'>parallel_pipe</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nstage"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>nstage</strong></td><td> =</td><td>1</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-stageid"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>stageid</strong></td><td> =</td><td>0</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lidproc"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>lidproc</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lkstrt"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>lkstrt</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lgrp"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>lgrp</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lnvp"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>lnvp</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+     <h4>Type-Bound Procedures</h4>
+      <table class="table table-striped varlist">
+      <tbody>
+      
+       <tr><td>generic, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-del%7E14'>del</a></strong>  => end_parallel </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getnvp'>getnvp</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getidproc'>getidproc</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getkstrt'>getkstrt</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getlworld'>getlworld</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getmreal'>getmreal</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getmint'>getmint</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getmdouble'>getmdouble</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel.html#boundprocedure-getmcplx'>getmcplx</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getnstage'>getnstage</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getstageid'>getstageid</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getlidproc'>getlidproc</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getlkstrt'>getlkstrt</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getlgrp'>getlgrp</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-getlnvp'>getlnvp</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/parallel_pipe.html#boundprocedure-init_parallel_pipe'>init_parallel_pipe</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/parallel_pipe.html#boundprocedure-new%7E16'>new</a></strong>  => init_parallel, init_parallel_pipe </td>
+       <td></td></tr>
+      
+       </tbody>
+       </table>
+     
+  </div>
+</div>
+
+     
+    </section>
+	<br>
+    
+    
+     
+    <section>
+    <h2>Functions</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getlidproc"></span><h3>
+private function <a href='../proc/getlidproc.html'>getlidproc</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getlkstrt"></span><h3>
+private function <a href='../proc/getlkstrt.html'>getlkstrt</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getlgrp"></span><h3>
+private function <a href='../proc/getlgrp.html'>getlgrp</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getlnvp"></span><h3>
+private function <a href='../proc/getlnvp.html'>getlnvp</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getnstage"></span><h3>
+private function <a href='../proc/getnstage.html'>getnstage</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getstageid"></span><h3>
+private function <a href='../proc/getstageid.html'>getstageid</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    </section>
+    <br>
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-init_parallel_pipe"></span><h3>
+private subroutine <a href='../proc/init_parallel_pipe.html'>init_parallel_pipe</a>(this, nst)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>nst</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

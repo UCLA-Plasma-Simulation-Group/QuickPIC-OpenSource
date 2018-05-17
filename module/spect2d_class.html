@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>spect2d_class &ndash; QuickPIC</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+				
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+		 aria-expanded="false">Contents <span class="caret"></span></a>
+	      <ul class="dropdown-menu">
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+				
+				
+            <li><a href="../lists/modules.html">Modules</a></li>
+				
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+				
+								
+            <li><a href="../lists/types.html">Derived Types</a></li>
+				
+				
+            <li><a href="../program/quickpic.html">Program</a></li>
+	    
+            </ul>
+            </li>
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>spect2d_class 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+	  data-placement="bottom" data-html="true"
+	  title=" 0.9% of total for modules and submodules.">65 statements</a>
+     </li> 
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/spect2d_class.f03"> Source File</a></li>
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+     <li><a href='../sourcefile/spect2d_class.f03.html'>spect2d_class.f03</a></li>
+  
+     <li class="active">spect2d_class</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-0">Derived Types</a></h3></div>
+  <div id="types-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#type-spect2d">spect2d</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getindx">getindx</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getindy">getindy</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getpsolver">getpsolver</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getinorder">getinorder</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-init_spect2d">init_spect2d</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-end_spect2d">end_spect2d</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+	<ul class="list-inline">
+	  
+	  <li><a href='../module/perrors_class.html'>perrors_class</a></li>
+	  
+	  <li><a href='../module/parallel_pipe_class.html'>parallel_pipe_class</a></li>
+	  
+	</ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~spect2d_class~~UsesGraph Pages: 1 -->
+<svg id="modulespect2d_classUsesGraph" width="425pt" height="73pt"
+ viewBox="0.00 0.00 425.46 72.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~spect2d_class~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 68.5)">
+<title>module~~spect2d_class~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-68.5 421.4592,-68.5 421.4592,4 -4,4"/>
+<!-- module~spect2d_class -->
+<g id="module~~spect2d_class~~UsesGraph_node1" class="node">
+<title>module~spect2d_class</title>
+<polygon fill="none" stroke="#000000" points="417.2294,-42.2554 339.1515,-42.2554 339.1515,-20.2446 417.2294,-20.2446 417.2294,-42.2554"/>
+<text text-anchor="middle" x="378.1904" y="-28.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">spect2d_class</text>
+</g>
+<!-- module~perrors_class -->
+<g id="module~~spect2d_class~~UsesGraph_node2" class="node">
+<title>module~perrors_class</title>
+<g id="a_module~~spect2d_class~~UsesGraph_node2"><a xlink:href=".././module/perrors_class.html" xlink:title="perrors_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="289.7889,-63.2554 214.7479,-63.2554 214.7479,-41.2446 289.7889,-41.2446 289.7889,-63.2554"/>
+<text text-anchor="middle" x="252.2684" y="-49.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors_class</text>
+</a>
+</g>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~perrors_class -->
+<g id="module~~spect2d_class~~UsesGraph_edge1" class="edge">
+<title>module~spect2d_class&#45;&gt;module~perrors_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.0382,-37.7794C326.7332,-39.8315 313.0053,-42.1209 300.1654,-44.2622"/>
+<polygon fill="#000000" stroke="#000000" points="299.3905,-40.843 290.1025,-45.9404 300.5421,-47.7477 299.3905,-40.843"/>
+</g>
+<!-- module~parallel_pipe_class -->
+<g id="module~~spect2d_class~~UsesGraph_node3" class="node">
+<title>module~parallel_pipe_class</title>
+<g id="a_module~~spect2d_class~~UsesGraph_node3"><a xlink:href=".././module/parallel_pipe_class.html" xlink:title="parallel_pipe_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="303.0753,-22.2554 201.4616,-22.2554 201.4616,-.2446 303.0753,-.2446 303.0753,-22.2554"/>
+<text text-anchor="middle" x="252.2684" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe_class</text>
+</a>
+</g>
+</g>
+<!-- module~spect2d_class&#45;&gt;module~parallel_pipe_class -->
+<g id="module~~spect2d_class~~UsesGraph_edge2" class="edge">
+<title>module~spect2d_class&#45;&gt;module~parallel_pipe_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.0382,-25.0315C330.7502,-23.7151 321.8168,-22.2963 312.9439,-20.887"/>
+<polygon fill="#000000" stroke="#000000" points="313.4148,-17.418 302.9896,-19.306 312.3167,-24.3313 313.4148,-17.418"/>
+</g>
+<!-- mpi -->
+<g id="module~~spect2d_class~~UsesGraph_node4" class="node">
+<title>mpi</title>
+<g id="a_module~~spect2d_class~~UsesGraph_node4"><a xlink:href="http://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node410.htm" xlink:title="mpi">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-23.2554 0,-23.2554 0,-1.2446 54,-1.2446 54,-23.2554"/>
+<text text-anchor="middle" x="27" y="-9.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">mpi</text>
+</a>
+</g>
+</g>
+<!-- module~perrors_class&#45;&gt;mpi -->
+<g id="module~~spect2d_class~~UsesGraph_edge3" class="edge">
+<title>module~perrors_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.7024,-58.0921C181.267,-61.9301 131.3898,-64.2797 90,-52.25 81.6548,-49.8245 64.7547,-38.9561 50.5579,-29.1599"/>
+<polygon fill="#000000" stroke="#000000" points="52.3671,-26.154 42.1684,-23.284 48.3513,-31.8876 52.3671,-26.154"/>
+</g>
+<!-- module~parallel_class -->
+<g id="module~~spect2d_class~~UsesGraph_node5" class="node">
+<title>module~parallel_class</title>
+<g id="a_module~~spect2d_class~~UsesGraph_node5"><a xlink:href=".././module/parallel_class.html" xlink:title="parallel_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="165.4238,-43.2554 90.1914,-43.2554 90.1914,-21.2446 165.4238,-21.2446 165.4238,-43.2554"/>
+<text text-anchor="middle" x="127.8076" y="-29.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_class</text>
+</a>
+</g>
+</g>
+<!-- module~perrors_class&#45;&gt;module~parallel_class -->
+<g id="module~~spect2d_class~~UsesGraph_edge4" class="edge">
+<title>module~perrors_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.5883,-46.1951C202.394,-44.2355 188.7019,-42.0353 175.8605,-39.9718"/>
+<polygon fill="#000000" stroke="#000000" points="176.2179,-36.4844 165.7892,-38.3534 175.1072,-43.3957 176.2179,-36.4844"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;mpi -->
+<g id="module~~spect2d_class~~UsesGraph_edge5" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.4329,-11.4757C159.8589,-11.6602 102.0156,-11.917 64.5415,-12.0833"/>
+<polygon fill="#000000" stroke="#000000" points="64.059,-8.5854 54.0747,-12.1298 64.0901,-15.5853 64.059,-8.5854"/>
+</g>
+<!-- module~parallel_pipe_class&#45;&gt;module~parallel_class -->
+<g id="module~~spect2d_class~~UsesGraph_edge6" class="edge">
+<title>module~parallel_pipe_class&#45;&gt;module~parallel_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.2863,-19.8521C192.791,-21.2855 184.0064,-22.7677 175.5944,-24.187"/>
+<polygon fill="#000000" stroke="#000000" points="174.8413,-20.7646 165.563,-25.8796 176.006,-27.667 174.8413,-20.7646"/>
+</g>
+<!-- module~parallel_class&#45;&gt;mpi -->
+<g id="module~~spect2d_class~~UsesGraph_edge8" class="edge">
+<title>module~parallel_class&#45;&gt;mpi</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.9838,-24.7458C81.4839,-23.0595 72.4742,-21.272 64.0081,-19.5923"/>
+<polygon fill="#000000" stroke="#000000" points="64.5118,-16.1241 54.0218,-17.6111 63.1495,-22.9903 64.5118,-16.1241"/>
+</g>
+<!-- omp_lib -->
+<g id="module~~spect2d_class~~UsesGraph_node6" class="node">
+<title>omp_lib</title>
+<g id="a_module~~spect2d_class~~UsesGraph_node6"><a xlink:href="https://gcc.gnu.org/onlinedocs/gcc-4.4.3/libgomp/Runtime-Library-Routines.html" xlink:title="omp_lib">
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-64.2554 0,-64.2554 0,-42.2446 54,-42.2446 54,-64.2554"/>
+<text text-anchor="middle" x="27" y="-50.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">omp_lib</text>
+</a>
+</g>
+</g>
+<!-- module~parallel_class&#45;&gt;omp_lib -->
+<g id="module~~spect2d_class~~UsesGraph_edge7" class="edge">
+<title>module~parallel_class&#45;&gt;omp_lib</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.9838,-40.1294C81.4839,-41.9 72.4742,-43.7769 64.0081,-45.5406"/>
+<polygon fill="#000000" stroke="#000000" points="63.0979,-42.155 54.0218,-47.6209 64.5255,-49.0078 63.0979,-42.155"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+	
+	
+	<li class="list-group-item">
+	  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~spect2d_class~~UsedByGraph Pages: 1 -->
+<svg id="modulespect2d_classUsedByGraph" width="641pt" height="367pt"
+ viewBox="0.00 0.00 641.00 367.08" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~spect2d_class~~UsedByGraph" class="graph" transform="scale(.8489 .8489) rotate(0) translate(4 428.4131)">
+<title>module~~spect2d_class~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-428.4131 751.0754,-428.4131 751.0754,4 -4,4"/>
+<!-- module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node1" class="node">
+<title>module~spect2d_class</title>
+<polygon fill="none" stroke="#000000" points="78.3077,-258.4275 .2298,-258.4275 .2298,-236.4166 78.3077,-236.4166 78.3077,-258.4275"/>
+<text text-anchor="middle" x="39.2688" y="-244.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">spect2d_class</text>
+</g>
+<!-- module~fdist2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node2" class="node">
+<title>module~fdist2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node2"><a xlink:href=".././module/fdist2d_class.html" xlink:title="fdist2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="416.1732,-393.4275 343.776,-393.4275 343.776,-371.4166 416.1732,-371.4166 416.1732,-393.4275"/>
+<text text-anchor="middle" x="379.9746" y="-379.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fdist2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge1" class="edge">
+<title>module~fdist2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M268.3517,-421.422C214.861,-417.4732 204.1534,-401.9231 153.809,-383.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M362.4298,-393.5387C340.958,-405.9501 303.1542,-423.9913 268.3517,-421.422"/>
+</g>
+<!-- program~quickpic -->
+<g id="module~~spect2d_class~~UsedByGraph_node3" class="node">
+<title>program~quickpic</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node3"><a xlink:href=".././program/quickpic.html" xlink:title="quickpic">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="747.0754,-257.4275 693.0754,-257.4275 693.0754,-235.4166 747.0754,-235.4166 747.0754,-257.4275"/>
+<text text-anchor="middle" x="720.0754" y="-243.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">quickpic</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge2" class="edge">
+<title>program~quickpic&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.1794,-421.422C442.6363,-427.1116 429.6681,-417.2444 379.9746,-421.422"/>
+</g>
+<!-- program~quickpic&#45;&gt;module~fdist2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge12" class="edge">
+<title>program~quickpic&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.1794,-421.422C463.5422,-418.9521 432.8287,-407.6117 410.788,-397.7917"/>
+<polygon fill="#000000" stroke="#000000" points="412.1551,-394.568 401.6078,-393.5657 409.228,-400.9266 412.1551,-394.568"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M713.6638,-257.4627C689.6055,-297.2935 600.5256,-430.7667 492.1794,-421.422"/>
+</g>
+<!-- module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node4" class="node">
+<title>module~spect3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node4"><a xlink:href=".././module/spect3d_class.html" xlink:title="spect3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.8479,-159.4275 114.77,-159.4275 114.77,-137.4166 192.8479,-137.4166 192.8479,-159.4275"/>
+<text text-anchor="middle" x="153.809" y="-145.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge14" class="edge">
+<title>program~quickpic&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M612.5541,-168.422C571.9575,-150.5265 571.0628,-130.5167 532.0327,-109.422 468.5394,-75.1056 451.1561,-64.3474 379.9746,-52.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M708.6341,-235.2681C690.1201,-217.9264 651.7013,-184.7945 612.5541,-168.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-52.422C329.1384,-39.6906 317.1392,4.7139 268.3517,-14.422"/>
+</g>
+<!-- module~species2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node7" class="node">
+<title>module~species2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node7"><a xlink:href=".././module/species2d_class.html" xlink:title="species2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="657.0968,-315.4275 568.0113,-315.4275 568.0113,-293.4166 657.0968,-293.4166 657.0968,-315.4275"/>
+<text text-anchor="middle" x="612.5541" y="-301.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~species2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge26" class="edge">
+<title>program~quickpic&#45;&gt;module~species2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.5984,-257.4679C683.41,-266.2004 660.5834,-278.5137 642.3672,-288.34"/>
+<polygon fill="#000000" stroke="#000000" points="640.4606,-285.3917 633.3211,-293.2197 643.784,-291.5525 640.4606,-285.3917"/>
+</g>
+<!-- module~field2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node10" class="node">
+<title>module~field2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node10"><a xlink:href=".././module/field2d_class.html" xlink:title="field2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="528.3832,-218.4275 455.9757,-218.4275 455.9757,-196.4166 528.3832,-196.4166 528.3832,-218.4275"/>
+<text text-anchor="middle" x="492.1794" y="-204.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~field2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge30" class="edge">
+<title>program~quickpic&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M612.5541,-168.422C596.4875,-161.3779 553.6145,-178.3034 523.637,-192.0316"/>
+<polygon fill="#000000" stroke="#000000" points="521.987,-188.9393 514.4075,-196.3421 524.9491,-195.2817 521.987,-188.9393"/>
+</g>
+<!-- module~input_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node11" class="node">
+<title>module~input_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node11"><a xlink:href=".././module/input_class.html" xlink:title="input_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="644.5865,-83.4275 580.5216,-83.4275 580.5216,-61.4166 644.5865,-61.4166 644.5865,-83.4275"/>
+<text text-anchor="middle" x="612.5541" y="-69.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">input_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~input_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge31" class="edge">
+<title>program~quickpic&#45;&gt;module~input_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M713.1859,-235.2729C695.401,-206.4918 647.7532,-129.3841 624.992,-92.5501"/>
+<polygon fill="#000000" stroke="#000000" points="627.7595,-90.3706 619.5254,-83.7036 621.8047,-94.0503 627.7595,-90.3706"/>
+</g>
+<!-- module~fdist3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node13" class="node">
+<title>module~fdist3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node13"><a xlink:href=".././module/fdist3d_class.html" xlink:title="fdist3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="304.5503,-64.4275 232.1531,-64.4275 232.1531,-42.4166 304.5503,-42.4166 304.5503,-64.4275"/>
+<text text-anchor="middle" x="268.3517" y="-50.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~fdist3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge36" class="edge">
+<title>program~quickpic&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-52.422C358.8155,-48.8772 335.0828,-48.5851 314.9591,-49.3956"/>
+<polygon fill="#000000" stroke="#000000" points="314.6083,-45.9087 304.7974,-49.9085 314.9612,-52.8998 314.6083,-45.9087"/>
+</g>
+<!-- module~beam3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node14" class="node">
+<title>module~beam3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node14"><a xlink:href=".././module/beam3d_class.html" xlink:title="beam3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="531.8865,-140.4275 452.4724,-140.4275 452.4724,-118.4166 531.8865,-118.4166 531.8865,-140.4275"/>
+<text text-anchor="middle" x="492.1794" y="-126.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">beam3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~beam3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge38" class="edge">
+<title>program~quickpic&#45;&gt;module~beam3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M612.5541,-168.422C589.8729,-158.4779 563.8243,-149.7288 541.7725,-143.0508"/>
+<polygon fill="#000000" stroke="#000000" points="542.5311,-139.625 531.9483,-140.1313 540.537,-146.335 542.5311,-139.625"/>
+</g>
+<!-- module~field3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node15" class="node">
+<title>module~field3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node15"><a xlink:href=".././module/field3d_class.html" xlink:title="field3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="416.1783,-218.4275 343.7709,-218.4275 343.7709,-196.4166 416.1783,-196.4166 416.1783,-218.4275"/>
+<text text-anchor="middle" x="379.9746" y="-204.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field3d_class</text>
+</a>
+</g>
+</g>
+<!-- program~quickpic&#45;&gt;module~field3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge40" class="edge">
+<title>program~quickpic&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M612.5541,-168.422C544.2913,-138.4933 455.498,-170.8542 409.8956,-192.0474"/>
+<polygon fill="#000000" stroke="#000000" points="408.3563,-188.9038 400.8431,-196.3738 411.3748,-195.2195 408.3563,-188.9038"/>
+</g>
+<!-- module~spect3d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge3" class="edge">
+<title>module~spect3d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M140.6697,-159.7786C120.9056,-176.8612 83.3493,-209.3221 59.9061,-229.5847"/>
+<polygon fill="#000000" stroke="#000000" points="57.5317,-227.0107 52.2548,-236.1979 62.1092,-232.3067 57.5317,-227.0107"/>
+</g>
+<!-- module~fft2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node5" class="node">
+<title>module~fft2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node5"><a xlink:href=".././module/fft2d_class.html" xlink:title="fft2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="299.36,-239.4275 237.3434,-239.4275 237.3434,-217.4166 299.36,-217.4166 299.36,-239.4275"/>
+<text text-anchor="middle" x="268.3517" y="-225.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge4" class="edge">
+<title>module~fft2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M236.979,-231.0241C198.7813,-234.1922 133.8101,-239.5808 88.8249,-243.3119"/>
+<polygon fill="#000000" stroke="#000000" points="88.3749,-239.8371 78.6984,-244.1518 88.9535,-246.8131 88.3749,-239.8371"/>
+</g>
+<!-- module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node6" class="node">
+<title>module~ufield2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node6"><a xlink:href=".././module/ufield2d_class.html" xlink:title="ufield2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.853,-278.4275 114.7649,-278.4275 114.7649,-256.4166 192.853,-256.4166 192.853,-278.4275"/>
+<text text-anchor="middle" x="153.809" y="-264.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fft2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge22" class="edge">
+<title>module~fft2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M237.0524,-239.079C224.3667,-243.3982 209.5242,-248.4519 195.9133,-253.0862"/>
+<polygon fill="#000000" stroke="#000000" points="194.6068,-249.8336 186.2686,-256.3701 196.863,-256.4601 194.6068,-249.8336"/>
+</g>
+<!-- module~ufield2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge5" class="edge">
+<title>module~ufield2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M114.7111,-260.5951C106.3266,-259.1311 97.3624,-257.5658 88.6469,-256.044"/>
+<polygon fill="#000000" stroke="#000000" points="89.0324,-252.5584 78.5793,-254.2861 87.8282,-259.4541 89.0324,-252.5584"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge6" class="edge">
+<title>module~species2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.1794,-383.422C443.1314,-402.5642 432.4406,-417.0113 379.9746,-421.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-421.422C330.5388,-425.578 317.8272,-425.0745 268.3517,-421.422"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~fdist2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge10" class="edge">
+<title>module~species2d_class&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M599.5124,-315.6858C578.4666,-333.2044 535.0265,-366.7 492.1794,-383.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M492.1794,-383.422C471.6091,-391.4501 447.2573,-392.1729 426.5054,-390.4857"/>
+<polygon fill="#000000" stroke="#000000" points="426.6348,-386.9808 416.3312,-389.4478 425.9243,-393.9447 426.6348,-386.9808"/>
+</g>
+<!-- module~part2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node8" class="node">
+<title>module~part2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node8"><a xlink:href=".././module/part2d_class.html" xlink:title="part2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="527.7151,-354.4275 456.6438,-354.4275 456.6438,-332.4166 527.7151,-332.4166 527.7151,-354.4275"/>
+<text text-anchor="middle" x="492.1794" y="-340.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~species2d_class&#45;&gt;module~part2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge27" class="edge">
+<title>module~species2d_class&#45;&gt;module~part2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M578.3815,-315.4936C565.2934,-319.734 550.173,-324.6328 536.2853,-329.1323"/>
+<polygon fill="#000000" stroke="#000000" points="534.8718,-325.911 526.4374,-332.3228 537.0294,-332.5702 534.8718,-325.911"/>
+</g>
+<!-- module~species2d_class&#45;&gt;module~field2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge29" class="edge">
+<title>module~species2d_class&#45;&gt;module~field2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M598.7456,-293.2949C578.0852,-276.6464 538.9247,-245.0902 514.2623,-225.2168"/>
+<polygon fill="#000000" stroke="#000000" points="516.1803,-222.2675 506.1977,-218.7182 511.7882,-227.7181 516.1803,-222.2675"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge7" class="edge">
+<title>module~part2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M268.3517,-383.422C217.7842,-377.5452 201.5738,-401.0327 153.809,-383.422"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~fdist2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge11" class="edge">
+<title>module~part2d_class&#45;&gt;module~fdist2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M460.3262,-354.4936C448.2448,-358.6928 434.3056,-363.5377 421.4644,-368.0011"/>
+<polygon fill="#000000" stroke="#000000" points="420.2041,-364.7337 411.9075,-371.3228 422.5023,-371.3457 420.2041,-364.7337"/>
+</g>
+<!-- module~part2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge23" class="edge">
+<title>module~part2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M456.5243,-346.5187C426.2826,-349.4936 381.8501,-354.6874 343.623,-362.422 309.5814,-369.3099 303.0158,-385.5849 268.3517,-383.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M268.3517,-383.422C216.3479,-377.3783 179.6926,-319.5026 163.3571,-287.856"/>
+<polygon fill="#000000" stroke="#000000" points="166.3484,-286.0094 158.7737,-278.6017 160.0756,-289.1163 166.3484,-286.0094"/>
+</g>
+<!-- module~fpois2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node9" class="node">
+<title>module~fpois2d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node9"><a xlink:href=".././module/fpois2d_class.html" xlink:title="fpois2d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="305.973,-317.4275 230.7304,-317.4275 230.7304,-295.4166 305.973,-295.4166 305.973,-317.4275"/>
+<text text-anchor="middle" x="268.3517" y="-303.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d_class</text>
+</a>
+</g>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge8" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M250.6662,-317.4822C243.8794,-321.7783 236.0848,-326.7755 229.0803,-331.422 195.1972,-353.8993 191.9741,-397.4474 153.809,-383.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M153.809,-383.422C99.7167,-363.5437 63.605,-300.3327 48.0157,-267.5609"/>
+<polygon fill="#000000" stroke="#000000" points="51.1878,-266.0814 43.8393,-258.4492 44.8244,-268.9982 51.1878,-266.0814"/>
+</g>
+<!-- module~fpois2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge24" class="edge">
+<title>module~fpois2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M235.8347,-295.3505C223.5016,-291.1513 209.272,-286.3063 196.1632,-281.843"/>
+<polygon fill="#000000" stroke="#000000" points="197.0017,-278.4312 186.4072,-278.5212 194.7454,-285.0577 197.0017,-278.4312"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~spect2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge9" class="edge">
+<title>module~field2d_class&#45;&gt;module~spect2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-267.422C339.7998,-277.7956 343.6415,-305.8235 307.623,-326.422 275.9798,-344.5185 188.0242,-395.9958 153.809,-383.422"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fft2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge20" class="edge">
+<title>module~field2d_class&#45;&gt;module~fft2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-267.422C364.6494,-271.2331 327.4254,-256.3757 300.1613,-243.9132"/>
+<polygon fill="#000000" stroke="#000000" points="301.528,-240.6888 290.9852,-239.6395 298.5725,-247.0343 301.528,-240.6888"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge25" class="edge">
+<title>module~field2d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-267.422C320.4604,-282.2218 249.3804,-278.9627 203.0004,-274.1715"/>
+<polygon fill="#000000" stroke="#000000" points="203.2389,-270.6767 192.9168,-273.0652 202.4754,-277.635 203.2389,-270.6767"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~fpois2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge28" class="edge">
+<title>module~field2d_class&#45;&gt;module~fpois2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-267.422C354.4072,-273.7801 326.42,-283.5654 304.8656,-291.7435"/>
+<polygon fill="#000000" stroke="#000000" points="303.5214,-288.5106 295.4467,-295.3699 306.0365,-295.0431 303.5214,-288.5106"/>
+</g>
+<!-- module~ufield3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node12" class="node">
+<title>module~ufield3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node12"><a xlink:href=".././module/ufield3d_class.html" xlink:title="ufield3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="307.3957,-198.4275 229.3076,-198.4275 229.3076,-176.4166 307.3957,-176.4166 307.3957,-198.4275"/>
+<text text-anchor="middle" x="268.3517" y="-184.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~field2d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge32" class="edge">
+<title>module~field2d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M477.209,-218.5893C456.59,-233.1986 417.7043,-258.0396 379.9746,-267.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.9746,-267.422C339.7084,-277.4353 342.1567,-231.4232 307.623,-208.422 305.0672,-206.7197 302.3591,-205.0401 299.6075,-203.4172"/>
+<polygon fill="#000000" stroke="#000000" points="301.2357,-200.3174 290.8036,-198.4677 297.8053,-206.4193 301.2357,-200.3174"/>
+</g>
+<!-- module~field2d_class&#45;&gt;module~field3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge41" class="edge">
+<title>module~field2d_class&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455.7497,-207.422C446.3462,-207.422 436.0983,-207.422 426.2654,-207.422"/>
+<polygon fill="#000000" stroke="#000000" points="426.2216,-203.9221 416.2215,-207.422 426.2215,-210.9221 426.2216,-203.9221"/>
+</g>
+<!-- module~input_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge13" class="edge">
+<title>module~input_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M268.3517,-14.422C250.121,-21.0244 243.6455,-20.6235 229.0803,-33.422 198.3596,-60.4167 175.0358,-102.8099 162.9739,-127.8846"/>
+<polygon fill="#000000" stroke="#000000" points="159.6949,-126.6348 158.6398,-137.177 166.0388,-129.5937 159.6949,-126.6348"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M590.9222,-61.3968C535.6114,-34.76 385.1573,27.8797 268.3517,-14.422"/>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge15" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M235.8347,-176.3505C223.5016,-172.1513 209.272,-167.3063 196.1632,-162.843"/>
+<polygon fill="#000000" stroke="#000000" points="197.0017,-159.4312 186.4072,-159.5212 194.7454,-166.0577 197.0017,-159.4312"/>
+</g>
+<!-- module~ufield3d_class&#45;&gt;module~ufield2d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge21" class="edge">
+<title>module~ufield3d_class&#45;&gt;module~ufield2d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M245.9464,-198.5385C240.3282,-201.5594 234.3906,-204.9586 229.0803,-208.422 209.7816,-221.0089 189.2884,-237.2857 174.566,-249.5539"/>
+<polygon fill="#000000" stroke="#000000" points="172.0064,-247.134 166.6172,-256.2558 176.5186,-252.4857 172.0064,-247.134"/>
+</g>
+<!-- module~fdist3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge16" class="edge">
+<title>module~fdist3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M254.7623,-64.6928C235.1287,-80.9767 198.6324,-111.2462 175.318,-130.5827"/>
+<polygon fill="#000000" stroke="#000000" points="172.8434,-128.088 167.3806,-137.1659 177.3122,-133.476 172.8434,-128.088"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge17" class="edge">
+<title>module~beam3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M457.8118,-140.4885C444.9425,-144.0986 430.1023,-147.6364 416.3262,-149.422 351.1038,-157.8761 333.8614,-154.2445 268.3517,-148.422"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~fdist3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge35" class="edge">
+<title>module~beam3d_class&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M459.633,-118.371C420.2634,-105.0032 353.8961,-82.4684 310.6091,-67.7704"/>
+<polygon fill="#000000" stroke="#000000" points="311.5318,-64.3875 300.9374,-64.4864 309.2811,-71.0158 311.5318,-64.3875"/>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~field3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge39" class="edge">
+<title>module~beam3d_class&#45;&gt;module~field3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.6748,-140.4922C466.8648,-144.7059 459.1516,-149.6451 452.3262,-154.422 435.7196,-166.0447 432.6839,-170.4517 416.3262,-182.422 412.7797,-185.0173 408.997,-187.705 405.262,-190.3134"/>
+<polygon fill="#000000" stroke="#000000" points="403.0105,-187.6146 396.7675,-196.1747 406.986,-193.3761 403.0105,-187.6146"/>
+</g>
+<!-- module~part3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_node16" class="node">
+<title>module~part3d_class</title>
+<g id="a_module~~spect2d_class~~UsedByGraph_node16"><a xlink:href=".././module/part3d_class.html" xlink:title="part3d_class">
+<polygon fill="#337ab7" stroke="#337ab7" points="415.5103,-140.4275 344.4389,-140.4275 344.4389,-118.4166 415.5103,-118.4166 415.5103,-140.4275"/>
+<text text-anchor="middle" x="379.9746" y="-126.272" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part3d_class</text>
+</a>
+</g>
+</g>
+<!-- module~beam3d_class&#45;&gt;module~part3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge42" class="edge">
+<title>module~beam3d_class&#45;&gt;module~part3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M452.3043,-129.422C443.7022,-129.422 434.5432,-129.422 425.7364,-129.422"/>
+<polygon fill="#000000" stroke="#000000" points="425.6143,-125.9221 415.6142,-129.422 425.6142,-132.9221 425.6143,-125.9221"/>
+</g>
+<!-- module~field3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge18" class="edge">
+<title>module~field3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M362.7949,-196.1987C336.7847,-179.5838 288.3293,-150.1976 268.3517,-148.422"/>
+</g>
+<!-- module~field3d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge33" class="edge">
+<title>module~field3d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.7338,-200.9286C335.316,-199.4204 326.2181,-197.7902 317.3528,-196.2018"/>
+<polygon fill="#000000" stroke="#000000" points="317.9518,-192.7535 307.4912,-194.4349 316.7171,-199.6437 317.9518,-192.7535"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~spect3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge19" class="edge">
+<title>module~part3d_class&#45;&gt;module~spect3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M344.2212,-140.2812C322.4116,-145.7114 293.9043,-150.6931 268.3517,-148.422"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M268.3517,-148.422C247.0142,-146.5256 223.3524,-146.2251 203.1005,-146.5133"/>
+<polygon fill="#000000" stroke="#000000" points="202.7814,-143.0188 192.8513,-146.7124 202.9174,-150.0175 202.7814,-143.0188"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~ufield3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge34" class="edge">
+<title>module~part3d_class&#45;&gt;module~ufield3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M358.7165,-140.4679C341.8334,-149.2405 317.9956,-161.6268 299.0421,-171.4751"/>
+<polygon fill="#000000" stroke="#000000" points="297.1707,-168.5031 289.9109,-176.2197 300.3983,-174.7147 297.1707,-168.5031"/>
+</g>
+<!-- module~part3d_class&#45;&gt;module~fdist3d_class -->
+<g id="module~~spect2d_class~~UsedByGraph_edge37" class="edge">
+<title>module~part3d_class&#45;&gt;module~fdist3d_class</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M363.5043,-118.208C344.8491,-105.5064 314.2625,-84.681 292.8157,-70.0787"/>
+<polygon fill="#000000" stroke="#000000" points="294.7625,-67.17 284.5267,-64.435 290.8228,-72.9561 294.7625,-67.17"/>
+</g>
+</g>
+</svg>
+</div><script>var panmodulespect2d_classUsedByGraph = svgPanZoom('#modulespect2d_classUsedByGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="484pt" height="31pt"
+ viewBox="0.00 0.00 483.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 479.8539,-26.5 479.8539,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="137.6205,-22.2554 72.3795,-22.2554 72.3795,-.2446 137.6205,-.2446 137.6205,-22.2554"/>
+<text text-anchor="middle" x="105" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="218.288,-22.2554 155.712,-22.2554 155.712,-.2446 218.288,-.2446 218.288,-22.2554"/>
+<text text-anchor="middle" x="187" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="290,-22.2554 236,-22.2554 236,-.2446 290,-.2446 290,-22.2554"/>
+<text text-anchor="middle" x="263" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="362,-22.2554 308,-22.2554 308,-.2446 362,-.2446 362,-22.2554"/>
+<text text-anchor="middle" x="335" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="475.7082,-22.2554 380.2918,-22.2554 380.2918,-.2446 475.7082,-.2446 475.7082,-22.2554"/>
+<text text-anchor="middle" x="428" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+	</li>
+	
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#types-1">Derived Types</a></h3></div>
+  <div id="types-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#type-spect2d">spect2d</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getindx">getindx</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getindy">getindy</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getpsolver">getpsolver</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-getinorder">getinorder</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-init_spect2d">init_spect2d</a>
+      
+      <a class="list-group-item" href="../module/spect2d_class.html#proc-end_spect2d">end_spect2d</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    <section>
+     <h2>Derived Types</h2>
+	 
+	   
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="type-spect2d"></span><h3>type, public :: <a href='../type/spect2d.html'>spect2d</a>
+    
+  </h3></div>
+  <div class="panel-body">
+    
+     
+     <h4>Components</h4>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-indx"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>indx</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-indy"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>indy</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-psolver"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>psolver</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-inorder"></span>integer,</td>
+  
+  <td>private</td>
+  <td></td><td>::</td>
+  <td><strong>inorder</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-err"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>err</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-p%7E2"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  
+  <td>public,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>p</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+     
+     
+          
+     
+     <h4>Type-Bound Procedures</h4>
+      <table class="table table-striped varlist">
+      <tbody>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/spect2d.html#boundprocedure-init_spect2d'>init_spect2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, private :: <strong><a href='../type/spect2d.html#boundprocedure-end_spect2d'>end_spect2d</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/spect2d.html#boundprocedure-new%7E2'>new</a></strong>  => init_spect2d </td>
+       <td></td></tr>
+      
+       <tr><td>generic, public :: <strong><a href='../type/spect2d.html#boundprocedure-del%7E2'>del</a></strong>  => end_spect2d </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/spect2d.html#boundprocedure-getindx'>getindx</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/spect2d.html#boundprocedure-getindy'>getindy</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/spect2d.html#boundprocedure-getpsolver'>getpsolver</a></strong>  </td>
+       <td></td></tr>
+      
+       <tr><td>procedure, public :: <strong><a href='../type/spect2d.html#boundprocedure-getinorder'>getinorder</a></strong>  </td>
+       <td></td></tr>
+      
+       </tbody>
+       </table>
+     
+  </div>
+</div>
+
+     
+    </section>
+	<br>
+    
+    
+     
+    <section>
+    <h2>Functions</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getindx"></span><h3>
+private function <a href='../proc/getindx.html'>getindx</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getindy"></span><h3>
+private function <a href='../proc/getindy.html'>getindy</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getpsolver"></span><h3>
+private function <a href='../proc/getpsolver.html'>getpsolver</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-getinorder"></span><h3>
+private function <a href='../proc/getinorder.html'>getinorder</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>integer
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    </section>
+    <br>
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-init_spect2d"></span><h3>
+private subroutine <a href='../proc/init_spect2d.html'>init_spect2d</a>(this, pp, perr, indx, indy, psolver, inorder)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>pp</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>perr</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indx</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>indy</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>psolver</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>inorder</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-end_spect2d"></span><h3>
+private subroutine <a href='../proc/end_spect2d.html'>end_spect2d</a>(this)
+    
+    
+	 
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>
