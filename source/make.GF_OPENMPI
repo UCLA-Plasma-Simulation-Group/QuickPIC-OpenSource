@@ -1,6 +1,6 @@
 # name of the compiler 
 FC_GF_OPENMPI = mpif90 -fopenmp
-CC_GF_OPENMPI = gcc
+CC_GF_OPENMPI = mpicc
 LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
 
 OPTS_DBL_GF_OPENMPI = -O3 -fdefault-real-8 -fdefault-double-8
