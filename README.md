@@ -5,7 +5,7 @@ QuickPIC is a 3D parallel (MPI & OpenMP Hybrid) Quasi-Static PIC code, which is 
 
 If you clone this repository, we ask that you __please contact__ Weiming An (anweiming@ucla.edu). The development of QuickPIC relies on grant funding for which we are required to report code usage, and we would greatly appreciate being able to maintain accurate user-number tallies.
 
-Please also feel free to send an email to this address if you would like assistance using the code, if you have any questions related to the code base, or if you have suggestions for improvements. We are in the process of establishing a user forum for discussions related to the use and development of QuickPIC and will be more than happy to include you in such a forum if you desire.
+Please feel free to join in our email list [quickpic-users-developers](https://groups.google.com/a/lists.ucla.edu/forum/#!forum/quickpic-users-developers). We also have created a chat room “QuickPIC-User-Developer-Community” on [Gitter](https://gitter.im/home).
 
 # Compile QuickPIC
 

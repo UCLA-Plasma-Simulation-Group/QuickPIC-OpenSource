@@ -413,9 +413,9 @@
          nd2 = size(this%rf,3)
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)
-         do i = 1, rank
+         do k = 1, nd2
             do j = 1, nd1
-               do k = 1, nd2
+               do i = 1, rank
                   this%rf(ddim(i),j,k,lpos) = rf2d(sdim(i),j,k)
                enddo
             enddo
@@ -445,9 +445,9 @@
          nd2 = size(this%rf,3)
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)
-         do i = 1, rank
+         do k = 1, nd2
             do j = 1, nd1
-               do k = 1, nd2
+               do i = 1, rank
                   rf2d(ddim(i),j,k) = this%rf(sdim(i),j,k,lpos)
                enddo
             enddo
@@ -588,10 +588,10 @@
          
 
 !$OMP PARALLEL DO PRIVATE(i,j,k,l)         
-         do i = 1, size(rf1,1)
-            do j = 1, size(rf1,2)
-               do k = 1, size(rf1,3)
-                  do l = 1, size(rf1,4)               
+         do l = 1, size(rf1,4)  
+            do k = 1, size(rf1,3)
+               do j = 1, size(rf1,2)
+                  do i = 1, size(rf1,1)             
                      rf1(i,j,k,l) = rf2(i,j,k,l) + rf3(i,j,k,l)
                   enddo
                enddo
@@ -623,10 +623,10 @@
          
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do i = 1, size(rf1,1)
-            do j = 1, size(rf1,2)
-               do k = 1, size(rf1,3)
-                  do l = 1, size(rf1,4)               
+         do l = 1, size(rf1,4)  
+            do k = 1, size(rf1,3)
+               do j = 1, size(rf1,2)
+                  do i = 1, size(rf1,1)             
                      rf1(i,j,k,l) = rf2(i,j,k,l) - rf3(i,j,k,l)
                   enddo
                enddo
@@ -656,10 +656,10 @@
          rf2 => a1%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do i = 1, size(rf1,1)
-            do j = 1, size(rf1,2)
-               do k = 1, size(rf1,3)
-                  do l = 1, size(rf1,4)               
+         do l = 1, size(rf1,4)
+            do k = 1, size(rf1,3)
+               do j = 1, size(rf1,2)
+                  do i = 1, size(rf1,1)               
                      rf1(i,j,k,l) = rf2(i,j,k,l) * value
                   enddo
                enddo
@@ -686,10 +686,10 @@
          rf => this%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do i = 1, size(rf,1)
-            do j = 1, size(rf,2)
-               do k = 1, size(rf,3)
-                  do l = 1, size(rf,4)               
+         do l = 1, size(rf,4)
+            do k = 1, size(rf,3)
+               do j = 1, size(rf,2)
+                  do i = 1, size(rf,1)               
                      rf(i,j,k,l) = value
                   enddo
                enddo
@@ -718,10 +718,10 @@
          rf2 => that%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do i = 1, size(rf1,1)
-            do j = 1, size(rf1,2)
-               do k = 1, size(rf1,3)
-                  do l = 1, size(rf1,4)               
+         do l = 1, size(rf1,4) 
+            do k = 1, size(rf1,3)
+               do j = 1, size(rf1,2)
+                  do i = 1, size(rf1,1)              
                      rf1(i,j,k,l) = rf2(i,j,k,l)
                   enddo
                enddo
