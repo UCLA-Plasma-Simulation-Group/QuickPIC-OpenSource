@@ -7,6 +7,10 @@ If you clone this repository, we ask that you __please contact__ Weiming An (anw
 
 Please feel free to join in our email list [quickpic-users-developers](https://groups.google.com/a/lists.ucla.edu/forum/#!forum/quickpic-users-developers). We also have created a chat room “QuickPIC-User-Developer-Community” on [Gitter](https://gitter.im/home).
 
+# Documentation
+
+Visit [here](http://ucla-plasma-simulation-group.github.io/quickpic-dev) for the documentaion.
+
 # Compile QuickPIC
 
 The makefile is set to use gcc and gfortran with MPI. HDF5-Parallel is also required
@@ -14,16 +18,20 @@ for compiling.
 
 To compile the programs, execute:
 
+```
 make
+```
 
-The program name is qpic.e
+The program name is `qpic.e`
 
 The command to execute a program with both MPI and OpenMP varies from
 one system to another.  One possible command is:
 
+```
 mpirun -np nproc ./qpic.e
+```
 
-where nproc is the number of processors to be used. Note that nproc should be 2 at least.
+where `nproc` is the number of processors to be used. Note that `nproc` should be 2 at least.
 
 By default, OpenMP will use the maximum number of processors it can find
 on the MPI node.  If the user wants to control the number of threads, the
@@ -34,6 +42,9 @@ number of threads per node expected.
 
 To compile QuickPIC on Debian, execute:
 
+```
 make SYS_FX=DEBIAN
+```
 
 This requires that libhdf5-openmpi-dev is installed as it uses the h5pfc compiler wrapper.
+

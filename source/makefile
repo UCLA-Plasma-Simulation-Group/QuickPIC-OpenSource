@@ -69,119 +69,119 @@ clean ::
 	rm *.o *.mod; rm qpic.e
 
 # Compilation rules
-input_class.o : input_class.f spect3d_class.o\
+input_class.o : input_class.f03 spect3d_class.o\
                   perrors_class.o parallel_pipe_class.o parallel_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c input_class.f -o input_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c input_class.f03 -o input_class.o
 
-beam3d_class.o : beam3d_class.f fdist3d_class.o field3d_class.o spect3d_class.o \
+beam3d_class.o : beam3d_class.f03 fdist3d_class.o field3d_class.o spect3d_class.o \
                   perrors_class.o parallel_pipe_class.o part3d_class.o hdf5io_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c beam3d_class.f -o beam3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c beam3d_class.f03 -o beam3d_class.o
 
 
-species2d_class.o : species2d_class.f spect2d_class.o perrors_class.o \
+species2d_class.o : species2d_class.f03 spect2d_class.o perrors_class.o \
                   parallel_pipe_class.o field2d_class.o hdf5io_class.o \
                   fdist2d_class.o part2d_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c species2d_class.f -o species2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c species2d_class.f03 -o species2d_class.o
 
 
-field3d_class.o : field3d_class.f spect3d_class.o perrors_class.o \
+field3d_class.o : field3d_class.f03 spect3d_class.o perrors_class.o \
                   parallel_pipe_class.o ufield3d_class.o hdf5io_class.o 
-	${FC} ${OPTS} ${FORMAT_FREE} -c field3d_class.f -o field3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c field3d_class.f03 -o field3d_class.o
 
-field2d_class.o : field2d_class.f spect2d_class.o perrors_class.o \
+field2d_class.o : field2d_class.f03 spect2d_class.o perrors_class.o \
                   parallel_pipe_class.o ufield2d_class.o fft2d_class.o \
                   fpois2d_class.o hdf5io_class.o field3d_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c field2d_class.f -o field2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c field2d_class.f03 -o field2d_class.o
 
-part3d_class.o : part3d_class.f fdist3d_class.o ufield3d_class.o spect3d_class.o \
+part3d_class.o : part3d_class.f03 fdist3d_class.o ufield3d_class.o spect3d_class.o \
                   perrors_class.o parallel_pipe_class.o part3d_lib.o hdf5io_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_class.f -o part3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_class.f03 -o part3d_class.o
 
 part3d_lib77.o : part3d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c part3d_lib77.f -o part3d_lib77.o
 
-part3d_lib.o : part3d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_lib.f -o part3d_lib.o
+part3d_lib.o : part3d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_lib.f03 -o part3d_lib.o
 
-fdist3d_class.o : fdist3d_class.f spect3d_class.o perrors_class.o \
+fdist3d_class.o : fdist3d_class.f03 spect3d_class.o perrors_class.o \
                    parallel_pipe_class.o 
-	${FC} ${OPTS} ${FORMAT_FREE} -c fdist3d_class.f -o fdist3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c fdist3d_class.f03 -o fdist3d_class.o
 
 ufield3d_lib77.o : ufield3d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c ufield3d_lib77.f -o ufield3d_lib77.o
 
-ufield3d_lib.o : ufield3d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c ufield3d_lib.f -o ufield3d_lib.o
+ufield3d_lib.o : ufield3d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c ufield3d_lib.f03 -o ufield3d_lib.o
 
-ufield3d_class.o : ufield3d_class.f spect3d_class.o perrors_class.o \
+ufield3d_class.o : ufield3d_class.f03 spect3d_class.o perrors_class.o \
                    parallel_pipe_class.o ufield3d_lib.o hdf5io_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c ufield3d_class.f -o ufield3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c ufield3d_class.f03 -o ufield3d_class.o
 
-part2d_class.o : part2d_class.f fdist2d_class.o ufield2d_class.o spect2d_class.o \
+part2d_class.o : part2d_class.f03 fdist2d_class.o ufield2d_class.o spect2d_class.o \
                   perrors_class.o parallel_pipe_class.o part2d_lib.o hdf5io_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_class.f -o part2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_class.f03 -o part2d_class.o
 
 part2d_lib77.o : part2d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c part2d_lib77.f -o part2d_lib77.o
 
-part2d_lib.o : part2d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_lib.f -o part2d_lib.o
+part2d_lib.o : part2d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_lib.f03 -o part2d_lib.o
 
-fdist2d_class.o : fdist2d_class.f spect2d_class.o perrors_class.o \
+fdist2d_class.o : fdist2d_class.f03 spect2d_class.o perrors_class.o \
                    parallel_pipe_class.o 
-	${FC} ${OPTS} ${FORMAT_FREE} -c fdist2d_class.f -o fdist2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c fdist2d_class.f03 -o fdist2d_class.o
 
-fpois2d_class.o : fpois2d_class.f ufield2d_class.o spect2d_class.o perrors_class.o \
+fpois2d_class.o : fpois2d_class.f03 ufield2d_class.o spect2d_class.o perrors_class.o \
                    parallel_pipe_class.o fpois2d_lib.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c fpois2d_class.f -o fpois2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c fpois2d_class.f03 -o fpois2d_class.o
 
 fpois2d_lib77.o : fpois2d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c fpois2d_lib77.f -o fpois2d_lib77.o
 
-fpois2d_lib.o : fpois2d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c fpois2d_lib.f -o fpois2d_lib.o
+fpois2d_lib.o : fpois2d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c fpois2d_lib.f03 -o fpois2d_lib.o
 
 
-fft2d_class.o : fft2d_class.f ufield2d_class.o spect2d_class.o perrors_class.o \
+fft2d_class.o : fft2d_class.f03 ufield2d_class.o spect2d_class.o perrors_class.o \
                    parallel_pipe_class.o fft2d_lib.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c fft2d_class.f -o fft2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c fft2d_class.f03 -o fft2d_class.o
 
 fft2d_lib77.o : fft2d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c fft2d_lib77.f -o fft2d_lib77.o
 
-fft2d_lib.o : fft2d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c fft2d_lib.f -o fft2d_lib.o
+fft2d_lib.o : fft2d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c fft2d_lib.f03 -o fft2d_lib.o
 
 ufield2d_lib77.o : ufield2d_lib77.f
 	${FC} ${OPTS} ${FORMAT_FIXED} -c ufield2d_lib77.f -o ufield2d_lib77.o
 
-ufield2d_lib.o : ufield2d_lib.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c ufield2d_lib.f -o ufield2d_lib.o
+ufield2d_lib.o : ufield2d_lib.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c ufield2d_lib.f03 -o ufield2d_lib.o
 
-ufield2d_class.o : ufield2d_class.f spect2d_class.o perrors_class.o \
+ufield2d_class.o : ufield2d_class.f03 spect2d_class.o perrors_class.o \
                    parallel_pipe_class.o ufield2d_lib.o hdf5io_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c ufield2d_class.f -o ufield2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c ufield2d_class.f03 -o ufield2d_class.o
 
-hdf5io_class.o : hdf5io_class.f spect3d_class.o perrors_class.o parallel_pipe_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c hdf5io_class.f -o hdf5io_class.o
+hdf5io_class.o : hdf5io_class.f03 spect3d_class.o perrors_class.o parallel_pipe_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c hdf5io_class.f03 -o hdf5io_class.o
 
-spect3d_class.o : spect3d_class.f perrors_class.o parallel_pipe_class.o spect2d_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c spect3d_class.f -o spect3d_class.o
+spect3d_class.o : spect3d_class.f03 perrors_class.o parallel_pipe_class.o spect2d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c spect3d_class.f03 -o spect3d_class.o
 
-spect2d_class.o : spect2d_class.f perrors_class.o parallel_pipe_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c spect2d_class.f -o spect2d_class.o
+spect2d_class.o : spect2d_class.f03 perrors_class.o parallel_pipe_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c spect2d_class.f03 -o spect2d_class.o
 
 dtimer.o : dtimer.c
 	${CC} -O3 -std=c99 -c dtimer.c
 
-perrors_class.o : perrors_class.f parallel_class.o dtimer.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c perrors_class.f -o perrors_class.o
+perrors_class.o : perrors_class.f03 parallel_class.o dtimer.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c perrors_class.f03 -o perrors_class.o
 
-parallel_pipe_class.o : parallel_pipe_class.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_pipe_class.f -o parallel_pipe_class.o
+parallel_pipe_class.o : parallel_pipe_class.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_pipe_class.f03 -o parallel_pipe_class.o
 
-parallel_class.o : parallel_class.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_class.f -o parallel_class.o
+parallel_class.o : parallel_class.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_class.f03 -o parallel_class.o
 
-main.o : main.f parallel_pipe_class.o 
-	${FC} ${OPTS} ${FORMAT_FREE} -c main.f -o main.o
+main.o : main.f03 parallel_pipe_class.o 
+	${FC} ${OPTS} ${FORMAT_FREE} -c main.f03 -o main.o
