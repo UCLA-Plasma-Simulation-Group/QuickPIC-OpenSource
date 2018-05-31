@@ -111,7 +111,7 @@
          class(perrors), pointer :: err => null()
          class(parallel), pointer :: p => null()
          class(parallel_pipe), pointer :: pp => null()
-         type(json_file), private :: input
+         type(json_file), private, pointer :: input => null()
 
          contains
          
@@ -1081,45 +1081,20 @@
          
          call this%load_from_string(ff)
          
-         call this%get('simulation.nodes(2)',num_stages,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.nodes(2) in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
+         call this%get('simulation.nodes(2)',num_stages)
          
          call pp%new(nst=num_stages)
          
          this%pp => pp
                      
-         call this%get('simulation.indx',indx,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.indx in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
+         call this%get('simulation.indx',indx)
 
-         call this%get('simulation.indy',indy,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.indy in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
+         call this%get('simulation.indy',indy)
 
-         call this%get('simulation.indz',indz,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.indz in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
+         call this%get('simulation.indz',indz)
 
-         call this%get('simulation.boundary',boundary,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.boundary in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
-
+         call this%get('simulation.boundary',boundary)
+         
          select case (trim(boundary))
          case ("conducting")
             psolve = 1
@@ -1132,15 +1107,10 @@
          this%sp => sp
 
          call this%err%werrfl0(ff)
-         
+
          call this%err%werrfl0(class//sname//' ended')
          
-         call this%get('simulation.verbose',verbose,found)
-         if (.not. found) then
-             write (erstr,*) 'error: cannot find simulation.verbose in the input file'
-             call this%err%equit(class//sname//erstr)
-             return
-         end if
+         call this%get('simulation.verbose',verbose)
 
          call err%setmonitor(verbose)
 
@@ -1173,6 +1143,7 @@
          character(len=38), save :: sname = 'initialize_json_core_in_file:'
          call this%err%werrfl0(class//sname//' started')
          
+         allocate(this%input)
          call this%input%initialize(verbose,compact_reals,print_signs,&
          &real_format,spaces_per_tab,strict_type_checking,trailing_spaces_significant,&
          &case_sensitive_keys,no_whitespace,unescape_strings,comment_char,path_mode,&
@@ -1247,169 +1218,232 @@
 
       end subroutine load_from_string
 !
-      subroutine json_file_get_object(this, path, p, found)
+      subroutine json_file_get_object(this, path, p)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          type(json_value),pointer,intent(out) :: p
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_object:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, p, found)
+         call this%input%get(path, p)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_object
 !
-      subroutine json_file_get_integer(this, path, val, found)
+      subroutine json_file_get_integer(this, path, val)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          integer,intent(out) :: val 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_integer:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, val, found)
+         call this%input%get(path, val)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_integer
 !
-      subroutine json_file_get_double(this, path, val, found)
+      subroutine json_file_get_double(this, path, val)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          real,intent(out) :: val 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_double:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, val, found)
+         call this%input%get(path, val)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_double
 !
-      subroutine json_file_get_logical(this, path, val, found)
+      subroutine json_file_get_logical(this, path, val)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          logical,intent(out) :: val 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_logical:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, val, found)
+         call this%input%get(path, val)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_logical
 !
-      subroutine json_file_get_string(this, path, val, found)
+      subroutine json_file_get_string(this, path, val)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          character(len=:),allocatable,intent(out) :: val 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_string:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, val, found)
+         call this%input%get(path, val)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_string
 !
-      subroutine json_file_get_integer_vec(this, path, vec, found)
+      subroutine json_file_get_integer_vec(this, path, vec)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          integer,dimension(:),allocatable,intent(out) :: vec 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_integer_vec:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, vec, found)
+         call this%input%get(path, vec)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_integer_vec
 !
-      subroutine json_file_get_double_vec(this, path, vec, found)
+      subroutine json_file_get_double_vec(this, path, vec)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          real,dimension(:),allocatable,intent(out) :: vec 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_double_vec:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, vec, found)
+         call this%input%get(path, vec)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_double_vec
 !
-      subroutine json_file_get_logical_vec(this, path, vec, found)
+      subroutine json_file_get_logical_vec(this, path, vec)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          logical,dimension(:),allocatable,intent(out) :: vec 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_logical_vec:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, vec, found)
+         call this%input%get(path, vec)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_logical_vec
 !
-      subroutine json_file_get_string_vec(this, path, vec, found)
+      subroutine json_file_get_string_vec(this, path, vec)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
          character(len=*),dimension(:),allocatable,intent(out) :: vec 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_string_vec:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, vec, found)
+         call this%input%get(path, vec)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine json_file_get_string_vec
 !
-      subroutine json_file_get_alloc_string_vec(this, path, vec, ilen, found)
+      subroutine json_file_get_alloc_string_vec(this, path, vec, ilen)
 
          implicit none
 
@@ -1417,12 +1451,19 @@
          character(len=*),intent(in) :: path
          character(len=:),dimension(:),allocatable,intent(out) :: vec
          integer,dimension(:),allocatable,intent(out) :: ilen 
-         logical,intent(out),optional :: found
 ! local data
          character(len=38), save :: sname = 'json_file_get_alloc_string_vec:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%get(path, vec, ilen, found)
+         call this%input%get(path, vec, ilen)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
@@ -1444,22 +1485,29 @@
 
       end subroutine json_file_get_root                            
 !
-      subroutine  json_file_variable_info(this,path, found, var_type, n_children, name)
+      subroutine  json_file_variable_info(this,path, var_type, n_children, name)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
-         logical,intent(out),optional :: found
          integer,intent(out),optional :: var_type
          integer,intent(out),optional :: n_children
          character(len=:),allocatable,intent(out),optional :: name
 
 ! local data
          character(len=38), save :: sname = 'json_file_variable_info:'
+         character(len=:), allocatable :: error
+         logical :: st
+
          call this%err%werrfl0(class//sname//' started')
 
-         call this%input%info(path, found, var_type, n_children, name)
+         call this%input%info(path, var_type=var_type, n_children=n_children, name=name)
+         if (this%input%failed()) then
+            call this%input%check_for_errors(st, error)
+            call this%input%clear_exceptions()
+            call this%err%equit(class//sname//error)
+         end if         
 
          call this%err%werrfl0(class//sname//' ended')
 
