@@ -15,12 +15,12 @@
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
-    "dump_restart" : false,
-    "ndump_restart" : 100,
+    "dump_restart" : true,
+    "ndump_restart" : 1,
     "read_restart" : false,
-    "restart_timestep" : 100,
+    "restart_timestep" : 1,
     "iter" : 1,
-    "verbose" : 2
+    "verbose" : 0
 },
 
 "beam" :

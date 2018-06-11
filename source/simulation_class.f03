@@ -187,6 +187,7 @@
          call this%in%get('simulation.read_restart',read_rst)
          if (read_rst) then
             call this%in%get('simulation.restart_timestep',this%start3d)
+            this%start3d = this%start3d + 1
          else
             this%start3d = 1
          end if
@@ -517,8 +518,8 @@
 
             if (read_rst) then
                call input%get('simulation.restart_timestep',rst_timestep)
-               write (sn,'(I2.2)') i
-               write (sid,'(I8.8)') this%p%getidproc()
+               write (sn,'(I4.4)') i
+               write (sid,'(I10.10)') this%p%getidproc()
                write (stime,'(I8.8)') rst_timestep
                call file_rst%new(&
                &filename = './RST/Beam-'//trim(sn)//'/',&
@@ -834,7 +835,6 @@
                              
          end do
 
-
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine go_simulation
@@ -989,15 +989,15 @@
                               call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
                               &slice('//trim(s4)//').(2)',this%diag(n_diag)%slice_pos)
                               if (this%p%getidproc() == 0) then
-                                 call system('mkdir -p ./ChargeDensity/beam'//trim(s1)//'_slice'//trim(s4)//'/')
+                                 call system('mkdir -p ./Beam'//trim(s1)//'/Charge_slice_'//trim(s4)//'/')
                               end if
                               call this%diag(n_diag)%file%new(&
                               &timeunits = '1 / \omega_p',&
                               &dt = dt,&
                               &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
                               &rank = 2,&
-                              &filename = './ChargeDensity/beam'//trim(s1)//'_slice'//trim(s4)//'/',&
-                              &dataname = 'chargeslice'//sl,&
+                              &filename = './Beam'//trim(s1)//'/Charge_slice_'//trim(s4)//'/',&
+                              &dataname = 'charge_slice_'//sl,&
                               &units = 'n_0',&
                               &label = 'Charge Density')
                            end do
@@ -1008,7 +1008,7 @@
                            allocate(this%diag(n_diag)%dim)
                            this%diag(n_diag)%dim = 1
                            if (this%p%getidproc() == 0) then
-                              call system('mkdir -p ./ChargeDensity/beam'//trim(s1)//'/')
+                              call system('mkdir -p ./Beam'//trim(s1)//'/Charge/')
                            end if
                            call this%diag(n_diag)%file%new(&
                            &timeunits = '1 / \omega_p',&
@@ -1019,7 +1019,7 @@
                            &axismin = (/alx1,aly1,alz1/),&
                            &axismax = (/alx2,aly2,alz2/),&
                            &rank = 3,&
-                           &filename = './ChargeDensity/beam'//trim(s1)//'/',&
+                           &filename = './Beam'//trim(s1)//'/Charge/',&
                            &dataname = 'charge',&
                            &units = 'n_0',&
                            &label = 'Charge Density')
@@ -1032,16 +1032,16 @@
                         call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
                         &sample',this%diag(n_diag)%psample)
                         if (this%p%getidproc() == 0) then
-                           call system('mkdir -p ./Raw/beam'//trim(s1)//'/')
+                           call system('mkdir -p ./Beam'//trim(s1)//'/Raw/')
                         end if
                         call this%diag(n_diag)%file%new(&
                         &timeunits = '1 / \omega_p',&
                         &dt = dt,&
                         &ty = 'particles',&
-                        &filename = './Raw/beam'//trim(s1)//'/',&
+                        &filename = './Beam'//trim(s1)//'/Raw/',&
                         &dataname = 'raw',&
                         &units = '',&
-                        &label = 'Beam RAw')
+                        &label = 'Beam Raw')
                      end select
                   end do
                end if
@@ -1063,7 +1063,7 @@
                      &//'('//trim(s3)//')',ss)
                      select case (trim(ss))
                      case ('charge')
-                        sn1 = 'ChargeDensity'
+                        sn1 = 'Charge'
                         sn2 = 'charge'
                         sn3 = 'n_0'
                         sn4 = 'Charge Density'
@@ -1130,15 +1130,15 @@
                            call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').&
                            &slice('//trim(s4)//').(2)',this%diag(n_diag)%slice_pos)
                            if (this%p%getidproc() == 0) then
-                              call system('mkdir -p ./'//trim(sn1)//'/species'//trim(s1)//'_slice'//trim(s4)//'/')
+                              call system('mkdir -p ./Species'//trim(s1)//'/'//trim(sn1)//'_slice_'//trim(s4)//'/')
                            end if
                            call this%diag(n_diag)%file%new(&
                            &timeunits = '1 / \omega_p',&
                            &dt = dt,&
                            &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
                            &rank = 2,&
-                           &filename = './'//trim(sn1)//'/species'//trim(s1)//'_slice'//trim(s4)//'/',&
-                           &dataname = trim(sn2)//'slice'//sl,&
+                           &filename = './Species'//trim(s1)//'/'//trim(sn1)//'_slice_'//trim(s4)//'/',&
+                           &dataname = trim(sn2)//'_slice_'//sl,&
                            &units = trim(sn3),&
                            &label = trim(sn4))
                         end do
@@ -1149,7 +1149,7 @@
                         allocate(this%diag(n_diag)%dim)
                         this%diag(n_diag)%dim = dim
                         if (this%p%getidproc() == 0) then
-                           call system('mkdir -p ./'//trim(sn1)//'/species'//trim(s1)//'/')
+                           call system('mkdir -p ./Species'//trim(s1)//'/'//trim(sn1)//'/')
                         end if
                         call this%diag(n_diag)%file%new(&
                         &timeunits = '1 / \omega_p',&
@@ -1160,7 +1160,7 @@
                         &axismin = (/alx1,aly1,alz1/),&
                         &axismax = (/alx2,aly2,alz2/),&
                         &rank = 3,&
-                        &filename = './'//trim(sn1)//'/species'//trim(s1)//'/',&
+                        &filename = './Species'//trim(s1)//'/'//trim(sn1)//'/',&
                         &dataname = trim(sn2),&
                         &units = trim(sn3),&
                         &label = trim(sn4))
@@ -1317,6 +1317,9 @@
                n_diag = n_diag + 1
                this%diag(n_diag)%df = ndump
                this%diag(n_diag)%obj => this%beams%beam(i)
+               if (this%p%getidproc() == 0) then
+                  call system('mkdir -p ./RST/Beam-'//trim(s1)//'/')
+               end if
                call this%diag(n_diag)%file%new(&
                &ty='rst',&
                &filename = './RST/Beam-'//trim(s1)//'/',&
@@ -1339,11 +1342,13 @@
          character(len=18), save :: sname = 'diag_simulation:'
          integer :: n, m, l, i, j, k, ierr, idn = 9
          integer, dimension(10) :: istat
+         logical :: rst
          real :: dt
 
          call this%err%werrfl2(class//sname//' started')
 
          call this%in%get('simulation.dt',dt)
+         call this%in%get('simulation.dump_restart',rst)
 
          n = size(this%diag)
 
@@ -1363,10 +1368,14 @@
                      call obj%wr(this%diag(i)%file,this%diag(i)%dim,this%tag(1),this%tag(1),this%id(idn+i))
                   end if
                type is (beam3d)
-                  this%tag(1) = ntag()
-                  call MPI_WAIT(this%id(idn+i),istat,ierr)
-                  call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
-                  &this%tag(1),this%tag(1),this%id(idn+i))         
+                  if (rst) then
+                     call obj%wrst(this%diag(i)%file)
+                  else
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
+                     &this%tag(1),this%tag(1),this%id(idn+i))
+                  end if
                end select
             end if
          end do
