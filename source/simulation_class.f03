@@ -88,6 +88,21 @@
 
       end type sim_species
 !      
+      type sim_diag
+
+         private
+
+         class(parallel_pipe),pointer :: p => null()
+         class(perrors),pointer :: err => null()
+         class(spect3d), pointer :: sp3 => null()
+         class(spect2d), pointer :: sp2 => null()
+         type(hdf5file) :: file
+         class(*), pointer :: obj => null()
+         integer, allocatable :: slice, slice_pos, psample, dim
+         integer :: df
+
+      end type sim_diag
+!      
       type simulation
 
          private
@@ -102,11 +117,11 @@
          type(sim_fields) :: fields
          type(sim_beams) :: beams
          type(sim_species) :: species
-         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies
-         integer, dimension(54) :: id
+         type(sim_diag), dimension(:), allocatable :: diag
+         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep
          integer, dimension(8) :: tag
-         integer, dimension(:), allocatable :: tag_spe, id_spe, id_br
-         integer, dimension(:), allocatable :: tag_beam, id_beam, id_qep, id_qeps
+         integer, dimension(:), allocatable :: tag_spe, id_spe, id
+         integer, dimension(:), allocatable :: tag_beam, id_beam
          real :: dex, dxi, dex2
 
          contains
@@ -114,15 +129,15 @@
          generic :: new => init_simulation
          generic :: del => end_simulation
          generic :: go => go_simulation
-         generic :: diag => diag_simulation
 
          procedure, private :: init_simulation, end_simulation
-         procedure, private :: go_simulation, diag_simulation
+         procedure, private :: init_diag, diag_simulation
+         procedure, private :: go_simulation
 
       end type simulation
 !
-      character(len=20) :: class = 'simulation: '
-      character(len=128) :: erstr
+      character(len=20), save :: class = 'simulation: '
+      character(len=128), save :: erstr
             
       contains
 !
@@ -183,15 +198,15 @@
          call this%beams%new(this%in,this%fields)
          call this%species%new(this%in,this%fields)
 
-         allocate(this%tag_spe(this%nspecies),this%id_spe(this%nspecies))
-         allocate(this%id_qep(this%nspecies),this%id_qeps(this%nspecies))
-         allocate(this%tag_beam(this%nbeams),this%id_beam(this%nbeams),this%id_br(this%nbeams))
+         call this%init_diag()                 
+
+         allocate(this%tag_spe(this%nspecies),this%tag_beam(this%nbeams))
+         allocate(this%id_spe(this%nspecies),this%id_beam(this%nbeams))
+
+         allocate(this%id(9+size(this%diag)))
          this%id(:) = MPI_REQUEST_NULL
          this%id_spe(:) = MPI_REQUEST_NULL
-         this%id_qep(:) = MPI_REQUEST_NULL
-         this%id_qeps(:) = MPI_REQUEST_NULL
          this%id_beam(:) = MPI_REQUEST_NULL                 
-         this%id_br(:) = MPI_REQUEST_NULL                 
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -226,9 +241,9 @@
 ! local data
          character(len=18), save :: sname = 'init_sim_fields:'
          character(len=18), save :: class = 'sim_fields:'
-         character(len=20) :: sn
+         character(len=20) :: s1, s2, s3
          character(len=:), allocatable :: ff   
-         integer :: i,n,ndump
+         integer :: i,n,ndump,j,k,l,m
 
          this%err => input%err
          this%p => input%pp
@@ -275,35 +290,49 @@
             call this%amu0(i)%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)
          end do
          
+         loop1: do i = 1, n
+            write (s1, '(I4.4)') i
+            call input%info('species('//trim(s1)//').diag',n_children=m)
+            do j = 1, m
+               write (s2, '(I4.4)') j
+               call input%get('species('//trim(s1)//').diag'//'('//trim(s2)//').ndump',ndump)
+               if (ndump>0) then
+                  call input%info('species('//trim(s1)//').diag'//'('//trim(s2)//').name',n_children=l)
+                  do k = 1, l
+                     write (s3, '(I4.4)') k
+                     if(allocated(ff)) deallocate(ff)
+                     call input%get('species('//trim(s1)//').diag'//'('//trim(s2)//').name'&
+                     &//'('//trim(s3)//')',ff)
+                     if (ff == 'jx' .or. ff == 'jy' .or. ff == 'jz') then
+                        allocate(this%cu3d)
+                        call this%cu3d%new(this%p,this%err,this%sp3,dim=1)
+                        exit loop1
+                     end if
+                  end do
+               end if
+            end do
+         end do loop1
+
          call input%info('field.diag',n_children=n)
          
-         do i = 1, n
-            write (sn,'(I4.4)') i
-            call input%get('field.diag('//trim(sn)//').ndump',ndump)
+         loop2: do i = 1, n
+            write (s1,'(I4.4)') i
+            call input%get('field.diag('//trim(s1)//').ndump',ndump)
             if (ndump > 0) then
-               call input%get('field.diag('//trim(sn)//').name',ff)
-               if (ff == 'psi') then
-                  deallocate(ff)
-                  allocate(this%psi3d)
-                  call this%psi3d%new(this%p,this%err,this%sp3,dim=1)
-                  exit
-               end if
+               call input%info('field.diag('//trim(s1)//').name',n_children=m)
+               do j = 1, m
+                  write (s2,'(I4.4)') j
+                  if(allocated(ff)) deallocate(ff)
+                  call input%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ff)
+                  if (ff == 'psi') then
+                     allocate(this%psi3d)
+                     call this%psi3d%new(this%p,this%err,this%sp3,dim=1)
+                     exit loop2
+                  end if
+               end do
             end if
-         end do
+         end do loop2
          
-         do i = 1, n
-            write (sn,'(I4.4)') i
-            call input%get('field.diag('//trim(sn)//').ndump',ndump)
-            if (ndump > 0) then
-               call input%get('field.diag('//trim(sn)//').name',ff)
-               if (ff == 'jp') then
-                  deallocate(ff)
-                  allocate(this%cu3d)
-                  call this%cu3d%new(this%p,this%err,this%sp3,dim=1)
-                  exit
-               end if
-            end if
-         end do
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -491,9 +520,10 @@
                write (sn,'(I2.2)') i
                write (sid,'(I8.8)') this%p%getidproc()
                write (stime,'(I8.8)') rst_timestep
-               call file_rst%new(filename = './RST/RST-'//trim(sn)//'-'//trim(sid)//&
-               &'_'//trim(stime)//'.h5',dataname = 'RST-'//trim(sn)//'-'//trim(sid)//&
-               &'_'//trim(stime))
+               call file_rst%new(&
+               &filename = './RST/Beam-'//trim(sn)//'/',&
+               &dataname = 'RST-beam'//trim(sn)//'-'//trim(sid),&
+               &n = rst_timestep)
                call this%beam(i)%rrst(file_rst)
             end if
          end do
@@ -628,7 +658,8 @@
          call this%err%werrfl2(class//sname//' started')
 
          do i = this%start3d, this%nstep3d
-   
+
+            this%tstep = i
             write (erstr,*) '3D step:', i        
             call this%err%werrfl0(erstr)
             
@@ -786,9 +817,7 @@
             call this%fields%psit%psend(this%tag(6),this%id(8))
             call MPI_WAIT(this%id(9),istat,ierr)
             call this%fields%bxyz%psend(this%tag(7),this%id(9))
-   
-            call this%diag()
-   
+      
             do m = 1, this%nbeams
                this%tag_beam(m) = ntag()
                call MPI_WAIT(this%id_beam(m),istat,ierr)
@@ -800,13 +829,506 @@
                call MPI_WAIT(this%id_spe(m),istat,ierr)
                call this%species%spe(m)%renew(this%species%pf(m),this%fields%qe0(m))
             end do
+
+            call this%diag_simulation()
                              
-         enddo
+         end do
 
 
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine go_simulation
+!
+      subroutine init_diag(this)
+
+         implicit none
+
+         class(simulation), intent(inout), target :: this
+! local data
+         character(len=18), save :: sname = 'init_diag:'
+         integer :: n_diag = 0, ndump, slice, slice_pos, sample
+         integer :: n, m, l, i, j, k, ii
+         character(len=20) :: s1, s2, s3, s4, sn1, sn2, sn3, sn4
+         character(len=:), allocatable :: ss,sl
+         real :: min, max, cwp, n0, dt
+         real :: alx1, aly1, alz1, alx2, aly2, alz2
+         logical :: rst
+         integer :: ierr, indx, indy, indz, dim
+         class (*), pointer :: obj => null()
+
+
+         call this%err%werrfl2(class//sname//' started')
+
+         call this%in%get('simulation.n0',n0)
+         call this%in%get('simulation.indx',indx)
+         call this%in%get('simulation.indy',indy)
+         call this%in%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         call this%in%get('simulation.box.x(1)',min)
+         call this%in%get('simulation.box.x(2)',max)
+         alx1 = min/cwp
+         alx2 = max/cwp
+         call this%in%get('simulation.box.y(1)',min)
+         call this%in%get('simulation.box.y(2)',max)
+         aly1 = min/cwp 
+         aly2 = max/cwp 
+         call this%in%get('simulation.box.z(1)',min)
+         call this%in%get('simulation.box.z(2)',max)
+         alz1 = min/cwp 
+         alz2 = max/cwp 
+         call this%in%get('simulation.dt',dt)
+
+         do i = 1, this%nbeams
+            write (s1, '(I4.4)') i
+            call this%in%info('beam('//trim(s1)//').diag',n_children=m)
+            do j = 1, m
+               write (s2, '(I4.4)') j
+               call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').ndump',ndump)
+               if (ndump>0) then
+                  call this%in%info('beam('//trim(s1)//').diag'//'('//trim(s2)//').name',n_children=l)
+                  if(this%in%found('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
+                     call this%in%info('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
+                     n_diag = n_diag + l*n
+                  else
+                     n_diag = n_diag + l
+                  end if
+               end if
+            end do
+         end do
+
+         do i = 1, this%nspecies
+            write (s1, '(I4.4)') i
+            call this%in%info('species('//trim(s1)//').diag',n_children=m)
+            do j = 1, m
+               write (s2, '(I4.4)') j
+               call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').ndump',ndump)
+               if (ndump>0) then
+                  call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').name',n_children=l)
+                  if(this%in%found('species('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
+                     call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
+                     n_diag = n_diag + l*n
+                  else
+                     n_diag = n_diag + l
+                  end if
+               end if
+            end do
+         end do
+
+         call this%in%info('field.diag',n_children=n)
+         do i = 1, n
+            write (s1, '(I4.4)') i
+            call this%in%get('field.diag('//trim(s1)//').ndump',ndump)
+            if (ndump>0) then
+               call this%in%info('field.diag('//trim(s1)//').name',n_children=l)
+               if(this%in%found('field.diag('//trim(s1)//').slice')) then
+                  call this%in%info('field.diag('//trim(s1)//').slice',n_children=m)
+                  n_diag = n_diag + l*m
+               else
+                  n_diag = n_diag + l
+               end if
+            end if
+         end do
+
+         call this%in%get('simulation.dump_restart',rst)
+         if (rst) n_diag = n_diag + this%nbeams
+
+         allocate(this%diag(n_diag))
+         n_diag = 0
+         do i = 1, this%nbeams
+            write (s1, '(I4.4)') i
+            call this%in%info('beam('//trim(s1)//').diag',n_children=m)
+            do j = 1, m
+               write (s2, '(I4.4)') j
+               call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').ndump',ndump)
+               if (ndump>0) then
+                  call this%in%info('beam('//trim(s1)//').diag'//'('//trim(s2)//').name',n_children=l)
+                  do k = 1, l
+                     write (s3, '(I4.4)') k
+                     if (allocated(ss)) deallocate(ss)
+                     call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').name'&
+                     &//'('//trim(s3)//')',ss)
+                     select case (trim(ss))
+                     case ('charge')
+                        if (this%in%found('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
+                           call this%in%info('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
+                           do ii = 1, n
+                              n_diag = n_diag + 1 
+                              this%diag(n_diag)%df = ndump
+                              this%diag(n_diag)%obj => this%fields%qeb
+                              allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
+                              allocate(this%diag(n_diag)%dim)
+                              this%diag(n_diag)%dim = 1
+                              if (allocated(sl)) deallocate(sl)
+                              write (s4, '(I4.4)') ii
+                              call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
+                              &slice('//trim(s4)//').(1)',sl)
+                              select case (sl)
+                              case ('yz')
+                                 this%diag(n_diag)%slice = 1
+                                 call this%diag(n_diag)%file%new(&
+                                 &axismin = (/aly1,alz1,alx1/),&
+                                 &axismax = (/aly2,alz2,alx2/),&
+                                 &axisname  = (/'y  ','\xi','x  '/),&
+                                 &axislabel = (/'y  ','\xi','x  '/))
+                              case ('xz')
+                                 this%diag(n_diag)%slice = 2
+                                 call this%diag(n_diag)%file%new(&
+                                 &axismin = (/alx1,alz1,aly1/),&
+                                 &axismax = (/alx2,alz2,aly2/),&
+                                 &axisname  = (/'x  ','\xi','y  '/),&
+                                 &axislabel = (/'x  ','\xi','y  '/))
+                              case ('xy')
+                                 this%diag(n_diag)%slice = 3
+                                 call this%diag(n_diag)%file%new(&
+                                 &axismin = (/alx1,aly1,alz1/),&
+                                 &axismax = (/alx2,aly2,alz2/),&
+                                 &axisname  = (/'x','y','z'/),&
+                                 &axislabel = (/'x','y','z'/))
+                              end select
+                              call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
+                              &slice('//trim(s4)//').(2)',this%diag(n_diag)%slice_pos)
+                              if (this%p%getidproc() == 0) then
+                                 call system('mkdir -p ./ChargeDensity/beam'//trim(s1)//'_slice'//trim(s4)//'/')
+                              end if
+                              call this%diag(n_diag)%file%new(&
+                              &timeunits = '1 / \omega_p',&
+                              &dt = dt,&
+                              &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                              &rank = 2,&
+                              &filename = './ChargeDensity/beam'//trim(s1)//'_slice'//trim(s4)//'/',&
+                              &dataname = 'chargeslice'//sl,&
+                              &units = 'n_0',&
+                              &label = 'Charge Density')
+                           end do
+                        else
+                           n_diag = n_diag + 1 
+                           this%diag(n_diag)%df = ndump
+                           this%diag(n_diag)%obj => this%fields%qeb
+                           allocate(this%diag(n_diag)%dim)
+                           this%diag(n_diag)%dim = 1
+                           if (this%p%getidproc() == 0) then
+                              call system('mkdir -p ./ChargeDensity/beam'//trim(s1)//'/')
+                           end if
+                           call this%diag(n_diag)%file%new(&
+                           &timeunits = '1 / \omega_p',&
+                           &dt = dt,&
+                           &axisname  = (/'x  ','y  ','\xi'/),&
+                           &axislabel = (/'x  ','y  ','\xi'/),&
+                           &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                           &axismin = (/alx1,aly1,alz1/),&
+                           &axismax = (/alx2,aly2,alz2/),&
+                           &rank = 3,&
+                           &filename = './ChargeDensity/beam'//trim(s1)//'/',&
+                           &dataname = 'charge',&
+                           &units = 'n_0',&
+                           &label = 'Charge Density')
+                        end if
+                     case ('raw')
+                        n_diag = n_diag + 1 
+                        this%diag(n_diag)%df = ndump
+                        this%diag(n_diag)%obj => this%beams%beam(i)
+                        allocate(this%diag(n_diag)%psample)
+                        call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
+                        &sample',this%diag(n_diag)%psample)
+                        if (this%p%getidproc() == 0) then
+                           call system('mkdir -p ./Raw/beam'//trim(s1)//'/')
+                        end if
+                        call this%diag(n_diag)%file%new(&
+                        &timeunits = '1 / \omega_p',&
+                        &dt = dt,&
+                        &ty = 'particles',&
+                        &filename = './Raw/beam'//trim(s1)//'/',&
+                        &dataname = 'raw',&
+                        &units = '',&
+                        &label = 'Beam RAw')
+                     end select
+                  end do
+               end if
+            end do
+         end do
+
+         do i = 1, this%nspecies
+            write (s1, '(I4.4)') i
+            call this%in%info('species('//trim(s1)//').diag',n_children=m)
+            do j = 1, m
+               write (s2, '(I4.4)') j
+               call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').ndump',ndump)
+               if (ndump>0) then
+                  call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').name',n_children=l)
+                  do k = 1, l
+                     write (s3, '(I4.4)') k
+                     if (allocated(ss)) deallocate(ss)
+                     call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').name'&
+                     &//'('//trim(s3)//')',ss)
+                     select case (trim(ss))
+                     case ('charge')
+                        sn1 = 'ChargeDensity'
+                        sn2 = 'charge'
+                        sn3 = 'n_0'
+                        sn4 = 'Charge Density'
+                        dim = 1
+                        obj => this%fields%qep(i)
+                     case ('jx')
+                        sn1 = 'Jx'
+                        sn2 = 'jx'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_x'
+                        dim = 1
+                        obj => this%fields%cu3d
+                     case ('jy')
+                        sn1 = 'Jy'
+                        sn2 = 'jy'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_y'
+                        dim = 2
+                        obj => this%fields%cu3d
+                     case ('jz')
+                        sn1 = 'Jz'
+                        sn2 = 'jz'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_z'
+                        dim = 3
+                        obj => this%fields%cu3d
+                     end select
+                     if (this%in%found('species('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
+                        call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
+                        do ii = 1, n
+                           n_diag = n_diag + 1 
+                           this%diag(n_diag)%df = ndump
+                           this%diag(n_diag)%obj => obj
+                           allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
+                           allocate(this%diag(n_diag)%dim)
+                           this%diag(n_diag)%dim = dim
+                           if (allocated(sl)) deallocate(sl)
+                           write (s4, '(I4.4)') ii
+                           call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').&
+                           &slice('//trim(s4)//').(1)',sl)
+                           select case (sl)
+                           case ('yz')
+                              this%diag(n_diag)%slice = 1
+                              call this%diag(n_diag)%file%new(&
+                              &axismin = (/aly1,alz1,alx1/),&
+                              &axismax = (/aly2,alz2,alx2/),&
+                              &axisname  = (/'y  ','\xi','x  '/),&
+                              &axislabel = (/'y  ','\xi','x  '/))
+                           case ('xz')
+                              this%diag(n_diag)%slice = 2
+                              call this%diag(n_diag)%file%new(&
+                              &axismin = (/alx1,alz1,aly1/),&
+                              &axismax = (/alx2,alz2,aly2/),&
+                              &axisname  = (/'x  ','\xi','y  '/),&
+                              &axislabel = (/'x  ','\xi','y  '/))
+                           case ('xy')
+                              this%diag(n_diag)%slice = 3
+                              call this%diag(n_diag)%file%new(&
+                              &axismin = (/alx1,aly1,alz1/),&
+                              &axismax = (/alx2,aly2,alz2/),&
+                              &axisname  = (/'x','y','z'/),&
+                              &axislabel = (/'x','y','z'/))
+                           end select
+                           call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').&
+                           &slice('//trim(s4)//').(2)',this%diag(n_diag)%slice_pos)
+                           if (this%p%getidproc() == 0) then
+                              call system('mkdir -p ./'//trim(sn1)//'/species'//trim(s1)//'_slice'//trim(s4)//'/')
+                           end if
+                           call this%diag(n_diag)%file%new(&
+                           &timeunits = '1 / \omega_p',&
+                           &dt = dt,&
+                           &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                           &rank = 2,&
+                           &filename = './'//trim(sn1)//'/species'//trim(s1)//'_slice'//trim(s4)//'/',&
+                           &dataname = trim(sn2)//'slice'//sl,&
+                           &units = trim(sn3),&
+                           &label = trim(sn4))
+                        end do
+                     else
+                        n_diag = n_diag + 1 
+                        this%diag(n_diag)%df = ndump
+                        this%diag(n_diag)%obj => obj
+                        allocate(this%diag(n_diag)%dim)
+                        this%diag(n_diag)%dim = dim
+                        if (this%p%getidproc() == 0) then
+                           call system('mkdir -p ./'//trim(sn1)//'/species'//trim(s1)//'/')
+                        end if
+                        call this%diag(n_diag)%file%new(&
+                        &timeunits = '1 / \omega_p',&
+                        &dt = dt,&
+                        &axisname  = (/'x  ','y  ','\xi'/),&
+                        &axislabel = (/'x  ','y  ','\xi'/),&
+                        &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                        &axismin = (/alx1,aly1,alz1/),&
+                        &axismax = (/alx2,aly2,alz2/),&
+                        &rank = 3,&
+                        &filename = './'//trim(sn1)//'/species'//trim(s1)//'/',&
+                        &dataname = trim(sn2),&
+                        &units = trim(sn3),&
+                        &label = trim(sn4))
+                     end if
+                  end do
+               end if
+            end do
+         end do
+
+         call this%in%info('field.diag',n_children=n)
+         do i = 1, n
+            write (s1, '(I4.4)') i
+            call this%in%get('field.diag('//trim(s1)//').ndump',ndump)
+            if (ndump>0) then
+               call this%in%info('field.diag('//trim(s1)//').name',n_children=m)
+               do j = 1, m
+                  write (s2, '(I4.4)') j
+                  if (allocated(ss)) deallocate(ss)
+                  call this%in%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ss)
+                  select case (trim(ss))
+                  case ('ex')
+                     sn1 = 'Ex'
+                     sn2 = 'ex'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field'
+                     dim = 1
+                     obj => this%fields%bexyz
+                  case ('ey')
+                     sn1 = 'Ey'
+                     sn2 = 'ey'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field'
+                     dim = 2
+                     obj => this%fields%bexyz
+                  case ('ez')
+                     sn1 = 'Ez'
+                     sn2 = 'ez'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field'
+                     dim = 3
+                     obj => this%fields%bexyz
+                  case ('bx')
+                     sn1 = 'Bx'
+                     sn2 = 'bx'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field'
+                     dim = 1
+                     obj => this%fields%bbxyz
+                  case ('by')
+                     sn1 = 'By'
+                     sn2 = 'by'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field'
+                     dim = 2
+                     obj => this%fields%bbxyz
+                  case ('bz')
+                     sn1 = 'Bz'
+                     sn2 = 'bz'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field'
+                     dim = 3
+                     obj => this%fields%bbxyz
+                  case ('psi')
+                     sn1 = 'Psi'
+                     sn2 = 'psi'
+                     sn3 = 'mc^2'
+                     sn4 = '\Psi'
+                     dim = 1
+                     obj => this%fields%psi3d
+                  end select
+                  if (this%in%found('field.diag('//trim(s1)//').slice')) then
+                     call this%in%info('field.diag('//trim(s1)//').slice',n_children=l)
+                     do k = 1, l
+                        n_diag = n_diag + 1 
+                        this%diag(n_diag)%df = ndump
+                        this%diag(n_diag)%obj => obj
+                        allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
+                        allocate(this%diag(n_diag)%dim)
+                        this%diag(n_diag)%dim = dim
+                        if (allocated(sl)) deallocate(sl)
+                        write (s3, '(I4.4)') k
+                        call this%in%get('field.diag('//trim(s1)//').&
+                        &slice('//trim(s3)//').(1)',sl)
+                        select case (sl)
+                        case ('yz')
+                           this%diag(n_diag)%slice = 1
+                           call this%diag(n_diag)%file%new(&
+                           &axismin = (/aly1,alz1,alx1/),&
+                           &axismax = (/aly2,alz2,alx2/),&
+                           &axisname  = (/'y  ','\xi','x  '/),&
+                           &axislabel = (/'y  ','\xi','x  '/))
+                        case ('xz')
+                           this%diag(n_diag)%slice = 2
+                           call this%diag(n_diag)%file%new(&
+                           &axismin = (/alx1,alz1,aly1/),&
+                           &axismax = (/alx2,alz2,aly2/),&
+                           &axisname  = (/'x  ','\xi','y  '/),&
+                           &axislabel = (/'x  ','\xi','y  '/))
+                        case ('xy')
+                           this%diag(n_diag)%slice = 3
+                           call this%diag(n_diag)%file%new(&
+                           &axismin = (/alx1,aly1,alz1/),&
+                           &axismax = (/alx2,aly2,alz2/),&
+                           &axisname  = (/'x','y','z'/),&
+                           &axislabel = (/'x','y','z'/))
+                        end select
+                        call this%in%get('field.diag('//trim(s1)//').&
+                        &slice('//trim(s3)//').(2)',this%diag(n_diag)%slice_pos)
+                        if (this%p%getidproc() == 0) then
+                           call system('mkdir -p ./Fields/'//trim(sn1)//'_slice'//trim(s3)//'/')
+                        end if
+                        call this%diag(n_diag)%file%new(&
+                        &timeunits = '1 / \omega_p',&
+                        &dt = dt,&
+                        &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                        &rank = 2,&
+                        &filename = './Fields/'//trim(sn1)//'_slice'//trim(s3)//'/',&
+                        &dataname = trim(sn2)//'slice'//sl,&
+                        &units = trim(sn3),&
+                        &label = trim(sn4))
+                     end do
+                  else
+                     n_diag = n_diag + 1 
+                     this%diag(n_diag)%df = ndump
+                     this%diag(n_diag)%obj => obj
+                     allocate(this%diag(n_diag)%dim)
+                     this%diag(n_diag)%dim = dim
+                     if (this%p%getidproc() == 0) then
+                        call system('mkdir -p ./Fields/'//trim(sn1)//'/')
+                     end if
+                     call this%diag(n_diag)%file%new(&
+                     &timeunits = '1 / \omega_p',&
+                     &dt = dt,&
+                     &axisname  = (/'x  ','y  ','\xi'/),&
+                     &axislabel = (/'x  ','y  ','\xi'/),&
+                     &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                     &axismin = (/alx1,aly1,alz1/),&
+                     &axismax = (/alx2,aly2,alz2/),&
+                     &rank = 3,&
+                     &filename = './Fields/'//trim(sn1)//'/',&
+                     &dataname = trim(sn2),&
+                     &units = trim(sn3),&
+                     &label = trim(sn4))
+                  end if
+               end do
+            end if
+         end do
+
+         if (rst) then
+            call this%in%get('simulation.ndump_restart',ndump) 
+            do i = 1, this%nbeams
+               write (s1,'(I4.4)') i
+               write (s2,'(I10.10)') this%p%getidproc()
+               n_diag = n_diag + 1
+               this%diag(n_diag)%df = ndump
+               this%diag(n_diag)%obj => this%beams%beam(i)
+               call this%diag(n_diag)%file%new(&
+               &ty='rst',&
+               &filename = './RST/Beam-'//trim(s1)//'/',&
+               &dataname = 'RST-beam'//trim(s1)//'-'//trim(s2))
+            end do
+         end if
+
+         call MPI_BARRIER(this%p%getlworld(),ierr)
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_diag
 !
       subroutine diag_simulation(this)
 
@@ -815,9 +1337,39 @@
          class(simulation), intent(inout) :: this
 ! local data
          character(len=18), save :: sname = 'diag_simulation:'
+         integer :: n, m, l, i, j, k, ierr, idn = 9
+         integer, dimension(10) :: istat
+         real :: dt
 
          call this%err%werrfl2(class//sname//' started')
 
+         call this%in%get('simulation.dt',dt)
+
+         n = size(this%diag)
+
+         do i = 1, n
+            if (mod(this%tstep-1,this%diag(i)%df) == 0) then
+               call this%diag(i)%file%new(n = this%tstep, t = this%tstep*dt)
+               select type (obj => this%diag(i)%obj)
+               type is (field3d)
+                  if (allocated(this%diag(i)%slice)) then
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wr(this%diag(i)%file,this%diag(i)%dim,this%diag(i)%slice,this%diag(i)%slice_pos,&
+                     &this%tag(1),this%tag(1),this%id(idn+i))
+                  else
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wr(this%diag(i)%file,this%diag(i)%dim,this%tag(1),this%tag(1),this%id(idn+i))
+                  end if
+               type is (beam3d)
+                  this%tag(1) = ntag()
+                  call MPI_WAIT(this%id(idn+i),istat,ierr)
+                  call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
+                  &this%tag(1),this%tag(1),this%id(idn+i))         
+               end select
+            end if
+         end do
 
          call this%err%werrfl2(class//sname//' ended')
 

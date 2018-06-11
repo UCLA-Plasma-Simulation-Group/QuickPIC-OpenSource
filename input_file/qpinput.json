@@ -20,7 +20,7 @@
     "read_restart" : false,
     "restart_timestep" : 100,
     "iter" : 1,
-    "verbose" : 0
+    "verbose" : 2
 },
 
 "beam" :
@@ -46,17 +46,17 @@
     "diag" :
     [
         {
-        "name" : "charge",
-        "ndump" : 0
+        "name" : ["charge"],
+        "ndump" : 1
         },
         {
-        "name" : "charge",
-        "ndump" : 0,
-        "slice" : ["x", 256]
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
         },
         {
-        "name" : "raw",
-        "ndump" : 0,
+        "name" : ["raw"],
+        "ndump" : 1,
         "sample" : 10
         }
     ]    
@@ -73,17 +73,13 @@
     "diag" :
     [
         {
-        "name" : "charge",
-        "ndump" : 0
+        "name" : ["charge", "jx"],
+        "ndump" : 1
         },
         {
-        "name" : "charge",
-        "ndump" : 0,
-        "slice" : ["x", 256]
-        },
-        {
-        "name" : "current",
-        "ndump" : 0
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129]]
         }
     ]    
     }
@@ -94,13 +90,13 @@
     "diag" :
     [
         {
-        "name" : "ex",
-        "ndump" : 0
+        "name" : ["ex","ez"],
+        "ndump" : 1
         },
         {
-        "name" : "ex",
-        "ndump" : 0,
-        "slice" : ["x", 256]
+        "name" : ["ex","by","ez","psi"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz", 129]]
         }
     ]    
     

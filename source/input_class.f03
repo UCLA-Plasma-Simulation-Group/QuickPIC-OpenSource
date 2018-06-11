@@ -124,6 +124,7 @@
          &json_file_get_root
          generic :: info => json_file_variable_info
 
+         procedure :: found
          procedure, private :: read_input_json
          procedure, private :: initialize, set_json_core_in_file
          procedure, private :: load_file, print_to_string
@@ -1217,6 +1218,24 @@
          call this%err%werrfl0(class//sname//' ended')
 
       end subroutine load_from_string
+!
+      function found(this, path)
+
+         implicit none
+
+         class(input_json),intent(inout) :: this
+         character(len=*),intent(in) :: path
+         logical :: found
+! local data
+         character(len=38), save :: sname = 'json_file_found:'
+
+         call this%err%werrfl0(class//sname//' started')
+
+         call this%input%info(path, found=found)
+
+         call this%err%werrfl0(class//sname//' ended')
+
+      end function found
 !
       subroutine json_file_get_object(this, path, p)
 

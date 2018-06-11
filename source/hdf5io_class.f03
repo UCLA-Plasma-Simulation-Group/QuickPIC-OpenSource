@@ -386,11 +386,19 @@
          integer(hsize_t), dimension(3) :: gsize, lsize
          integer(hsize_t), dimension(2) :: lnoff
          integer :: info
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
                   
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+
          ierr = 0
          gsize = gs
          lsize = ls
          lnoff = noff
+
          call h5open_f(ierr)
          treal = detect_precision()
          call h5pcreate_f(H5P_FILE_ACCESS_F, flplID, ierr)         
@@ -400,7 +408,7 @@
          call h5pset_fapl_mpio_f(flplID, pp%getlgrp(), info, ierr)
          call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
       
-         call h5fcreate_f(file%filename,H5F_ACC_TRUNC_F,file_id,ierr,&
+         call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
          &access_prp=flplID) 
          call wrattr_file(file,file_id,xferID)
 
@@ -452,6 +460,13 @@
          integer(hsize_t), dimension(2) :: gsize, lsize
          integer(hsize_t) :: lnoff
          integer :: info
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
                   
          ierr = 0
          gsize = gs
@@ -466,7 +481,7 @@
          call h5pset_fapl_mpio_f(flplID, pp%getlgrp(), info, ierr)
          call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
       
-         call h5fcreate_f(file%filename,H5F_ACC_TRUNC_F,file_id,ierr,&
+         call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
          &access_prp=flplID) 
          call wrattr_file(file,file_id,xferID)
 
@@ -525,6 +540,13 @@
          integer :: ori, des, nvyp, stageid, mid, message, info
          integer, dimension(10) :: istat
          integer(hsize_t), dimension(1) :: dims 
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
          
          ierr = 0
          gsize = gs
@@ -551,7 +573,7 @@
          call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
          
          if (ori >= 0) then
-            call h5fopen_f(file%filename,H5F_ACC_RDWR_F, file_id, ierr,&
+            call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr,&
             &access_prp=flplID)
             call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
             lstr = len(string)
@@ -562,7 +584,7 @@
             call h5aclose_f(aid, ierr)
             call h5tclose_f(tstring, ierr)
          else
-            call h5fcreate_f(file%filename,H5F_ACC_TRUNC_F,file_id,ierr,&
+            call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
             &access_prp=flplID) 
             call wrattr_file(file,file_id,xferID)
          endif
@@ -632,7 +654,13 @@
          integer :: ori, des, nvyp, stageid, mid, message, info
          integer, dimension(10) :: istat
          integer(hsize_t), dimension(1) :: dims 
-         
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
          
          ierr = 0
          gsize = gs
@@ -659,7 +687,7 @@
          call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
          
          if (ori >= 0) then
-            call h5fopen_f(file%filename,H5F_ACC_RDWR_F, file_id, ierr,&
+            call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr,&
             &access_prp=flplID)
             call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
             lstr = len(string)
@@ -670,7 +698,7 @@
             call h5aclose_f(aid, ierr)
             call h5tclose_f(tstring, ierr)
          else
-            call h5fcreate_f(file%filename,H5F_ACC_TRUNC_F,file_id,ierr,&
+            call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
             &access_prp=flplID) 
             call wrattr_file(file,file_id,xferID)
          endif
@@ -738,6 +766,13 @@
          integer :: ori, des, nvyp, stageid, mid, message, info
          integer, dimension(10) :: istat
          integer(hsize_t), dimension(1) :: dims 
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
          
          ierr = 0
          gsize = gs
@@ -759,7 +794,7 @@
          info = MPI_INFO_NULL
          
          if (ori >= 0) then
-            call h5fopen_f(file%filename,H5F_ACC_RDWR_F, file_id, ierr)
+            call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr)
             call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
             lstr = len(string)
             call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
@@ -769,7 +804,7 @@
             call h5aclose_f(aid, ierr)
             call h5tclose_f(tstring, ierr)
          else
-            call h5fcreate_f(file%filename,H5F_ACC_TRUNC_F,file_id,ierr)
+            call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr)
             call wrattr_file(file,file_id,H5P_DEFAULT_F)
          endif
          
@@ -831,6 +866,13 @@
          integer(hid_t) :: file_id, rootID, dset_id, dspace_id, aspace_id
          integer :: info
          integer, dimension(10) :: istat
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
       
          ierr = 0
          ldim(1) = 1
@@ -847,7 +889,7 @@
             info = MPI_INFO_NULL
             call h5pset_fapl_mpio_f(flplID, pp%getlgrp(), info, ierr)
             call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)
-            call h5fcreate_f(file%filename, H5F_ACC_TRUNC_F, file_id, ierr,&
+            call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr,&
             &access_prp=flplID) 
             call wrattr_file(file,file_id,xferID)
             call h5gopen_f(file_id, '/', rootID, ierr)
@@ -890,7 +932,7 @@
                info = MPI_INFO_NULL
                call h5pset_fapl_mpio_f(flplID, pgrp, info, ierr)
                call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
-               call h5fcreate_f(file%filename, H5F_ACC_TRUNC_F, file_id, ierr,&
+               call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr,&
                &access_prp=flplID) 
                call wrattr_file(file,file_id,xferID)
                call h5gopen_f(file_id, '/', rootID, ierr)
@@ -980,6 +1022,13 @@
          integer(hid_t) :: file_id, rootID, dset_id, dspace_id, aspace_id
          integer :: ori, des, nvyp, stageid, mid, message, info
          integer, dimension(10) :: istat
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
 
          ierr = 0
          tpo = 0
@@ -1005,7 +1054,7 @@
                info = MPI_INFO_NULL
                call h5pset_fapl_mpio_f(flplID, pp%getlgrp(), info, ierr)
                call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)
-               call h5fcreate_f(file%filename, H5F_ACC_TRUNC_F, file_id, ierr,&
+               call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr,&
                &access_prp=flplID) 
                call wrattr_file(file,file_id,xferID)
                call h5gopen_f(file_id, '/', rootID, ierr)
@@ -1057,7 +1106,7 @@
                call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
 
                if (ori < 0) then
-                  call h5fcreate_f(file%filename, H5F_ACC_TRUNC_F, file_id, ierr,&
+                  call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr,&
                   &access_prp=flplID) 
                   call wrattr_file(file,file_id,xferID)
                   call h5gopen_f(file_id, '/', rootID, ierr)
@@ -1068,7 +1117,7 @@
                   call h5aclose_f(aid, ierr)
                   call h5sclose_f(aspace_id, ierr)
                else
-                  call h5fopen_f(file%filename,H5F_ACC_RDWR_F, file_id, ierr,&
+                  call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr,&
                   &access_prp=flplID)
                   call h5gopen_f(file_id, '/', rootID, ierr)
                   call h5aopen_f(rootID, 'tp', aid, ierr)
@@ -1205,13 +1254,20 @@
          integer(hid_t) :: treal
          integer(hid_t) :: file_id, rootID, dset_id, dspace_id, aspace_id
          integer(hid_t) :: memspaceID, aid
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
 
          ierr = 0
          ldim(1) = 1
          call h5open_f(ierr)
          treal = detect_precision()
          tp = int(npp/dspl)
-         call h5fcreate_f(file%filename, H5F_ACC_TRUNC_F, file_id, ierr)
+         call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr)
          call wrattr_file(file,file_id,H5P_DEFAULT_F)
          call h5gopen_f(file_id, '/', rootID, ierr)
          call h5screate_simple_f(1, ldim, aspace_id, ierr)
@@ -1262,12 +1318,19 @@
          integer(hid_t) :: treal
          integer(hid_t) :: file_id, rootID, dset_id, dspace_id, aspace_id
          integer(hid_t) :: memspaceID, aid
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
 
          ierr = 0
          ldim(1) = 1
          call h5open_f(ierr)
          treal = detect_precision()
-         call h5fopen_f(file%filename,H5F_ACC_RDONLY_F, file_id, ierr)
+         call h5fopen_f(filename,H5F_ACC_RDONLY_F, file_id, ierr)
          call h5gopen_f(file_id, '/', rootID, ierr)
          call h5aopen_f(rootID, 'tp', aid, ierr)
          call h5aread_f(aid, H5T_NATIVE_INTEGER, tp, ldim, ierr)
