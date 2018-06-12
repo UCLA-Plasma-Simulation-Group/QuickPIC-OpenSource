@@ -11,7 +11,7 @@
         "z" : [0,545.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 10.1,
+    "time" : 20.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,

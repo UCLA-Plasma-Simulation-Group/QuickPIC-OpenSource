@@ -146,7 +146,8 @@
             call this%qn%as(0.0)
             call this%pd%qdp(this%qn%getrs())
             call this%qn%ag()
-            call this%qn%cb(this%q3,1,(/1/),(/1/))                     
+            call this%qn%cb(this%q3,1,(/1/),(/1/))
+            call this%qn%mult(this%qn,-1.0)
          end if
          
          call this%err%werrfl2(class//sname//' ended')
