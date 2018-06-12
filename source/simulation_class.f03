@@ -34,9 +34,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, qi, psit, psi, div_vpot, reg
          type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb         
-         type(field2d), dimension(:), allocatable :: qe0, cu0, dcu0, amu0      
          type(field3d), allocatable :: bexyz, bbxyz, qeb
-         type(field3d), dimension(:), allocatable :: qep
          type(field3d), allocatable :: psi3d,cu3d
 
          contains
@@ -279,17 +277,6 @@
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
 
          call input%get('simulation.nspecies',n)
-
-         allocate(this%qe0(n),this%cu0(n),this%dcu0(n),this%amu0(n))
-         allocate(this%qep(n))
-
-         do i = 1, n
-            call this%qep(i)%new(this%p,this%err,this%sp3,dim=1)
-            call this%qe0(i)%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
-            call this%cu0(i)%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)
-            call this%dcu0(i)%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
-            call this%amu0(i)%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)
-         end do
          
          loop1: do i = 1, n
             write (s1, '(I4.4)') i
@@ -368,16 +355,6 @@
          call this%epw%del()
          call this%epwb%del()
          call this%bxyz%del()
-
-         n = size(this%qep)
-
-         do i = 1, n
-            call this%qep(i)%del()
-            call this%qe0(i)%del()
-            call this%cu0(i)%del()
-            call this%dcu0(i)%del()
-            call this%amu0(i)%del()
-         end do
 
          if(allocated(this%psi3d)) call this%psi3d%del()
          if(allocated(this%cu3d)) call this%cu3d%del()
@@ -617,7 +594,7 @@
             qbm = qm/qbm
             npmax = npx*npy/this%p%getlnvp()
             qm = qm/abs(qm)/(real(npx)/2**indx)/(real(npy)/2**indy)
-            call this%spe(i)%new(this%p,this%err,this%sp2,this%pf(i),fields%qe0(i),qm=qm,&
+            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i),qm=qm,&
             &qbm=qbm,dt=dz,ci=1.0,xdim=7,npmax=npmax,nbmax=int(0.01*npmax))
 
          end do
@@ -677,7 +654,7 @@
    
             do l =  1, this%nspecies
                this%tag_spe(l) = ntag()
-               call this%species%spe(l)%precv(this%fields%qe0(l),this%tag_spe(l))
+               call this%species%spe(l)%precv(this%tag_spe(l))
             end do
             this%tag(2) = ntag()
             call this%fields%qi%precv(this%tag(2))
@@ -696,16 +673,6 @@
             call this%fields%psit%cb(this%fields%bexyz,1,(/1/),(/3/))
             call this%fields%bxyz%cb(this%fields%bbxyz,1,(/1,2,3/),(/1,2,3/))
    
-   
-            if (this%p%getstageid() == 0) then
-               do m = 1, this%nspecies
-                  call this%fields%qe0(m)%as(0.0)           
-                  call this%species%spe(m)%qdp(this%fields%qe0(m))
-                  call this%fields%qi%add(this%fields%qi,this%fields%qe0(m))
-                  call this%fields%qe0(m)%cb(this%fields%qep(m),1,(/1/),(/1/))         
-               end do
-            end if
-                     
             do j = 1, this%nstep2d
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
@@ -715,11 +682,9 @@
                call this%fields%qb%cp(this%fields%qeb,j+1,(/1/),(/1/))
                call this%fields%qb%fftrk(1)
                call this%fields%qb%elf(this%fields%epwb)
-               call this%fields%qe%mult(this%fields%qi,-1.0)
+               call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
-                  call this%fields%qe0(l)%as(0.0)
-                  call this%species%spe(l)%qdp(this%fields%qe0(l))                     
-                  call this%fields%qe%add(this%fields%qe,this%fields%qe0(l))
+                  call this%species%spe(l)%qdp(this%fields%qe)                     
                end do
                call this%fields%qe%fftrk(1)
                call this%fields%qe%pot(this%fields%psi)
@@ -746,26 +711,15 @@
                   call this%fields%dcu%as(0.0)
                   call this%fields%amu%as(0.0)
                   do m = 1, this%nspecies
-                     call this%fields%cu0(m)%as(0.0)
-                     call this%fields%dcu0(m)%as(0.0)
-                     call this%fields%amu0(m)%as(0.0)
                      call this%species%spe(m)%amjdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-                     &this%fields%cu0(m),this%fields%amu0(m),this%fields%dcu0(m),this%dex)
-                     call this%fields%cu0(m)%mult(this%fields%cu0(m),this%dex)
-                     call this%fields%amu0(m)%mult(this%fields%amu0(m),this%dex)
-                     call this%fields%dcu0(m)%mult(this%fields%dcu0(m),this%dex)
-                     call this%fields%cu%add(this%fields%cu,this%fields%cu0(m))
-                     call this%fields%amu%add(this%fields%amu,this%fields%amu0(m))
-                     call this%fields%dcu%add(this%fields%dcu,this%fields%dcu0(m))
+                     &this%fields%cu,this%fields%amu,this%fields%dcu,this%dex)
                   end do
+                  call this%fields%cu%mult(this%fields%cu,this%dex)
+                  call this%fields%amu%mult(this%fields%amu,this%dex)
+                  call this%fields%dcu%mult(this%fields%dcu,this%dex)
                   if (l == this%iter) then
                      do m = 1, this%nspecies              
-                        call this%fields%reg%add(this%fields%qe0(m),this%fields%cu0(m),(/1/),(/1/),(/3/))
-                        call this%fields%reg%fftrk(1)
-                        call this%fields%reg%smooth(this%fields%reg)
-                        call this%fields%reg%fftkr(1)
-                        call this%fields%qe0(m)%as(this%fields%reg)
-                        call this%fields%qe0(m)%cb(this%fields%qep(m),j+1,(/1/),(/1/))                     
+                        call this%species%spe(m)%cbq(j+1)
                      end do
                      if (allocated(this%fields%cu3d)) then
                         call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
@@ -828,7 +782,7 @@
             
             do m = 1, this%nspecies                       
                call MPI_WAIT(this%id_spe(m),istat,ierr)
-               call this%species%spe(m)%renew(this%species%pf(m),this%fields%qe0(m))
+               call this%species%spe(m)%renew(this%species%pf(m))
             end do
 
             call this%diag_simulation()
@@ -1068,7 +1022,7 @@
                         sn3 = 'n_0'
                         sn4 = 'Charge Density'
                         dim = 1
-                        obj => this%fields%qep(i)
+                        obj => this%species%spe(i)
                      case ('jx')
                         sn1 = 'Jx'
                         sn2 = 'jx'
@@ -1376,6 +1330,17 @@
                      call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
                      &this%tag(1),this%tag(1),this%id(idn+i))
                   end if
+               type is (species2d)
+                  if (allocated(this%diag(i)%slice)) then
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wrq(this%diag(i)%file,this%diag(i)%slice,this%diag(i)%slice_pos,&
+                     &this%tag(1),this%tag(1),this%id(idn+i))
+                  else
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
+                  end if                  
                end select
             end if
          end do

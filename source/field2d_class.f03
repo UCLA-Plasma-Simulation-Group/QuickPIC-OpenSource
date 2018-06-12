@@ -145,7 +145,7 @@
          call this%err%werrfl2(class//sname//' started')
          
          call this%rs%del()
-         call this%ks%del()
+         if (associated(this%ks)) call this%ks%del()
          deallocate(this%rs,this%ks)
 
          call this%err%werrfl2(class//sname//' ended')

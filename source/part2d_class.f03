@@ -206,7 +206,7 @@
          
          class(part2d), intent(inout) :: this
          class(fdist2d), intent(in) :: pf
-         class(ufield2d), target, intent(in) :: fd
+         class(ufield2d), pointer, intent(in) :: fd
 
 ! local data
          character(len=18), save :: sname = 'renew_part2d:'

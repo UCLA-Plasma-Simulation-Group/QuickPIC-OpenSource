@@ -25,7 +25,8 @@
          class(spect3d), pointer, public :: sp => null()
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
-         class(part3d), pointer :: pd         
+         class(part3d), pointer :: pd
+         class(field3d), pointer :: q => null()
          contains
          
          generic :: new => init_beam3d
@@ -76,9 +77,10 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         allocate(this%pd)
-         call this%pd%new(pp,perr,psp,pf,fd%getrs(),qm,qbm,dt,ci,xdim,npmax,nbmax)
-         call this%pmv(fd,1,1,id)
+         allocate(this%pd,this%q)
+         call this%q%new(this%p,this%err,this%sp,dim=1)
+         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qm,qbm,dt,ci,xdim,npmax,nbmax)
+         call this%pmv(this%q,1,1,id)
          call MPI_WAIT(id,istat,ierr)
          
          call this%err%werrfl2(class//sname//' ended')
@@ -94,7 +96,7 @@
 
          call this%err%werrfl2(class//sname//' started')
          call this%pd%del()
-         deallocate(this%pd)
+         call this%q%del()
          call this%err%werrfl2(class//sname//' ended')
                   
       end subroutine end_beam3d
@@ -110,8 +112,9 @@
          character(len=18), save :: sname = 'qdeposit_beam3d:'
                   
          call this%err%werrfl2(class//sname//' started')
-         
-         call this%pd%qdp(q%getrs())
+         call this%q%as(0.0)
+         call this%pd%qdp(this%q%getrs())
+         call q%add(q,this%q)
                  
          call this%err%werrfl2(class//sname//' ended')
          
