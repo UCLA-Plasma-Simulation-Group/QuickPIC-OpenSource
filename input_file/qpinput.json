@@ -60,6 +60,42 @@
         "sample" : 10
         }
     ]    
+    },
+    {
+    "evolution" : true,
+    "profile" : 1,
+    "np" : [64,64,128],
+    "npmax" : 4000000,
+    "q" : 1.0,
+    "m" : 1.0,
+    "gamma" : 20000,
+    "num_particle" : 1.5E9,
+    "quiet_start" : true,
+    "parameter" :
+    [
+        [340.0,340.0,200.0],
+        [13.3,13.3,21.286],
+        [100.0,100.0,0.0],
+        [0.0,0.0,0.0],
+        [0.0,0.0,0.0]
+    ],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
     }
 ],
 

@@ -903,7 +903,7 @@
                            do ii = 1, n
                               n_diag = n_diag + 1 
                               this%diag(n_diag)%df = ndump
-                              this%diag(n_diag)%obj => this%fields%qeb
+                              this%diag(n_diag)%obj => this%beams%beam(i)
                               allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
                               allocate(this%diag(n_diag)%dim)
                               this%diag(n_diag)%dim = 1
@@ -952,7 +952,7 @@
                         else
                            n_diag = n_diag + 1 
                            this%diag(n_diag)%df = ndump
-                           this%diag(n_diag)%obj => this%fields%qeb
+                           this%diag(n_diag)%obj => this%beams%beam(i)
                            allocate(this%diag(n_diag)%dim)
                            this%diag(n_diag)%dim = 1
                            if (this%p%getidproc() == 0) then
@@ -1319,6 +1319,15 @@
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
                      &this%tag(1),this%tag(1),this%id(idn+i))
+                  else if (allocated(this%diag(i)%slice)) then
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wrq(this%diag(i)%file,this%diag(i)%slice,this%diag(i)%slice_pos,&
+                     &this%tag(1),this%tag(1),this%id(idn+i))
+                  else if (allocated(this%diag(i)%dim)) then
+                     this%tag(1) = ntag()
+                     call MPI_WAIT(this%id(idn+i),istat,ierr)
+                     call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
                   else
                      call obj%wrst(this%diag(i)%file)
                   end if

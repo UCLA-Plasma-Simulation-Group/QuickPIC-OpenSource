@@ -34,7 +34,8 @@
          generic :: push => push_beam3d
          generic :: pmv => pmove_beam3d
          generic :: qdp => qdeposit_beam3d  
-         generic :: wr => writehdf5_beam3d       
+         generic :: wr => writehdf5_beam3d
+         generic :: wrq => writeq_beam3d, writeqslice_beam3d
          generic :: wrst => writerst_beam3d       
          generic :: rrst => readrst_beam3d       
          procedure, private :: init_beam3d
@@ -43,7 +44,7 @@
          procedure, private :: pmove_beam3d   
          procedure, private :: qdeposit_beam3d, writehdf5_beam3d
          procedure, private :: writerst_beam3d, readrst_beam3d
-                  
+         procedure, private :: writeq_beam3d, writeqslice_beam3d                  
       end type 
 
       save      
@@ -201,6 +202,40 @@
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writerst_beam3d
+!            
+      subroutine writeq_beam3d(this,file,rtag,stag,id)
+
+         implicit none
+         
+         class(beam3d), intent(inout) :: this
+         class(hdf5file), intent(in) :: file
+         integer, intent(in) :: rtag, stag
+         integer, intent(inout) :: id
+! local data
+         character(len=18), save :: sname = 'writeq_beam3d:'
+
+         call this%err%werrfl2(class//sname//' started')                  
+         call this%q%wr(file,1,rtag,stag,id)
+         call this%err%werrfl2(class//sname//' ended')
+      
+      end subroutine writeq_beam3d
+!            
+      subroutine writeqslice_beam3d(this,file,slice,spos,rtag,stag,id)
+
+         implicit none
+         
+         class(beam3d), intent(inout) :: this
+         class(hdf5file), intent(in) :: file
+         integer, intent(in) :: rtag, stag, slice, spos
+         integer, intent(inout) :: id         
+! local data
+         character(len=18), save :: sname = 'writeqslice_beam3d:'
+
+         call this%err%werrfl2(class//sname//' started')                  
+         call this%q%wr(file,1,slice,spos,rtag,stag,id)
+         call this%err%werrfl2(class//sname//' ended')
+      
+      end subroutine writeqslice_beam3d
 !            
       subroutine readrst_beam3d(this,file)
 
