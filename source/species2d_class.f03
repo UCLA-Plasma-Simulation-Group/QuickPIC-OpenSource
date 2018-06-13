@@ -141,14 +141,14 @@
                   
          call this%err%werrfl2(class//sname//' started')
          
+         call this%pd%renew(pf,this%qn%getrs())
+         call this%qn%as(0.0)
+         call this%pd%qdp(this%qn%getrs())
+         call this%qn%ag()
          if (this%p%getstageid() == 0) then
-            call this%pd%renew(pf,this%qn%getrs())
-            call this%qn%as(0.0)
-            call this%pd%qdp(this%qn%getrs())
-            call this%qn%ag()
             call this%qn%cb(this%q3,1,(/1/),(/1/))
-            call this%qn%mult(this%qn,-1.0)
          end if
+         call this%qn%mult(this%qn,-1.0)
          
          call this%err%werrfl2(class//sname//' ended')
 

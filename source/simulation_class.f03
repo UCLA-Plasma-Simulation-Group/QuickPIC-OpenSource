@@ -32,7 +32,7 @@
          class(perrors),pointer :: err => null()
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
-         type(field2d), allocatable :: qb, qe, qi, psit, psi, div_vpot, reg
+         type(field2d), allocatable :: qb, qe, psit, psi, div_vpot, reg
          type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb         
          type(field3d), allocatable :: bexyz, bbxyz, qeb
          type(field3d), allocatable :: psi3d,cu3d
@@ -252,7 +252,7 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         allocate(this%qb, this%qe, this%qi, this%psit, this%psi)
+         allocate(this%qb, this%qe, this%psit, this%psi)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          allocate(this%dcu, this%amu, this%epw, this%epwb)
          allocate(this%bexyz, this%bbxyz, this%qeb)
@@ -263,7 +263,6 @@
          
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
-         call this%qi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%div_vpot%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
@@ -343,7 +342,6 @@
          call this%qeb%del()
          call this%qb%del()
          call this%qe%del()
-         call this%qi%del()
          call this%psit%del()
          call this%div_vpot%del()
          call this%psi%del()
@@ -656,8 +654,6 @@
                this%tag_spe(l) = ntag()
                call this%species%spe(l)%precv(this%tag_spe(l))
             end do
-            this%tag(2) = ntag()
-            call this%fields%qi%precv(this%tag(2))
             this%tag(3) = ntag()
             call this%fields%cu%precv(this%tag(3))
             this%tag(4) = ntag()
@@ -760,8 +756,6 @@
             do m = 1, this%nspecies                       
                call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
             end do
-            call MPI_WAIT(this%id(4),istat,ierr)
-            call this%fields%qi%psend(this%tag(2),this%id(4))
             call MPI_WAIT(this%id(5),istat,ierr)
             call this%fields%cu%psend(this%tag(3),this%id(5))
             call MPI_WAIT(this%id(6),istat,ierr)
