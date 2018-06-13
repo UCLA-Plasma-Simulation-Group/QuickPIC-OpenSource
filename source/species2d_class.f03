@@ -201,7 +201,8 @@
 
          call cu%add(this%cu,cu)
          call dcu%add(this%dcu,dcu)
-         call cu%add(this%cu,cu)
+         call amu%add(this%amu,amu)
+         call this%cu%mult(this%cu,dex)
 
          call this%err%werrfl2(class//sname//' ended')
          
