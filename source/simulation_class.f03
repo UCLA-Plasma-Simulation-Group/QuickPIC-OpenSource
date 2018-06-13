@@ -1296,13 +1296,11 @@
          character(len=18), save :: sname = 'diag_simulation:'
          integer :: n, m, l, i, j, k, ierr, idn = 9
          integer, dimension(10) :: istat
-         logical :: rst
          real :: dt
 
          call this%err%werrfl2(class//sname//' started')
 
          call this%in%get('simulation.dt',dt)
-         call this%in%get('simulation.dump_restart',rst)
 
          n = size(this%diag)
 
@@ -1322,13 +1320,13 @@
                      call obj%wr(this%diag(i)%file,this%diag(i)%dim,this%tag(1),this%tag(1),this%id(idn+i))
                   end if
                type is (beam3d)
-                  if (rst) then
-                     call obj%wrst(this%diag(i)%file)
-                  else
+                  if (allocated(this%diag(i)%psample)) then
                      this%tag(1) = ntag()
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wr(this%diag(i)%file,this%diag(i)%psample,(/this%dex,this%dex,this%dxi/),&
                      &this%tag(1),this%tag(1),this%id(idn+i))
+                  else
+                     call obj%wrst(this%diag(i)%file)
                   end if
                type is (species2d)
                   if (allocated(this%diag(i)%slice)) then

@@ -330,8 +330,8 @@
          
          class(part2d), intent(in) :: this
          class(ufield2d), target, intent(inout) :: q
-         character(len=18), save :: sname = 'qdeposit:'
 ! local data
+         character(len=18), save :: sname = 'qdeposit:'
          real, dimension(:,:,:), pointer :: pq => null()
          integer :: noff, nxv, nypmx
                   
