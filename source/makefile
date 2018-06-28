@@ -172,7 +172,7 @@ spect2d_class.o : spect2d_class.f03 perrors_class.o parallel_pipe_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c spect2d_class.f03 -o spect2d_class.o
 
 dtimer.o : dtimer.c
-	${CC} -O3 -std=c99 -c dtimer.c
+	${CC} -c dtimer.c
 
 perrors_class.o : perrors_class.f03 parallel_class.o dtimer.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c perrors_class.f03 -o perrors_class.o
