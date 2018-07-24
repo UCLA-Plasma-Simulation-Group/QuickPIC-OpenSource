@@ -1,7 +1,7 @@
 {
 "simulation" : //note
 {
-    "nodes" : [32,1],  
+    "nodes" : [32,2],  
     "indx" : 8,
     "indy" : 8,
     "indz" : 8,
@@ -13,9 +13,9 @@
     "n0" : 1.0e16,
     "time" : 20.1,
     "dt" : 10.0,
-    "nbeams" : 1,
+    "nbeams" : 2,
     "nspecies" : 1,
-    "dump_restart" : true,
+    "dump_restart" : false,
     "ndump_restart" : 1,
     "read_restart" : false,
     "restart_timestep" : 1,

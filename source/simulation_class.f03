@@ -34,7 +34,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, psit, psi, div_vpot, reg
          type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb         
-         type(field3d), allocatable :: bexyz, bbxyz, qeb
+         type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d
 
          contains
@@ -120,6 +120,7 @@
          integer, dimension(8) :: tag
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
+         integer, dimension(:,:), allocatable :: id_bq, tag_bq
          real :: dex, dxi, dex2
 
          contains
@@ -201,11 +202,13 @@
 
          allocate(this%tag_spe(this%nspecies),this%tag_beam(this%nbeams))
          allocate(this%id_spe(this%nspecies),this%id_beam(this%nbeams))
+         allocate(this%id_bq(this%nbeams,3),this%tag_bq(this%nbeams,2))
 
          allocate(this%id(9+size(this%diag)))
          this%id(:) = MPI_REQUEST_NULL
          this%id_spe(:) = MPI_REQUEST_NULL
          this%id_beam(:) = MPI_REQUEST_NULL                 
+         this%id_bq(:,:) = MPI_REQUEST_NULL                 
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -255,11 +258,10 @@
          allocate(this%qb, this%qe, this%psit, this%psi)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          allocate(this%dcu, this%amu, this%epw, this%epwb)
-         allocate(this%bexyz, this%bbxyz, this%qeb)
+         allocate(this%bexyz, this%bbxyz)
 
          call this%bexyz%new(this%p,this%err,this%sp3,dim=3)
          call this%bbxyz%new(this%p,this%err,this%sp3,dim=3)
-         call this%qeb%new(this%p,this%err,this%sp3,dim=1)
          
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
@@ -339,7 +341,6 @@
 
          call this%bexyz%del()
          call this%bbxyz%del()
-         call this%qeb%del()
          call this%qb%del()
          call this%qe%del()
          call this%psit%del()
@@ -486,7 +487,7 @@
             call input%get('simulation.dt',dt)
             call input%get(trim(s1)//'.npmax',npmax)
             
-            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf3(i),fields%qeb,qm=qm,qbm=qbm,&
+            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf3(i),qm=qm,qbm=qbm,&
             &dt=dt,ci=1.0,xdim=6,npmax=npmax,nbmax=int(npmax*0.01))
 
             call input%get('simulation.read_restart',read_rst)
@@ -639,16 +640,12 @@
             write (erstr,*) '3D step:', i        
             call this%err%werrfl0(erstr)
             
-            call MPI_WAIT(this%id(1),istat,ierr)
-            call MPI_WAIT(this%id(3),istat,ierr)
-            call this%fields%qeb%as(0.0)
             do m = 1, this%nbeams
-               call this%beams%beam(m)%qdp(this%fields%qeb)
+               this%tag_bq(m,1) = ntag()
+               this%tag_bq(m,2) = ntag()
+               call this%beams%beam(m)%qdp(this%id_bq(m,1),this%id_bq(m,2),&
+               &this%id_bq(m,3),this%tag_bq(m,1),this%tag_bq(m,2))
             end do
-            this%tag(1) = ntag()
-            call this%fields%qeb%ag(this%tag(1),this%tag(1),this%id(1))
-            this%tag(1) = ntag()
-            call this%fields%qeb%pcg(this%tag(1),this%tag(1),this%id(2),this%id(3))    
    
             do l =  1, this%nspecies
                this%tag_spe(l) = ntag()
@@ -673,9 +670,14 @@
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
                if (j == this%nstep2d) then
-                  call MPI_WAIT(this%id(2),istat,ierr)
+                  do m = 1, this%nbeams
+                     call MPI_WAIT(this%id_bq(m,2),istat,ierr)
+                  end do
                endif
-               call this%fields%qb%cp(this%fields%qeb,j+1,(/1/),(/1/))
+               call this%fields%qb%as(0.0)
+               do m = 1, this%nbeams
+                  call this%beams%beam(m)%qdp(this%fields%qb,j+1)
+               end do
                call this%fields%qb%fftrk(1)
                call this%fields%qb%elf(this%fields%epwb)
                call this%fields%qe%as(0.0)

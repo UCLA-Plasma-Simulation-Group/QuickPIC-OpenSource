@@ -52,6 +52,7 @@
          generic :: psend => pipesend_field2d
          generic :: precv => piperecv_field2d
          generic :: cp => copyfrom
+         generic :: ca => copyadd
          generic :: cb => copyto
          generic :: as => asc, asa
          generic :: add => sum1, sum2
@@ -67,7 +68,7 @@
          procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
-         procedure, private :: copyfrom, copyto
+         procedure, private :: copyfrom, copyto, copyadd
          procedure :: getstate, getgcells, getrs, getks
                   
       end type 
@@ -557,6 +558,32 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyfrom
+!      
+      subroutine copyadd(this,that,lpos,sdim,ddim)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         class(field3d), intent(in) :: that
+         integer, intent(in) :: lpos
+         integer, intent(in), dimension(:) :: sdim, ddim
+! local data         
+         character(len=20), save :: sname = 'copyadd:'
+         class(ufield3d), pointer :: rs3d
+
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         rs3d => that%getrs()
+         
+         call rs3d%ca(this%rs,lpos,sdim,ddim)
+         
+         this%gcells = 1
+         this%state = 0
+                  
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine copyadd
 !      
       subroutine asa(this,that) 
 

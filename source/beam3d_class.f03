@@ -8,6 +8,7 @@
       use spect3d_class
       use fdist3d_class
       use field3d_class
+      use field2d_class
       use part3d_class
       use hdf5io_class
       use mpi
@@ -33,7 +34,7 @@
          generic :: del => end_beam3d
          generic :: push => push_beam3d
          generic :: pmv => pmove_beam3d
-         generic :: qdp => qdeposit_beam3d  
+         generic :: qdp => qdeposit_beam3d, qdpcopy_beam3d  
          generic :: wr => writehdf5_beam3d
          generic :: wrq => writeq_beam3d, writeqslice_beam3d
          generic :: wrst => writerst_beam3d       
@@ -44,7 +45,8 @@
          procedure, private :: pmove_beam3d   
          procedure, private :: qdeposit_beam3d, writehdf5_beam3d
          procedure, private :: writerst_beam3d, readrst_beam3d
-         procedure, private :: writeq_beam3d, writeqslice_beam3d                  
+         procedure, private :: writeq_beam3d, writeqslice_beam3d 
+         procedure, private :: qdpcopy_beam3d                 
       end type 
 
       save      
@@ -54,7 +56,7 @@
       
       contains
 !
-      subroutine init_beam3d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax)
+      subroutine init_beam3d(this,pp,perr,psp,pf,qm,qbm,dt,ci,xdim,npmax,nbmax)
       
          implicit none
          
@@ -63,7 +65,6 @@
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(in) :: pf
-         class(field3d), intent(in) :: fd
          real, intent(in) :: qm, qbm, dt, ci
          integer, intent(in) :: npmax, nbmax, xdim
 
@@ -102,24 +103,47 @@
                   
       end subroutine end_beam3d
 !      
-      subroutine qdeposit_beam3d(this,q)
+      subroutine qdeposit_beam3d(this,id1,id2,id3,tag1,tag2)
 ! deposit the charge density      
       
          implicit none
          
-         class(beam3d), intent(in) :: this
-         class(field3d), intent(inout) :: q
+         class(beam3d), intent(inout) :: this
+         integer, intent(inout) :: id1, id2, id3, tag1, tag2
 ! local data
          character(len=18), save :: sname = 'qdeposit_beam3d:'
+         integer, dimension(10) :: istat
+         integer :: ierr
                   
          call this%err%werrfl2(class//sname//' started')
-         call this%q%as(0.0)
+         call MPI_WAIT(id1,istat,ierr)
+         call MPI_WAIT(id3,istat,ierr)
          call this%pd%qdp(this%q%getrs())
-         call q%add(q,this%q)
+         call this%q%ag(tag1,tag1,id1)
+         call this%q%pcg(tag2,tag2,id2,id3)    
                  
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine qdeposit_beam3d
+!      
+      subroutine qdpcopy_beam3d(this,q,slice)
+! copy and add the charge density to a 2d slice
+      
+         implicit none
+         
+         class(beam3d), intent(inout) :: this
+         class(field2d), intent(inout) :: q
+         integer, intent(in) :: slice
+! local data
+         character(len=18), save :: sname = 'qdpcopy_beam3d:'
+                  
+         call this%err%werrfl2(class//sname//' started')
+
+         call q%ca(this%q,slice,(/1/),(/1/))
+                
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine qdpcopy_beam3d
 !      
       subroutine push_beam3d(this,ef,bf,dex,dez,rtag,stag,sid)
       
