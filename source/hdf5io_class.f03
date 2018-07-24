@@ -983,6 +983,25 @@
                   call h5dclose_f(dset_id, ierr)
                enddo
 
+               buff(1:tnpp) = part((i+2),1:(1+(tnpp-1)*dspl):dspl) 
+               ldim(1) = tp
+               call h5screate_simple_f(1, ldim, dspace_id, ierr)
+               call h5dcreate_f(rootID, 'q', treal,&
+               &dspace_id, dset_id, ierr)
+               ldim(1) = tnpp
+               call h5screate_simple_f(1, ldim, memspaceID, ierr)
+               start = dims(1,pid+1) - 1
+               call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F,start,&
+               &ldim, ierr)
+               call h5dwrite_f(dset_id, treal, buff, ldim, ierr, memspaceID,&
+               &dspace_id, xfer_prp=xferID)
+               call wrattr_dataset(file,dset_id,unit='a.u.',&
+               &name='q')
+               call h5sclose_f(memspaceID, ierr)
+               call h5sclose_f(dspace_id, ierr)
+               call h5dclose_f(dset_id, ierr)
+
+
                call h5pclose_f(xferID, ierr)
                call h5pclose_f(flplID, ierr)
                call h5gclose_f(rootID, ierr)

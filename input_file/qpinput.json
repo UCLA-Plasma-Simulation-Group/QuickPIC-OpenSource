@@ -13,7 +13,7 @@
     "n0" : 1.0e16,
     "time" : 20.1,
     "dt" : 10.0,
-    "nbeams" : 2,
+    "nbeams" : 1,
     "nspecies" : 1,
     "dump_restart" : false,
     "ndump_restart" : 1,

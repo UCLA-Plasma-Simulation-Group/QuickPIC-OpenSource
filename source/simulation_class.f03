@@ -594,7 +594,7 @@
             npmax = npx*npy/this%p%getlnvp()
             qm = qm/abs(qm)/(real(npx)/2**indx)/(real(npy)/2**indy)
             call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i),qm=qm,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=7,npmax=npmax,nbmax=int(0.01*npmax))
+            &qbm=qbm,dt=dz,ci=1.0,xdim=8,npmax=npmax,nbmax=int(0.01*npmax))
 
          end do
          call this%err%werrfl2(class//sname//' ended')

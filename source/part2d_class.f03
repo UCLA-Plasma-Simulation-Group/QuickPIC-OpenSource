@@ -276,6 +276,7 @@
                      pt(5,nps) = 0.0
                      pt(6,nps) = 1.0
                      pt(7,nps) = 1.0
+                     pt(8,nps) = this%qm
                      nps = nps + 1
                   enddo
                enddo
@@ -293,6 +294,7 @@
                      pt(5,nps) = 0.0
                      pt(6,nps) = 1.0
                      pt(7,nps) = 1.0
+                     pt(8,nps) = this%qm
                      nps = nps + 1
                   enddo
                enddo
@@ -310,6 +312,7 @@
                      pt(5,nps) = 0.0
                      pt(6,nps) = 1.0
                      pt(7,nps) = 1.0
+                     pt(8,nps) = this%qm
                      nps = nps + 1
                   enddo
                enddo
@@ -342,7 +345,7 @@
          nxv = size(pq,2)
          nypmx = size(pq,3)
          
-         call PPGPPOST2L(this%ppart,pq(1,:,:),this%kpic,noff,this%qm,&
+         call PPGPPOST2L(this%ppart,pq(1,:,:),this%kpic,noff,&
          &this%xdim,this%nppmx0,mx,my,nxv,nypmx,mx1,mxyp1)         
          
          call this%err%werrfl2(class//sname//' ended')
@@ -375,7 +378,7 @@
          nx = ef%getnd1(); nyp = ef%getnd2p()
          
          call PPGRDCJPPOST2L_QP(this%ppart,pef,pbf,ppsit(1,:,:),pcu,pdcu,&
-         &pamu,this%kpic,noff,nyp,this%qm,this%qbm, this%dt,this%ci,this%xdim,&
+         &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
          &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          
          call this%err%werrfl2(class//sname//' ended')
