@@ -1214,6 +1214,48 @@
                   call h5dclose_f(dset_id, ierr)
                enddo
 
+               buff(1:tnpp) = part(7,1:((tnpp-1)*dspl+1):dspl) 
+               if (ori >= 0 .and. tpo /= 0) then
+                  call h5dopen_f(rootID, 'q', dset_id, ierr)
+                  ldim(1) = tp
+                  call h5dextend_f(dset_id, ldim, ierr)
+                  call h5screate_simple_f(1, ldim, dspace_id, ierr)
+                  ldim(1) = tnpp
+                  call h5screate_simple_f(1, ldim, memspaceID, ierr )
+                  start = tpo + dims(1,pid+1) - 1
+                  call h5sselect_hyperslab_f(dspace_id,H5S_SELECT_SET_F,start,&
+                  &ldim,ierr)
+                  call h5dwrite_f(dset_id, treal, buff, ldim, ierr, memspaceID,&
+                  &dspace_id, xfer_prp=xferID)
+               else
+                  maxdim = (/H5S_UNLIMITED_F/)
+                  ldim(1) = 1
+                  call h5screate_simple_f(1, ldim, dspace_id, ierr, maxdim)
+                  call h5pcreate_f(H5P_DATASET_CREATE_F, dcplID, ierr)
+                  ldim(1) = tp
+                  call h5pset_chunk_f(dcplID, 1, ldim, ierr)
+                  call h5dcreate_f(rootID, 'q', treal,&
+                  &dspace_id, dset_id, ierr, dcplID)
+                  ldim(1) = tp
+                  call h5dextend_f(dset_id, ldim, ierr)
+                  call h5sclose_f(dspace_id, ierr)
+                  call h5screate_simple_f(1, ldim, dspace_id, ierr)
+                  ldim(1) = tnpp
+                  call h5screate_simple_f(1, ldim, memspaceID, ierr )
+                  start = tpo + dims(1,pid+1) - 1
+                  call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F,start,&
+                  &ldim, ierr)
+                  call h5dwrite_f(dset_id, treal, buff, ldim, ierr, memspaceID,&
+                  &dspace_id, xfer_prp=xferID)
+                  call wrattr_dataset(file,dset_id,unit='a.u.',&
+                  &name='q')
+                  call h5pclose_f(dcplID, ierr)
+               endif
+               call h5sclose_f(memspaceID, ierr)
+               call h5sclose_f(dspace_id, ierr)
+               call h5dclose_f(dset_id, ierr)
+
+
                call h5pclose_f(xferID, ierr)
                call h5pclose_f(flplID, ierr)
                call h5gclose_f(rootID, ierr)
@@ -1282,7 +1324,7 @@
             call h5fclose_f(file_id, ierr)
             call h5close_f(ierr)
          else
-            dim(1) = 6
+            dim(1) = size(part,1)
             dim(2) = tp 
             call h5screate_simple_f(2, dim, dspace_id, ierr)
             call h5screate_simple_f(2, dim, memspaceID, ierr)
@@ -1342,7 +1384,7 @@
             call h5fclose_f(file_id, ierr)
             call h5close_f(ierr)
          else
-            dim(1) = 6
+            dim(1) = size(part,1)
             dim(2) = tp 
             call h5screate_simple_f(2, dim, dspace_id, ierr)
             call h5screate_simple_f(2, dim, memspaceID, ierr)

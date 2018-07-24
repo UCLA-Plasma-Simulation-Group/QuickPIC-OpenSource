@@ -488,7 +488,7 @@
             call input%get(trim(s1)//'.npmax',npmax)
             
             call this%beam(i)%new(this%p,this%err,this%sp3,this%pf3(i),qm=qm,qbm=qbm,&
-            &dt=dt,ci=1.0,xdim=6,npmax=npmax,nbmax=int(npmax*0.01))
+            &dt=dt,ci=1.0,xdim=7,npmax=npmax,nbmax=int(npmax*0.01))
 
             call input%get('simulation.read_restart',read_rst)
 

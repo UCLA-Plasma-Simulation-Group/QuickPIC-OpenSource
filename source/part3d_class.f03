@@ -177,7 +177,7 @@
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
          
-         call PRVDIST32_RANDOM(pt,edges,this%npp,nps,vtx,vty,vtz,vdx,vdy,&
+         call PRVDIST32_RANDOM(pt,this%qm,edges,this%npp,nps,vtx,vty,vtz,vdx,vdy,&
          &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
          &x0,y0,z0,cx,cy,lquiet,ierr)
 
@@ -222,10 +222,10 @@
          
          select case (this%sp%getinorder())
          case (1)
-            call PGPOST32L(part,pq(1,:,:,:),npp,noff,qm,idimp,npmax,1,nxv,nypmx,&
+            call PGPOST32L(part,pq(1,:,:,:),npp,noff,idimp,npmax,1,nxv,nypmx,&
             &nzpmx,2)
          case default
-            call PGPOST32L(part,pq(1,:,:,:),npp,noff,qm,idimp,npmax,1,nxv,nypmx,&
+            call PGPOST32L(part,pq(1,:,:,:),npp,noff,idimp,npmax,1,nxv,nypmx,&
             &nzpmx,2)         
          end select
          call this%err%werrfl2(class//sname//' ended')
