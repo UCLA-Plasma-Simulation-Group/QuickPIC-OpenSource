@@ -791,7 +791,7 @@
             
             do m = 1, this%nspecies                       
                call MPI_WAIT(this%id_spe(m),istat,ierr)
-               call this%species%spe(m)%renew(this%species%pf(m)%p,i*this%dt)
+               call this%species%spe(m)%renew(i*this%dt)
             end do
 
             call this%diag_simulation()

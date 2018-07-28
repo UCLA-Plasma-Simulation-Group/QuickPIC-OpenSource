@@ -30,6 +30,7 @@
          class(field2d), pointer :: q => null(), qn => null(), cu => null()
          class(field2d), pointer :: amu => null(), dcu => null()
          class(field3d), pointer :: q3 => null()
+         class(fdist2d), pointer :: pf => null()
          
          contains
          
@@ -79,7 +80,7 @@
          class(spect3d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist2d), intent(inout) :: pf
+         class(fdist2d), intent(inout), target :: pf
          real, intent(in) :: qm, qbm, dt, ci, s
          integer, intent(in) :: npmax, nbmax, xdim
 
@@ -89,6 +90,7 @@
          this%sp => psp
          this%err => perr
          this%p => pp
+         this%pf => pf
 
          call this%err%werrfl2(class//sname//' started')
          
@@ -129,12 +131,11 @@
                   
       end subroutine end_species2d
 !
-      subroutine renew_species2d(this,pf,s)
+      subroutine renew_species2d(this,s)
       
          implicit none
          
          class(species2d), intent(inout) :: this
-         class(fdist2d), intent(inout) :: pf
          real, intent(in) :: s
 
 ! local data
@@ -142,7 +143,7 @@
                   
          call this%err%werrfl2(class//sname//' started')
          
-         call this%pd%renew(pf,this%qn%getrs(),s)
+         call this%pd%renew(this%pf,this%qn%getrs(),s)
          call this%qn%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()
