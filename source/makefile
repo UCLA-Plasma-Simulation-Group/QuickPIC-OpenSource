@@ -128,7 +128,7 @@ part2d_lib.o : part2d_lib.f03
 	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_lib.f03 -o part2d_lib.o
 
 fdist2d_class.o : fdist2d_class.f03 spect2d_class.o perrors_class.o \
-                   parallel_pipe_class.o 
+                   parallel_pipe_class.o ufield2d_class.o input_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c fdist2d_class.f03 -o fdist2d_class.o
 
 fpois2d_class.o : fpois2d_class.f03 ufield2d_class.o spect2d_class.o perrors_class.o \

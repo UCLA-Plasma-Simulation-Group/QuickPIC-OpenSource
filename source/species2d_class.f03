@@ -71,7 +71,7 @@
       contains
 !
       subroutine init_species2d(this,pp,perr,psp,pf,qm,qbm,dt,ci,xdim,&
-      &npmax,nbmax)
+      &npmax,nbmax,s)
       
          implicit none
          
@@ -79,8 +79,8 @@
          class(spect3d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist2d), intent(in) :: pf
-         real, intent(in) :: qm, qbm, dt, ci
+         class(fdist2d), intent(inout) :: pf
+         real, intent(in) :: qm, qbm, dt, ci, s
          integer, intent(in) :: npmax, nbmax, xdim
 
 ! local data
@@ -99,7 +99,7 @@
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qm,qbm,dt,ci,xdim,npmax,nbmax)
+         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qm,qbm,dt,ci,xdim,npmax,nbmax,s)
          call this%qn%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()
@@ -129,19 +129,20 @@
                   
       end subroutine end_species2d
 !
-      subroutine renew_species2d(this,pf)
+      subroutine renew_species2d(this,pf,s)
       
          implicit none
          
          class(species2d), intent(inout) :: this
-         class(fdist2d), intent(in) :: pf
+         class(fdist2d), intent(inout) :: pf
+         real, intent(in) :: s
 
 ! local data
          character(len=18), save :: sname = 'renew_species2d:'
                   
          call this%err%werrfl2(class//sname//' started')
          
-         call this%pd%renew(pf,this%qn%getrs())
+         call this%pd%renew(pf,this%qn%getrs(),s)
          call this%qn%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()

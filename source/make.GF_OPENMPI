@@ -1,6 +1,6 @@
 # name of the compiler 
 FC_GF_OPENMPI = mpif90 -I/usr/local/jsonfortran-gnu-6.3.0/lib/ -fopenmp
-CC_GF_OPENMPI = gcc -O3 -std=c99
+CC_GF_OPENMPI = mpicc -O3 -std=c99
 LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
 
 OPTS_DBL_GF_OPENMPI = -O3 -fdefault-real-8 -fdefault-double-8

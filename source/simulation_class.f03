@@ -23,6 +23,10 @@
       private
 
       public :: simulation
+
+      type fdist2d_wrap
+         class(fdist2d), allocatable :: p
+      end type fdist2d_wrap
 !
       type sim_fields
 
@@ -74,7 +78,7 @@
          class(perrors),pointer :: err => null()
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
-         type(fdist2d), dimension(:), allocatable :: pf
+         type(fdist2d_wrap), dimension(:), allocatable :: pf
          type(species2d), dimension(:), allocatable :: spe
 
          contains
@@ -121,7 +125,7 @@
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
          integer, dimension(:,:), allocatable :: id_bq, tag_bq
-         real :: dex, dxi, dex2
+         real :: dex, dxi, dex2, dt
 
          contains
          
@@ -147,7 +151,7 @@
          class(simulation), intent(inout) :: this
 ! local data
          character(len=18), save :: sname = 'init_simulation:'
-         real :: min, max, cwp, n0, dx, dy, dz
+         real :: min, max, cwp, n0, dx, dy, dz, dt
          integer :: indx, indy, indz
          logical :: read_rst
          
@@ -184,6 +188,8 @@
          call this%in%get('simulation.dt',max)
          this%nstep3d = min/max
          call this%in%get('simulation.read_restart',read_rst)
+         call this%in%get('simulation.dt',dt)
+         this%dt = dt
          if (read_rst) then
             call this%in%get('simulation.restart_timestep',this%start3d)
             this%start3d = this%start3d + 1
@@ -196,7 +202,7 @@
 
          call this%fields%new(this%in)
          call this%beams%new(this%in,this%fields)
-         call this%species%new(this%in,this%fields)
+         call this%species%new(this%in,this%fields,(this%start3d-1)*dt)
 
          call this%init_diag()                 
 
@@ -532,21 +538,22 @@
 
       end subroutine end_sim_beams
 !
-      subroutine init_sim_species(this,input,fields)
+      subroutine init_sim_species(this,input,fields,s)
 
          implicit none
 
          class(sim_species), intent(inout) :: this
          type(input_json), pointer, intent(inout) :: input
          class(sim_fields), intent(inout) :: fields
+         real, intent(in) :: s
 ! local data
          character(len=18), save :: class = 'sim_species:'
          character(len=18), save :: sname = 'init_sim_species:'
          integer :: i,n,ndump
-         integer :: npf,npx,npy,npz
+         integer :: npf
          real, dimension(3,100) :: arg
          character(len=20) :: sn,s1
-         integer :: indx, indy, indz, npmax
+         integer :: indx, indy, indz, npmax, xppc, yppc
          real :: min, max, cwp, n0
          real :: qm, qbm, dt, dx, dy, dz
 
@@ -582,19 +589,25 @@
             write (sn,'(I3.3)') i
             s1 = 'species('//trim(sn)//')'
             call input%get(trim(s1)//'.profile',npf)
-            call input%get(trim(s1)//'.np(1)',npx)
-            call input%get(trim(s1)//'.np(2)',npy)
-
-            call this%pf(i)%new(this%p,this%err,this%sp2,npf=npf,npx=npx,&
-            &npy=npy,arg=arg(1:2,:))
+            call input%get(trim(s1)//'.ppc(1)',xppc)
+            call input%get(trim(s1)//'.ppc(2)',yppc)
+            select case (npf)
+            case (0)
+               allocate(fdist2d_000::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+! Add new distributions under this line
+            case default
+               write (erstr,*) 'Invalid species profile number:', npf
+               call this%err%equit(class//sname//erstr)
+            end select
 
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
-            npmax = npx*npy/this%p%getlnvp()
-            qm = qm/abs(qm)/(real(npx)/2**indx)/(real(npy)/2**indy)
-            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i),qm=qm,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,npmax=npmax,nbmax=int(0.01*npmax))
+            npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
+            qm = qm/abs(qm)/xppc/yppc
+            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qm=qm,&
+            &qbm=qbm,dt=dz,ci=1.0,xdim=8,npmax=npmax,nbmax=int(0.01*npmax),s=s)
 
          end do
          call this%err%werrfl2(class//sname//' ended')
@@ -778,7 +791,7 @@
             
             do m = 1, this%nspecies                       
                call MPI_WAIT(this%id_spe(m),istat,ierr)
-               call this%species%spe(m)%renew(this%species%pf(m))
+               call this%species%spe(m)%renew(this%species%pf(m)%p,i*this%dt)
             end do
 
             call this%diag_simulation()

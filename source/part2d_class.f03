@@ -97,7 +97,7 @@
       
       contains
 !
-      subroutine init_part2d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax)
+      subroutine init_part2d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax,s)
       
          implicit none
          
@@ -105,14 +105,14 @@
          class(spect2d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist2d), intent(in) :: pf
-         class(ufield2d), intent(in), target :: fd
-         real, intent(in) :: qm, qbm, dt, ci
+         class(fdist2d), intent(inout) :: pf
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: qm, qbm, dt, ci, s
          integer, intent(in) :: npmax, nbmax, xdim
 
 ! local data
          character(len=18), save :: sname = 'init_part2d:'
-         integer :: xtras, noff, nxyp, nx, prof
+         integer :: xtras, noff, nxyp, nx
                   
          this%sp => psp
          this%err => perr
@@ -130,18 +130,13 @@
          noff = fd%getnoff()
          nxyp = fd%getnd2p()
          nx = fd%getnd1p()
-         prof = pf%getnpf()
-         
          
          allocate(this%part(xdim,npmax))
          mx1 = (nx - 1)/mx + 1
          myp1 = (nxyp - 1)/my + 1; mxyp1 = mx1*myp1
          allocate(this%kpic(mxyp1))
          
-         select case (prof)
-         case (1)
-            call init_prof1(this,pf,fd)
-         end select
+         call pf%dist(this%part,this%npp,fd,s)
 
 ! find number of particles in each of mx, my tiles: updates kpic, nppmx
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
@@ -200,13 +195,14 @@
          
       end subroutine end_part2d
 !
-      subroutine renew_part2d(this,pf,fd)
+      subroutine renew_part2d(this,pf,fd,s)
       
          implicit none
          
          class(part2d), intent(inout) :: this
-         class(fdist2d), intent(in) :: pf
+         class(fdist2d), intent(inout) :: pf
          class(ufield2d), pointer, intent(in) :: fd
+         real, intent(in) :: s
 
 ! local data
          character(len=18), save :: sname = 'renew_part2d:'
@@ -217,10 +213,7 @@
          noff = fd%getnoff()
          prof = pf%getnpf()         
          
-         select case (prof)
-         case (1)
-            call init_prof1(this,pf,fd)
-         end select
+         call pf%dist(this%part,this%npp,fd,s)
          
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
          &this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
@@ -243,88 +236,6 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_part2d
-!      
-      subroutine init_prof1(this,pf,fd)
-      
-         implicit none
-         
-         class(part2d), intent(inout) :: this
-         class(fdist2d), intent(in) :: pf
-         class(ufield2d), intent(in) :: fd
-! local data
-         real, dimension(:,:), pointer :: pt => null()
-         integer :: nps, nx, ny, noff, npx, pp, i, j
-         integer :: ix, iy
-         character(len=18), save :: sname = 'init_prof1:'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
-         npx = pf%getnpx(); pp = npx/nx
-         nps = 1
-         pt => this%part
-! initialize the particle positions
-         if (noff < ny) then
-         do i=2, nx-2
-            do j=2, ny
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     pt(8,nps) = this%qm
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         else if (noff > (nx-ny-1)) then       
-         do i=2, nx-2
-            do j=1, ny-2
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     pt(8,nps) = this%qm
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         else
-         do i=2, nx-2
-            do j=1, ny
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     pt(8,nps) = this%qm
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         endif
-         
-         this%npp = nps - 1
-         
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine init_prof1
 !      
       subroutine qdeposit(this,q)
 ! deposit the charge density      
