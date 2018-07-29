@@ -57,7 +57,7 @@
       
       contains
 !
-      subroutine init_beam3d(this,pp,perr,psp,pf,qm,qbm,dt,ci,xdim,npmax,nbmax)
+      subroutine init_beam3d(this,pp,perr,psp,pf,qbm,dt,ci,xdim)
       
          implicit none
          
@@ -66,8 +66,8 @@
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout), target :: pf
-         real, intent(in) :: qm, qbm, dt, ci
-         integer, intent(in) :: npmax, nbmax, xdim
+         real, intent(in) :: qbm, dt, ci
+         integer, intent(in) :: xdim
 
 ! local data
          character(len=18), save :: sname = 'init_beam3d:'
@@ -83,7 +83,7 @@
 
          allocate(this%pd,this%q)
          call this%q%new(this%p,this%err,this%sp,dim=1)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qm,qbm,dt,ci,xdim,npmax,nbmax)
+         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim)
          call this%pmv(this%q,1,1,id)
          call MPI_WAIT(id,istat,ierr)
          
@@ -179,14 +179,6 @@
          integer, intent(inout) :: sid
 ! local data
          character(len=18), save :: sname = 'pmove:'
-         integer :: ny, nz, nvpy, nvpz, nbmax, idds = 2
-         integer :: ierr
-         real, dimension(4) :: edges
-         integer, dimension(2) :: noff         
-         integer, dimension(2) :: jsl, jsr, jss
-         integer, dimension(9) :: info
-         integer :: idimp, npmax, idps, ntmax
-         real, dimension(:,:), pointer :: pbuff
          
          call this%err%werrfl2(class//sname//' started')
          

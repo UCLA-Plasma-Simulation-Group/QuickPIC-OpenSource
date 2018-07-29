@@ -24,7 +24,7 @@
          class(parallel_pipe), pointer, public :: p => null()
 !
 ! ndprof = profile type 
-         integer :: npf
+         integer :: npf, npmax
                           
          contains
          generic :: new => init_fdist2d         
@@ -33,7 +33,7 @@
          procedure(ab_init_fdist2d), deferred, private :: init_fdist2d
          procedure, private :: end_fdist2d
          procedure(ab_dist2d), deferred, private :: dist2d
-         procedure :: getnpf
+         procedure :: getnpf, getnpmax
                   
       end type fdist2d
 
@@ -89,8 +89,19 @@
          
          getnpf = this%npf
       
-      end function getnpf  
+      end function getnpf
 !      
+      function getnpmax(this)
+
+         implicit none
+
+         class(fdist2d), intent(in) :: this
+         integer :: getnpmax
+         
+         getnpmax = this%npmax
+      
+      end function getnpmax
+!
       subroutine end_fdist2d(this)
           
          implicit none
@@ -111,7 +122,7 @@
          type(input_json), intent(inout), pointer :: input
          integer, intent(in) :: i
 ! local data
-         integer :: npf,xppc,yppc
+         integer :: npf,xppc,yppc,npmax,indx,indy
          real :: qm
          character(len=20) :: sn,s1
          character(len=18), save :: sname = 'init_fdist2d_000:'
@@ -123,15 +134,19 @@
          call this%err%werrfl2(class//sname//' started')
          write (sn,'(I3.3)') i
          s1 = 'species('//trim(sn)//')'
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
          call input%get(trim(s1)//'.profile',npf)
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
+         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
 
          this%npf = npf
          this%xppc = xppc
          this%yppc = yppc
          this%qm = qm
+         this%npmax = npmax
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_fdist2d_000

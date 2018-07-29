@@ -26,7 +26,6 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
 !
-! qm = charge on particle, in units of e
 ! qbm = particle charge/mass ratio
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
@@ -39,7 +38,7 @@
 ! ppart(:,:,:) = particle coordinates for OpenMP
 ! nppmx, nppmx0, nbmaxp, ntmaxp, npbmx, irc, ncl, ihole, kpic = parameters for OpenMP
 !         
-         real :: qm, qbm, dt, ci
+         real :: qbm, dt, ci
          integer :: npmax, nbmax, np, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null()
          real, dimension(:,:,:), pointer :: ppart => null()
@@ -97,7 +96,7 @@
       
       contains
 !
-      subroutine init_part2d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax,s)
+      subroutine init_part2d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim,s)
       
          implicit none
          
@@ -107,12 +106,12 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist2d), intent(inout) :: pf
          class(ufield2d), intent(in), pointer :: fd
-         real, intent(in) :: qm, qbm, dt, ci, s
-         integer, intent(in) :: npmax, nbmax, xdim
+         real, intent(in) :: qbm, dt, ci, s
+         integer, intent(in) :: xdim
 
 ! local data
          character(len=18), save :: sname = 'init_part2d:'
-         integer :: xtras, noff, nxyp, nx
+         integer :: xtras, noff, nxyp, nx, npmax, nbmax
                   
          this%sp => psp
          this%err => perr
@@ -120,12 +119,13 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         this%qm = qm
          this%qbm = qbm
          this%dt = dt
          this%ci = ci
          this%xdim = xdim
+         npmax = pf%getnpmax()
          this%npmax = npmax
+         nbmax = max(int(0.01*npmax),100)
          this%nbmax = nbmax
          noff = fd%getnoff()
          nxyp = fd%getnd2p()
@@ -140,7 +140,7 @@
 
 ! find number of particles in each of mx, my tiles: updates kpic, nppmx
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
-         &this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
+         &this%xdim,npmax,mx,my,mx1,mxyp1,this%irc)
 ! check for errors
          if (this%irc /= 0) then
             write (erstr,*) 'PPDBLKP2L error, irc=', this%irc
@@ -160,7 +160,7 @@
 !
 ! copy ordered particle data for OpenMP
          call PPPMOVIN2L(this%part,this%ppart,this%kpic,this%npp,noff,&
-         &this%nppmx0,this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
+         &this%nppmx0,this%xdim,npmax,mx,my,mx1,mxyp1,this%irc)
 ! check for errors
          if (this%irc /= 0) then
             write (erstr,*) 'PPPMOVIN2L overflow error, irc=', this%irc

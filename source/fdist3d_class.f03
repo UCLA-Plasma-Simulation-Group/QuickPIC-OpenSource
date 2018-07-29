@@ -25,7 +25,7 @@
          class(parallel_pipe), pointer, public :: p => null()
 !
 ! ndprof = profile type
-         integer :: npf
+         integer :: npf, npmax
                          
          contains
          
@@ -35,7 +35,7 @@
          procedure(ab_init_fdist3d), deferred, private :: init_fdist3d
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
-         procedure :: getnpf
+         procedure :: getnpf, getnpmax
                   
       end type 
 
@@ -92,7 +92,18 @@
          
          getnpf = this%npf
 
-      end function getnpf  
+      end function getnpf
+!      
+      function getnpmax(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         integer :: getnpmax
+         
+         getnpmax = this%npmax
+
+      end function getnpmax
 !      
       subroutine end_fdist3d(this)
           
@@ -114,7 +125,7 @@
          type(input_json), intent(inout), pointer :: input
          integer, intent(in) :: i        
 ! local data
-         integer :: npf,npx,npy,npz
+         integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
          logical :: quiet
@@ -174,11 +185,14 @@
          call input%get(trim(s1)//'.quiet_start',quiet)
          call input%get(trim(s1)//'.gamma',gamma)
          call input%get(trim(s1)//'.num_particle',np)
+         call input%get(trim(s1)//'.npmax',npmax)
+
 
          this%npf = npf
          this%npx = npx
          this%npy = npy
          this%npz = npz
+         this%npmax = npmax
          this%bcx = bcx/dx/cwp
          this%bcy = bcy/dy/cwp
          this%bcz = bcz/dz/cwp

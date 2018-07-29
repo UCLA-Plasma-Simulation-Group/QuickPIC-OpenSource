@@ -386,11 +386,10 @@
          integer :: npf,npx,npy,npz,npp
          real, dimension(3,100) :: arg
          logical :: quiet
-         real :: min, max, cwp, n0, gamma
-         real :: qm, qbm, dt, ntemp, alx, aly, alz
-         real :: dx, dy, dz
+         real :: gamma
+         real :: qm, qbm, dt
          logical :: read_rst
-         integer :: rst_timestep, ierr, indx, indy, indz, npmax
+         integer :: rst_timestep, ierr
          type(hdf5file) :: file_rst
          character(len=20) :: sn, sid, stime,s1
 
@@ -400,25 +399,6 @@
          this%sp2 => input%sp
          
          call this%err%werrfl2(class//sname//' started')
-
-         call input%get('simulation.n0',n0)
-         call input%get('simulation.indx',indx)
-         call input%get('simulation.indy',indy)
-         call input%get('simulation.indz',indz)
-
-         cwp=5.32150254*1e9/sqrt(n0)
-         call input%get('simulation.box.x(1)',min)
-         call input%get('simulation.box.x(2)',max)
-         alx = (max-min)/cwp 
-         dx=alx/real(2**indx)
-         call input%get('simulation.box.y(1)',min)
-         call input%get('simulation.box.y(2)',max)
-         aly = (max-min)/cwp 
-         dy=aly/real(2**indy)
-         call input%get('simulation.box.z(1)',min)
-         call input%get('simulation.box.z(2)',max)
-         alz = (max-min)/cwp 
-         dz=alz/real(2**indz)
 
          call input%get('simulation.nbeams',n)         
 
@@ -444,10 +424,9 @@
             qbm = qm/qbm
                
             call input%get('simulation.dt',dt)
-            call input%get(trim(s1)//'.npmax',npmax)
             
-            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qm=qm,qbm=qbm,&
-            &dt=dt,ci=1.0,xdim=7,npmax=npmax,nbmax=int(npmax*0.01))
+            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+            &dt=dt,ci=1.0,xdim=7)
 
             call input%get('simulation.read_restart',read_rst)
 
@@ -506,9 +485,9 @@
          integer :: npf
          real, dimension(3,100) :: arg
          character(len=20) :: sn,s1
-         integer :: indx, indy, indz, npmax, xppc, yppc
+         integer :: indz, xppc, yppc
          real :: min, max, cwp, n0
-         real :: qm, qbm, dt, dx, dy, dz
+         real :: qm, qbm, dz
 
          this%err => input%err
          this%p => input%pp
@@ -518,17 +497,9 @@
          call this%err%werrfl2(class//sname//' started')
 
          call input%get('simulation.n0',n0)
-         call input%get('simulation.indx',indx)
-         call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
          cwp=5.32150254*1e9/sqrt(n0)
-         call input%get('simulation.box.x(1)',min)
-         call input%get('simulation.box.x(2)',max)
-         dx=(max-min)/cwp/real(2**indx)
-         call input%get('simulation.box.y(1)',min)
-         call input%get('simulation.box.y(2)',max)
-         dy=(max-min)/cwp/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
          dz=(max-min)/cwp/real(2**indz)
@@ -542,8 +513,6 @@
             write (sn,'(I3.3)') i
             s1 = 'species('//trim(sn)//')'
             call input%get(trim(s1)//'.profile',npf)
-            call input%get(trim(s1)//'.ppc(1)',xppc)
-            call input%get(trim(s1)//'.ppc(2)',yppc)
             select case (npf)
             case (0)
                allocate(fdist2d_000::this%pf(i)%p)
@@ -557,10 +526,8 @@
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
-            npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
-            qm = qm/abs(qm)/xppc/yppc
-            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qm=qm,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,npmax=npmax,nbmax=int(0.01*npmax),s=s)
+            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
+            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
 
          end do
          call this%err%werrfl2(class//sname//' ended')

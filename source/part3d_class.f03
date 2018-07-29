@@ -26,7 +26,6 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
 !
-! qm = charge on particle, in units of e
 ! qbm = particle charge/mass ratio
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
@@ -36,7 +35,7 @@
 ! npmax = maximum number of particles in each partition
 ! part(:,:) = initial particle coordinates
 !         
-         real :: qm, qbm, dt, ci
+         real :: qbm, dt, ci
          integer :: npmax, nbmax, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null(), pbuff => null()
          
@@ -73,7 +72,7 @@
       
       contains
 !
-      subroutine init_part3d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax)
+      subroutine init_part3d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim)
       
          implicit none
          
@@ -83,12 +82,12 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout) :: pf
          class(ufield3d), target, intent(in) :: fd
-         real, intent(in) :: qm, qbm, dt, ci
-         integer, intent(in) :: npmax, nbmax, xdim
+         real, intent(in) :: qbm, dt, ci
+         integer, intent(in) :: xdim
 
 ! local data
          character(len=18), save :: sname = 'init_part3d:'
-         integer :: noff, nxyp, nx, prof
+         integer :: noff, nxyp, nx, prof, npmax, nbmax
                   
          this%sp => psp
          this%err => perr
@@ -96,12 +95,13 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         this%qm = qm
          this%qbm = qbm
          this%dt = dt
          this%ci = ci
          this%xdim = xdim
+         npmax = pf%getnpmax()
          this%npmax = npmax
+         nbmax = int(0.01*this%npmax)
          this%nbmax = nbmax
          prof = pf%getnpf()
 
@@ -138,7 +138,6 @@
          character(len=18), save :: sname = 'qdeposit:'
 ! local data
          real, dimension(:,:,:,:), pointer :: pq => null()
-         real :: qm
          real, dimension(:,:), pointer :: part
          integer :: npp
          integer, dimension(2) :: noff
@@ -150,7 +149,6 @@
          pq => q%getrf()
          part => this%part
          noff = q%getnoff()
-         qm = this%qm
          npp = this%npp
 
          idimp = this%xdim; npmax = this%npmax
