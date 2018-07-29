@@ -30,16 +30,16 @@
          generic :: new => init_fdist2d         
          generic :: del => end_fdist2d
          generic :: dist => dist2d
-         procedure(initialize), deferred, private :: init_fdist2d
+         procedure(ab_init_fdist2d), deferred, private :: init_fdist2d
          procedure, private :: end_fdist2d
-         procedure(init_prof), deferred, private :: dist2d
+         procedure(ab_dist2d), deferred, private :: dist2d
          procedure :: getnpf
                   
       end type fdist2d
 
       abstract interface
 !
-      subroutine init_prof(this,part2d,npp,fd,s)
+      subroutine ab_dist2d(this,part2d,npp,fd,s)
          import fdist2d
          import ufield2d
          implicit none
@@ -48,23 +48,22 @@
          integer, intent(inout) :: npp
          class(ufield2d), intent(in), pointer :: fd         
          real, intent(in) :: s
-      end subroutine init_prof
+      end subroutine ab_dist2d
 !
-      subroutine initialize(this,input,i)
+      subroutine ab_init_fdist2d(this,input,i)
          import fdist2d
          import input_json
          implicit none
          class(fdist2d), intent(inout) :: this
          type(input_json), intent(inout), pointer :: input
          integer, intent(in) :: i
-      end subroutine initialize
+      end subroutine ab_init_fdist2d
 !
       end interface
 
       type, extends(fdist2d) :: fdist2d_000
 
          private
-
 ! xppc, yppc = particle per cell in x and y directions
          integer :: xppc, yppc
          real :: qm
@@ -111,7 +110,6 @@
          class(fdist2d_000), intent(inout) :: this
          type(input_json), intent(inout), pointer :: input
          integer, intent(in) :: i
-
 ! local data
          integer :: npf,xppc,yppc
          real :: qm
@@ -141,10 +139,10 @@
       subroutine dist2d_000(this,part2d,npp,fd,s)
          implicit none
          class(fdist2d_000), intent(inout) :: this
-         class(ufield2d), intent(in), pointer :: fd
          real, dimension(:,:), pointer, intent(inout) :: part2d
-         real, intent(in) :: s 
          integer, intent(inout) :: npp
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: s 
 ! local data
          character(len=18), save :: sname = 'dist2d_000:'
          real, dimension(:,:), pointer :: pt => null()

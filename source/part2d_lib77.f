@@ -226,7 +226,7 @@
 ! loop over tiles
 !$OMP PARALLEL DO
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,mnoff,nn,mm,x,y,dxp,dyp,amx,amy,
-!$OMP& sq)
+!$OMP& sq,qm)
       do 80 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
@@ -449,7 +449,7 @@
 !$OMP& dxp,dyp,amx,amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omzt, 
 !$OMP& omt,anorm,rot1,rot2,spsit,  
 !$OMP& sfxy,sbxy,scu,sdcu,samu,qm1,qtmh1,qtmh2,inv_part_7,ddx,
-!$OMP& ddy,p6,p7)
+!$OMP& ddy,p6,p7,qm)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp

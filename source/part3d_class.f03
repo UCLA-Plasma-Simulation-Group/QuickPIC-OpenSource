@@ -81,7 +81,7 @@
          class(spect3d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist3d), intent(in) :: pf
+         class(fdist3d), intent(inout) :: pf
          class(ufield3d), target, intent(in) :: fd
          real, intent(in) :: qm, qbm, dt, ci
          integer, intent(in) :: npmax, nbmax, xdim
@@ -107,12 +107,8 @@
 
          allocate(this%part(xdim,npmax),this%pbuff(xdim,nbmax))
          
+         call pf%dist(this%part,this%npp,fd)
                            
-         select case (prof)
-         case (1)
-            call init_prof1(this,pf,fd)
-         end select
-
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_part3d
@@ -131,65 +127,6 @@
          return
          
       end subroutine end_part3d
-!
-      subroutine init_prof1(this,pf,fd)
-      
-         implicit none
-         
-         class(part3d), intent(inout) :: this
-         class(fdist3d), intent(in) :: pf
-         class(ufield3d), intent(in) :: fd
-! local data1
-
-! edges(1) = lower boundary in y of particle partition
-! edges(2) = upper boundary in y of particle partition
-! edges(3) = lower boundary in z of particle partition
-! edges(4) = upper boundary in z of particle partition
-         real, dimension(:,:), pointer :: pt => null()
-         real, dimension(3,100) :: arg
-         integer :: npx, npy, npz, nx, ny, nz, ipbc
-         real :: vtx, vty, vtz, vdx, vdy, vdz
-         real :: sigx, sigy, sigz, x0, y0, z0
-         real, dimension(3) :: cx, cy
-         real, dimension(4) :: edges
-         integer, dimension(2) :: noff
-         integer :: nps=1
-         logical :: lquiet = .false.
-         integer :: idimp, npmax, ierr = 0
-         character(len=18), save :: sname = 'init_prof1:'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         npx = pf%getnpx(); npy = pf%getnpy(); npz = pf%getnpz()
-         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
-         ipbc = this%sp%getpsolver()
-         arg = pf%getarg()
-         pt => this%part
-         vtx = arg(1,1); vty = arg(2,1); vtz = arg(3,1)
-         vdx = arg(1,2); vdy = arg(2,2); vdz = arg(3,2)
-         sigx = arg(1,3); sigy = arg(2,3); sigz = arg(3,3)
-         x0 = arg(1,4); y0 = arg(2,4); z0 = arg(3,4)
-         cx = arg(1,5:7); cy = arg(2,5:7)
-         if (arg(1,8) >= 0) lquiet = .true.
-         idimp = this%xdim; npmax = this%npmax
-         noff = fd%getnoff()
-         edges(1) = noff(1); edges(3) = noff(2)
-         edges(2) = edges(1) + fd%getnd2p()
-         edges(4) = edges(3) + fd%getnd3p()         
-         
-         call PRVDIST32_RANDOM(pt,this%qm,edges,this%npp,nps,vtx,vty,vtz,vdx,vdy,&
-         &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
-         &x0,y0,z0,cx,cy,lquiet,ierr)
-
-         if (ierr /= 0) then
-            write (erstr,*) 'PRVDIST32_RANDOM error'
-            call this%err%equit(class//sname//erstr)
-         endif
-         
-         
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine init_prof1
 !      
       subroutine qdeposit(this,q)
 ! deposit the charge density      

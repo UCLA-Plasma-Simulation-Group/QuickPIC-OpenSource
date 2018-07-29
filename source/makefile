@@ -104,7 +104,7 @@ part3d_lib.o : part3d_lib.f03
 	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_lib.f03 -o part3d_lib.o
 
 fdist3d_class.o : fdist3d_class.f03 spect3d_class.o perrors_class.o \
-                   parallel_pipe_class.o 
+                   parallel_pipe_class.o part3d_lib.o ufield3d_class.o input_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c fdist3d_class.f03 -o fdist3d_class.o
 
 ufield3d_lib77.o : ufield3d_lib77.f

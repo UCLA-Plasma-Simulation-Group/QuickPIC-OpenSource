@@ -28,6 +28,7 @@
          class(parallel_pipe), pointer, public :: p => null()
          class(part3d), pointer :: pd
          class(field3d), pointer :: q => null()
+         class(fdist3d), pointer :: pf => null()
          contains
          
          generic :: new => init_beam3d
@@ -64,7 +65,7 @@
          class(spect3d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist3d), intent(in) :: pf
+         class(fdist3d), intent(inout), target :: pf
          real, intent(in) :: qm, qbm, dt, ci
          integer, intent(in) :: npmax, nbmax, xdim
 
@@ -76,6 +77,7 @@
          this%sp => psp
          this%err => perr
          this%p => pp
+         this%pf => pf
 
          call this%err%werrfl2(class//sname//' started')
 

@@ -28,6 +28,10 @@
          class(fdist2d), allocatable :: p
       end type fdist2d_wrap
 !
+      type fdist3d_wrap
+         class(fdist3d), allocatable :: p
+      end type fdist3d_wrap
+!
       type sim_fields
 
          private
@@ -59,7 +63,7 @@
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
          type(beam3d), dimension(:), allocatable :: beam
-         type(fdist3d), dimension(:), allocatable :: pf3
+         type(fdist3d_wrap), dimension(:), allocatable :: pf
          
          contains
          
@@ -418,82 +422,31 @@
 
          call input%get('simulation.nbeams',n)         
 
-         allocate(this%beam(n),this%pf3(n))
+         allocate(this%beam(n),this%pf(n))
          
          do i = 1, n
             arg(:,:) = 0.0
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//')'
             call input%get(trim(s1)//'.profile',npf)
-            call input%get(trim(s1)//'.np(1)',npx)
-            call input%get(trim(s1)//'.np(2)',npy)
-            call input%get(trim(s1)//'.np(3)',npz)
-
-            call input%get(trim(s1)//'.parameter(3)(1)',arg(1,1))
-            call input%get(trim(s1)//'.parameter(3)(2)',arg(2,1))
-            call input%get(trim(s1)//'.parameter(3)(3)',arg(3,1))
-            arg(1,2) = 0.0; arg(2,2) = 0.0
-            call input%get(trim(s1)//'.gamma',arg(3,2))
-            call input%get(trim(s1)//'.parameter(2)(1)',arg(1,3))
-            call input%get(trim(s1)//'.parameter(2)(2)',arg(2,3))
-            call input%get(trim(s1)//'.parameter(2)(3)',arg(3,3))
-            call input%get(trim(s1)//'.parameter(1)(1)',arg(1,4))
-            call input%get(trim(s1)//'.parameter(1)(2)',arg(2,4))
-            call input%get(trim(s1)//'.parameter(1)(3)',arg(3,4))
-            call input%get(trim(s1)//'.parameter(4)(1)',arg(1,5))
-            call input%get(trim(s1)//'.parameter(4)(2)',arg(1,6))
-            call input%get(trim(s1)//'.parameter(4)(3)',arg(1,7))
-            call input%get(trim(s1)//'.parameter(5)(1)',arg(2,5))
-            call input%get(trim(s1)//'.parameter(5)(2)',arg(2,6))
-            call input%get(trim(s1)//'.parameter(5)(3)',arg(2,7))
-            call input%get(trim(s1)//'.quiet_start',quiet)
-            call input%get(trim(s1)//'.gamma',gamma)
-            if (quiet) then
-               arg(1,8) = 1.0
-            else
-               arg(1,8) = 0.0
-            endif
-
-            arg(1,1) = arg(1,1)/arg(1,3)
-            arg(2,1) = arg(2,1)/arg(2,3)
-            arg(3,1) = arg(3,1)*gamma
-            arg(1:3,3) = arg(1:3,3)/cwp
-            arg(1:3,4) = arg(1:3,4)/cwp
-            arg(1,5) = arg(1,5)*cwp 
-            arg(1,7) = arg(1,7)/cwp
-            arg(2,5) = arg(2,5)*cwp 
-            arg(2,7) = arg(2,7)/cwp
-            arg(1,3) = arg(1,3)/dx
-            arg(1,4) = arg(1,4)/dx
-            arg(2,3) = arg(2,3)/dy
-            arg(2,4) = arg(2,4)/dy
-            arg(3,3) = arg(3,3)/dz
-            arg(3,4) = arg(3,4)/dz
-            arg(1,5) = arg(1,5)*dz*dz/dx
-            arg(1,6) = arg(1,6)*dz/dx
-            arg(1,7) = arg(1,7)/dz*dz/dx
-            arg(2,5) = arg(2,5)*dz*dz/dy
-            arg(2,6) = arg(2,6)*dz/dy
-            arg(2,7) = arg(2,7)/dz*dz/dy 
-
-            call this%pf3(i)%new(this%p,this%err,this%sp3,npf=npf,npx=npx,&
-            &npy=npy,npz=npz,arg=arg)
+            select case (npf)
+            case (0)
+               allocate(fdist3d_000::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+! Add new distributions under this line
+            case default
+               write (erstr,*) 'Invalid species profile number:', npf
+               call this%err%equit(class//sname//erstr)
+            end select
 
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
-            call input%get(trim(s1)//'.num_particle',npp)
-            ntemp = npp*1e12*(2**indz)
-            ntemp = ntemp*(2**indx)
-            ntemp = ntemp*(2**indy)/(npx*alx*aly*alz*n0*cwp*cwp*cwp) 
-            ntemp = ntemp/npy
-            ntemp = ntemp/npz
-            qm = ntemp*qm
                
             call input%get('simulation.dt',dt)
             call input%get(trim(s1)//'.npmax',npmax)
             
-            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf3(i),qm=qm,qbm=qbm,&
+            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qm=qm,qbm=qbm,&
             &dt=dt,ci=1.0,xdim=7,npmax=npmax,nbmax=int(npmax*0.01))
 
             call input%get('simulation.read_restart',read_rst)
