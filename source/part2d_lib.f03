@@ -50,13 +50,12 @@
       end interface
 !
       interface
-         subroutine PPGPPOST2L(ppart,q,kpic,noff,qm,idimp,nppmx,mx,my,  &
+         subroutine PPGPPOST2L(ppart,q,kpic,noff,idimp,nppmx,mx,my,  &
      &nxv,nypmx,mx1,mxyp1)
          implicit none
          integer, intent(in) :: idimp, nppmx, mx, my, nxv, nypmx
          integer, intent(in) :: mx1, mxyp1
          integer, intent(in) :: noff
-         real, intent(in) :: qm
          real, dimension(idimp,nppmx,mxyp1), intent(in) :: ppart
          real, dimension(nxv,nypmx), intent(inout) :: q
          integer, dimension(mxyp1), intent(in) :: kpic
@@ -65,11 +64,11 @@
 !
       interface
          subroutine PPGRDCJPPOST2L_QP(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,noff,&
-     &nyp,qm,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+     &nyp,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          implicit none
          integer, intent(in) :: noff, nyp, idimp, nppmx, nx, mx, my
          integer, intent(in) :: nxv, nypmx, mx1, mxyp1
-         real, intent(in) ::  qm, qbm, dt, ci
+         real, intent(in) ::  qbm, dt, ci
          real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
          real, dimension(2,nxv,nypmx), intent(in) :: fxy
          real, dimension(3,nxv,nypmx), intent(in) :: bxy

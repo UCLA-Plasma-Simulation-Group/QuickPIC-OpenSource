@@ -35,7 +35,7 @@ part2d_lib.o part2d_lib77.o part2d_class.o fdist2d_class.o \
 ufield3d_class.o ufield3d_lib77.o ufield3d_lib.o \
 part3d_lib.o part3d_lib77.o part3d_class.o fdist3d_class.o \
 field2d_class.o field3d_class.o species2d_class.o beam3d_class.o \
-input_class.o
+input_class.o simulation_class.o
 
 
 OBJS_MAIN = main.o  
@@ -104,7 +104,7 @@ part3d_lib.o : part3d_lib.f03
 	${FC} ${OPTS} ${FORMAT_FREE} -c part3d_lib.f03 -o part3d_lib.o
 
 fdist3d_class.o : fdist3d_class.f03 spect3d_class.o perrors_class.o \
-                   parallel_pipe_class.o 
+                   parallel_pipe_class.o part3d_lib.o ufield3d_class.o input_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c fdist3d_class.f03 -o fdist3d_class.o
 
 ufield3d_lib77.o : ufield3d_lib77.f
@@ -128,7 +128,7 @@ part2d_lib.o : part2d_lib.f03
 	${FC} ${OPTS} ${FORMAT_FREE} -c part2d_lib.f03 -o part2d_lib.o
 
 fdist2d_class.o : fdist2d_class.f03 spect2d_class.o perrors_class.o \
-                   parallel_pipe_class.o 
+                   parallel_pipe_class.o ufield2d_class.o input_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c fdist2d_class.f03 -o fdist2d_class.o
 
 fpois2d_class.o : fpois2d_class.f03 ufield2d_class.o spect2d_class.o perrors_class.o \
@@ -172,7 +172,7 @@ spect2d_class.o : spect2d_class.f03 perrors_class.o parallel_pipe_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c spect2d_class.f03 -o spect2d_class.o
 
 dtimer.o : dtimer.c
-	${CC} -O3 -std=c99 -c dtimer.c
+	${CC} -c dtimer.c
 
 perrors_class.o : perrors_class.f03 parallel_class.o dtimer.o
 	${FC} ${OPTS} ${FORMAT_FREE} -c perrors_class.f03 -o perrors_class.o
@@ -183,5 +183,10 @@ parallel_pipe_class.o : parallel_pipe_class.f03
 parallel_class.o : parallel_class.f03
 	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_class.f03 -o parallel_class.o
 
-main.o : main.f03 parallel_pipe_class.o 
+simulation_class.o : parallel_pipe_class.o perrors_class.o spect3d_class.o spect2d_class.o \
+                     field2d_class.o fdist2d_class.o field3d_class.o beam3d_class.o species2d_class.o \
+                     fdist3d_class.o hdf5io_class.o input_class.o simulation_class.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c simulation_class.f03 -o simulation_class.o
+
+main.o : main.f03 simulation_class.o 
 	${FC} ${OPTS} ${FORMAT_FREE} -c main.f03 -o main.o

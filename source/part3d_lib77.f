@@ -1,7 +1,7 @@
 c-----------------------------------------------------------------------
-      subroutine PRVDIST32_RANDOM(part,edges,npp,nps,vtx,vty,vtz,vdx,vdy
-     1,vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,mblok,nblok,idps,sigx ,
-     1sigy,sigz,x0,y0,z0,cx,cy,lquiet,ierr)
+      subroutine PRVDIST32_RANDOM(part,qm,edges,npp,nps,vtx,vty,vtz,vdx,
+     1vdy,vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,mblok,nblok,idps,sig
+     1x,sigy,sigz,x0,y0,z0,cx,cy,lquiet,ierr)
 c old quiet start     
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -36,7 +36,7 @@ c ranorm = gaussian random number with zero mean and unit variance
 
       integer nps,npp,npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,idps,ierr
       integer mblok,ipbc
-      real sigx,sigy,sigz,x0,y0,z0
+      real qm,sigx,sigy,sigz,x0,y0,z0
       real cx,cy
       double precision random,ranorm
       real part,edges,vtx,vty,vtz,vdx,vdy,vdz
@@ -107,6 +107,7 @@ c calculate offset in y
             part(4,npt,m) = tvtx
             part(5,npt,m) = tvty
             part(6,npt,m) = tvtz 
+            part(7,npt,m) = qm
             npp(m) = npt
           else
             ierr = ierr + 1
@@ -121,6 +122,7 @@ c quiet start
                 part(4,npt,m) = -tvtx
                 part(5,npt,m) = -tvty
                 part(6,npt,m) = tvtz 
+                part(7,npt,m) = qm
                 npp(m) = npt
              else
                 ierr = ierr + 1
@@ -140,8 +142,8 @@ c quiet start
       return
       end
 c-----------------------------------------------------------------------
-      subroutine PGPOST32L(part,q,npp,noff,qm,idimp,npmax,mnblok,nxv,nyp
-     1mx,nzpmx,idds)
+      subroutine PGPOST32L(part,q,npp,noff,idimp,npmax,mnblok,nxv,nypmx,
+     1nzpmx,idds)
 c for 3d code, this subroutine calculates particle charge density
 c using first-order linear interpolation, and distributed data
 c with 2D spatial decomposition
@@ -176,6 +178,7 @@ c nzpmx = maximum size of particle partition in z, including guard cells
 c idds = dimensionality of domain decomposition
       dimension part(idimp,npmax,mnblok), q(nxv,nypmx,nzpmx,mnblok)
       dimension npp(mnblok), noff(idds,mnblok)
+      real qm
       do 20 m = 1, mnblok
       mnoff = noff(1,m) - 1
       lnoff = noff(2,m) - 1
@@ -184,6 +187,7 @@ c find interpolation weights
       nn = part(1,j,m)
       mm = part(2,j,m)
       ll = part(3,j,m)
+      qm = part(7,j,m)
       dxp = qm*(part(1,j,m) - float(nn))
       dyp = part(2,j,m) - float(mm)
       dzp = part(3,j,m) - float(ll)

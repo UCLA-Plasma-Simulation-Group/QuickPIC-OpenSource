@@ -26,7 +26,6 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
 !
-! qm = charge on particle, in units of e
 ! qbm = particle charge/mass ratio
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
@@ -39,7 +38,7 @@
 ! ppart(:,:,:) = particle coordinates for OpenMP
 ! nppmx, nppmx0, nbmaxp, ntmaxp, npbmx, irc, ncl, ihole, kpic = parameters for OpenMP
 !         
-         real :: qm, qbm, dt, ci
+         real :: qbm, dt, ci
          integer :: npmax, nbmax, np, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null()
          real, dimension(:,:,:), pointer :: ppart => null()
@@ -97,7 +96,7 @@
       
       contains
 !
-      subroutine init_part2d(this,pp,perr,psp,pf,fd,qm,qbm,dt,ci,xdim,npmax,nbmax)
+      subroutine init_part2d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim,s)
       
          implicit none
          
@@ -105,14 +104,14 @@
          class(spect2d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         class(fdist2d), intent(in) :: pf
-         class(ufield2d), intent(in), target :: fd
-         real, intent(in) :: qm, qbm, dt, ci
-         integer, intent(in) :: npmax, nbmax, xdim
+         class(fdist2d), intent(inout) :: pf
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: qbm, dt, ci, s
+         integer, intent(in) :: xdim
 
 ! local data
          character(len=18), save :: sname = 'init_part2d:'
-         integer :: xtras, noff, nxyp, nx, prof
+         integer :: xtras, noff, nxyp, nx, npmax, nbmax
                   
          this%sp => psp
          this%err => perr
@@ -120,32 +119,28 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         this%qm = qm
          this%qbm = qbm
          this%dt = dt
          this%ci = ci
          this%xdim = xdim
+         npmax = pf%getnpmax()
          this%npmax = npmax
+         nbmax = max(int(0.01*npmax),100)
          this%nbmax = nbmax
          noff = fd%getnoff()
          nxyp = fd%getnd2p()
          nx = fd%getnd1p()
-         prof = pf%getnpf()
-         
          
          allocate(this%part(xdim,npmax))
          mx1 = (nx - 1)/mx + 1
          myp1 = (nxyp - 1)/my + 1; mxyp1 = mx1*myp1
          allocate(this%kpic(mxyp1))
          
-         select case (prof)
-         case (1)
-            call init_prof1(this,pf,fd)
-         end select
+         call pf%dist(this%part,this%npp,fd,s)
 
 ! find number of particles in each of mx, my tiles: updates kpic, nppmx
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
-         &this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
+         &this%xdim,npmax,mx,my,mx1,mxyp1,this%irc)
 ! check for errors
          if (this%irc /= 0) then
             write (erstr,*) 'PPDBLKP2L error, irc=', this%irc
@@ -165,7 +160,7 @@
 !
 ! copy ordered particle data for OpenMP
          call PPPMOVIN2L(this%part,this%ppart,this%kpic,this%npp,noff,&
-         &this%nppmx0,this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
+         &this%nppmx0,this%xdim,npmax,mx,my,mx1,mxyp1,this%irc)
 ! check for errors
          if (this%irc /= 0) then
             write (erstr,*) 'PPPMOVIN2L overflow error, irc=', this%irc
@@ -200,13 +195,14 @@
          
       end subroutine end_part2d
 !
-      subroutine renew_part2d(this,pf,fd)
+      subroutine renew_part2d(this,pf,fd,s)
       
          implicit none
          
          class(part2d), intent(inout) :: this
-         class(fdist2d), intent(in) :: pf
-         class(ufield2d), target, intent(in) :: fd
+         class(fdist2d), intent(inout) :: pf
+         class(ufield2d), pointer, intent(in) :: fd
+         real, intent(in) :: s
 
 ! local data
          character(len=18), save :: sname = 'renew_part2d:'
@@ -217,10 +213,7 @@
          noff = fd%getnoff()
          prof = pf%getnpf()         
          
-         select case (prof)
-         case (1)
-            call init_prof1(this,pf,fd)
-         end select
+         call pf%dist(this%part,this%npp,fd,s)
          
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
          &this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
@@ -244,85 +237,6 @@
 
       end subroutine renew_part2d
 !      
-      subroutine init_prof1(this,pf,fd)
-      
-         implicit none
-         
-         class(part2d), intent(inout) :: this
-         class(fdist2d), intent(in) :: pf
-         class(ufield2d), intent(in) :: fd
-! local data
-         real, dimension(:,:), pointer :: pt => null()
-         integer :: nps, nx, ny, noff, npx, pp, i, j
-         integer :: ix, iy
-         character(len=18), save :: sname = 'init_prof1:'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
-         npx = pf%getnpx(); pp = npx/nx
-         nps = 1
-         pt => this%part
-! initialize the particle positions
-         if (noff < ny) then
-         do i=2, nx-2
-            do j=2, ny
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         else if (noff > (nx-ny-1)) then       
-         do i=2, nx-2
-            do j=1, ny-2
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         else
-         do i=2, nx-2
-            do j=1, ny
-               do ix = 0, pp-1
-                  do iy=0, pp-1
-                     pt(1,nps) = (ix + 0.5)/pp + i - 1
-                     pt(2,nps) = (iy + 0.5)/pp + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
-                     nps = nps + 1
-                  enddo
-               enddo
-            enddo
-         enddo
-         endif
-         
-         this%npp = nps - 1
-         
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine init_prof1
-!      
       subroutine qdeposit(this,q)
 ! deposit the charge density      
       
@@ -330,8 +244,8 @@
          
          class(part2d), intent(in) :: this
          class(ufield2d), target, intent(inout) :: q
-         character(len=18), save :: sname = 'qdeposit:'
 ! local data
+         character(len=18), save :: sname = 'qdeposit:'
          real, dimension(:,:,:), pointer :: pq => null()
          integer :: noff, nxv, nypmx
                   
@@ -342,7 +256,7 @@
          nxv = size(pq,2)
          nypmx = size(pq,3)
          
-         call PPGPPOST2L(this%ppart,pq(1,:,:),this%kpic,noff,this%qm,&
+         call PPGPPOST2L(this%ppart,pq(1,:,:),this%kpic,noff,&
          &this%xdim,this%nppmx0,mx,my,nxv,nypmx,mx1,mxyp1)         
          
          call this%err%werrfl2(class//sname//' ended')
@@ -375,7 +289,7 @@
          nx = ef%getnd1(); nyp = ef%getnd2p()
          
          call PPGRDCJPPOST2L_QP(this%ppart,pef,pbf,ppsit(1,:,:),pcu,pdcu,&
-         &pamu,this%kpic,noff,nyp,this%qm,this%qbm, this%dt,this%ci,this%xdim,&
+         &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
          &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          
          call this%err%werrfl2(class//sname//' ended')
