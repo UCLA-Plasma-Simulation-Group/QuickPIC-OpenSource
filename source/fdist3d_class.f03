@@ -199,6 +199,9 @@
          this%sigx = sigx/dx/cwp
          this%sigy = sigy/dy/cwp
          this%sigz = sigz/dz/cwp
+         this%sigvx = sigvx
+         this%sigvy = sigvy
+         this%sigvz = sigvz
          this%cx1 = cx1*cwp*dz*dz/dx
          this%cx2 = cx2*dz/dx
          this%cx3 = cx3/cwp/dx

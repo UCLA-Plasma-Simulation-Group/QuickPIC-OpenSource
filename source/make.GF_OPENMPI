@@ -1,5 +1,8 @@
 # name of the compiler 
-FC_GF_OPENMPI = mpif90 -I/usr/local/jsonfortran-gnu-6.3.0/lib/ -fopenmp
+JSON_LIB = /usr/local/jsonfortran-gnu-6.3.0/lib/
+JSON_INC = /usr/local/jsonfortran-gnu-6.3.0/lib/
+
+FC_GF_OPENMPI = mpif90 -I$(JSON_INC) -fopenmp
 CC_GF_OPENMPI = mpicc -O3 -std=c99
 LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
 
@@ -18,7 +21,7 @@ HDF_LIBPATH_GF_OPENMPI= -L$(HDF5_LIB) -lhdf5_fortran -lhdf5_hl -lhdf5 -lz
 HDF_INCLUDE_PATH_GF_OPENMPI= -I$(HDF5_INC) -I${HDF5_LIB} -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
 
 # other libs
-OTHER_LIBS_GF_OPENMPI = -L/usr/local/jsonfortran-gnu-6.3.0/lib/ -ljsonfortran
+OTHER_LIBS_GF_OPENMPI = -L$(JSON_LIB) -ljsonfortran
 
 # memory options
 MEM_OPTIONS_GF_OPENMPI = 
