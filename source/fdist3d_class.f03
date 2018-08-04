@@ -141,6 +141,9 @@
 
          call this%err%werrfl2(class//sname//' started')
 
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
          call input%get('simulation.n0',n0)
          call input%get('simulation.indx',indx)
          call input%get('simulation.indy',indy)
@@ -149,27 +152,28 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
          alx = (max-min)/cwp 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
          aly = (max-min)/cwp 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
          alz = (max-min)/cwp 
          dz=alz/real(2**indz)
 
-         write (sn,'(I3.3)') i
-         s1 = 'beam('//trim(sn)//')'
          call input%get(trim(s1)//'.profile',npf)
          call input%get(trim(s1)//'.np(1)',npx)
          call input%get(trim(s1)//'.np(2)',npy)
          call input%get(trim(s1)//'.np(3)',npz)
          call input%get(trim(s1)//'.q',qm)
-         call input%get(trim(s1)//'.center(1)',bcx)
-         call input%get(trim(s1)//'.center(2)',bcy)
-         call input%get(trim(s1)//'.center(3)',bcz)
          call input%get(trim(s1)//'.sigma(1)',sigx)
          call input%get(trim(s1)//'.sigma(2)',sigy)
          call input%get(trim(s1)//'.sigma(3)',sigz)
