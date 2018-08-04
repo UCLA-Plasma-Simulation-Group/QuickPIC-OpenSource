@@ -1,17 +1,17 @@
 {
 "simulation" : //note
 {
-    "nodes" : [32,1],  
-    "indx" : 9,
-    "indy" : 9,
-    "indz" : 9,
+    "nodes" : [32,2],  
+    "indx" : 8,
+    "indy" : 8,
+    "indz" : 8,
     "box" : {
-        "x" : [-340.0,340.0],
-        "y" : [-340.0,340.0],
+        "x" : [0,680.0],
+        "y" : [0,680.0],
         "z" : [0,545.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 10.1,
+    "time" : 20.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -20,7 +20,7 @@
     "read_restart" : false,
     "restart_timestep" : 1,
     "iter" : 1,
-    "verbose" : 0
+    "verbose" : 2
 },
 
 "beam" :
@@ -33,10 +33,10 @@
     "q" : -1.0,
     "m" : 1.0,
     "gamma" : 20000,
-    "num_particle" : 3.0E9,
+    "num_particle" : 1.5E9,
     "quiet_start" : true,
-    "center" : [0.0,0.0,120.0],
-    "sigma" : [5.0,5.0,21.286],
+    "center" : [340.0,340.0,120.0],
+    "sigma" : [13.3,13.3,21.286],
     "sigma_v" : [3.0,3.0,100.0],
     "centroid_x" : [0.0,0.0,0.0],
     "centroid_y" : [0.0,0.0,0.0],
@@ -49,7 +49,7 @@
         {
         "name" : ["charge"],
         "ndump" : 1,
-        "slice" : [["xz", 257],["yz",257],["xy",40]]
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
         },
         {
         "name" : ["raw"],
@@ -109,7 +109,7 @@
         {
         "name" : ["charge"],
         "ndump" : 1,
-        "slice" : [["xz", 257],["yz",257]]
+        "slice" : [["xz", 129],["yz",129]]
         }
     ]    
     }
@@ -126,7 +126,7 @@
         {
         "name" : ["ex","by","ez","psi"],
         "ndump" : 1,
-        "slice" : [["xz", 257],["yz", 257]]
+        "slice" : [["xz", 129],["yz", 129]]
         }
     ]    
     
