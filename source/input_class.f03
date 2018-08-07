@@ -1058,7 +1058,7 @@
          
          call this%err%werrfl0(class//sname//' started')
          
-         call this%initialize(comment_char='/')
+         call this%initialize(comment_char='!')
          
          if (p%getidproc() == 0) then
             inquire(FILE='./qpinput.json', EXIST=found)
