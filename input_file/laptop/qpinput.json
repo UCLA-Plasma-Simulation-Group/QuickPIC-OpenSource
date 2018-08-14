@@ -1,7 +1,7 @@
 {
 "simulation" : !note
 {
-    "nodes" : [32,2],  
+    "nodes" : [32,2], 
     "indx" : 8,
     "indy" : 8,
     "indz" : 8,
@@ -20,11 +20,45 @@
     "read_restart" : false,
     "restart_timestep" : 1,
     "iter" : 1,
-    "verbose" : 2
+    "verbose" : 0
 },
 
 "beam" :
 [
+    {
+    "evolution" : true,
+    "profile" : 100,
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "gamma" : 20000,
+    "np" : 2.0,
+    "center" : [340.0,340.0,120.0],
+    "ppc" : [2,2,2]
+    "r1" : 30.0,
+    "r2" : 5.0
+    "edge_x" : [295.0,385.0],
+    "edge_y" : [295.0,385.0],
+    "edge_z" : [105.0,135.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
+    },
+
     {
     "evolution" : true,
     "profile" : 0,
@@ -58,6 +92,7 @@
         }
     ]    
     },
+    
     {
     "evolution" : true,
     "profile" : 0,

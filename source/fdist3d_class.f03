@@ -78,6 +78,22 @@
 
       end type fdist3d_000
 
+      type, extends(fdist3d) :: fdist3d_100
+
+         private
+
+         integer :: xppc, yppc, zppc
+         real :: qm, bcx, bcy, bcz
+         real, dimension(3) :: lbound, ubound
+         real :: r1, r2
+         real :: gamma, np
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_100
+         procedure, private :: dist3d => dist3d_100
+
+      end type fdist3d_100
+
       character(len=10), save :: class = 'fdist3d:'
       character(len=128), save :: erstr
       
@@ -283,5 +299,192 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_000
+!
+      subroutine init_fdist3d_100(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_100), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: xppc,yppc,zppc,npmax,npf
+         real :: qm, bcx, bcy, bcz
+         real, dimension(3) :: lbound, ubound
+         real :: r1, r2
+         real :: gamma, np
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz         
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_100:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.edge_x(1)',lbound(1))
+         call input%get(trim(s1)//'.edge_x(2)',ubound(1))
+         lbound(1) = lbound(1) - min
+         ubound(1) = ubound(1) - min
+         bcx = bcx - min
+         alx = (max-min)/cwp 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         call input%get(trim(s1)//'.edge_y(1)',lbound(2))
+         call input%get(trim(s1)//'.edge_y(2)',ubound(2))
+         lbound(2) = lbound(2) - min
+         ubound(2) = ubound(2) - min
+         bcy = bcy -min
+         aly = (max-min)/cwp 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         call input%get(trim(s1)//'.edge_z(1)',lbound(3))
+         call input%get(trim(s1)//'.edge_z(2)',ubound(3))
+         lbound(3) = lbound(3) - min
+         ubound(3) = ubound(3) - min
+         bcz = bcz -min
+         alz = (max-min)/cwp 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.ppc(1)',xppc)
+         call input%get(trim(s1)//'.ppc(2)',yppc)
+         call input%get(trim(s1)//'.ppc(3)',zppc)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.np',np)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.r1',r1)
+         call input%get(trim(s1)//'.r2',r2)
+
+         this%npf = npf
+         this%npmax = npmax
+         this%xppc = xppc
+         this%yppc = yppc
+         this%zppc = zppc
+         this%bcx = bcx/dx/cwp
+         this%bcy = bcy/dy/cwp
+         this%bcz = bcz/dz/cwp
+         this%lbound(1) = lbound(1)/dx/cwp
+         this%lbound(2) = lbound(2)/dy/cwp
+         this%lbound(3) = lbound(3)/dz/cwp
+         this%ubound(1) = ubound(1)/dx/cwp
+         this%ubound(2) = ubound(2)/dy/cwp
+         this%ubound(3) = ubound(3)/dz/cwp
+         this%r1 = r1/dx/cwp
+         this%r2 = r2/dx/cwp
+         this%gamma = gamma
+         this%np = np
+
+         qm = qm/abs(qm)/xppc/yppc/zppc
+         this%qm = qm
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_100
+!
+      subroutine dist3d_100(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_100), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in) :: fd
+! local data1
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: xppc,yppc,zppc
+         real :: qm, bcx, bcy, bcz
+         real, dimension(3) :: lbound, ubound
+         real :: r1, r2, tx, ty, tz, a1, a2, a3, a4
+         real :: gamma, np
+         integer, dimension(2) :: noff
+         integer :: nps=1
+         integer :: i, j, k, ix, iy, iz
+         integer :: idimp, npmax, ierr = 0
+         character(len=18), save :: sname = 'dist3d_100:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         xppc = this%xppc; yppc = this%yppc; zppc = this%zppc;
+         noff = fd%getnoff()
+         lbound(1) = max(this%lbound(1),0.0)
+         ubound(1) = min(this%ubound(1),real(fd%getnd1()))
+         if (this%lbound(2) > real(noff(1)+fd%getnd2p())) then
+            npp = 0
+            return
+         else
+            lbound(2) = max(this%lbound(2),real(noff(1)))
+            ubound(2) = min(this%ubound(2),real(noff(1)+fd%getnd2p()))
+         end if
+         if (this%lbound(3) > real(noff(2)+fd%getnd3p())) then
+            npp = 0
+            return
+         else
+            lbound(3) = max(this%lbound(3),real(noff(2)))
+            ubound(3) = min(this%ubound(3),real(noff(2)+fd%getnd3p()))
+         end if
+
+         pt => part3d
+         r1 = this%r1; r2 = this%r2; np = this%np
+         gamma = this%gamma
+         bcx = this%bcx; bcy = this%bcy; bcz = this%bcz;
+         qm = this%qm
+         bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
+
+         do i=int(lbound(1)), int(ubound(1))
+            do j=int(lbound(2)), int(ubound(2))
+               do k = int(lbound(3)), int(ubound(3))
+                  do ix = 0, xppc-1
+                     do iy=0, yppc-1
+                        do iz=0, zppc-1
+                           tx = (ix + 0.5)/xppc + i - 1
+                           ty = (iy + 0.5)/yppc + j - 1 + noff(1)
+                           tz = (iz + 0.5)/zppc + k - 1 + noff(2)
+                           pt(1,nps) = tx
+                           pt(2,nps) = ty
+                           pt(3,nps) = tz
+                           pt(4,nps) = 0.0
+                           pt(5,nps) = 0.0
+                           pt(6,nps) = gamma
+                           a1 = abs(tz - bcz)
+                           a2 = sqrt((tx-bcx)**2+(ty-bcy)**2)
+                           a3 = abs(a2-r1)
+                           a4 = sqrt(a1**2+a3**2)
+                           pt(7,nps) = qm*np*exp(-a4**2/r2**2*0.5)
+                           nps = nps + 1
+                        enddo
+                     enddo
+                  enddo
+               enddo
+            enddo
+         enddo
+
+         ! if (ierr /= 0) then
+         !    write (erstr,*) 'PRVDIST32_RANDOM error'
+         !    call this%err%equit(class//sname//erstr)
+         ! endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_100
 !
       end module fdist3d_class

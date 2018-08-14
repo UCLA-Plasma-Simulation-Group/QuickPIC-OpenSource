@@ -415,7 +415,7 @@
                call this%pf(i)%p%new(input,i)
 ! Add new distributions under this line
             case default
-               write (erstr,*) 'Invalid species profile number:', npf
+               write (erstr,*) 'Invalid beam profile number:', npf
                call this%err%equit(class//sname//erstr)
             end select
 
