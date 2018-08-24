@@ -1,7 +1,7 @@
 {
 "simulation" : !note
 {
-    "nodes" : [32,2], 
+    "nodes" : [32,1], 
     "indx" : 8,
     "indy" : 8,
     "indz" : 8,
@@ -11,7 +11,7 @@
         "z" : [0,545.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 20.1,
+    "time" : 10.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -34,12 +34,12 @@
     "gamma" : 20000,
     "np" : 2.0,
     "center" : [340.0,340.0,120.0],
-    "ppc" : [2,2,2]
+    "ppc" : [2,2,2],
     "r1" : 30.0,
-    "r2" : 5.0
-    "edge_x" : [295.0,385.0],
-    "edge_y" : [295.0,385.0],
-    "edge_z" : [105.0,135.0],
+    "r2" : 5.0,
+    "range_x" : [295.0,385.0],
+    "range_y" : [295.0,385.0],
+    "range_z" : [105.0,135.0],
     "diag" :
     [
         {
@@ -54,11 +54,10 @@
         {
         "name" : ["raw"],
         "ndump" : 1,
-        "sample" : 10
+        "sample" : 1
         }
     ]    
     },
-
     {
     "evolution" : true,
     "profile" : 0,

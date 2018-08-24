@@ -14,7 +14,7 @@
 
       private
 
-      public :: fdist3d, fdist3d_000
+      public :: fdist3d, fdist3d_000, fdist3d_100
 
       type, abstract :: fdist3d
 
@@ -84,7 +84,7 @@
 
          integer :: xppc, yppc, zppc
          real :: qm, bcx, bcy, bcz
-         real, dimension(3) :: lbound, ubound
+         real, dimension(3) :: lb, ub
          real :: r1, r2
          real :: gamma, np
 
@@ -310,7 +310,7 @@
 ! local data
          integer :: xppc,yppc,zppc,npmax,npf
          real :: qm, bcx, bcy, bcz
-         real, dimension(3) :: lbound, ubound
+         real, dimension(3) :: lb, ub
          real :: r1, r2
          real :: gamma, np
          real :: min, max, cwp, n0
@@ -336,30 +336,31 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
-         call input%get(trim(s1)//'.edge_x(1)',lbound(1))
-         call input%get(trim(s1)//'.edge_x(2)',ubound(1))
-         lbound(1) = lbound(1) - min
-         ubound(1) = ubound(1) - min
+         call input%get(trim(s1)//'.center(1)',bcx)
+         call input%get(trim(s1)//'.range_x(1)',lb(1))
+         call input%get(trim(s1)//'.range_x(2)',ub(1))
+         lb(1) = lb(1) - min
+         ub(1) = ub(1) - min
          bcx = bcx - min
          alx = (max-min)/cwp 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
          call input%get(trim(s1)//'.center(2)',bcy)
-         call input%get(trim(s1)//'.edge_y(1)',lbound(2))
-         call input%get(trim(s1)//'.edge_y(2)',ubound(2))
-         lbound(2) = lbound(2) - min
-         ubound(2) = ubound(2) - min
+         call input%get(trim(s1)//'.range_y(1)',lb(2))
+         call input%get(trim(s1)//'.range_y(2)',ub(2))
+         lb(2) = lb(2) - min
+         ub(2) = ub(2) - min
          bcy = bcy -min
          aly = (max-min)/cwp 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
          call input%get(trim(s1)//'.center(3)',bcz)
-         call input%get(trim(s1)//'.edge_z(1)',lbound(3))
-         call input%get(trim(s1)//'.edge_z(2)',ubound(3))
-         lbound(3) = lbound(3) - min
-         ubound(3) = ubound(3) - min
+         call input%get(trim(s1)//'.range_z(1)',lb(3))
+         call input%get(trim(s1)//'.range_z(2)',ub(3))
+         lb(3) = lb(3) - min
+         ub(3) = ub(3) - min
          bcz = bcz -min
          alz = (max-min)/cwp 
          dz=alz/real(2**indz)
@@ -383,12 +384,12 @@
          this%bcx = bcx/dx/cwp
          this%bcy = bcy/dy/cwp
          this%bcz = bcz/dz/cwp
-         this%lbound(1) = lbound(1)/dx/cwp
-         this%lbound(2) = lbound(2)/dy/cwp
-         this%lbound(3) = lbound(3)/dz/cwp
-         this%ubound(1) = ubound(1)/dx/cwp
-         this%ubound(2) = ubound(2)/dy/cwp
-         this%ubound(3) = ubound(3)/dz/cwp
+         this%lb(1) = lb(1)/dx/cwp
+         this%lb(2) = lb(2)/dy/cwp
+         this%lb(3) = lb(3)/dz/cwp
+         this%ub(1) = ub(1)/dx/cwp
+         this%ub(2) = ub(2)/dy/cwp
+         this%ub(3) = ub(3)/dz/cwp
          this%r1 = r1/dx/cwp
          this%r2 = r2/dx/cwp
          this%gamma = gamma
@@ -413,11 +414,11 @@
          real, dimension(:,:), pointer :: pt => null()
          integer :: xppc,yppc,zppc
          real :: qm, bcx, bcy, bcz
-         real, dimension(3) :: lbound, ubound
+         real, dimension(3) :: lb, ub
          real :: r1, r2, tx, ty, tz, a1, a2, a3, a4
          real :: gamma, np
          integer, dimension(2) :: noff
-         integer :: nps=1
+         integer :: nps = 1
          integer :: i, j, k, ix, iy, iz
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_100:'
@@ -426,39 +427,43 @@
          
          xppc = this%xppc; yppc = this%yppc; zppc = this%zppc;
          noff = fd%getnoff()
-         lbound(1) = max(this%lbound(1),0.0)
-         ubound(1) = min(this%ubound(1),real(fd%getnd1()))
-         if (this%lbound(2) > real(noff(1)+fd%getnd2p())) then
+         lb(1) = max(this%lb(1),0.0)
+         ub(1) = min(this%ub(1),real(fd%getnd1()))
+         if (this%lb(2) > real(noff(1)+fd%getnd2p()) .or. &
+         &this%ub(2) < real(noff(1))) then
             npp = 0
             return
          else
-            lbound(2) = max(this%lbound(2),real(noff(1)))
-            ubound(2) = min(this%ubound(2),real(noff(1)+fd%getnd2p()))
+            lb(2) = max(this%lb(2),real(noff(1)))
+            ub(2) = min(this%ub(2),real(noff(1)+fd%getnd2p()))
          end if
-         if (this%lbound(3) > real(noff(2)+fd%getnd3p())) then
+         if (this%lb(3) > real(noff(2)+fd%getnd3p()) .or. &
+         &this%ub(3) < real(noff(2))) then
             npp = 0
             return
          else
-            lbound(3) = max(this%lbound(3),real(noff(2)))
-            ubound(3) = min(this%ubound(3),real(noff(2)+fd%getnd3p()))
+            lb(3) = max(this%lb(3),real(noff(2)))
+            ub(3) = min(this%ub(3),real(noff(2)+fd%getnd3p()))
          end if
 
          pt => part3d
          r1 = this%r1; r2 = this%r2; np = this%np
          gamma = this%gamma
-         bcx = this%bcx; bcy = this%bcy; bcz = this%bcz;
+         bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
          qm = this%qm
          bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
 
-         do i=int(lbound(1)), int(ubound(1))
-            do j=int(lbound(2)), int(ubound(2))
-               do k = int(lbound(3)), int(ubound(3))
+         write (2,*) "bound2", bcx, bcy, bcz, r1, r2
+
+         do i=int(lb(1)), int(ub(1))-1
+            do j=int(lb(2)), int(ub(2))-1
+               do k = int(lb(3)), int(ub(3))-1
                   do ix = 0, xppc-1
-                     do iy=0, yppc-1
-                        do iz=0, zppc-1
+                     do iy= 0, yppc-1
+                        do iz= 0, zppc-1
                            tx = (ix + 0.5)/xppc + i - 1
-                           ty = (iy + 0.5)/yppc + j - 1 + noff(1)
-                           tz = (iz + 0.5)/zppc + k - 1 + noff(2)
+                           ty = (iy + 0.5)/yppc + j - 1
+                           tz = (iz + 0.5)/zppc + k - 1
                            pt(1,nps) = tx
                            pt(2,nps) = ty
                            pt(3,nps) = tz
@@ -468,8 +473,8 @@
                            a1 = abs(tz - bcz)
                            a2 = sqrt((tx-bcx)**2+(ty-bcy)**2)
                            a3 = abs(a2-r1)
-                           a4 = sqrt(a1**2+a3**2)
-                           pt(7,nps) = qm*np*exp(-a4**2/r2**2*0.5)
+                           a4 = a1**2+a3**2
+                           pt(7,nps) = qm*np*exp(-a4/r2**2*0.5)
                            nps = nps + 1
                         enddo
                      enddo
@@ -477,6 +482,8 @@
                enddo
             enddo
          enddo
+
+         npp = nps - 1
 
          ! if (ierr /= 0) then
          !    write (erstr,*) 'PRVDIST32_RANDOM error'
