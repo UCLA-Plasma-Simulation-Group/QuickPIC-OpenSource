@@ -155,7 +155,7 @@
          class(simulation), intent(inout) :: this
 ! local data
          character(len=18), save :: sname = 'init_simulation:'
-         real :: min, max, cwp, n0, dx, dy, dz, dt
+         real :: min, max, n0, dx, dy, dz, dt
          integer :: indx, indy, indz
          logical :: read_rst
          
@@ -173,16 +173,15 @@
          call this%in%get('simulation.indy',indy)
          call this%in%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
          call this%in%get('simulation.box.x(1)',min)
          call this%in%get('simulation.box.x(2)',max)
-         dx=(max-min)/cwp/real(2**indx)
+         dx=(max-min)/real(2**indx)
          call this%in%get('simulation.box.y(1)',min)
          call this%in%get('simulation.box.y(2)',max)
-         dy=(max-min)/cwp/real(2**indy)
+         dy=(max-min)/real(2**indy)
          call this%in%get('simulation.box.z(1)',min)
          call this%in%get('simulation.box.z(2)',max)
-         dz=(max-min)/cwp/real(2**indz)
+         dz=(max-min)/real(2**indz)
          
          this%dex = dx
          this%dxi = dz
@@ -502,7 +501,7 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
-         dz=(max-min)/cwp/real(2**indz)
+         dz=(max-min)/real(2**indz)
 
          call input%get('simulation.nspecies',n)
 
@@ -733,7 +732,7 @@
          integer :: n, m, l, i, j, k, ii
          character(len=20) :: s1, s2, s3, s4, sn1, sn2, sn3, sn4
          character(len=:), allocatable :: ss,sl
-         real :: min, max, cwp, n0, dt
+         real :: min, max, n0, dt
          real :: alx1, aly1, alz1, alx2, aly2, alz2
          logical :: rst
          integer :: ierr, indx, indy, indz, dim
@@ -747,19 +746,18 @@
          call this%in%get('simulation.indy',indy)
          call this%in%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
          call this%in%get('simulation.box.x(1)',min)
          call this%in%get('simulation.box.x(2)',max)
-         alx1 = min/cwp
-         alx2 = max/cwp
+         alx1 = min
+         alx2 = max
          call this%in%get('simulation.box.y(1)',min)
          call this%in%get('simulation.box.y(2)',max)
-         aly1 = min/cwp 
-         aly2 = max/cwp 
+         aly1 = min 
+         aly2 = max 
          call this%in%get('simulation.box.z(1)',min)
          call this%in%get('simulation.box.z(2)',max)
-         alz1 = min/cwp 
-         alz2 = max/cwp 
+         alz1 = min 
+         alz2 = max 
          call this%in%get('simulation.dt',dt)
 
          do i = 1, this%nbeams
