@@ -1044,8 +1044,8 @@
          class(input_json), intent(inout) :: this
 ! local data
          character(len=18), save :: sname = 'read_input_json:'
-         logical :: found
-         character(len=:), allocatable :: ff, boundary
+         logical :: found, stat
+         character(len=:), allocatable :: ff, boundary, error_msg
          integer :: length, num_stages, verbose, indx, indy, indz, psolve, ierr
          
          call p%new()
@@ -1065,6 +1065,11 @@
             if(found) then
 ! read the file
                call this%load_file(filename = './qpinput.json')
+               call this%input%check_for_errors(stat,error_msg)
+               if (.not. stat) then
+                  call this%err%equit(class//sname//trim(error_msg))
+                  return
+               end if
             else
                 write (erstr,*) 'error: cannot find the input file'
                 call this%err%equit(class//sname//erstr)
@@ -1142,7 +1147,7 @@
          logical,intent(in),optional :: allow_duplicate_keys
 ! local data
          character(len=38), save :: sname = 'initialize_json_core_in_file:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
          
          allocate(this%input)
          call this%input%initialize(verbose,compact_reals,print_signs,&
@@ -1150,7 +1155,7 @@
          &case_sensitive_keys,no_whitespace,unescape_strings,comment_char,path_mode,&
          &path_separator,compress_vectors,allow_duplicate_keys)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
       
       end subroutine initialize
 !
@@ -1162,11 +1167,11 @@
          type(json_core),intent(in) :: core
 ! local data
          character(len=38), save :: sname = 'set_json_core_in_file:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%initialize(core)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
          
       end subroutine set_json_core_in_file   
 !
@@ -1179,11 +1184,11 @@
          integer,intent(in),optional :: unit
 ! local data
          character(len=18), save :: sname = 'json_file_load:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%load_file(filename, unit)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
          
       end subroutine load_file
 !
@@ -1195,11 +1200,11 @@
          character(len=:),allocatable,intent(out) :: str
 ! local data
          character(len=38), save :: sname = 'json_file_print_to_string:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%print_to_string(str)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine print_to_string     
 !
@@ -1211,11 +1216,11 @@
          character(len=*),intent(in) :: str
 ! local data
          character(len=38), save :: sname = 'json_file_load_from_string:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%load_from_string(str)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine load_from_string
 !
@@ -1229,11 +1234,11 @@
 ! local data
          character(len=38), save :: sname = 'json_file_found:'
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%info(path, found=found)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end function found
 !
@@ -1249,7 +1254,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, p)
          if (this%input%failed()) then
@@ -1258,7 +1263,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_object
 !
@@ -1274,7 +1279,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, val)
          if (this%input%failed()) then
@@ -1283,7 +1288,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_integer
 !
@@ -1299,7 +1304,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, val)
          if (this%input%failed()) then
@@ -1308,7 +1313,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_double
 !
@@ -1324,7 +1329,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, val)
          if (this%input%failed()) then
@@ -1333,7 +1338,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_logical
 !
@@ -1349,7 +1354,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, val)
          if (this%input%failed()) then
@@ -1358,7 +1363,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_string
 !
@@ -1374,7 +1379,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
@@ -1383,7 +1388,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_integer_vec
 !
@@ -1399,7 +1404,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
@@ -1408,7 +1413,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_double_vec
 !
@@ -1424,7 +1429,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
@@ -1433,7 +1438,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_logical_vec
 !
@@ -1449,7 +1454,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
@@ -1458,7 +1463,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_string_vec
 !
@@ -1475,7 +1480,7 @@
          character(len=:), allocatable :: error
          logical :: st
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(path, vec, ilen)
          if (this%input%failed()) then
@@ -1484,7 +1489,7 @@
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_alloc_string_vec
 !
@@ -1496,40 +1501,41 @@
          type(json_value),pointer,intent(out) :: p
 ! local data
          character(len=38), save :: sname = 'json_file_get_root:'
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%get(p)
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_root                            
 !
-      subroutine  json_file_variable_info(this,path, var_type, n_children, name)
+      subroutine  json_file_variable_info(this,path,n_children)
 
          implicit none
 
          class(input_json),intent(inout) :: this
          character(len=*),intent(in) :: path
-         integer,intent(out),optional :: var_type
-         integer,intent(out),optional :: n_children
-         character(len=:),allocatable,intent(out),optional :: name
+         integer,intent(out) :: n_children
 
 ! local data
          character(len=38), save :: sname = 'json_file_variable_info:'
          character(len=:), allocatable :: error
          logical :: st
+         integer :: var_type
+         character(len=:),allocatable :: name
 
-         call this%err%werrfl0(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
 
          call this%input%info(path, var_type=var_type, n_children=n_children, name=name)
+
          if (this%input%failed()) then
             call this%input%check_for_errors(st, error)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
 
-         call this%err%werrfl0(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
-      end subroutine json_file_variable_info                           
-
+      end subroutine json_file_variable_info
+!
       end module input_class
