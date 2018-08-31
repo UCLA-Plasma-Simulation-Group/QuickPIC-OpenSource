@@ -154,19 +154,19 @@
          call input%get('simulation.box.x(2)',max)
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
-         alx = (max-min)/cwp 
+         alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
-         aly = (max-min)/cwp 
+         aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
-         alz = (max-min)/cwp 
+         alz = (max-min) 
          dz=alz/real(2**indz)
 
          call input%get(trim(s1)//'.profile',npf)
@@ -188,7 +188,7 @@
          call input%get(trim(s1)//'.centroid_y(3)',cy3)
          call input%get(trim(s1)//'.quiet_start',quiet)
          call input%get(trim(s1)//'.gamma',gamma)
-         call input%get(trim(s1)//'.num_particle',np)
+         call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
 
 
@@ -197,31 +197,32 @@
          this%npy = npy
          this%npz = npz
          this%npmax = npmax
-         this%bcx = bcx/dx/cwp
-         this%bcy = bcy/dy/cwp
-         this%bcz = bcz/dz/cwp
-         this%sigx = sigx/dx/cwp
-         this%sigy = sigy/dy/cwp
-         this%sigz = sigz/dz/cwp
+         qm = qm*np*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm*(2**indz)
+         qm = qm*(2**indx)
+         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/npy
+         qm = qm/npz
+         this%qm = qm
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%sigx = sigx/dx
+         this%sigy = sigy/dy
+         this%sigz = sigz/dz
          this%sigvx = sigvx
          this%sigvy = sigvy
          this%sigvz = sigvz
-         this%cx1 = cx1*cwp*dz*dz/dx
+         this%cx1 = cx1*dz*dz/dx
          this%cx2 = cx2*dz/dx
-         this%cx3 = cx3/cwp/dx
-         this%cy1 = cy1*cwp*dz*dz/dy
+         this%cx3 = cx3/dx
+         this%cy1 = cy1*dz*dz/dy
          this%cy2 = cy2*dz/dy
-         this%cy3 = cy3/cwp/dy
+         this%cy3 = cy3/dy
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
 
-         qm = qm*np*1e12*(2**indz)
-         qm = qm*(2**indx)
-         qm = qm*(2**indy)/(npx*alx*aly*alz*n0*cwp*cwp*cwp) 
-         qm = qm/npy
-         qm = qm/npz
-         this%qm = qm
 
          call this%err%werrfl2(class//sname//' ended')
 

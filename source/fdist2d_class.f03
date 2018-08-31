@@ -66,7 +66,7 @@
          private
 ! xppc, yppc = particle per cell in x and y directions
          integer :: xppc, yppc
-         real :: qm
+         real :: qm, den
                           
          contains
          procedure, private :: init_fdist2d => init_fdist2d_000
@@ -123,7 +123,7 @@
          integer, intent(in) :: i
 ! local data
          integer :: npf,xppc,yppc,npmax,indx,indy
-         real :: qm
+         real :: qm, den
          character(len=20) :: sn,s1
          character(len=18), save :: sname = 'init_fdist2d_000:'
          
@@ -140,12 +140,14 @@
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.density',den)
          npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
 
          this%npf = npf
          this%xppc = xppc
          this%yppc = yppc
          this%qm = qm
+         this%den = den
          this%npmax = npmax
          call this%err%werrfl2(class//sname//' ended')
 
@@ -169,7 +171,7 @@
          
          nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
          xppc = this%xppc; yppc = this%yppc
-         qm = this%qm/abs(this%qm)/xppc/yppc
+         qm = this%den*this%qm/abs(this%qm)/xppc/yppc
          nps = 1
          pt => part2d
 ! initialize the particle positions
