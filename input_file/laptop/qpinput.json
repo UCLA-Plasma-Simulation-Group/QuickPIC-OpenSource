@@ -96,6 +96,28 @@
 "species" :
 [
     {
+    "profile" : 10,
+    "ppc" : [2,2],
+    "q" : -1.0,
+    "m" : 1.0,
+    "density" : 1.0,
+    "center" : [6.389172934605045,6.389172934605045],
+    "inner_radius" : [1.0,1.5],
+    "outer_radius" : [2.5, 2.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge", "jx"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        }
+    ]    
+    },
+    {
     "profile" : 0,
     "ppc" : [2,2],
     "q" : -1.0,
