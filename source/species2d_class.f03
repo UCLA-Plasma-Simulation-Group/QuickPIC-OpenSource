@@ -100,7 +100,7 @@
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
+         call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          call this%qn%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()

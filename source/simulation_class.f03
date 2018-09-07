@@ -451,7 +451,6 @@
          implicit none
 
          class(sim_beams), intent(inout) :: this
-         type(input_json), intent(in) :: input
 ! local data
          character(len=18), save :: sname = 'end_sim_beams:'
          character(len=18), save :: class = 'sim_beams:'
