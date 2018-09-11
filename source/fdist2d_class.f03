@@ -67,6 +67,8 @@
 ! xppc, yppc = particle per cell in x and y directions
          integer :: xppc, yppc
          real :: qm, den
+         character(len=:), allocatable :: long_prof
+         real, dimension(:), allocatable :: s, fs
                           
          contains
          procedure, private :: init_fdist2d => init_fdist2d_000
@@ -142,7 +144,11 @@
          call input%get(trim(s1)//'.q',qm)
          call input%get(trim(s1)//'.density',den)
          npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
-
+         call input%get(trim(s1)//'.longitudinal_profile',this%long_prof)
+         if (trim(this%long_prof) == 'piecewise') then
+            call input%get(trim(s1)//'.piecewise_density',this%fs)
+            call input%get(trim(s1)//'.piecewise_s',this%s)
+         end if
          this%npf = npf
          this%xppc = xppc
          this%yppc = yppc
@@ -165,13 +171,35 @@
          real, dimension(:,:), pointer :: pt => null()
          integer :: nps, nx, ny, noff, xppc, yppc, i, j
          integer :: ix, iy
-         real :: qm
+         real :: qm, den_temp
+         integer :: prof_l
 
          call this%err%werrfl2(class//sname//' started')
          
          nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
          xppc = this%xppc; yppc = this%yppc
-         qm = this%den*this%qm/abs(this%qm)/xppc/yppc
+         den_temp = 1.0
+         if (trim(this%long_prof) == 'piecewise') then
+            prof_l = size(this%fs)
+            if (s<this%s(1) .or. s>this%s(prof_l)) then
+               write (erstr,*) 'The s is out of the bound!'
+               call this%err%equit(class//sname//erstr)
+               return
+            end if
+            do i = 2, prof_l
+               if (this%s(i) < this%s(i-1)) then
+                  write (erstr,*) 's is not monotonically increasing!'
+                  call this%err%equit(class//sname//erstr)
+                  return
+               end if
+               if (s<=this%s(i)) then
+                  den_temp = this%fs(i-1) + (this%fs(i)-this%fs(i-1))/&
+                  &(this%s(i)-this%s(i-1))*(s-this%s(i-1))
+                  exit
+               end if
+            end do
+         end if
+         qm = den_temp*this%den*this%qm/abs(this%qm)/real(xppc)/real(yppc)
          nps = 1
          pt => part2d
 ! initialize the particle positions
