@@ -118,6 +118,7 @@
          integer :: ierr
                   
          call this%err%werrfl2(class//sname//' started')
+         call this%q%as(0.0)
          call MPI_WAIT(id1,istat,ierr)
          call MPI_WAIT(id3,istat,ierr)
          call this%pd%qdp(this%q%getrs())

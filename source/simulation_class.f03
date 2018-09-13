@@ -412,6 +412,9 @@
             case (0)
                allocate(fdist3d_000::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            case (1)
+               allocate(fdist3d_001::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
 ! Add new distributions under this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
@@ -710,13 +713,13 @@
                &this%tag_beam(m),this%tag_beam(m),this%id_beam(m))
             end do
             
+            call this%diag_simulation()
+                             
             do m = 1, this%nspecies                       
                call MPI_WAIT(this%id_spe(m),istat,ierr)
                call this%species%spe(m)%renew(i*this%dt)
             end do
 
-            call this%diag_simulation()
-                             
          end do
 
          call this%err%werrfl2(class//sname//' ended')
