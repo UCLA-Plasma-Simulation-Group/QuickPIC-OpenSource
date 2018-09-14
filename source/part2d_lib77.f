@@ -292,7 +292,6 @@
    70 continue
    80 continue
 !$OMP END PARALLEL DO
-      write (2,*) "charge", ppart(8,1,1)
       return
       end
 !-----------------------------------------------------------------------
