@@ -72,7 +72,7 @@
       interface
          subroutine PBPOISD22N_QP(cu,dcu,amu,bxy,bz,isign,ffd,ax,ay,affp&
      &,ci,wm,nx,ny,kstrt,nyv,kxp2,j2blok,nyd,aa,dex)
-		 implicit none
+         implicit none
          real, intent(in) :: ax, ay, affp, ci, wm, aa,dex
          integer, intent(in) :: isign, nx, ny, kstrt, nyv, kxp2, j2blok, nyd
          real, dimension(2,nyv,kxp2+1,j2blok), intent(inout) :: dcu, bxy

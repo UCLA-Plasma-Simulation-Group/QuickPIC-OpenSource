@@ -154,7 +154,6 @@
             return
             
          else
-					   
             call dtimer(dtime,itime,1)
             write (tstr,'(f12.3)') dtime
             write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
@@ -178,8 +177,7 @@
             return
             
          else
-					   
-   	        call dtimer(dtime,itime,1)
+            call dtimer(dtime,itime,1)
             write (tstr,'(f12.3)') dtime
             write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
             flush(this%eunit)

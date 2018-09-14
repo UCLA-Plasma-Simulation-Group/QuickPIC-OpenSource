@@ -1,6 +1,6 @@
 # name of the compiler 
-FC_DEBIAN = h5pfc -fopenmp
-CC_DEBIAN = gcc
+FC_DEBIAN = h5pfc -c -fopenmp
+CC_DEBIAN = gcc -c -O3 -std=c99
 LINKER_DEBIAN = h5pfc -fopenmp -O3
 
 OPTS_DBL_DEBIAN = -O3 -fdefault-real-8 -fdefault-double-8

@@ -120,15 +120,6 @@ c local data
       nxvy = nxv*nypmx
 c special case for one processor in y
       if (nvpy.eq.1) then
-         do 40 m = 1, mnblok
-         do 30 k = 1, kzp1
-         do 20 j = 1, nx1
-         do 10 n = 1, 3
-         f(n,j,1,k,m) = f(n,j,1,k,m) + f(n,j,kyp+1,k,m)
-   10    continue
-   20    continue
-   30    continue
-   40    continue
          go to 170
       endif
 c buffer data in y
@@ -237,13 +228,6 @@ c local data
       nxvy = nxv*nypmx
 c special case for one processor in y
       if (nvpy.eq.1) then
-         do 30 m = 1, mnblok
-         do 20 k = 1, kzp1
-         do 10 j = 1, nx1
-         f(j,1,k,m) = f(j,1,k,m) + f(j,kyp+1,k,m)
-   10    continue
-   20    continue
-   30    continue
          go to 130
       endif
 c buffer data in y
@@ -294,13 +278,6 @@ c this segment is used for mpi computers
   120 continue
 c special case for one processor in z
   130 if (nvpz.eq.1) then
-         do 160 m = 1, mnblok
-         do 150 k = 1, kyp1
-         do 140 j = 1, nx1
-         f(j,k,1,m) = f(j,k,1,m) + f(j,k,kzp+1,m)
-  140    continue
-  150    continue
-  160    continue
          return
       endif
 c add guard cells in z
