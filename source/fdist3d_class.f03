@@ -235,7 +235,7 @@
          class(fdist3d_000), intent(inout) :: this
          real, dimension(:,:), pointer, intent(inout) :: part3d
          integer, intent(inout) :: npp
-         class(ufield3d), intent(in) :: fd
+         class(ufield3d), intent(in), pointer :: fd
 ! local data1
 
 ! edges(1) = lower boundary in y of particle partition

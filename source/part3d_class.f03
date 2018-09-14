@@ -81,7 +81,7 @@
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout) :: pf
-         class(ufield3d), target, intent(in) :: fd
+         class(ufield3d), pointer, intent(in) :: fd
          real, intent(in) :: qbm, dt, ci
          integer, intent(in) :: xdim
 
@@ -134,7 +134,7 @@
          implicit none
          
          class(part3d), intent(in) :: this
-         class(ufield3d), target, intent(inout) :: q
+         class(ufield3d),  pointer, intent(in) :: q
          character(len=18), save :: sname = 'qdeposit:'
 ! local data
          real, dimension(:,:,:,:), pointer :: pq => null()
@@ -172,7 +172,7 @@
          implicit none
          
          class(part3d), intent(inout) :: this
-         class(ufield3d), target, intent(in) :: ef, bf
+         class(ufield3d), pointer, intent(in) :: ef, bf
          real, intent(in) :: dex, dez
          character(len=18), save :: sname = 'partpush'
 ! local data
@@ -211,7 +211,7 @@
          implicit none
          
          class(part3d), intent(inout) :: this
-         class(ufield3d), target, intent(in) :: fd
+         class(ufield3d), pointer, intent(in) :: fd
          integer, intent(in) :: rtag, stag
          integer, intent(inout) :: sid
          character(len=18), save :: sname = 'pmove:'

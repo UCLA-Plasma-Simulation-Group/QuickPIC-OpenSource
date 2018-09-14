@@ -100,12 +100,17 @@
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
+         call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          call this%qn%as(0.0)
+         call this%cu%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()
+         call this%q%as(this%qn)
          if (this%p%getstageid() == 0) then
-            call this%qn%cb(this%q3,1,(/1/),(/1/))         
+            call this%q%fftrk(1)
+            call this%q%smooth(this%q)
+            call this%q%fftkr(1)
+            call this%q%cb(this%q3,1,(/1/),(/1/))         
          end if
          call this%qn%mult(this%qn,-1.0)
          call this%err%werrfl2(class//sname//' ended')
@@ -146,11 +151,14 @@
          call this%qn%as(0.0)
          call this%pd%qdp(this%qn%getrs())
          call this%qn%ag()
+         call this%q%as(this%qn)
          if (this%p%getstageid() == 0) then
-            call this%qn%cb(this%q3,1,(/1/),(/1/))
+            call this%q%fftrk(1)
+            call this%q%smooth(this%q)
+            call this%q%fftkr(1)
+            call this%q%cb(this%q3,1,(/1/),(/1/))         
          end if
          call this%qn%mult(this%qn,-1.0)
-         
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_species2d
