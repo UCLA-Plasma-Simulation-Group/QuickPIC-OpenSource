@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	 
-	 <meta name="description" content="">
+   
+   <meta name="description" content="">
     
     <meta name="author" content="Weiming An" >
     <link rel="icon" href="../favicon.png">
@@ -48,33 +48,39 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-				
+        
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
               aria-haspopup="true"
-		 aria-expanded="false">Contents <span class="caret"></span></a>
-	      <ul class="dropdown-menu">
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
               
             <li><a href="../lists/files.html">Source Files</a></li>
-				
-				
+        
+        
+        
             <li><a href="../lists/modules.html">Modules</a></li>
-				
+        
             
                                 
             <li><a href="../lists/procedures.html">Procedures</a></li>
-				
-								
+        
+        
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+               
             <li><a href="../lists/types.html">Derived Types</a></li>
-				
-				
+        
+        
             <li><a href="../program/quickpic.html">Program</a></li>
-	    
+      
             </ul>
             </li>
 
+
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
 
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
@@ -83,6 +89,8 @@
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
 
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
                              
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
 
@@ -125,19 +133,23 @@
     
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
-	  data-placement="bottom" data-html="true"
-	  title=" 0.1% of total for procedures.">19 statements</a>
+    data-placement="bottom" data-html="true"
+    title=" 0.2% of total for procedures.">37 statements</a>
      </li> 
+     
      
      
     <li><i class="fa fa-code"></i><a href="../src/species2d_class.f03"> Source File</a></li>
      
+     
   </ul>
   <ol class="breadcrumb in-well text-right">
   
+    
      <li><a href='../sourcefile/species2d_class.f03.html'>species2d_class.f03</a></li>
-  
+    
      <li><a href='../module/species2d_class.html'>species2d_class</a></li>
+    
   
      <li class="active">init_species2d</li>
   </ol>
@@ -189,10 +201,10 @@
     
     <div class="col-md-9" id='text'>
     <h2>
-private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdim, npmax, nbmax)
+private subroutine init_species2d(this, pp, perr, psp, pf, qbm, dt, ci, xdim, s)
     
     
-	 
+   
 </h2>
     
   
@@ -218,7 +230,7 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-this%7E140"></span>class(<a href='../type/species2d.html'>species2d</a>),</td>
+  <td><span class="anchor" id="variable-this%7E174"></span>class(<a href='../type/species2d.html'>species2d</a>),</td>
   <td>intent(inout)</td>
   <td></td>
   
@@ -233,7 +245,7 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-pp%7E22"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td><span class="anchor" id="variable-pp%7E20"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -248,7 +260,7 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-perr%7E21"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td><span class="anchor" id="variable-perr%7E19"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -263,7 +275,7 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-psp%7E10"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td><span class="anchor" id="variable-psp%7E8"></span>class(<a href='../type/spect3d.html'>spect3d</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -278,42 +290,12 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-pf%7E7"></span>class(<a href='../type/fdist2d.html'>fdist2d</a>),</td>
-  <td>intent(in)</td>
+  <td><span class="anchor" id="variable-pf%7E9"></span>class(<a href='../type/fdist2d.html'>fdist2d</a>),</td>
+  <td>intent(inout),</td>
   <td></td>
   
-  <td></td><td>::</td>
+  <td>target</td><td>::</td>
   <td><strong>pf</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" id="variable-fd%7E17"></span>class(<a href='../type/field2d.html'>field2d</a>),</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>fd</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" id="variable-qm%7E12"></span>real,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>qm</strong></td><td></td>
   
 </tr>
 
@@ -383,27 +365,12 @@ private subroutine init_species2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, 
   
 <tr>
   
-  <td><span class="anchor" id="variable-npmax%7E22"></span>integer,</td>
+  <td><span class="anchor" id="variable-s%7E12"></span>real,</td>
   <td>intent(in)</td>
   <td></td>
   
   <td></td><td>::</td>
-  <td><strong>npmax</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" id="variable-nbmax%7E15"></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>nbmax</strong></td><td></td>
+  <td><strong>s</strong></td><td></td>
   
 </tr>
 

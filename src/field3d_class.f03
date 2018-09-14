@@ -23,7 +23,7 @@
          class(spect3d), pointer, public :: sp => null()
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
-         class(ufield3d), pointer :: rs         
+         class(ufield3d), pointer :: rs => null()        
          integer :: gcells
          
          contains

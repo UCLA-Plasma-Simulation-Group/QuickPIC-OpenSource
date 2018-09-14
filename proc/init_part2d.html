@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	 
-	 <meta name="description" content="">
+   
+   <meta name="description" content="">
     
     <meta name="author" content="Weiming An" >
     <link rel="icon" href="../favicon.png">
@@ -48,33 +48,39 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-				
+        
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
               aria-haspopup="true"
-		 aria-expanded="false">Contents <span class="caret"></span></a>
-	      <ul class="dropdown-menu">
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
               
             <li><a href="../lists/files.html">Source Files</a></li>
-				
-				
+        
+        
+        
             <li><a href="../lists/modules.html">Modules</a></li>
-				
+        
             
                                 
             <li><a href="../lists/procedures.html">Procedures</a></li>
-				
-								
+        
+        
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+               
             <li><a href="../lists/types.html">Derived Types</a></li>
-				
-				
+        
+        
             <li><a href="../program/quickpic.html">Program</a></li>
-	    
+      
             </ul>
             </li>
 
+
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
 
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
@@ -83,6 +89,8 @@
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
 
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
                              
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
 
@@ -125,19 +133,23 @@
     
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
-	  data-placement="bottom" data-html="true"
-	  title=" 0.3% of total for procedures.">58 statements</a>
+    data-placement="bottom" data-html="true"
+    title=" 0.3% of total for procedures.">55 statements</a>
      </li> 
+     
      
      
     <li><i class="fa fa-code"></i><a href="../src/part2d_class.f03"> Source File</a></li>
      
+     
   </ul>
   <ol class="breadcrumb in-well text-right">
   
+    
      <li><a href='../sourcefile/part2d_class.f03.html'>part2d_class.f03</a></li>
-  
+    
      <li><a href='../module/part2d_class.html'>part2d_class</a></li>
+    
   
      <li class="active">init_part2d</li>
   </ol>
@@ -189,10 +201,10 @@
     
     <div class="col-md-9" id='text'>
     <h2>
-private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdim, npmax, nbmax)
+private subroutine init_part2d(this, pp, perr, psp, pf, fd, qbm, dt, ci, xdim, s)
     
     
-	 
+   
 </h2>
     
   
@@ -218,7 +230,7 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-this%7E106"></span>class(<a href='../type/part2d.html'>part2d</a>),</td>
+  <td><span class="anchor" id="variable-this%7E139"></span>class(<a href='../type/part2d.html'>part2d</a>),</td>
   <td>intent(inout)</td>
   <td></td>
   
@@ -233,7 +245,7 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-pp%7E9"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td><span class="anchor" id="variable-pp%7E8"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -248,7 +260,7 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-perr%7E8"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td><span class="anchor" id="variable-perr%7E7"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -263,7 +275,7 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-psp%7E7"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  <td><span class="anchor" id="variable-psp%7E6"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
@@ -278,8 +290,8 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-pf%7E3"></span>class(<a href='../type/fdist2d.html'>fdist2d</a>),</td>
-  <td>intent(in)</td>
+  <td><span class="anchor" id="variable-pf%7E6"></span>class(<a href='../type/fdist2d.html'>fdist2d</a>),</td>
+  <td>intent(inout)</td>
   <td></td>
   
   <td></td><td>::</td>
@@ -293,27 +305,12 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-fd%7E4"></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
+  <td><span class="anchor" id="variable-fd%7E6"></span>class(<a href='../type/ufield2d.html'>ufield2d</a>),</td>
   <td>intent(in),</td>
   <td></td>
   
-  <td>target</td><td>::</td>
+  <td>pointer</td><td>::</td>
   <td><strong>fd</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" id="variable-qm%7E10"></span>real,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>qm</strong></td><td></td>
   
 </tr>
 
@@ -383,27 +380,12 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
   
 <tr>
   
-  <td><span class="anchor" id="variable-npmax%7E20"></span>integer,</td>
+  <td><span class="anchor" id="variable-s%7E9"></span>real,</td>
   <td>intent(in)</td>
   <td></td>
   
   <td></td><td>::</td>
-  <td><strong>npmax</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" id="variable-nbmax%7E13"></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>nbmax</strong></td><td></td>
+  <td><strong>s</strong></td><td></td>
   
 </tr>
 
@@ -418,70 +400,55 @@ private subroutine init_part2d(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdi
     
     <div class="panel panel-default">
       <div class="panel-heading">
-	<h3 class="panel-title">Calls</h3>
+  <h3 class="panel-title">Calls</h3>
       </div>
       <div class="panel-body">
-	<div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: proc~~init_part2d~~CallsGraph Pages: 1 -->
-<svg id="procinit_part2dCallsGraph" width="184pt" height="113pt"
- viewBox="0.00 0.00 184.14 112.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~init_part2d~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 108.5)">
+<svg id="procinit_part2dCallsGraph" width="184pt" height="72pt"
+ viewBox="0.00 0.00 184.14 71.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~init_part2d~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 67.5)">
 <title>proc~~init_part2d~~CallsGraph</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-108.5 180.1409,-108.5 180.1409,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-67.5 180.1409,-67.5 180.1409,4 -4,4"/>
 <!-- proc~init_part2d -->
 <g id="proc~~init_part2d~~CallsGraph_node1" class="node">
 <title>proc~init_part2d</title>
-<polygon fill="none" stroke="#000000" points="61.0513,-63.2554 -.0171,-63.2554 -.0171,-41.2446 61.0513,-41.2446 61.0513,-63.2554"/>
-<text text-anchor="middle" x="30.5171" y="-49.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">init_part2d</text>
-</g>
-<!-- proc~init_prof1~2 -->
-<g id="proc~~init_part2d~~CallsGraph_node2" class="node">
-<title>proc~init_prof1~2</title>
-<g id="a_proc~~init_part2d~~CallsGraph_node2"><a xlink:href=".././proc/init_prof1%7E2.html" xlink:title="init_prof1">
-<polygon fill="#d9534f" stroke="#d9534f" points="164.2824,-104.2554 108.8926,-104.2554 108.8926,-82.2446 164.2824,-82.2446 164.2824,-104.2554"/>
-<text text-anchor="middle" x="136.5875" y="-90.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">init_prof1</text>
-</a>
-</g>
-</g>
-<!-- proc~init_part2d&#45;&gt;proc~init_prof1~2 -->
-<g id="proc~~init_part2d~~CallsGraph_edge1" class="edge">
-<title>proc~init_part2d&#45;&gt;proc~init_prof1~2</title>
-<path fill="none" stroke="#000000" d="M59.2213,-63.3452C71.6627,-68.1542 86.3849,-73.8449 99.6296,-78.9644"/>
-<polygon fill="#000000" stroke="#000000" points="98.3696,-82.2297 108.9589,-82.5706 100.8934,-75.7005 98.3696,-82.2297"/>
+<polygon fill="none" stroke="#000000" points="61.0513,-42.2554 -.0171,-42.2554 -.0171,-20.2446 61.0513,-20.2446 61.0513,-42.2554"/>
+<text text-anchor="middle" x="30.5171" y="-28.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">init_part2d</text>
 </g>
 <!-- interface~pppmovin2l -->
-<g id="proc~~init_part2d~~CallsGraph_node3" class="node">
+<g id="proc~~init_part2d~~CallsGraph_node2" class="node">
 <title>interface~pppmovin2l</title>
-<g id="a_proc~~init_part2d~~CallsGraph_node3"><a xlink:href=".././interface/pppmovin2l.html" xlink:title="PPPMOVIN2L">
+<g id="a_proc~~init_part2d~~CallsGraph_node2"><a xlink:href=".././interface/pppmovin2l.html" xlink:title="PPPMOVIN2L">
 <polygon fill="#a7506f" stroke="#a7506f" points="176.1943,-63.2554 96.9808,-63.2554 96.9808,-41.2446 176.1943,-41.2446 176.1943,-63.2554"/>
 <text text-anchor="middle" x="136.5875" y="-49.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">PPPMOVIN2L</text>
 </a>
 </g>
 </g>
 <!-- proc~init_part2d&#45;&gt;interface~pppmovin2l -->
-<g id="proc~~init_part2d~~CallsGraph_edge2" class="edge">
+<g id="proc~~init_part2d~~CallsGraph_edge1" class="edge">
 <title>proc~init_part2d&#45;&gt;interface~pppmovin2l</title>
-<path fill="none" stroke="#000000" d="M61.1971,-52.25C69.2008,-52.25 78.036,-52.25 86.7553,-52.25"/>
-<polygon fill="#000000" stroke="#000000" points="86.8811,-55.7501 96.881,-52.25 86.881,-48.7501 86.8811,-55.7501"/>
+<path fill="none" stroke="#000000" d="M61.1971,-37.3241C69.2878,-38.9259 78.2281,-40.6959 87.0396,-42.4404"/>
+<polygon fill="#000000" stroke="#000000" points="86.3917,-45.88 96.881,-44.3888 87.7512,-39.0133 86.3917,-45.88"/>
 </g>
 <!-- interface~ppdblkp2l -->
-<g id="proc~~init_part2d~~CallsGraph_node4" class="node">
+<g id="proc~~init_part2d~~CallsGraph_node3" class="node">
 <title>interface~ppdblkp2l</title>
-<g id="a_proc~~init_part2d~~CallsGraph_node4"><a xlink:href=".././interface/ppdblkp2l.html" xlink:title="PPDBLKP2L">
+<g id="a_proc~~init_part2d~~CallsGraph_node3"><a xlink:href=".././interface/ppdblkp2l.html" xlink:title="PPDBLKP2L">
 <polygon fill="#a7506f" stroke="#a7506f" points="172.7063,-22.2554 100.4688,-22.2554 100.4688,-.2446 172.7063,-.2446 172.7063,-22.2554"/>
 <text text-anchor="middle" x="136.5875" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">PPDBLKP2L</text>
 </a>
 </g>
 </g>
 <!-- proc~init_part2d&#45;&gt;interface~ppdblkp2l -->
-<g id="proc~~init_part2d~~CallsGraph_edge3" class="edge">
+<g id="proc~~init_part2d~~CallsGraph_edge2" class="edge">
 <title>proc~init_part2d&#45;&gt;interface~ppdblkp2l</title>
-<path fill="none" stroke="#000000" d="M59.2213,-41.1548C71.2486,-36.5058 85.4073,-31.033 98.3022,-26.0487"/>
-<polygon fill="#000000" stroke="#000000" points="99.7949,-29.2241 107.8604,-22.3541 97.271,-22.6949 99.7949,-29.2241"/>
+<path fill="none" stroke="#000000" d="M61.1971,-25.4652C70.2792,-23.7527 80.4319,-21.8384 90.2711,-19.9832"/>
+<polygon fill="#000000" stroke="#000000" points="91.1747,-23.3745 100.353,-18.0822 89.8776,-16.4957 91.1747,-23.3745"/>
 </g>
 </g>
 </svg>

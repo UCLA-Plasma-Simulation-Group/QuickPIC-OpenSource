@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	 
-	 <meta name="description" content="">
+   
+   <meta name="description" content="">
     
     <meta name="author" content="Weiming An" >
     <link rel="icon" href="../favicon.png">
@@ -48,33 +48,39 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-				
+        
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
               aria-haspopup="true"
-		 aria-expanded="false">Contents <span class="caret"></span></a>
-	      <ul class="dropdown-menu">
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
               
             <li><a href="../lists/files.html">Source Files</a></li>
-				
-				
+        
+        
+        
             <li><a href="../lists/modules.html">Modules</a></li>
-				
+        
             
                                 
             <li><a href="../lists/procedures.html">Procedures</a></li>
-				
-								
+        
+        
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+               
             <li><a href="../lists/types.html">Derived Types</a></li>
-				
-				
+        
+        
             <li><a href="../program/quickpic.html">Program</a></li>
-	    
+      
             </ul>
             </li>
 
+
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
 
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
@@ -83,6 +89,8 @@
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
 
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
                              
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
 
@@ -125,19 +133,23 @@
     
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
-	  data-placement="bottom" data-html="true"
-	  title="<p> 8.9% of total for derived types.</p>Including implementation: 1006 statements, 11.9% of total for derived types.">44 statements</a>
+    data-placement="bottom" data-html="true"
+    title="<p> 7.9% of total for derived types.</p>Including implementation: 1037 statements, 10.9% of total for derived types.">45 statements</a>
      </li> 
+     
      
      
     <li><i class="fa fa-code"></i><a href="../src/field2d_class.f03"> Source File</a></li>
      
+     
   </ul>
   <ol class="breadcrumb in-well text-right">
   
+    
      <li><a href='../sourcefile/field2d_class.f03.html'>field2d_class.f03</a></li>
-  
+    
      <li><a href='../module/field2d_class.html'>field2d_class</a></li>
+    
   
      <li class="active">field2d</li>
   </ol>
@@ -169,9 +181,9 @@
       
       <a class="list-group-item" href="../type/field2d.html#variable-sp%7E4">sp</a>
       
-      <a class="list-group-item" href="../type/field2d.html#variable-err%7E5">err</a>
+      <a class="list-group-item" href="../type/field2d.html#variable-err%7E10">err</a>
       
-      <a class="list-group-item" href="../type/field2d.html#variable-p%7E6">p</a>
+      <a class="list-group-item" href="../type/field2d.html#variable-p%7E13">p</a>
       
       <a class="list-group-item" href="../type/field2d.html#variable-rs">rs</a>
       
@@ -211,9 +223,9 @@
   <div id="boundprocs-0" class="panel-collapse collapse">
     <div class="list-group">
       
-      <a class="list-group-item" href="../type/field2d.html#boundprocedure-new%7E6">new</a>
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-new%7E10">new</a>
       
-      <a class="list-group-item" href="../type/field2d.html#boundprocedure-del%7E5">del</a>
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-del%7E9">del</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-fftrk">fftrk</a>
       
@@ -244,6 +256,8 @@
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-precv">precv</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-cp">cp</a>
+      
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-ca">ca</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-cb">cb</a>
       
@@ -307,6 +321,8 @@
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-writehdf5_field2d">writehdf5_field2d</a>
       
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-copyadd">copyadd</a>
+      
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-copyto">copyto</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-copyfrom">copyfrom</a>
@@ -338,7 +354,7 @@
     
     <div class="panel panel-default">
       <div class="panel-heading">
-	<h3 class="panel-title">Inherits</h3>
+  <h3 class="panel-title">Inherits</h3>
       </div>
       <div class="panel-body">
     <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -347,211 +363,211 @@
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: type~~field2d~~InheritsGraph Pages: 1 -->
-<svg id="typefield2dInheritsGraph" width="491pt" height="333pt"
- viewBox="0.00 0.00 490.74 333.24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~field2d~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 329.238)">
+<svg id="typefield2dInheritsGraph" width="491pt" height="338pt"
+ viewBox="0.00 0.00 490.74 338.48" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~field2d~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 334.4756)">
 <title>type~~field2d~~InheritsGraph</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-329.238 486.7415,-329.238 486.7415,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-334.4756 486.7415,-334.4756 486.7415,4 -4,4"/>
 <!-- type~field2d -->
 <g id="type~~field2d~~InheritsGraph_node1" class="node">
 <title>type~field2d</title>
-<polygon fill="none" stroke="#000000" points="482.7415,-218.7435 428.7415,-218.7435 428.7415,-196.7326 482.7415,-196.7326 482.7415,-218.7435"/>
-<text text-anchor="middle" x="455.7415" y="-204.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">field2d</text>
-</g>
-<!-- type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_node2" class="node">
-<title>type~parallel_pipe</title>
-<g id="a_type~~field2d~~InheritsGraph_node2"><a xlink:href=".././type/parallel_pipe.html" xlink:title="parallel_pipe">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="166.6015,-153.7435 95.5098,-153.7435 95.5098,-131.7326 166.6015,-131.7326 166.6015,-153.7435"/>
-<text text-anchor="middle" x="131.0557" y="-139.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe</text>
-</a>
-</g>
-</g>
-<!-- type~field2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_edge3" class="edge">
-<title>type~field2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M447.3813,-219.0927C438.9841,-229.9546 425.2411,-246.3258 410.7415,-257.738 394.5858,-270.4536 389.054,-271.8957 370.0491,-279.738 304.9407,-306.6047 280.029,-335.4051 214.4385,-309.738 201.0227,-304.4881 203.3647,-294.4799 190.6332,-287.738"/>
-<text text-anchor="middle" x="292.2438" y="-317.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~fpois2d -->
-<g id="type~~field2d~~InheritsGraph_node3" class="node">
-<title>type~fpois2d</title>
-<g id="a_type~~field2d~~InheritsGraph_node3"><a xlink:href=".././type/fpois2d.html" xlink:title="fpois2d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-143.7435 316.0491,-143.7435 316.0491,-121.7326 370.0491,-121.7326 370.0491,-143.7435"/>
-<text text-anchor="middle" x="343.0491" y="-129.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d</text>
-</a>
-</g>
-</g>
-<!-- type~field2d&#45;&gt;type~fpois2d -->
-<g id="type~~field2d~~InheritsGraph_edge6" class="edge">
-<title>type~field2d&#45;&gt;type~fpois2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M441.8619,-196.4352C433.1192,-189.4833 421.491,-180.539 410.7415,-173.238 398.2831,-164.7764 384.0371,-156.1111 371.8381,-148.9785"/>
-<polygon fill="#000000" stroke="#000000" points="373.381,-145.8277 362.972,-143.8517 369.8769,-151.8875 373.381,-145.8277"/>
-<text text-anchor="middle" x="399.3953" y="-174.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pt</text>
-</g>
-<!-- type~perrors -->
-<g id="type~~field2d~~InheritsGraph_node4" class="node">
-<title>type~perrors</title>
-<g id="a_type~~field2d~~InheritsGraph_node4"><a xlink:href=".././type/perrors.html" xlink:title="perrors">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="158.0557,-106.7435 104.0557,-106.7435 104.0557,-84.7326 158.0557,-84.7326 158.0557,-106.7435"/>
-<text text-anchor="middle" x="131.0557" y="-92.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors</text>
-</a>
-</g>
-</g>
-<!-- type~field2d&#45;&gt;type~perrors -->
-<g id="type~~field2d~~InheritsGraph_edge2" class="edge">
-<title>type~field2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-17.738C165.8563,-28.8018 148.8513,-56.2822 139.5364,-75.4747"/>
-<polygon fill="#000000" stroke="#000000" points="136.3285,-74.0738 135.3658,-84.6248 142.6981,-76.977 136.3285,-74.0738"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M449.8956,-196.6299C431.9462,-163.6266 374.1975,-65.3467 298.0491,-15.238 266.8468,5.2943 250.9189,1.283 214.4385,-6.738 203.0553,-9.2409 201.2754,-12.9859 190.6332,-17.738"/>
-<text text-anchor="middle" x="292.2438" y="-17.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
-</g>
-<!-- type~spect2d -->
-<g id="type~~field2d~~InheritsGraph_node5" class="node">
-<title>type~spect2d</title>
-<g id="a_type~~field2d~~InheritsGraph_node5"><a xlink:href=".././type/spect2d.html" xlink:title="spect2d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="268.4385,-159.7435 214.4385,-159.7435 214.4385,-137.7326 268.4385,-137.7326 268.4385,-159.7435"/>
-<text text-anchor="middle" x="241.4385" y="-145.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d</text>
-</a>
-</g>
-</g>
-<!-- type~field2d&#45;&gt;type~spect2d -->
-<g id="type~~field2d~~InheritsGraph_edge1" class="edge">
-<title>type~field2d&#45;&gt;type~spect2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.6055,-208.9297C399.7984,-209.3091 353.3708,-207.3574 316.0491,-193.738 297.6313,-187.0171 278.7382,-175.5669 264.572,-165.8989"/>
-<polygon fill="#000000" stroke="#000000" points="266.1915,-162.7591 255.998,-159.8707 262.1654,-168.4854 266.1915,-162.7591"/>
-<text text-anchor="middle" x="343.0491" y="-207.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
-</g>
-<!-- type~ufield2d -->
-<g id="type~~field2d~~InheritsGraph_node6" class="node">
-<title>type~ufield2d</title>
-<g id="a_type~~field2d~~InheritsGraph_node6"><a xlink:href=".././type/ufield2d.html" xlink:title="ufield2d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-270.7435 316.0491,-270.7435 316.0491,-248.7326 370.0491,-248.7326 370.0491,-270.7435"/>
-<text text-anchor="middle" x="343.0491" y="-256.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d</text>
-</a>
-</g>
-</g>
-<!-- type~field2d&#45;&gt;type~ufield2d -->
-<g id="type~~field2d~~InheritsGraph_edge4" class="edge">
-<title>type~field2d&#45;&gt;type~ufield2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M439.061,-218.7648C430.7537,-223.9903 420.4355,-230.0899 410.7415,-234.738 400.8967,-239.4584 389.9099,-243.8622 379.6996,-247.6178"/>
-<polygon fill="#000000" stroke="#000000" points="378.4495,-244.3477 370.2109,-251.0092 380.8055,-250.9393 378.4495,-244.3477"/>
-<text text-anchor="middle" x="399.3953" y="-245.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">rs, ks</text>
+<polygon fill="none" stroke="#000000" points="482.7415,-179.9811 428.7415,-179.9811 428.7415,-157.9702 482.7415,-157.9702 482.7415,-179.9811"/>
+<text text-anchor="middle" x="455.7415" y="-165.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">field2d</text>
 </g>
 <!-- type~fft2d -->
-<g id="type~~field2d~~InheritsGraph_node7" class="node">
+<g id="type~~field2d~~InheritsGraph_node2" class="node">
 <title>type~fft2d</title>
-<g id="a_type~~field2d~~InheritsGraph_node7"><a xlink:href=".././type/fft2d.html" xlink:title="fft2d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-184.7435 316.0491,-184.7435 316.0491,-162.7326 370.0491,-162.7326 370.0491,-184.7435"/>
-<text text-anchor="middle" x="343.0491" y="-170.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d</text>
+<g id="a_type~~field2d~~InheritsGraph_node2"><a xlink:href=".././type/fft2d.html" xlink:title="fft2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-199.9811 316.0491,-199.9811 316.0491,-177.9702 370.0491,-177.9702 370.0491,-199.9811"/>
+<text text-anchor="middle" x="343.0491" y="-185.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d</text>
 </a>
 </g>
 </g>
 <!-- type~field2d&#45;&gt;type~fft2d -->
 <g id="type~~field2d~~InheritsGraph_edge5" class="edge">
 <title>type~field2d&#45;&gt;type~fft2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.4618,-199.5076C413.9274,-195.1225 395.8399,-189.6654 380.0564,-184.9034"/>
-<polygon fill="#000000" stroke="#000000" points="380.6623,-181.4304 370.0775,-181.8927 378.6403,-188.132 380.6623,-181.4304"/>
-<text text-anchor="middle" x="399.3953" y="-195.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">ft</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.4618,-173.8171C413.9274,-176.3966 395.8399,-179.6066 380.0564,-182.4078"/>
+<polygon fill="#000000" stroke="#000000" points="379.312,-178.9851 370.0775,-184.1788 380.5353,-185.8774 379.312,-178.9851"/>
+<text text-anchor="middle" x="399.3953" y="-181.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">ft</text>
+</g>
+<!-- type~spect2d -->
+<g id="type~~field2d~~InheritsGraph_node3" class="node">
+<title>type~spect2d</title>
+<g id="a_type~~field2d~~InheritsGraph_node3"><a xlink:href=".././type/spect2d.html" xlink:title="spect2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="268.4385,-160.9811 214.4385,-160.9811 214.4385,-138.9702 268.4385,-138.9702 268.4385,-160.9811"/>
+<text text-anchor="middle" x="241.4385" y="-146.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~spect2d -->
+<g id="type~~field2d~~InheritsGraph_edge1" class="edge">
+<title>type~field2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.367,-165.6821C411.5559,-163.7239 389.5745,-161.2785 370.0491,-159.4756 339.2856,-156.6352 304.3198,-154.0967 278.6199,-152.3599"/>
+<polygon fill="#000000" stroke="#000000" points="278.7709,-148.8623 268.5602,-151.689 278.3051,-155.8468 278.7709,-148.8623"/>
+<text text-anchor="middle" x="343.0491" y="-161.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fpois2d -->
+<g id="type~~field2d~~InheritsGraph_node4" class="node">
+<title>type~fpois2d</title>
+<g id="a_type~~field2d~~InheritsGraph_node4"><a xlink:href=".././type/fpois2d.html" xlink:title="fpois2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-274.9811 316.0491,-274.9811 316.0491,-252.9702 370.0491,-252.9702 370.0491,-274.9811"/>
+<text text-anchor="middle" x="343.0491" y="-260.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~fpois2d -->
+<g id="type~~field2d~~InheritsGraph_edge6" class="edge">
+<title>type~field2d&#45;&gt;type~fpois2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M442.3716,-180.2465C423.0552,-196.5303 387.1484,-226.7998 364.2107,-246.1363"/>
+<polygon fill="#000000" stroke="#000000" points="361.7914,-243.5981 356.4015,-252.7195 366.3031,-248.9501 361.7914,-243.5981"/>
+<text text-anchor="middle" x="399.3953" y="-226.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pt</text>
+</g>
+<!-- type~parallel_pipe -->
+<g id="type~~field2d~~InheritsGraph_node5" class="node">
+<title>type~parallel_pipe</title>
+<g id="a_type~~field2d~~InheritsGraph_node5"><a xlink:href=".././type/parallel_pipe.html" xlink:title="parallel_pipe">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="166.6015,-235.9811 95.5098,-235.9811 95.5098,-213.9702 166.6015,-213.9702 166.6015,-235.9811"/>
+<text text-anchor="middle" x="131.0557" y="-221.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~field2d~~InheritsGraph_edge3" class="edge">
+<title>type~field2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M451.0234,-180.0624C440.3921,-203.5665 412.1598,-258.3415 370.0491,-283.9756 310.1545,-320.4354 280.0271,-334.7709 214.4385,-309.9756 201.2415,-304.9866 203.3179,-295.1521 190.6332,-288.9756"/>
+<text text-anchor="middle" x="292.2438" y="-322.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~ufield2d -->
+<g id="type~~field2d~~InheritsGraph_node6" class="node">
+<title>type~ufield2d</title>
+<g id="a_type~~field2d~~InheritsGraph_node6"><a xlink:href=".././type/ufield2d.html" xlink:title="ufield2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-113.9811 316.0491,-113.9811 316.0491,-91.9702 370.0491,-91.9702 370.0491,-113.9811"/>
+<text text-anchor="middle" x="343.0491" y="-99.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~ufield2d -->
+<g id="type~~field2d~~InheritsGraph_edge4" class="edge">
+<title>type~field2d&#45;&gt;type~ufield2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M446.409,-157.8281C437.951,-148.3442 424.7049,-134.9503 410.7415,-126.4756 401.3122,-120.7529 390.2945,-116.1753 379.9197,-112.6361"/>
+<polygon fill="#000000" stroke="#000000" points="380.8331,-109.2539 370.2426,-109.5575 378.7109,-115.9245 380.8331,-109.2539"/>
+<text text-anchor="middle" x="399.3953" y="-128.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">rs, ks</text>
+</g>
+<!-- type~perrors -->
+<g id="type~~field2d~~InheritsGraph_node7" class="node">
+<title>type~perrors</title>
+<g id="a_type~~field2d~~InheritsGraph_node7"><a xlink:href=".././type/perrors.html" xlink:title="perrors">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="158.0557,-184.9811 104.0557,-184.9811 104.0557,-162.9702 158.0557,-162.9702 158.0557,-184.9811"/>
+<text text-anchor="middle" x="131.0557" y="-170.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~perrors -->
+<g id="type~~field2d~~InheritsGraph_edge2" class="edge">
+<title>type~field2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-18.9756C166.7868,-33.2669 145.0558,-114.0013 135.7878,-152.9524"/>
+<polygon fill="#000000" stroke="#000000" points="132.3676,-152.2079 133.5128,-162.7407 139.1859,-153.7926 132.3676,-152.2079"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M447.6834,-157.7379C439.0888,-146.0556 424.8037,-127.4841 410.7415,-112.9756 364.849,-65.627 355.126,-49.4945 298.0491,-16.4756 265.6307,2.2783 250.7271,3.2873 214.4385,-5.9756 202.758,-8.9572 200.9734,-12.7787 190.6332,-18.9756"/>
+<text text-anchor="middle" x="292.2438" y="-18.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~spect2d -->
+<g id="type~~field2d~~InheritsGraph_edge7" class="edge">
+<title>type~fft2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8193,-178.5244C304.3157,-174.1091 290.74,-168.8985 278.3567,-164.1455"/>
+<polygon fill="#000000" stroke="#000000" points="279.3335,-160.7716 268.7434,-160.4558 276.8252,-167.3067 279.3335,-160.7716"/>
+<text text-anchor="middle" x="292.2438" y="-172.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~field2d~~InheritsGraph_edge9" class="edge">
+<title>type~fft2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8596,-199.3503C288.2998,-210.758 245.4183,-231.0345 214.4385,-257.4756 201.0909,-268.8678 206.901,-295.5557 190.6332,-288.9756"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-288.9756C170.2959,-279.6422 153.6262,-259.8379 143.1434,-244.7157"/>
+<polygon fill="#000000" stroke="#000000" points="145.8573,-242.4725 137.4383,-236.0404 140.0086,-246.3188 145.8573,-242.4725"/>
+<text text-anchor="middle" x="241.4385" y="-258.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~perrors -->
+<g id="type~~field2d~~InheritsGraph_edge8" class="edge">
+<title>type~fft2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.2377,-177.7923C324.5972,-173.5226 319.6825,-168.3744 316.0491,-162.9756 304.022,-145.1053 308.7159,-136.6898 298.0491,-117.9756 287.3594,-99.2216 283.662,-94.7801 268.4385,-79.4756 264.577,-75.5936 195.1464,-15.8753 190.6332,-18.9756"/>
+<text text-anchor="middle" x="241.4385" y="-81.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~spect2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~field2d~~InheritsGraph_edge11" class="edge">
+<title>type~spect2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M225.1511,-161.0422C206.8901,-173.4496 177.0682,-193.7123 155.8954,-208.0982"/>
+<polygon fill="#000000" stroke="#000000" points="153.7142,-205.3487 147.4099,-213.8637 157.6483,-211.1387 153.7142,-205.3487"/>
+<text text-anchor="middle" x="190.6332" y="-188.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~spect2d&#45;&gt;type~perrors -->
+<g id="type~~field2d~~InheritsGraph_edge10" class="edge">
+<title>type~spect2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-155.8467C200.5378,-158.8685 183.3799,-162.599 168.2488,-165.8889"/>
+<polygon fill="#000000" stroke="#000000" points="167.1902,-162.5372 158.1621,-168.082 168.6775,-169.3774 167.1902,-162.5372"/>
+<text text-anchor="middle" x="190.6332" y="-163.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~spect2d -->
+<g id="type~~field2d~~InheritsGraph_edge12" class="edge">
+<title>type~fpois2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M334.5143,-252.9116C321.0733,-235.6966 293.8783,-201.7011 268.4385,-174.9756 266.3325,-172.7633 264.0714,-170.5053 261.7866,-168.2958"/>
+<polygon fill="#000000" stroke="#000000" points="263.8075,-165.393 254.1178,-161.108 259.0205,-170.5003 263.8075,-165.393"/>
+<text text-anchor="middle" x="292.2438" y="-206.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~field2d~~InheritsGraph_edge14" class="edge">
+<title>type~fpois2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-288.9756C247.5207,-282.7071 231.6775,-307.8122 190.6332,-288.9756"/>
+<text text-anchor="middle" x="241.4385" y="-297.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~perrors -->
+<g id="type~~field2d~~InheritsGraph_edge13" class="edge">
+<title>type~fpois2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M330.455,-275.1145C320.6166,-282.5442 306.2983,-290.6656 292.2438,-288.9756"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-288.9756C255.2012,-284.5216 295.3617,-234.3044 268.4385,-208.4756 241.849,-182.9671 199.3223,-175.4998 168.6227,-173.6935"/>
+<polygon fill="#000000" stroke="#000000" points="168.4377,-170.183 158.3026,-173.2703 168.1508,-177.1771 168.4377,-170.183"/>
+<text text-anchor="middle" x="241.4385" y="-209.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
 </g>
 <!-- type~parallel -->
 <g id="type~~field2d~~InheritsGraph_node8" class="node">
 <title>type~parallel</title>
 <g id="a_type~~field2d~~InheritsGraph_node8"><a xlink:href=".././type/parallel.html" xlink:title="parallel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-126.7435 0,-126.7435 0,-104.7326 54,-104.7326 54,-126.7435"/>
-<text text-anchor="middle" x="27" y="-112.588" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-204.9811 0,-204.9811 0,-182.9702 54,-182.9702 54,-204.9811"/>
+<text text-anchor="middle" x="27" y="-190.8256" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel</text>
 </a>
 </g>
 </g>
 <!-- type~parallel_pipe&#45;&gt;type~parallel -->
-<g id="type~~field2d~~InheritsGraph_edge7" class="edge">
-<title>type~parallel_pipe&#45;&gt;type~parallel</title>
-<path fill="none" stroke="#000000" d="M95.2456,-133.4462C85.1928,-130.8377 74.2425,-127.9963 64.1155,-125.3686"/>
-<polygon fill="#000000" stroke="#000000" points="64.8852,-121.9525 54.3267,-122.8287 63.127,-128.7281 64.8852,-121.9525"/>
-</g>
-<!-- type~fpois2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_edge10" class="edge">
-<title>type~fpois2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-38.738C273.2584,-32.6774 283.2958,-63.4552 268.4385,-76.738 241.7651,-100.5846 204.9419,-117.653 176.132,-128.4507"/>
-<polygon fill="#000000" stroke="#000000" points="174.9029,-125.1734 166.6952,-131.8729 177.2894,-131.754 174.9029,-125.1734"/>
-<text text-anchor="middle" x="241.4385" y="-113.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~fpois2d&#45;&gt;type~perrors -->
-<g id="type~~field2d~~InheritsGraph_edge9" class="edge">
-<title>type~fpois2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-38.738C248.2043,-25.06 231.9695,2.7037 190.6332,-17.738"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M341.8246,-121.5586C338.6076,-98.7356 327.5588,-48.138 292.2438,-38.738"/>
-<text text-anchor="middle" x="241.4385" y="-30.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
-</g>
-<!-- type~fpois2d&#45;&gt;type~spect2d -->
-<g id="type~~field2d~~InheritsGraph_edge8" class="edge">
-<title>type~fpois2d&#45;&gt;type~spect2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8868,-134.6421C306.5212,-135.4931 295.9872,-136.6673 286.4385,-138.238 283.7842,-138.6747 281.0531,-139.1771 278.3111,-139.7205"/>
-<polygon fill="#000000" stroke="#000000" points="277.4997,-136.3148 268.4499,-141.824 278.96,-143.1607 277.4997,-136.3148"/>
-<text text-anchor="middle" x="292.2438" y="-140.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
-</g>
-<!-- type~perrors&#45;&gt;type~parallel -->
-<g id="type~~field2d~~InheritsGraph_edge11" class="edge">
-<title>type~perrors&#45;&gt;type~parallel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.9879,-100.9406C91.9191,-103.2603 77.5018,-106.0313 64.4241,-108.5449"/>
-<polygon fill="#000000" stroke="#000000" points="63.4533,-105.1674 54.2937,-110.4921 64.7746,-112.0416 63.4533,-105.1674"/>
-<text text-anchor="middle" x="74.6417" y="-109.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~spect2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_edge13" class="edge">
-<title>type~spect2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-147.2703C203.1546,-146.6571 189.7256,-145.9271 176.9761,-145.2341"/>
-<polygon fill="#000000" stroke="#000000" points="177.1263,-141.7372 166.951,-144.6892 176.7463,-148.7269 177.1263,-141.7372"/>
-<text text-anchor="middle" x="190.6332" y="-148.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~spect2d&#45;&gt;type~perrors -->
-<g id="type~~field2d~~InheritsGraph_edge12" class="edge">
-<title>type~spect2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M218.2986,-137.6275C202.4032,-129.9953 181.0796,-119.7569 163.4929,-111.3127"/>
-<polygon fill="#000000" stroke="#000000" points="164.6947,-108.0072 154.1651,-106.8339 161.6648,-114.3175 164.6947,-108.0072"/>
-<text text-anchor="middle" x="190.6332" y="-129.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
-</g>
-<!-- type~ufield2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_edge16" class="edge">
-<title>type~ufield2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-284.738C247.102,-286.5957 231.0736,-307.8825 190.6332,-287.738"/>
-<text text-anchor="middle" x="241.4385" y="-297.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~ufield2d&#45;&gt;type~perrors -->
 <g id="type~~field2d~~InheritsGraph_edge15" class="edge">
-<title>type~ufield2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-284.738C281.0115,-285.5944 221.404,-228.5912 214.4385,-219.738 196.0506,-196.3673 197.9126,-186.4419 184.8279,-159.738 176.7813,-143.3163 178.4473,-136.8592 166.8279,-122.738 164.0469,-119.3583 160.761,-116.1603 157.3263,-113.2273"/>
-<polygon fill="#000000" stroke="#000000" points="159.2491,-110.2885 149.2095,-106.9037 154.947,-115.8105 159.2491,-110.2885"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.9769,-270.8535C316.4735,-276.3252 304.1806,-282.2678 292.2438,-284.738"/>
-<text text-anchor="middle" x="241.4385" y="-270.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+<title>type~parallel_pipe&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" d="M95.2456,-214.3072C85.1928,-211.3123 74.2425,-208.05 64.1155,-205.033"/>
+<polygon fill="#000000" stroke="#000000" points="64.9097,-201.6177 54.3267,-202.1167 62.9111,-208.3263 64.9097,-201.6177"/>
 </g>
 <!-- type~ufield2d&#45;&gt;type~spect2d -->
-<g id="type~~field2d~~InheritsGraph_edge14" class="edge">
+<g id="type~~field2d~~InheritsGraph_edge16" class="edge">
 <title>type~ufield2d&#45;&gt;type~spect2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8436,-253.072C305.37,-249.2658 294.0978,-243.4544 286.4385,-234.738 267.7798,-213.5044 283.3428,-197.7562 268.4385,-173.738 267.0532,-171.5057 265.4163,-169.3455 263.6442,-167.2917"/>
-<polygon fill="#000000" stroke="#000000" points="265.9131,-164.609 256.387,-159.9715 260.9419,-169.5373 265.9131,-164.609"/>
-<text text-anchor="middle" x="292.2438" y="-245.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.7705,-113.7332C306.3955,-117.5795 295.8854,-122.0586 286.4385,-126.4756 281.3487,-128.8555 276.0032,-131.5074 270.8452,-134.1482"/>
+<polygon fill="#000000" stroke="#000000" points="269.111,-131.1051 261.8586,-138.8286 272.3446,-137.3135 269.111,-131.1051"/>
+<text text-anchor="middle" x="292.2438" y="-128.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
 </g>
-<!-- type~fft2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~field2d~~InheritsGraph_edge19" class="edge">
-<title>type~fft2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.7824,-178.332C282.4762,-184.4632 228.7865,-196.195 214.4385,-210.238 188.6872,-235.4418 223.531,-302.4382 190.6332,-287.738"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-287.738C167.3525,-276.1413 145.6248,-201.0337 136.1085,-163.7156"/>
-<polygon fill="#000000" stroke="#000000" points="139.4689,-162.7253 133.6576,-153.8665 132.676,-164.4158 139.4689,-162.7253"/>
-<text text-anchor="middle" x="241.4385" y="-211.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~fft2d&#45;&gt;type~perrors -->
+<!-- type~ufield2d&#45;&gt;type~parallel_pipe -->
 <g id="type~~field2d~~InheritsGraph_edge18" class="edge">
-<title>type~fft2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.3777,-162.5297C322.7134,-159.6073 319.0389,-156.2758 316.0491,-152.738 287.2192,-118.6249 301.5412,-94.2226 268.4385,-64.238 249.1685,-46.7832 236.0121,-56.2494 214.4385,-41.738 201.9724,-33.3527 204.3314,-11.5676 190.6332,-17.738"/>
-<text text-anchor="middle" x="241.4385" y="-66.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+<title>type~ufield2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-39.9756C268.5235,-35.1221 284.8975,-71.2186 268.4385,-88.9756 249.5505,-109.3532 235.6566,-102.5371 214.4385,-120.4756 198.7485,-133.7405 195.894,-138.6646 184.8279,-155.9756 174.7625,-171.7212 178.131,-179.0936 166.8279,-193.9756 163.2864,-198.6385 158.9452,-203.1072 154.5239,-207.1285"/>
+<polygon fill="#000000" stroke="#000000" points="151.9906,-204.6881 146.6342,-213.8292 156.522,-210.0235 151.9906,-204.6881"/>
+<text text-anchor="middle" x="241.4385" y="-122.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
 </g>
-<!-- type~fft2d&#45;&gt;type~spect2d -->
+<!-- type~ufield2d&#45;&gt;type~perrors -->
 <g id="type~~field2d~~InheritsGraph_edge17" class="edge">
-<title>type~fft2d&#45;&gt;type~spect2d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8193,-167.0385C304.4296,-164.2362 291.0086,-160.9341 278.7248,-157.9119"/>
-<polygon fill="#000000" stroke="#000000" points="279.29,-154.4466 268.7434,-155.4561 277.6176,-161.2439 279.29,-154.4466"/>
-<text text-anchor="middle" x="292.2438" y="-164.638" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+<title>type~ufield2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.1364,-91.882C332.5246,-75.3322 317.3515,-45.5225 292.2438,-39.9756"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-39.9756C279.4216,-37.1429 280.8206,-26.8478 268.4385,-22.4756 235.7984,-10.9504 220.0914,-.7982 190.6332,-18.9756"/>
+<text text-anchor="middle" x="241.4385" y="-24.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~perrors&#45;&gt;type~parallel -->
+<g id="type~~field2d~~InheritsGraph_edge19" class="edge">
+<title>type~perrors&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.9879,-179.1782C91.9191,-181.4979 77.5018,-184.2689 64.4241,-186.7825"/>
+<polygon fill="#000000" stroke="#000000" points="63.4533,-183.405 54.2937,-188.7297 64.7746,-190.2792 63.4533,-183.405"/>
+<text text-anchor="middle" x="74.6417" y="-186.8756" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
 </g>
 </g>
 </svg>
@@ -594,6 +610,139 @@
     </div>
     
     
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Inherited by</h3>
+      </div>
+      <div class="panel-body">
+     <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: type~~field2d~~InheritedByGraph Pages: 1 -->
+<svg id="typefield2dInheritedByGraph" width="641pt" height="66pt"
+ viewBox="0.00 0.00 641.00 65.98" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~field2d~~InheritedByGraph" class="graph" transform="scale(.8596 .8596) rotate(0) translate(4 72.75)">
+<title>type~~field2d~~InheritedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-72.75 741.6726,-72.75 741.6726,4 -4,4"/>
+<!-- type~field2d -->
+<g id="type~~field2d~~InheritedByGraph_node1" class="node">
+<title>type~field2d</title>
+<polygon fill="none" stroke="#000000" points="54,-45.2554 0,-45.2554 0,-23.2446 54,-23.2446 54,-45.2554"/>
+<text text-anchor="middle" x="27" y="-31.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">field2d</text>
+</g>
+<!-- type~species2d -->
+<g id="type~~field2d~~InheritedByGraph_node2" class="node">
+<title>type~species2d</title>
+<g id="a_type~~field2d~~InheritedByGraph_node2"><a xlink:href=".././type/species2d.html" xlink:title="species2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="338.0495,-22.2554 278.4866,-22.2554 278.4866,-.2446 338.0495,-.2446 338.0495,-22.2554"/>
+<text text-anchor="middle" x="308.2681" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d</text>
+</a>
+</g>
+</g>
+<!-- type~species2d&#45;&gt;type~field2d -->
+<g id="type~~field2d~~InheritedByGraph_edge2" class="edge">
+<title>type~species2d&#45;&gt;type~field2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M278.4337,-13.6896C226.766,-17.9146 120.7601,-26.583 64.308,-31.1992"/>
+<polygon fill="#000000" stroke="#000000" points="63.7199,-27.7355 54.0384,-32.039 64.2905,-34.7123 63.7199,-27.7355"/>
+<text text-anchor="middle" x="112.3982" y="-33.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">q, qn, cu, amu, dcu</text>
+</g>
+<!-- type~sim_fields -->
+<g id="type~~field2d~~InheritedByGraph_node3" class="node">
+<title>type~sim_fields</title>
+<g id="a_type~~field2d~~InheritedByGraph_node3"><a xlink:href=".././type/sim_fields.html" xlink:title="sim_fields">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="522.262,-68.2554 463.8984,-68.2554 463.8984,-46.2446 522.262,-46.2446 522.262,-68.2554"/>
+<text text-anchor="middle" x="493.0802" y="-54.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">sim_fields</text>
+</a>
+</g>
+</g>
+<!-- type~sim_fields&#45;&gt;type~field2d -->
+<g id="type~~field2d~~InheritedByGraph_edge1" class="edge">
+<title>type~sim_fields&#45;&gt;type~field2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M463.8353,-58.2269C395.1383,-60.1128 218.2296,-62.5897 72,-44.25 69.4986,-43.9363 66.9315,-43.5484 64.3527,-43.1093"/>
+<polygon fill="#000000" stroke="#000000" points="64.9432,-39.6588 54.4627,-41.2106 63.6234,-46.5333 64.9432,-39.6588"/>
+<text text-anchor="middle" x="308.2681" y="-61.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">qb, qe, psit, psi, div_vpot, reg, fxy, bxyz, cu, dcu, amu, epw, epwb</text>
+</g>
+<!-- type~simulation -->
+<g id="type~~field2d~~InheritedByGraph_node4" class="node">
+<title>type~simulation</title>
+<g id="a_type~~field2d~~InheritedByGraph_node4"><a xlink:href=".././type/simulation.html" xlink:title="simulation">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="737.8085,-48.2554 678.2662,-48.2554 678.2662,-26.2446 737.8085,-26.2446 737.8085,-48.2554"/>
+<text text-anchor="middle" x="708.0374" y="-34.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">simulation</text>
+</a>
+</g>
+</g>
+<!-- type~simulation&#45;&gt;type~sim_fields -->
+<g id="type~~field2d~~InheritedByGraph_edge4" class="edge">
+<title>type~simulation&#45;&gt;type~sim_fields</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M678.1485,-40.0309C640.1824,-43.5633 574.5582,-49.6691 532.5195,-53.5805"/>
+<polygon fill="#000000" stroke="#000000" points="532.0038,-50.1133 522.371,-54.5247 532.6523,-57.0832 532.0038,-50.1133"/>
+<text text-anchor="middle" x="644.2966" y="-47.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">fields</text>
+</g>
+<!-- type~sim_species -->
+<g id="type~~field2d~~InheritedByGraph_node5" class="node">
+<title>type~sim_species</title>
+<g id="a_type~~field2d~~InheritedByGraph_node5"><a xlink:href=".././type/sim_species.html" xlink:title="sim_species">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="610.0768,-28.2554 540.535,-28.2554 540.535,-6.2446 610.0768,-6.2446 610.0768,-28.2554"/>
+<text text-anchor="middle" x="575.3059" y="-14.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">sim_species</text>
+</a>
+</g>
+</g>
+<!-- type~simulation&#45;&gt;type~sim_species -->
+<g id="type~~field2d~~InheritedByGraph_edge5" class="edge">
+<title>type~simulation&#45;&gt;type~sim_species</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M678.1825,-29.3793C672.3177,-28.0213 666.1895,-26.7328 660.4021,-25.75 647.4661,-23.5531 633.3204,-21.8601 620.3417,-20.5848"/>
+<polygon fill="#000000" stroke="#000000" points="620.5084,-17.0854 610.2286,-19.65 619.864,-24.0557 620.5084,-17.0854"/>
+<text text-anchor="middle" x="644.2966" y="-28.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">species</text>
+</g>
+<!-- type~sim_species&#45;&gt;type~species2d -->
+<g id="type~~field2d~~InheritedByGraph_edge3" class="edge">
+<title>type~sim_species&#45;&gt;type~species2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M540.3954,-16.4656C490.9292,-15.3542 400.6643,-13.326 348.4651,-12.1532"/>
+<polygon fill="#000000" stroke="#000000" points="348.3205,-8.6491 338.2443,-11.9235 348.1632,-15.6474 348.3205,-8.6491"/>
+<text text-anchor="middle" x="493.0802" y="-18.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">spe</text>
+</g>
+</g>
+</svg>
+</div><script>var pantypefield2dInheritedByGraph = svgPanZoom('#typefield2dInheritedByGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="176pt" height="31pt"
+ viewBox="0.00 0.00 175.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 171.8539,-26.5 171.8539,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="167.7082,-22.2554 72.2918,-22.2554 72.2918,-.2446 167.7082,-.2446 167.7082,-22.2554"/>
+<text text-anchor="middle" x="120" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a derived type to the parent type which it
+    extends. Dashed arrows point from a derived type to the other
+    types it contains as a components, with a label listing the name(s) of
+    said component(s).
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
@@ -610,9 +759,9 @@
       
       <a class="list-group-item" href="../type/field2d.html#variable-sp%7E4">sp</a>
       
-      <a class="list-group-item" href="../type/field2d.html#variable-err%7E5">err</a>
+      <a class="list-group-item" href="../type/field2d.html#variable-err%7E10">err</a>
       
-      <a class="list-group-item" href="../type/field2d.html#variable-p%7E6">p</a>
+      <a class="list-group-item" href="../type/field2d.html#variable-p%7E13">p</a>
       
       <a class="list-group-item" href="../type/field2d.html#variable-rs">rs</a>
       
@@ -652,9 +801,9 @@
   <div id="boundprocs-1" class="panel-collapse collapse">
     <div class="list-group">
       
-      <a class="list-group-item" href="../type/field2d.html#boundprocedure-new%7E6">new</a>
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-new%7E10">new</a>
       
-      <a class="list-group-item" href="../type/field2d.html#boundprocedure-del%7E5">del</a>
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-del%7E9">del</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-fftrk">fftrk</a>
       
@@ -685,6 +834,8 @@
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-precv">precv</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-cp">cp</a>
+      
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-ca">ca</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-cb">cb</a>
       
@@ -747,6 +898,8 @@
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-multiply2">multiply2</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-writehdf5_field2d">writehdf5_field2d</a>
+      
+      <a class="list-group-item" href="../type/field2d.html#boundprocedure-copyadd">copyadd</a>
       
       <a class="list-group-item" href="../type/field2d.html#boundprocedure-copyto">copyto</a>
       
@@ -804,7 +957,7 @@
   
 <tr>
   
-  <td><span class="anchor" id="variable-err%7E5"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td><span class="anchor" id="variable-err%7E10"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
   
   <td>public,</td>
   <td>pointer</td><td>::</td>
@@ -818,7 +971,7 @@
   
 <tr>
   
-  <td><span class="anchor" id="variable-p%7E6"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td><span class="anchor" id="variable-p%7E13"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
   
   <td>public,</td>
   <td>pointer</td><td>::</td>
@@ -864,7 +1017,7 @@
   
   <td>private,</td>
   <td>pointer</td><td>::</td>
-  <td><strong>ft</strong></td><td></td><td></td><td></td>
+  <td><strong>ft</strong></td><td>=> </td><td>null()</td><td></td>
   
 </tr>
 
@@ -878,7 +1031,7 @@
   
   <td>private,</td>
   <td>pointer</td><td>::</td>
-  <td><strong>pt</strong></td><td></td><td></td><td></td>
+  <td><strong>pt</strong></td><td>=> </td><td>null()</td><td></td>
   
 </tr>
 
@@ -925,9 +1078,9 @@
     <section>
     <h2>Type-Bound Procedures</h2>
     
-	   
+     
 <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-new%7E6"></span><h3>generic, public :: <strong>new</strong>  => <a href='../type/field2d.html#boundprocedure-init_field2d'>init_field2d</a> 
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-new%7E10"></span><h3>generic, public :: <strong>new</strong>  => <a href='../type/field2d.html#boundprocedure-init_field2d'>init_field2d</a> 
     
   </h3></div>
   
@@ -942,7 +1095,7 @@
 private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp, perr, psp, dim, fftflag, state, gcells)
     
     
-	 
+   
 </h3>
     
     
@@ -1094,9 +1247,9 @@ private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-del%7E5"></span><h3>generic, public :: <strong>del</strong>  => <a href='../type/field2d.html#boundprocedure-end_field2d'>end_field2d</a> 
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-del%7E9"></span><h3>generic, public :: <strong>del</strong>  => <a href='../type/field2d.html#boundprocedure-end_field2d'>end_field2d</a> 
     
   </h3></div>
   
@@ -1111,7 +1264,7 @@ private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp
 private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -1158,7 +1311,7 @@ private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-fftrk"></span><h3>generic, public :: <strong>fftrk</strong>  => <a href='../type/field2d.html#boundprocedure-fftrk_field2d'>fftrk_field2d</a> 
     
@@ -1175,7 +1328,7 @@ private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
 private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, kind)
     
     
-	 
+   
 </h3>
     
     
@@ -1237,7 +1390,7 @@ private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-fftkr"></span><h3>generic, public :: <strong>fftkr</strong>  => <a href='../type/field2d.html#boundprocedure-fftkr_field2d'>fftkr_field2d</a> 
     
@@ -1254,7 +1407,7 @@ private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, 
 private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, kind)
     
     
-	 
+   
 </h3>
     
     
@@ -1316,7 +1469,7 @@ private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-div"></span><h3>generic, public :: <strong>div</strong>  => <a href='../type/field2d.html#boundprocedure-divf_field2d'>divf_field2d</a> 
     
@@ -1333,7 +1486,7 @@ private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, 
 private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1395,7 +1548,7 @@ private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-grad"></span><h3>generic, public :: <strong>grad</strong>  => <a href='../type/field2d.html#boundprocedure-gradf_field2d'>gradf_field2d</a> 
     
@@ -1412,7 +1565,7 @@ private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, th
 private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1474,7 +1627,7 @@ private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-curl"></span><h3>generic, public :: <strong>curl</strong>  => <a href='../type/field2d.html#boundprocedure-curlf_field2d'>curlf_field2d</a> 
     
@@ -1491,7 +1644,7 @@ private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, 
 private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1553,7 +1706,7 @@ private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-pot"></span><h3>generic, public :: <strong>pot</strong>  => <a href='../type/field2d.html#boundprocedure-potential_field2d'>potential_field2d</a> 
     
@@ -1570,7 +1723,7 @@ private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, 
 private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1632,7 +1785,7 @@ private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-smooth"></span><h3>generic, public :: <strong>smooth</strong>  => <a href='../type/field2d.html#boundprocedure-smoothf_field2d'>smoothf_field2d</a> 
     
@@ -1649,7 +1802,7 @@ private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a
 private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1711,7 +1864,7 @@ private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-elf"></span><h3>generic, public :: <strong>elf</strong>  => <a href='../type/field2d.html#boundprocedure-elfield_field2d'>elfield_field2d</a> 
     
@@ -1728,7 +1881,7 @@ private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(th
 private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1790,7 +1943,7 @@ private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-bf"></span><h3>generic, public :: <strong>bf</strong>  => <a href='../type/field2d.html#boundprocedure-bfield_field2d'>bfield_field2d</a> 
     
@@ -1807,7 +1960,7 @@ private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(th
 private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -1869,7 +2022,7 @@ private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-bfqp"></span><h3>generic, public :: <strong>bfqp</strong>  => <a href='../type/field2d.html#boundprocedure-bfield_qp_field2d'>bfield_qp_field2d</a> 
     
@@ -1886,7 +2039,7 @@ private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this
 private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a>(cu, dcu, amu, bxy, c, dex)
     
     
-	 
+   
 </h3>
     
     
@@ -2008,7 +2161,7 @@ private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-cg"></span><h3>generic, public :: <strong>cg</strong>  => <a href='../type/field2d.html#boundprocedure-copyguard_field2d'>copyguard_field2d</a> 
     
@@ -2025,7 +2178,7 @@ private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a
 private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -2072,7 +2225,7 @@ private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-ag"></span><h3>generic, public :: <strong>ag</strong>  => <a href='../type/field2d.html#boundprocedure-acopyguard_field2d'>acopyguard_field2d</a> 
     
@@ -2089,7 +2242,7 @@ private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a
 private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -2136,7 +2289,7 @@ private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d<
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-psend"></span><h3>generic, public :: <strong>psend</strong>  => <a href='../type/field2d.html#boundprocedure-pipesend_field2d'>pipesend_field2d</a> 
     
@@ -2153,7 +2306,7 @@ private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d<
 private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(this, stag, id)
     
     
-	 
+   
 </h3>
     
     
@@ -2230,7 +2383,7 @@ private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-precv"></span><h3>generic, public :: <strong>precv</strong>  => <a href='../type/field2d.html#boundprocedure-piperecv_field2d'>piperecv_field2d</a> 
     
@@ -2247,7 +2400,7 @@ private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(
 private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(this, rtag)
     
     
-	 
+   
 </h3>
     
     
@@ -2309,7 +2462,7 @@ private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-cp"></span><h3>generic, public :: <strong>cp</strong>  => <a href='../type/field2d.html#boundprocedure-copyfrom'>copyfrom</a> 
     
@@ -2326,7 +2479,7 @@ private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(
 private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos, sdim, ddim)
     
     
-	 
+   
 </h3>
     
     
@@ -2433,7 +2586,131 @@ private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos
 </div>
 
     
-	   
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-ca"></span><h3>generic, public :: <strong>ca</strong>  => <a href='../type/field2d.html#boundprocedure-copyadd'>copyadd</a> 
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/copyadd.html'>copyadd</a>(this, that, lpos, sdim, ddim)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field2d.html'>field2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>that</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>lpos</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>dimension(:)</td><td>::</td>
+  <td><strong>sdim</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>dimension(:)</td><td>::</td>
+  <td><strong>ddim</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-cb"></span><h3>generic, public :: <strong>cb</strong>  => <a href='../type/field2d.html#boundprocedure-copyto'>copyto</a> 
     
@@ -2450,7 +2727,7 @@ private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos
 private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sdim, ddim)
     
     
-	 
+   
 </h3>
     
     
@@ -2557,7 +2834,7 @@ private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sd
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-as"></span><h3>generic, public :: <strong>as</strong>  => <a href='../type/field2d.html#boundprocedure-asc'>asc</a>, <a href='../type/field2d.html#boundprocedure-asa'>asa</a> 
     
@@ -2574,7 +2851,7 @@ private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sd
 private subroutine <a href='../proc/asc.html'>asc</a>(this, value)
     
     
-	 
+   
 </h3>
     
     
@@ -2641,7 +2918,7 @@ private subroutine <a href='../proc/asc.html'>asc</a>(this, value)
 private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -2703,7 +2980,7 @@ private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-add"></span><h3>generic, public :: <strong>add</strong>  => <a href='../type/field2d.html#boundprocedure-sum1'>sum1</a>, <a href='../type/field2d.html#boundprocedure-sum2'>sum2</a> 
     
@@ -2720,7 +2997,7 @@ private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
 private subroutine <a href='../proc/sum1.html'>sum1</a>(this, a1, a2)
     
     
-	 
+   
 </h3>
     
     
@@ -2802,7 +3079,7 @@ private subroutine <a href='../proc/sum1.html'>sum1</a>(this, a1, a2)
 private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1, dim2)
     
     
-	 
+   
 </h3>
     
     
@@ -2924,7 +3201,7 @@ private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1,
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-sub"></span><h3>generic, public :: <strong>sub</strong>  => <a href='../type/field2d.html#boundprocedure-minus1'>minus1</a>, <a href='../type/field2d.html#boundprocedure-minus2'>minus2</a> 
     
@@ -2941,7 +3218,7 @@ private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1,
 private subroutine <a href='../proc/minus1.html'>minus1</a>(this, a1, a2)
     
     
-	 
+   
 </h3>
     
     
@@ -3023,7 +3300,7 @@ private subroutine <a href='../proc/minus1.html'>minus1</a>(this, a1, a2)
 private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, dim1, dim2)
     
     
-	 
+   
 </h3>
     
     
@@ -3145,7 +3422,7 @@ private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, d
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-mult"></span><h3>generic, public :: <strong>mult</strong>  => <a href='../type/field2d.html#boundprocedure-multiply1'>multiply1</a>, <a href='../type/field2d.html#boundprocedure-multiply2'>multiply2</a> 
     
@@ -3162,7 +3439,7 @@ private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, d
 private subroutine <a href='../proc/multiply1.html'>multiply1</a>(this, a1, value)
     
     
-	 
+   
 </h3>
     
     
@@ -3244,7 +3521,7 @@ private subroutine <a href='../proc/multiply1.html'>multiply1</a>(this, a1, valu
 private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim, dim1, value)
     
     
-	 
+   
 </h3>
     
     
@@ -3351,7 +3628,7 @@ private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim,
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-wr%7E2"></span><h3>generic, public :: <strong>wr</strong>  => <a href='../type/field2d.html#boundprocedure-writehdf5_field2d'>writehdf5_field2d</a> 
     
@@ -3368,7 +3645,7 @@ private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim,
 private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a>(this, file, dim)
     
     
-	 
+   
 </h3>
     
     
@@ -3445,7 +3722,7 @@ private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-end_field2d"></span><h3>procedure, private :: <strong>end_field2d</strong>  
     
@@ -3462,7 +3739,7 @@ private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a
 private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -3509,7 +3786,7 @@ private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-init_field2d"></span><h3>procedure, private :: <strong>init_field2d</strong>  
     
@@ -3526,7 +3803,7 @@ private subroutine <a href='../proc/end_field2d.html'>end_field2d</a>(this)
 private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp, perr, psp, dim, fftflag, state, gcells)
     
     
-	 
+   
 </h3>
     
     
@@ -3678,7 +3955,7 @@ private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-divf_field2d"></span><h3>procedure, private :: <strong>divf_field2d</strong>  
     
@@ -3695,7 +3972,7 @@ private subroutine <a href='../proc/init_field2d.html'>init_field2d</a>(this, pp
 private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -3757,7 +4034,7 @@ private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-fftkr_field2d"></span><h3>procedure, private :: <strong>fftkr_field2d</strong>  
     
@@ -3774,7 +4051,7 @@ private subroutine <a href='../proc/divf_field2d.html'>divf_field2d</a>(this, th
 private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, kind)
     
     
-	 
+   
 </h3>
     
     
@@ -3836,7 +4113,7 @@ private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-fftrk_field2d"></span><h3>procedure, private :: <strong>fftrk_field2d</strong>  
     
@@ -3853,7 +4130,7 @@ private subroutine <a href='../proc/fftkr_field2d.html'>fftkr_field2d</a>(this, 
 private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, kind)
     
     
-	 
+   
 </h3>
     
     
@@ -3915,7 +4192,7 @@ private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-potential_field2d"></span><h3>procedure, private :: <strong>potential_field2d</strong>  
     
@@ -3932,7 +4209,7 @@ private subroutine <a href='../proc/fftrk_field2d.html'>fftrk_field2d</a>(this, 
 private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -3994,7 +4271,7 @@ private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-curlf_field2d"></span><h3>procedure, private :: <strong>curlf_field2d</strong>  
     
@@ -4011,7 +4288,7 @@ private subroutine <a href='../proc/potential_field2d.html'>potential_field2d</a
 private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -4073,7 +4350,7 @@ private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-gradf_field2d"></span><h3>procedure, private :: <strong>gradf_field2d</strong>  
     
@@ -4090,7 +4367,7 @@ private subroutine <a href='../proc/curlf_field2d.html'>curlf_field2d</a>(this, 
 private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -4152,7 +4429,7 @@ private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-bfield_field2d"></span><h3>procedure, private :: <strong>bfield_field2d</strong>  
     
@@ -4169,7 +4446,7 @@ private subroutine <a href='../proc/gradf_field2d.html'>gradf_field2d</a>(this, 
 private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -4231,7 +4508,7 @@ private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-elfield_field2d"></span><h3>procedure, private :: <strong>elfield_field2d</strong>  
     
@@ -4248,7 +4525,7 @@ private subroutine <a href='../proc/bfield_field2d.html'>bfield_field2d</a>(this
 private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -4310,7 +4587,7 @@ private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-smoothf_field2d"></span><h3>procedure, private :: <strong>smoothf_field2d</strong>  
     
@@ -4327,7 +4604,7 @@ private subroutine <a href='../proc/elfield_field2d.html'>elfield_field2d</a>(th
 private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -4389,7 +4666,7 @@ private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-copyguard_field2d"></span><h3>procedure, private :: <strong>copyguard_field2d</strong>  
     
@@ -4406,7 +4683,7 @@ private subroutine <a href='../proc/smoothf_field2d.html'>smoothf_field2d</a>(th
 private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -4453,7 +4730,7 @@ private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-bfield_qp_field2d"></span><h3>procedure, private :: <strong>bfield_qp_field2d</strong>  
     
@@ -4470,7 +4747,7 @@ private subroutine <a href='../proc/copyguard_field2d.html'>copyguard_field2d</a
 private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a>(cu, dcu, amu, bxy, c, dex)
     
     
-	 
+   
 </h3>
     
     
@@ -4592,7 +4869,7 @@ private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-pipesend_field2d"></span><h3>procedure, private :: <strong>pipesend_field2d</strong>  
     
@@ -4609,7 +4886,7 @@ private subroutine <a href='../proc/bfield_qp_field2d.html'>bfield_qp_field2d</a
 private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(this, stag, id)
     
     
-	 
+   
 </h3>
     
     
@@ -4686,7 +4963,7 @@ private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-acopyguard_field2d"></span><h3>procedure, private :: <strong>acopyguard_field2d</strong>  
     
@@ -4703,7 +4980,7 @@ private subroutine <a href='../proc/pipesend_field2d.html'>pipesend_field2d</a>(
 private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -4750,7 +5027,7 @@ private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d<
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-multiply1"></span><h3>procedure, private :: <strong>multiply1</strong>  
     
@@ -4767,7 +5044,7 @@ private subroutine <a href='../proc/acopyguard_field2d.html'>acopyguard_field2d<
 private subroutine <a href='../proc/multiply1.html'>multiply1</a>(this, a1, value)
     
     
-	 
+   
 </h3>
     
     
@@ -4844,7 +5121,7 @@ private subroutine <a href='../proc/multiply1.html'>multiply1</a>(this, a1, valu
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-minus1"></span><h3>procedure, private :: <strong>minus1</strong>  
     
@@ -4861,7 +5138,7 @@ private subroutine <a href='../proc/multiply1.html'>multiply1</a>(this, a1, valu
 private subroutine <a href='../proc/minus1.html'>minus1</a>(this, a1, a2)
     
     
-	 
+   
 </h3>
     
     
@@ -4938,7 +5215,7 @@ private subroutine <a href='../proc/minus1.html'>minus1</a>(this, a1, a2)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-sum1"></span><h3>procedure, private :: <strong>sum1</strong>  
     
@@ -4955,7 +5232,7 @@ private subroutine <a href='../proc/minus1.html'>minus1</a>(this, a1, a2)
 private subroutine <a href='../proc/sum1.html'>sum1</a>(this, a1, a2)
     
     
-	 
+   
 </h3>
     
     
@@ -5032,7 +5309,7 @@ private subroutine <a href='../proc/sum1.html'>sum1</a>(this, a1, a2)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-asa"></span><h3>procedure, private :: <strong>asa</strong>  
     
@@ -5049,7 +5326,7 @@ private subroutine <a href='../proc/sum1.html'>sum1</a>(this, a1, a2)
 private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
     
     
-	 
+   
 </h3>
     
     
@@ -5111,7 +5388,7 @@ private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-asc"></span><h3>procedure, private :: <strong>asc</strong>  
     
@@ -5128,7 +5405,7 @@ private subroutine <a href='../proc/asa.html'>asa</a>(this, that)
 private subroutine <a href='../proc/asc.html'>asc</a>(this, value)
     
     
-	 
+   
 </h3>
     
     
@@ -5190,7 +5467,7 @@ private subroutine <a href='../proc/asc.html'>asc</a>(this, value)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-piperecv_field2d"></span><h3>procedure, private :: <strong>piperecv_field2d</strong>  
     
@@ -5207,7 +5484,7 @@ private subroutine <a href='../proc/asc.html'>asc</a>(this, value)
 private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(this, rtag)
     
     
-	 
+   
 </h3>
     
     
@@ -5269,7 +5546,7 @@ private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-minus2"></span><h3>procedure, private :: <strong>minus2</strong>  
     
@@ -5286,7 +5563,7 @@ private subroutine <a href='../proc/piperecv_field2d.html'>piperecv_field2d</a>(
 private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, dim1, dim2)
     
     
-	 
+   
 </h3>
     
     
@@ -5408,7 +5685,7 @@ private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, d
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-sum2"></span><h3>procedure, private :: <strong>sum2</strong>  
     
@@ -5425,7 +5702,7 @@ private subroutine <a href='../proc/minus2.html'>minus2</a>(this, a1, a2, dim, d
 private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1, dim2)
     
     
-	 
+   
 </h3>
     
     
@@ -5547,7 +5824,7 @@ private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1,
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-multiply2"></span><h3>procedure, private :: <strong>multiply2</strong>  
     
@@ -5564,7 +5841,7 @@ private subroutine <a href='../proc/sum2.html'>sum2</a>(this, a1, a2, dim, dim1,
 private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim, dim1, value)
     
     
-	 
+   
 </h3>
     
     
@@ -5671,7 +5948,7 @@ private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim,
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-writehdf5_field2d"></span><h3>procedure, private :: <strong>writehdf5_field2d</strong>  
     
@@ -5688,7 +5965,7 @@ private subroutine <a href='../proc/multiply2.html'>multiply2</a>(this, a1, dim,
 private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a>(this, file, dim)
     
     
-	 
+   
 </h3>
     
     
@@ -5765,7 +6042,131 @@ private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a
 </div>
 
     
-	   
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-copyadd"></span><h3>procedure, private :: <strong>copyadd</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/copyadd.html'>copyadd</a>(this, that, lpos, sdim, ddim)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field2d.html'>field2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>that</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>lpos</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>dimension(:)</td><td>::</td>
+  <td><strong>sdim</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in),</td>
+  <td></td>
+  
+  <td>dimension(:)</td><td>::</td>
+  <td><strong>ddim</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-copyto"></span><h3>procedure, private :: <strong>copyto</strong>  
     
@@ -5782,7 +6183,7 @@ private subroutine <a href='../proc/writehdf5_field2d.html'>writehdf5_field2d</a
 private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sdim, ddim)
     
     
-	 
+   
 </h3>
     
     
@@ -5889,7 +6290,7 @@ private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sd
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-copyfrom"></span><h3>procedure, private :: <strong>copyfrom</strong>  
     
@@ -5906,7 +6307,7 @@ private subroutine <a href='../proc/copyto.html'>copyto</a>(this, that, lpos, sd
 private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos, sdim, ddim)
     
     
-	 
+   
 </h3>
     
     
@@ -6013,7 +6414,7 @@ private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-getks"></span><h3>procedure, public :: <strong>getks</strong>  
     
@@ -6030,7 +6431,7 @@ private subroutine <a href='../proc/copyfrom.html'>copyfrom</a>(this, that, lpos
 private function <a href='../proc/getks.html'>getks</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -6086,7 +6487,7 @@ private function <a href='../proc/getks.html'>getks</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-getrs"></span><h3>procedure, public :: <strong>getrs</strong>  
     
@@ -6103,7 +6504,7 @@ private function <a href='../proc/getks.html'>getks</a>(this)
 private function <a href='../proc/getrs.html'>getrs</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -6159,7 +6560,7 @@ private function <a href='../proc/getrs.html'>getrs</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-getgcells"></span><h3>procedure, public :: <strong>getgcells</strong>  
     
@@ -6176,7 +6577,7 @@ private function <a href='../proc/getrs.html'>getrs</a>(this)
 private function <a href='../proc/getgcells.html'>getgcells</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -6232,7 +6633,7 @@ private function <a href='../proc/getgcells.html'>getgcells</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-getstate"></span><h3>procedure, public :: <strong>getstate</strong>  
     
@@ -6249,7 +6650,7 @@ private function <a href='../proc/getgcells.html'>getgcells</a>(this)
 private function <a href='../proc/getstate.html'>getstate</a>(this)
     
     
-	 
+   
 </h3>
     
     

@@ -1,6 +1,6 @@
 !-----------------------------------------------------------------------
-      subroutine PPDBLKP2L(part,kpic,npp,noff,nppmx,idimp,npmax,mx,my,  &
-     &mx1,mxyp1,irc)
+      subroutine PPDBLKP2L(part,kpic,npp,noff,nppmx,idimp,npmax,mx,my,  
+     1mx1,mxyp1,irc)
 ! this subroutine finds the maximum number of particles in each tile of
 ! mx, my to calculate size of segmented particle array ppart
 ! linear interpolation, spatial decomposition in y direction
@@ -63,8 +63,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPPMOVIN2L(part,ppart,kpic,npp,noff,nppmx,idimp,npmax, &
-     &mx,my,mx1,mxyp1,irc)
+      subroutine PPPMOVIN2L(part,ppart,kpic,npp,noff,nppmx,idimp,npmax, 
+     1mx,my,mx1,mxyp1,irc)
 ! this subroutine sorts particles by x,y grid in tiles of
 ! mx, my and copies to segmented array ppart
 ! linear interpolation, spatial decomposition in y direction
@@ -117,8 +117,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPPCHECK2L(ppart,kpic,noff,nyp,idimp,nppmx,nx,mx,my,mx1&
-     &,myp1,irc)
+      subroutine PPPCHECK2L(ppart,kpic,noff,nyp,idimp,nppmx,nx,mx,my,mx1
+     1,myp1,irc)
 ! this subroutine performs a sanity check to make sure particles sorted
 ! by x,y grid in tiles of mx, my, are all within bounds.
 ! tiles are assumed to be arranged in 2D linear memory
@@ -178,8 +178,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGPPOST2L(ppart,q,kpic,noff,qm,idimp,nppmx,mx,my,nxv, &
-     &nypmx,mx1,mxyp1)
+      subroutine PPGPPOST2L(ppart,q,kpic,noff,idimp,nppmx,mx,my,nxv,nypm
+     1x,mx1,mxyp1)
 ! for 2d code, this subroutine calculates particle charge density
 ! using first-order linear interpolation, periodic boundaries
 ! OpenMP version using guard cells, for distributed data
@@ -209,7 +209,6 @@
 ! mxyp1 = mx1*myp1, where myp1=(partition length in y direction-1)/my+1
       implicit none
       integer noff, idimp, nppmx, mx, my, nxv, nypmx, mx1, mxyp1
-      real qm
       real ppart, q
       integer kpic
       dimension ppart(idimp,nppmx,mxyp1), q(nxv,nypmx), kpic(mxyp1)
@@ -219,7 +218,7 @@
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
       real x, y, dxp, dyp, amx, amy
-      real sq
+      real sq, qm
 !     dimension sq(MXV,MYV)
       dimension sq(mx+1,my+1)
 ! error if local array is too small
@@ -227,7 +226,7 @@
 ! loop over tiles
 !$OMP PARALLEL DO
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,mnoff,nn,mm,x,y,dxp,dyp,amx,amy,
-!$OMP& sq)
+!$OMP& sq,qm)
       do 80 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
@@ -245,6 +244,7 @@
 ! find interpolation weights
       x = ppart(1,j,k)
       y = ppart(2,j,k)
+      qm = ppart(8,j,k)
       nn = x
       mm = y
       dxp = qm*(x - real(nn))
@@ -295,8 +295,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGRDCJPPOST2L_QP(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,no&
-     &ff,nyp,qm,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+      subroutine PPGRDCJPPOST2L_QP(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,no
+     1ff,nyp,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
 ! for 2-1/2d code, this subroutine calculates particle momentum flux,
 ! acceleration density and current density using first-order spline
 ! interpolation for relativistic particles.
@@ -410,7 +410,7 @@
       implicit none
       integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
       integer mx1, mxyp1
-      real qm, qbm, dt, ci,dex
+      real qbm, dt, ci,dex
       real ppart, fxy, bxy, cu, dcu, amu, psit
       integer kpic
       dimension ppart(idimp,nppmx,mxyp1)
@@ -423,7 +423,7 @@
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
       real qtmh, dti, ci2, gami, qtmg, gh, dxp, dyp, amx, amy
-      real dx, dy, dz, ox, oy, oz
+      real dx, dy, dz, ox, oy, oz, qm
       real acx, acy, acz, omxt, omyt, omzt, omt, anorm
       real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
       real x, y, vx, vy, vz, p2, v1, v2, v3, v4
@@ -449,7 +449,7 @@
 !$OMP& dxp,dyp,amx,amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omzt, 
 !$OMP& omt,anorm,rot1,rot2,spsit,  
 !$OMP& sfxy,sbxy,scu,sdcu,samu,qm1,qtmh1,qtmh2,inv_part_7,ddx,
-!$OMP& ddy,p6,p7)
+!$OMP& ddy,p6,p7,qm)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
@@ -497,6 +497,7 @@
       y = ppart(2,j,k)
       p6 = ppart(6,j,k)
       p7 = ppart(7,j,k)
+      qm = ppart(8,j,k)
       nn = x
       mm = y
       dxp = x - real(nn)

@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	 
-	 <meta name="description" content="">
+   
+   <meta name="description" content="">
     
     <meta name="author" content="Weiming An" >
     <link rel="icon" href="../favicon.png">
@@ -48,33 +48,39 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-				
+        
             <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
               <a href="#" class="dropdown-toggle"
               data-toggle="dropdown" role="button"
               aria-haspopup="true"
-		 aria-expanded="false">Contents <span class="caret"></span></a>
-	      <ul class="dropdown-menu">
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
               
             <li><a href="../lists/files.html">Source Files</a></li>
-				
-				
+        
+        
+        
             <li><a href="../lists/modules.html">Modules</a></li>
-				
+        
             
                                 
             <li><a href="../lists/procedures.html">Procedures</a></li>
-				
-								
+        
+        
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+               
             <li><a href="../lists/types.html">Derived Types</a></li>
-				
-				
+        
+        
             <li><a href="../program/quickpic.html">Program</a></li>
-	    
+      
             </ul>
             </li>
 
+
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
 
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
@@ -83,6 +89,8 @@
 
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
 
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
                              
 <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
 
@@ -125,19 +133,23 @@
     
      <li><i class="fa fa-list-ol"></i>
        <a data-toggle="tooltip"
-	  data-placement="bottom" data-html="true"
-	  title="<p> 4.5% of total for derived types.</p>Including implementation: 228 statements,  2.7% of total for derived types.">22 statements</a>
+    data-placement="bottom" data-html="true"
+    title="<p> 4.7% of total for derived types.</p>Including implementation: 297 statements,  3.1% of total for derived types.">27 statements</a>
      </li> 
+     
      
      
     <li><i class="fa fa-code"></i><a href="../src/beam3d_class.f03"> Source File</a></li>
      
+     
   </ul>
   <ol class="breadcrumb in-well text-right">
   
+    
      <li><a href='../sourcefile/beam3d_class.f03.html'>beam3d_class.f03</a></li>
-  
+    
      <li><a href='../module/beam3d_class.html'>beam3d_class</a></li>
+    
   
      <li class="active">beam3d</li>
   </ol>
@@ -169,11 +181,15 @@
       
       <a class="list-group-item" href="../type/beam3d.html#variable-sp%7E9">sp</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#variable-err%7E10">err</a>
+      <a class="list-group-item" href="../type/beam3d.html#variable-err%7E15">err</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#variable-p%7E11">p</a>
+      <a class="list-group-item" href="../type/beam3d.html#variable-p%7E18">p</a>
       
       <a class="list-group-item" href="../type/beam3d.html#variable-pd">pd</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#variable-q">q</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#variable-pf%7E3">pf</a>
       
     </div>
   </div>
@@ -201,9 +217,9 @@
   <div id="boundprocs-0" class="panel-collapse collapse">
     <div class="list-group">
       
-      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-new%7E14">new</a>
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-new%7E20">new</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-del%7E12">del</a>
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-del%7E18">del</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-push%7E3">push</a>
       
@@ -212,6 +228,8 @@
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-qdp%7E3">qdp</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wr%7E5">wr</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wrq">wrq</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wrst%7E2">wrst</a>
       
@@ -233,6 +251,12 @@
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writerst_beam3d">writerst_beam3d</a>
       
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writeqslice_beam3d">writeqslice_beam3d</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writeq_beam3d">writeq_beam3d</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-qdpcopy_beam3d">qdpcopy_beam3d</a>
+      
     </div>
   </div>
 </div>
@@ -252,7 +276,7 @@
     
     <div class="panel panel-default">
       <div class="panel-heading">
-	<h3 class="panel-title">Inherits</h3>
+  <h3 class="panel-title">Inherits</h3>
       </div>
       <div class="panel-body">
     <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -261,154 +285,361 @@
 <!-- Generated by graphviz version 2.40.1 (20161225.0304)
  -->
 <!-- Title: type~~beam3d~~InheritsGraph Pages: 1 -->
-<svg id="typebeam3dInheritsGraph" width="579pt" height="163pt"
- viewBox="0.00 0.00 578.65 162.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~beam3d~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 158.5)">
+<svg id="typebeam3dInheritsGraph" width="641pt" height="364pt"
+ viewBox="0.00 0.00 641.00 363.88" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~beam3d~~InheritsGraph" class="graph" transform="scale(.9497 .9497) rotate(0) translate(4 379.1666)">
 <title>type~~beam3d~~InheritsGraph</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-158.5 574.6494,-158.5 574.6494,4 -4,4"/>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-379.1666 670.9766,-379.1666 670.9766,4 -4,4"/>
 <!-- type~beam3d -->
 <g id="type~~beam3d~~InheritsGraph_node1" class="node">
 <title>type~beam3d</title>
-<polygon fill="none" stroke="#000000" points="570.6494,-105.0054 516.6494,-105.0054 516.6494,-82.9946 570.6494,-82.9946 570.6494,-105.0054"/>
-<text text-anchor="middle" x="543.6494" y="-90.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">beam3d</text>
+<polygon fill="none" stroke="#000000" points="666.9766,-194.672 612.9766,-194.672 612.9766,-172.6612 666.9766,-172.6612 666.9766,-194.672"/>
+<text text-anchor="middle" x="639.9766" y="-180.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">beam3d</text>
 </g>
-<!-- type~parallel_pipe -->
+<!-- type~field3d -->
 <g id="type~~beam3d~~InheritsGraph_node2" class="node">
-<title>type~parallel_pipe</title>
-<g id="a_type~~beam3d~~InheritsGraph_node2"><a xlink:href=".././type/parallel_pipe.html" xlink:title="parallel_pipe">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="166.6015,-85.0054 95.5098,-85.0054 95.5098,-62.9946 166.6015,-62.9946 166.6015,-85.0054"/>
-<text text-anchor="middle" x="131.0557" y="-70.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe</text>
+<title>type~field3d</title>
+<g id="a_type~~beam3d~~InheritsGraph_node2"><a xlink:href=".././type/field3d.html" xlink:title="field3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="571.6931,-194.672 517.6931,-194.672 517.6931,-172.6612 571.6931,-172.6612 571.6931,-194.672"/>
+<text text-anchor="middle" x="544.6931" y="-180.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field3d</text>
 </a>
 </g>
 </g>
-<!-- type~beam3d&#45;&gt;type~parallel_pipe -->
-<g id="type~~beam3d~~InheritsGraph_edge3" class="edge">
-<title>type~beam3d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M516.443,-102.8688C463.8466,-119.136 344.3243,-151.8375 241.4385,-149"/>
-<text text-anchor="middle" x="343.0491" y="-146.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~part3d -->
-<g id="type~~beam3d~~InheritsGraph_node3" class="node">
-<title>type~part3d</title>
-<g id="a_type~~beam3d~~InheritsGraph_node3"><a xlink:href=".././type/part3d.html" xlink:title="part3d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="470.0825,-105.0054 416.0825,-105.0054 416.0825,-82.9946 470.0825,-82.9946 470.0825,-105.0054"/>
-<text text-anchor="middle" x="443.0825" y="-90.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part3d</text>
-</a>
-</g>
-</g>
-<!-- type~beam3d&#45;&gt;type~part3d -->
-<g id="type~~beam3d~~InheritsGraph_edge4" class="edge">
-<title>type~beam3d&#45;&gt;type~part3d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M516.4346,-94C505.3667,-94 492.3951,-94 480.4632,-94"/>
-<polygon fill="#000000" stroke="#000000" points="480.3192,-90.5001 470.3191,-94 480.3191,-97.5001 480.3192,-90.5001"/>
-<text text-anchor="middle" x="493.366" y="-95.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pd</text>
-</g>
-<!-- type~perrors -->
-<g id="type~~beam3d~~InheritsGraph_node4" class="node">
-<title>type~perrors</title>
-<g id="a_type~~beam3d~~InheritsGraph_node4"><a xlink:href=".././type/perrors.html" xlink:title="perrors">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="158.0557,-44.0054 104.0557,-44.0054 104.0557,-21.9946 158.0557,-21.9946 158.0557,-44.0054"/>
-<text text-anchor="middle" x="131.0557" y="-29.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors</text>
-</a>
-</g>
-</g>
-<!-- type~beam3d&#45;&gt;type~perrors -->
-<g id="type~~beam3d~~InheritsGraph_edge2" class="edge">
-<title>type~beam3d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M533.5441,-82.8887C523.8455,-72.5953 508.4795,-57.2269 493.366,-46"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M493.366,-46C482.6441,-38.0353 481.734,-33.5298 470.0825,-27 438.4406,-9.267 429.338,0 393.0658,0 393.0658,0 393.0658,0 241.4385,0 214.3799,0 185.0945,-9.2153 163.492,-17.9064"/>
-<polygon fill="#000000" stroke="#000000" points="162.0107,-14.7322 154.1428,-21.8277 164.7182,-21.1874 162.0107,-14.7322"/>
-<text text-anchor="middle" x="343.0491" y="-1.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+<!-- type~beam3d&#45;&gt;type~field3d -->
+<g id="type~~beam3d~~InheritsGraph_edge5" class="edge">
+<title>type~beam3d&#45;&gt;type~field3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M612.927,-183.6666C603.2711,-183.6666 592.2177,-183.6666 581.8594,-183.6666"/>
+<polygon fill="#000000" stroke="#000000" points="581.8103,-180.1667 571.8103,-183.6666 581.8103,-187.1667 581.8103,-180.1667"/>
+<text text-anchor="middle" x="592.3348" y="-185.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">q</text>
 </g>
 <!-- type~spect3d -->
-<g id="type~~beam3d~~InheritsGraph_node5" class="node">
+<g id="type~~beam3d~~InheritsGraph_node3" class="node">
 <title>type~spect3d</title>
-<g id="a_type~~beam3d~~InheritsGraph_node5"><a xlink:href=".././type/spect3d.html" xlink:title="spect3d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-60.0054 316.0491,-60.0054 316.0491,-37.9946 370.0491,-37.9946 370.0491,-60.0054"/>
-<text text-anchor="middle" x="343.0491" y="-45.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d</text>
+<g id="a_type~~beam3d~~InheritsGraph_node3"><a xlink:href=".././type/spect3d.html" xlink:title="spect3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-136.672 316.0491,-136.672 316.0491,-114.6612 370.0491,-114.6612 370.0491,-136.672"/>
+<text text-anchor="middle" x="343.0491" y="-122.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d</text>
 </a>
 </g>
 </g>
 <!-- type~beam3d&#45;&gt;type~spect3d -->
 <g id="type~~beam3d~~InheritsGraph_edge1" class="edge">
 <title>type~beam3d&#45;&gt;type~spect3d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M493.366,-46C460.2201,-23.538 412.8249,-29.0722 380.1584,-37.1163"/>
-<polygon fill="#000000" stroke="#000000" points="378.8742,-33.8359 370.1066,-39.784 380.6699,-40.6017 378.8742,-33.8359"/>
-<text text-anchor="middle" x="443.0825" y="-36.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M393.8544,-118.6666C389.4096,-119.2133 384.7502,-119.8154 380.1321,-120.43"/>
+<polygon fill="#000000" stroke="#000000" points="379.6265,-116.9664 370.1877,-121.7788 380.5674,-123.9029 379.6265,-116.9664"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M592.3348,-42.6666C583.3472,-35.0091 405.5735,-117.2252 393.8544,-118.6666"/>
+<text text-anchor="middle" x="494.6764" y="-80.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
 </g>
-<!-- type~parallel -->
-<g id="type~~beam3d~~InheritsGraph_node7" class="node">
-<title>type~parallel</title>
-<g id="a_type~~beam3d~~InheritsGraph_node7"><a xlink:href=".././type/parallel.html" xlink:title="parallel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-64.0054 0,-64.0054 0,-41.9946 54,-41.9946 54,-64.0054"/>
-<text text-anchor="middle" x="27" y="-49.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel</text>
+<!-- type~fdist3d -->
+<g id="type~~beam3d~~InheritsGraph_node4" class="node">
+<title>type~fdist3d</title>
+<g id="a_type~~beam3d~~InheritsGraph_node4"><a xlink:href=".././type/fdist3d.html" xlink:title="fdist3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="471.6597,-32.672 417.6597,-32.672 417.6597,-10.6612 471.6597,-10.6612 471.6597,-32.672"/>
+<text text-anchor="middle" x="444.6597" y="-18.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist3d</text>
 </a>
 </g>
 </g>
-<!-- type~parallel_pipe&#45;&gt;type~parallel -->
-<g id="type~~beam3d~~InheritsGraph_edge5" class="edge">
-<title>type~parallel_pipe&#45;&gt;type~parallel</title>
-<path fill="none" stroke="#000000" d="M95.2456,-66.773C85.2975,-64.7653 74.4705,-62.5803 64.4322,-60.5544"/>
-<polygon fill="#000000" stroke="#000000" points="64.8214,-57.0624 54.3267,-58.5149 63.4366,-63.9241 64.8214,-57.0624"/>
-</g>
-<!-- type~part3d&#45;&gt;type~parallel_pipe -->
-<g id="type~~beam3d~~InheritsGraph_edge8" class="edge">
-<title>type~part3d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M241.4385,-149C201.2885,-153.8666 164.5695,-117.2238 145.2708,-93.418"/>
-<polygon fill="#000000" stroke="#000000" points="147.879,-91.0706 138.9749,-85.3289 142.355,-95.3701 147.879,-91.0706"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-104C316.1513,-104.9254 310.9898,-114.4737 286.4385,-125.5 265.856,-134.7438 263.9955,-149.5171 241.4385,-149"/>
-<text text-anchor="middle" x="292.2438" y="-126.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
-</g>
-<!-- type~part3d&#45;&gt;type~perrors -->
-<g id="type~~beam3d~~InheritsGraph_edge7" class="edge">
-<title>type~part3d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-104C271.6123,-106.8078 246.8087,-110.6298 184.8279,-75 174.1706,-68.8736 176.2575,-61.8863 166.8279,-54 165.0774,-52.536 163.2122,-51.1127 161.2875,-49.7424"/>
-<polygon fill="#000000" stroke="#000000" points="162.9296,-46.6352 152.6394,-44.1128 159.1106,-52.5017 162.9296,-46.6352"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M415.8994,-96.614C395.7751,-98.5744 367.6923,-101.3628 343.0491,-104"/>
-<text text-anchor="middle" x="292.2438" y="-106.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
-</g>
-<!-- type~part3d&#45;&gt;type~spect3d -->
+<!-- type~beam3d&#45;&gt;type~fdist3d -->
 <g id="type~~beam3d~~InheritsGraph_edge6" class="edge">
-<title>type~part3d&#45;&gt;type~spect3d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M418.6116,-82.9918C406.0166,-77.3259 390.4675,-70.3311 376.755,-64.1626"/>
-<polygon fill="#000000" stroke="#000000" points="378.1697,-60.9612 367.6141,-60.0506 375.2979,-67.345 378.1697,-60.9612"/>
-<text text-anchor="middle" x="393.0658" y="-74.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+<title>type~beam3d&#45;&gt;type~fdist3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M592.3348,-42.6666C561.0596,-18.1746 514.2418,-15.4942 481.7376,-17.2799"/>
+<polygon fill="#000000" stroke="#000000" points="481.4504,-13.7914 471.725,-17.9946 481.9489,-20.7736 481.4504,-13.7914"/>
+<text text-anchor="middle" x="544.6931" y="-32.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pf</text>
 </g>
-<!-- type~perrors&#45;&gt;type~parallel -->
+<!-- type~part3d -->
+<g id="type~~beam3d~~InheritsGraph_node5" class="node">
+<title>type~part3d</title>
+<g id="a_type~~beam3d~~InheritsGraph_node5"><a xlink:href=".././type/part3d.html" xlink:title="part3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="471.6597,-310.672 417.6597,-310.672 417.6597,-288.6612 471.6597,-288.6612 471.6597,-310.672"/>
+<text text-anchor="middle" x="444.6597" y="-296.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part3d</text>
+</a>
+</g>
+</g>
+<!-- type~beam3d&#45;&gt;type~part3d -->
+<g id="type~~beam3d~~InheritsGraph_edge4" class="edge">
+<title>type~beam3d&#45;&gt;type~part3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M592.3348,-319.6666C584.6761,-325.0987 580.9504,-316.7369 571.6931,-315.1666 541.6592,-310.0719 507.3571,-305.9884 481.974,-303.2942"/>
+<polygon fill="#000000" stroke="#000000" points="482.3329,-299.8127 472.0247,-302.2607 481.6096,-306.7753 482.3329,-299.8127"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M637.6036,-194.8956C631.1298,-224.438 612.3073,-303.1871 592.3348,-319.6666"/>
+<text text-anchor="middle" x="544.6931" y="-316.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pd</text>
+</g>
+<!-- type~parallel_pipe -->
+<g id="type~~beam3d~~InheritsGraph_node6" class="node">
+<title>type~parallel_pipe</title>
+<g id="a_type~~beam3d~~InheritsGraph_node6"><a xlink:href=".././type/parallel_pipe.html" xlink:title="parallel_pipe">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="166.6015,-145.672 95.5098,-145.672 95.5098,-123.6612 166.6015,-123.6612 166.6015,-145.672"/>
+<text text-anchor="middle" x="131.0557" y="-131.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe</text>
+</a>
+</g>
+</g>
+<!-- type~beam3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~beam3d~~InheritsGraph_edge3" class="edge">
+<title>type~beam3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M592.3348,-319.6666C471.9471,-419.0001 385.877,-364.8093 241.4385,-305.6666"/>
+<text text-anchor="middle" x="393.8544" y="-367.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_node7" class="node">
+<title>type~perrors</title>
+<g id="a_type~~beam3d~~InheritsGraph_node7"><a xlink:href=".././type/perrors.html" xlink:title="perrors">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="158.0557,-104.672 104.0557,-104.672 104.0557,-82.6612 158.0557,-82.6612 158.0557,-104.672"/>
+<text text-anchor="middle" x="131.0557" y="-90.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors</text>
+</a>
+</g>
+</g>
+<!-- type~beam3d&#45;&gt;type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_edge2" class="edge">
+<title>type~beam3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M592.3348,-42.6666C581.1027,-31.5254 585.2965,-21.7434 571.6931,-13.6666 533.1902,9.1938 516.358,-4.338 471.6597,-1.6666 447.7024,-.2348 441.6408,-.7155 417.6597,-1.6666 407.8465,-2.0558 251.246,-16.18 241.4385,-15.6666"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M241.4385,-15.6666C200.3228,-9.5973 163.2625,-49.263 144.3271,-74.2841"/>
+<polygon fill="#000000" stroke="#000000" points="141.4581,-72.2783 138.4083,-82.4247 147.1198,-76.3947 141.4581,-72.2783"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M637.687,-172.5499C631.2775,-142.4883 612.3126,-60.6391 592.3348,-42.6666"/>
+<text text-anchor="middle" x="393.8544" y="-6.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~field3d&#45;&gt;type~spect3d -->
+<g id="type~~beam3d~~InheritsGraph_edge7" class="edge">
+<title>type~field3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M494.6764,-144.6666C458.7047,-115.5551 440.095,-116.8637 393.8544,-118.6666"/>
+<text text-anchor="middle" x="444.6597" y="-129.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~field3d&#45;&gt;type~parallel_pipe -->
 <g id="type~~beam3d~~InheritsGraph_edge9" class="edge">
-<title>type~perrors&#45;&gt;type~parallel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.9879,-38.2026C91.9191,-40.5222 77.5018,-43.2933 64.4241,-45.8069"/>
-<polygon fill="#000000" stroke="#000000" points="63.4533,-42.4293 54.2937,-47.754 64.7746,-49.3035 63.4533,-42.4293"/>
-<text text-anchor="middle" x="74.6417" y="-46.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+<title>type~field3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.464,-193.5442C488.3441,-204.0807 440.7935,-221.2088 399.6597,-235.6666 349.4487,-253.3149 333.9503,-250.6827 286.4385,-274.6666 264.7579,-285.611 264.7318,-312.5404 241.4385,-305.6666"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M241.4385,-305.6666C210.0334,-292.8073 215.2022,-272.076 190.6332,-248.6666"/>
+<text text-anchor="middle" x="343.0491" y="-262.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~field3d&#45;&gt;type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_edge8" class="edge">
+<title>type~field3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M494.6764,-144.6666C481.846,-133.2712 484.6254,-124.9078 471.6597,-113.6666 444.1623,-89.8267 434.2724,-85.9095 399.6597,-74.6666 351.3824,-58.9852 332.0803,-81.8798 286.4385,-59.6666 261.2873,-47.4259 269.3028,-18.1156 241.4385,-15.6666"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M530.9236,-172.4122C521.0114,-164.4392 507.2297,-153.6142 494.6764,-144.6666"/>
+<text text-anchor="middle" x="343.0491" y="-72.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~ufield3d -->
+<g id="type~~beam3d~~InheritsGraph_node9" class="node">
+<title>type~ufield3d</title>
+<g id="a_type~~beam3d~~InheritsGraph_node9"><a xlink:href=".././type/ufield3d.html" xlink:title="ufield3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="471.6597,-194.672 417.6597,-194.672 417.6597,-172.6612 471.6597,-172.6612 471.6597,-194.672"/>
+<text text-anchor="middle" x="444.6597" y="-180.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield3d</text>
+</a>
+</g>
+</g>
+<!-- type~field3d&#45;&gt;type~ufield3d -->
+<g id="type~~beam3d~~InheritsGraph_edge10" class="edge">
+<title>type~field3d&#45;&gt;type~ufield3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M517.6226,-183.6666C506.6135,-183.6666 493.7107,-183.6666 481.8421,-183.6666"/>
+<polygon fill="#000000" stroke="#000000" points="481.7518,-180.1667 471.7518,-183.6666 481.7518,-187.1667 481.7518,-180.1667"/>
+<text text-anchor="middle" x="494.6764" y="-185.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">rs</text>
 </g>
 <!-- type~spect2d -->
-<g id="type~~beam3d~~InheritsGraph_node6" class="node">
+<g id="type~~beam3d~~InheritsGraph_node8" class="node">
 <title>type~spect2d</title>
-<g id="a_type~~beam3d~~InheritsGraph_node6"><a xlink:href=".././type/spect2d.html" xlink:title="spect2d">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="268.4385,-60.0054 214.4385,-60.0054 214.4385,-37.9946 268.4385,-37.9946 268.4385,-60.0054"/>
-<text text-anchor="middle" x="241.4385" y="-45.85" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d</text>
+<g id="a_type~~beam3d~~InheritsGraph_node8"><a xlink:href=".././type/spect2d.html" xlink:title="spect2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="268.4385,-136.672 214.4385,-136.672 214.4385,-114.6612 268.4385,-114.6612 268.4385,-136.672"/>
+<text text-anchor="middle" x="241.4385" y="-122.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d</text>
 </a>
 </g>
 </g>
 <!-- type~spect3d&#45;&gt;type~spect2d -->
-<g id="type~~beam3d~~InheritsGraph_edge10" class="edge">
+<g id="type~~beam3d~~InheritsGraph_edge11" class="edge">
 <title>type~spect3d&#45;&gt;type~spect2d</title>
-<path fill="none" stroke="#000000" d="M315.8193,-49C304.5435,-49 291.2769,-49 279.0937,-49"/>
-<polygon fill="#000000" stroke="#000000" points="278.7434,-45.5001 268.7434,-49 278.7434,-52.5001 278.7434,-45.5001"/>
+<path fill="none" stroke="#000000" d="M315.8193,-125.6666C304.5435,-125.6666 291.2769,-125.6666 279.0937,-125.6666"/>
+<polygon fill="#000000" stroke="#000000" points="278.7434,-122.1667 268.7434,-125.6666 278.7434,-129.1667 278.7434,-122.1667"/>
+</g>
+<!-- type~fdist3d&#45;&gt;type~spect3d -->
+<g id="type~~beam3d~~InheritsGraph_edge12" class="edge">
+<title>type~fdist3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M433.7856,-32.7964C416.3674,-50.6241 382.0333,-85.7657 360.955,-107.3396"/>
+<polygon fill="#000000" stroke="#000000" points="358.33,-105.0181 353.845,-114.6168 363.3369,-109.91 358.33,-105.0181"/>
+<text text-anchor="middle" x="393.8544" y="-79.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fdist3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~beam3d~~InheritsGraph_edge14" class="edge">
+<title>type~fdist3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-27.6666C323.2195,-29.1285 212.8883,-89.1509 159.7172,-118.6433"/>
+<polygon fill="#000000" stroke="#000000" points="157.8296,-115.6881 150.7899,-123.6061 161.2308,-121.8063 157.8296,-115.6881"/>
+<text text-anchor="middle" x="292.2438" y="-52.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fdist3d&#45;&gt;type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_edge13" class="edge">
+<title>type~fdist3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-27.6666C322.5319,-28.5735 318.4187,-19.7854 298.0491,-17.1666 273.0854,-13.9572 266.5245,-17.7103 241.4385,-15.6666"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M417.4935,-23.3456C397.0307,-24.5922 368.2825,-26.3047 343.0491,-27.6666"/>
+<text text-anchor="middle" x="292.2438" y="-19.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~part3d&#45;&gt;type~spect3d -->
+<g id="type~~beam3d~~InheritsGraph_edge15" class="edge">
+<title>type~part3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M438.1489,-288.5174C421.3417,-259.7364 376.3132,-182.6287 354.8033,-145.7947"/>
+<polygon fill="#000000" stroke="#000000" points="357.7024,-143.8185 349.6371,-136.9481 351.6576,-147.3485 357.7024,-143.8185"/>
+<text text-anchor="middle" x="393.8544" y="-219.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~part3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~beam3d~~InheritsGraph_edge17" class="edge">
+<title>type~part3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-300.6666C320.5815,-298.1556 263.1019,-312.1314 241.4385,-305.6666"/>
+<text text-anchor="middle" x="292.2438" y="-306.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~part3d&#45;&gt;type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_edge16" class="edge">
+<title>type~part3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M417.391,-301.7854C396.8758,-302.9316 368.1071,-303.5857 343.0491,-300.6666"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-300.6666C304.7872,-295.8272 220.2324,-242.3906 190.6332,-217.6666"/>
+<text text-anchor="middle" x="292.2438" y="-285.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~parallel -->
+<g id="type~~beam3d~~InheritsGraph_node10" class="node">
+<title>type~parallel</title>
+<g id="a_type~~beam3d~~InheritsGraph_node10"><a xlink:href=".././type/parallel.html" xlink:title="parallel">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-124.672 0,-124.672 0,-102.6612 54,-102.6612 54,-124.672"/>
+<text text-anchor="middle" x="27" y="-110.5166" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel</text>
+</a>
+</g>
+</g>
+<!-- type~parallel_pipe&#45;&gt;type~parallel -->
+<g id="type~~beam3d~~InheritsGraph_edge18" class="edge">
+<title>type~parallel_pipe&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" d="M95.2456,-127.4396C85.2975,-125.4319 74.4705,-123.2469 64.4322,-121.221"/>
+<polygon fill="#000000" stroke="#000000" points="64.8214,-117.7291 54.3267,-119.1815 63.4366,-124.5907 64.8214,-117.7291"/>
+</g>
+<!-- type~perrors&#45;&gt;type~parallel -->
+<g id="type~~beam3d~~InheritsGraph_edge19" class="edge">
+<title>type~perrors&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.9879,-98.8692C91.9191,-101.1889 77.5018,-103.9599 64.4241,-106.4735"/>
+<polygon fill="#000000" stroke="#000000" points="63.4533,-103.096 54.2937,-108.4206 64.7746,-109.9701 63.4533,-103.096"/>
+<text text-anchor="middle" x="74.6417" y="-106.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
 </g>
 <!-- type~spect2d&#45;&gt;type~parallel_pipe -->
-<g id="type~~beam3d~~InheritsGraph_edge12" class="edge">
+<g id="type~~beam3d~~InheritsGraph_edge21" class="edge">
 <title>type~spect2d&#45;&gt;type~parallel_pipe</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-55.1157C203.1546,-57.6707 189.7256,-60.7122 176.9761,-63.5997"/>
-<polygon fill="#000000" stroke="#000000" points="175.9309,-60.2477 166.951,-65.8703 177.4771,-67.0748 175.9309,-60.2477"/>
-<text text-anchor="middle" x="190.6332" y="-63.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-127.8683C203.1546,-128.7881 189.7256,-129.883 176.9761,-130.9225"/>
+<polygon fill="#000000" stroke="#000000" points="176.6335,-127.4387 166.951,-131.7399 177.2024,-134.4156 176.6335,-127.4387"/>
+<text text-anchor="middle" x="190.6332" y="-131.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
 </g>
 <!-- type~spect2d&#45;&gt;type~perrors -->
-<g id="type~~beam3d~~InheritsGraph_edge11" class="edge">
+<g id="type~~beam3d~~InheritsGraph_edge20" class="edge">
 <title>type~spect2d&#45;&gt;type~perrors</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.146,-38.8212C208.3747,-37.0619 202.2657,-35.4843 196.4385,-34.5 187.4094,-32.9749 177.5803,-32.2619 168.3513,-32.0006"/>
-<polygon fill="#000000" stroke="#000000" points="168.3028,-28.4998 158.2611,-31.8783 168.2179,-35.4993 168.3028,-28.4998"/>
-<text text-anchor="middle" x="190.6332" y="-36.9" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-117.8385C200.4042,-113.7707 183.0497,-108.7397 167.8129,-104.3225"/>
+<polygon fill="#000000" stroke="#000000" points="168.7412,-100.9476 158.1621,-101.5248 166.7921,-107.6708 168.7412,-100.9476"/>
+<text text-anchor="middle" x="190.6332" y="-113.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~spect3d -->
+<g id="type~~beam3d~~InheritsGraph_edge22" class="edge">
+<title>type~ufield3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M429.1876,-172.3719C420.6673,-166.3603 409.7928,-159.0214 399.6597,-153.1666 392.3955,-148.9695 384.3964,-144.8162 376.7565,-141.058"/>
+<polygon fill="#000000" stroke="#000000" points="378.2178,-137.8771 367.6893,-136.6935 375.1817,-144.1845 378.2178,-137.8771"/>
+<text text-anchor="middle" x="393.8544" y="-154.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~beam3d~~InheritsGraph_edge24" class="edge">
+<title>type~ufield3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-248.6666C160.1271,-225.1898 143.6913,-181.6427 136.2087,-155.6976"/>
+<polygon fill="#000000" stroke="#000000" points="139.5142,-154.5122 133.5351,-145.7658 132.7549,-156.3318 139.5142,-154.5122"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M435.2493,-194.8118C426.9366,-203.7256 413.9418,-215.5489 399.6597,-220.6666 352.2511,-237.6543 336.1269,-207.9682 286.4385,-216.1666 242.0749,-223.4865 226.2663,-276.0891 190.6332,-248.6666"/>
+<text text-anchor="middle" x="292.2438" y="-217.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~perrors -->
+<g id="type~~beam3d~~InheritsGraph_edge23" class="edge">
+<title>type~ufield3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-217.6666C150.1412,-193.835 194.6429,-152.5331 166.8279,-114.6666 166.0365,-113.5892 165.1718,-112.5577 164.2486,-111.571"/>
+<polygon fill="#000000" stroke="#000000" points="166.1789,-108.6215 156.271,-104.8687 161.6761,-113.9811 166.1789,-108.6215"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M417.4398,-186.1731C385.8649,-189.1974 332.2744,-194.6908 286.4385,-201.1666 275.7429,-202.6777 199.9423,-223.1455 190.6332,-217.6666"/>
+<text text-anchor="middle" x="292.2438" y="-202.5666" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+</g>
+</svg>
+</div><script>var pantypebeam3dInheritsGraph = svgPanZoom('#typebeam3dInheritsGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="176pt" height="31pt"
+ viewBox="0.00 0.00 175.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 171.8539,-26.5 171.8539,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="167.7082,-22.2554 72.2918,-22.2554 72.2918,-.2446 167.7082,-.2446 167.7082,-22.2554"/>
+<text text-anchor="middle" x="120" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a derived type to the parent type which it
+    extends. Dashed arrows point from a derived type to the other
+    types it contains as a components, with a label listing the name(s) of
+    said component(s).
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Inherited by</h3>
+      </div>
+      <div class="panel-body">
+     <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: type~~beam3d~~InheritedByGraph Pages: 1 -->
+<svg id="typebeam3dInheritedByGraph" width="311pt" height="31pt"
+ viewBox="0.00 0.00 311.23 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~beam3d~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>type~~beam3d~~InheritedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 307.2327,-26.5 307.2327,4 -4,4"/>
+<!-- type~beam3d -->
+<g id="type~~beam3d~~InheritedByGraph_node1" class="node">
+<title>type~beam3d</title>
+<polygon fill="none" stroke="#000000" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">beam3d</text>
+</g>
+<!-- type~sim_beams -->
+<g id="type~~beam3d~~InheritedByGraph_node2" class="node">
+<title>type~sim_beams</title>
+<g id="a_type~~beam3d~~InheritedByGraph_node2"><a xlink:href=".././type/sim_beams.html" xlink:title="sim_beams">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="179.2912,-22.2554 113.921,-22.2554 113.921,-.2446 179.2912,-.2446 179.2912,-22.2554"/>
+<text text-anchor="middle" x="146.6061" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">sim_beams</text>
+</a>
+</g>
+</g>
+<!-- type~sim_beams&#45;&gt;type~beam3d -->
+<g id="type~~beam3d~~InheritedByGraph_edge1" class="edge">
+<title>type~sim_beams&#45;&gt;type~beam3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M113.6066,-11.25C98.4377,-11.25 80.368,-11.25 64.668,-11.25"/>
+<polygon fill="#000000" stroke="#000000" points="64.2422,-7.7501 54.2422,-11.25 64.2421,-14.7501 64.2422,-7.7501"/>
+<text text-anchor="middle" x="83.882" y="-13.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">beam</text>
+</g>
+<!-- type~simulation -->
+<g id="type~~beam3d~~InheritedByGraph_node3" class="node">
+<title>type~simulation</title>
+<g id="a_type~~beam3d~~InheritedByGraph_node3"><a xlink:href=".././type/simulation.html" xlink:title="simulation">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="303.3685,-22.2554 243.8263,-22.2554 243.8263,-.2446 303.3685,-.2446 303.3685,-22.2554"/>
+<text text-anchor="middle" x="273.5974" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">simulation</text>
+</a>
+</g>
+</g>
+<!-- type~simulation&#45;&gt;type~sim_beams -->
+<g id="type~~beam3d~~InheritedByGraph_edge2" class="edge">
+<title>type~simulation&#45;&gt;type~sim_beams</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8236,-11.25C227.6449,-11.25 207.3515,-11.25 189.4963,-11.25"/>
+<polygon fill="#000000" stroke="#000000" points="189.3147,-7.7501 179.3147,-11.25 189.3146,-14.7501 189.3147,-7.7501"/>
+<text text-anchor="middle" x="211.7052" y="-13.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">beams</text>
 </g>
 </g>
 </svg>
@@ -450,7 +681,6 @@
       </div>
     </div>
     
-    
     <br>
 
     <section class="visible-xs visible-sm hidden-md">
@@ -467,11 +697,15 @@
       
       <a class="list-group-item" href="../type/beam3d.html#variable-sp%7E9">sp</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#variable-err%7E10">err</a>
+      <a class="list-group-item" href="../type/beam3d.html#variable-err%7E15">err</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#variable-p%7E11">p</a>
+      <a class="list-group-item" href="../type/beam3d.html#variable-p%7E18">p</a>
       
       <a class="list-group-item" href="../type/beam3d.html#variable-pd">pd</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#variable-q">q</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#variable-pf%7E3">pf</a>
       
     </div>
   </div>
@@ -499,9 +733,9 @@
   <div id="boundprocs-1" class="panel-collapse collapse">
     <div class="list-group">
       
-      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-new%7E14">new</a>
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-new%7E20">new</a>
       
-      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-del%7E12">del</a>
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-del%7E18">del</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-push%7E3">push</a>
       
@@ -510,6 +744,8 @@
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-qdp%7E3">qdp</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wr%7E5">wr</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wrq">wrq</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-wrst%7E2">wrst</a>
       
@@ -530,6 +766,12 @@
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-readrst_beam3d">readrst_beam3d</a>
       
       <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writerst_beam3d">writerst_beam3d</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writeqslice_beam3d">writeqslice_beam3d</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-writeq_beam3d">writeq_beam3d</a>
+      
+      <a class="list-group-item" href="../type/beam3d.html#boundprocedure-qdpcopy_beam3d">qdpcopy_beam3d</a>
       
     </div>
   </div>
@@ -575,7 +817,7 @@
   
 <tr>
   
-  <td><span class="anchor" id="variable-err%7E10"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  <td><span class="anchor" id="variable-err%7E15"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
   
   <td>public,</td>
   <td>pointer</td><td>::</td>
@@ -589,7 +831,7 @@
   
 <tr>
   
-  <td><span class="anchor" id="variable-p%7E11"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  <td><span class="anchor" id="variable-p%7E18"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
   
   <td>public,</td>
   <td>pointer</td><td>::</td>
@@ -611,6 +853,34 @@
   
 </tr>
 
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-q"></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>q</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-pf%7E3"></span>class(<a href='../type/fdist3d.html'>fdist3d</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>pf</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
 </tbody>
 </table>
 
@@ -626,9 +896,9 @@
     <section>
     <h2>Type-Bound Procedures</h2>
     
-	   
+     
 <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-new%7E14"></span><h3>generic, public :: <strong>new</strong>  => <a href='../type/beam3d.html#boundprocedure-init_beam3d'>init_beam3d</a> 
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-new%7E20"></span><h3>generic, public :: <strong>new</strong>  => <a href='../type/beam3d.html#boundprocedure-init_beam3d'>init_beam3d</a> 
     
   </h3></div>
   
@@ -640,10 +910,10 @@
             
     
     <h3>
-private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdim, npmax, nbmax)
+private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, perr, psp, pf, qbm, dt, ci, xdim)
     
     
-	 
+   
 </h3>
     
     
@@ -727,41 +997,11 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 <tr>
   
   <td><span class="anchor" ></span>class(<a href='../type/fdist3d.html'>fdist3d</a>),</td>
-  <td>intent(in)</td>
+  <td>intent(inout),</td>
   <td></td>
   
-  <td></td><td>::</td>
+  <td>target</td><td>::</td>
   <td><strong>pf</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>fd</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>real,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>qm</strong></td><td></td>
   
 </tr>
 
@@ -825,36 +1065,6 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
   
 </tr>
 
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>npmax</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>nbmax</strong></td><td></td>
-  
-</tr>
-
 </tbody>
 </table>
 
@@ -870,9 +1080,9 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-del%7E12"></span><h3>generic, public :: <strong>del</strong>  => <a href='../type/beam3d.html#boundprocedure-end_beam3d'>end_beam3d</a> 
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-del%7E18"></span><h3>generic, public :: <strong>del</strong>  => <a href='../type/beam3d.html#boundprocedure-end_beam3d'>end_beam3d</a> 
     
   </h3></div>
   
@@ -887,7 +1097,7 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -934,7 +1144,7 @@ private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-push%7E3"></span><h3>generic, public :: <strong>push</strong>  => <a href='../type/beam3d.html#boundprocedure-push_beam3d'>push_beam3d</a> 
     
@@ -951,7 +1161,7 @@ private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
 private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, bf, dex, dez, rtag, stag, sid)
     
     
-	 
+   
 </h3>
     
     
@@ -1103,7 +1313,7 @@ private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-pmv%7E3"></span><h3>generic, public :: <strong>pmv</strong>  => <a href='../type/beam3d.html#boundprocedure-pmove_beam3d'>pmove_beam3d</a> 
     
@@ -1120,7 +1330,7 @@ private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, 
 private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd, rtag, stag, sid)
     
     
-	 
+   
 </h3>
     
     
@@ -1227,9 +1437,9 @@ private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
-  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-qdp%7E3"></span><h3>generic, public :: <strong>qdp</strong>  => <a href='../type/beam3d.html#boundprocedure-qdeposit_beam3d'>qdeposit_beam3d</a> 
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-qdp%7E3"></span><h3>generic, public :: <strong>qdp</strong>  => <a href='../type/beam3d.html#boundprocedure-qdeposit_beam3d'>qdeposit_beam3d</a>, <a href='../type/beam3d.html#boundprocedure-qdpcopy_beam3d'>qdpcopy_beam3d</a> 
     
   </h3></div>
   
@@ -1241,10 +1451,10 @@ private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd
             
     
     <h3>
-private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(this, q)
+private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(this, id1, id2, id3, tag1, tag2)
     
     
-	 
+   
 </h3>
     
     
@@ -1268,7 +1478,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 <tr>
   
   <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
-  <td>intent(in)</td>
+  <td>intent(inout)</td>
   <td></td>
   
   <td></td><td>::</td>
@@ -1282,12 +1492,154 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
   
 <tr>
   
-  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id1</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id2</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id3</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>tag1</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>tag2</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/qdpcopy_beam3d.html'>qdpcopy_beam3d</a>(this, q, slice)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field2d.html'>field2d</a>),</td>
   <td>intent(inout)</td>
   <td></td>
   
   <td></td><td>::</td>
   <td><strong>q</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>slice</strong></td><td></td>
   
 </tr>
 
@@ -1306,7 +1658,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-wr%7E5"></span><h3>generic, public :: <strong>wr</strong>  => <a href='../type/beam3d.html#boundprocedure-writehdf5_beam3d'>writehdf5_beam3d</a> 
     
@@ -1323,7 +1675,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(this, file, dspl, delta, rtag, stag, id)
     
     
-	 
+   
 </h3>
     
     
@@ -1460,7 +1812,273 @@ private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(
 </div>
 
     
-	   
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-wrq"></span><h3>generic, public :: <strong>wrq</strong>  => <a href='../type/beam3d.html#boundprocedure-writeq_beam3d'>writeq_beam3d</a>, <a href='../type/beam3d.html#boundprocedure-writeqslice_beam3d'>writeqslice_beam3d</a> 
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/writeq_beam3d.html'>writeq_beam3d</a>(this, file, rtag, stag, id)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/hdf5file.html'>hdf5file</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>file</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rtag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>stag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/writeqslice_beam3d.html'>writeqslice_beam3d</a>(this, file, slice, spos, rtag, stag, id)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/hdf5file.html'>hdf5file</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>file</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>slice</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>spos</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rtag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>stag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-wrst%7E2"></span><h3>generic, public :: <strong>wrst</strong>  => <a href='../type/beam3d.html#boundprocedure-writerst_beam3d'>writerst_beam3d</a> 
     
@@ -1477,7 +2095,7 @@ private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(
 private subroutine <a href='../proc/writerst_beam3d.html'>writerst_beam3d</a>(this, file)
     
     
-	 
+   
 </h3>
     
     
@@ -1539,7 +2157,7 @@ private subroutine <a href='../proc/writerst_beam3d.html'>writerst_beam3d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-rrst%7E2"></span><h3>generic, public :: <strong>rrst</strong>  => <a href='../type/beam3d.html#boundprocedure-readrst_beam3d'>readrst_beam3d</a> 
     
@@ -1556,7 +2174,7 @@ private subroutine <a href='../proc/writerst_beam3d.html'>writerst_beam3d</a>(th
 private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this, file)
     
     
-	 
+   
 </h3>
     
     
@@ -1618,7 +2236,7 @@ private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-init_beam3d"></span><h3>procedure, private :: <strong>init_beam3d</strong>  
     
@@ -1632,10 +2250,10 @@ private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this
           
     
     <h3>
-private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, perr, psp, pf, fd, qm, qbm, dt, ci, xdim, npmax, nbmax)
+private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, perr, psp, pf, qbm, dt, ci, xdim)
     
     
-	 
+   
 </h3>
     
     
@@ -1719,41 +2337,11 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 <tr>
   
   <td><span class="anchor" ></span>class(<a href='../type/fdist3d.html'>fdist3d</a>),</td>
-  <td>intent(in)</td>
+  <td>intent(inout),</td>
   <td></td>
   
-  <td></td><td>::</td>
+  <td>target</td><td>::</td>
   <td><strong>pf</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>fd</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>real,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>qm</strong></td><td></td>
   
 </tr>
 
@@ -1817,36 +2405,6 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
   
 </tr>
 
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>npmax</strong></td><td></td>
-  
-</tr>
-
-  
-  
-  
-  
-<tr>
-  
-  <td><span class="anchor" ></span>integer,</td>
-  <td>intent(in)</td>
-  <td></td>
-  
-  <td></td><td>::</td>
-  <td><strong>nbmax</strong></td><td></td>
-  
-</tr>
-
 </tbody>
 </table>
 
@@ -1862,7 +2420,7 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-end_beam3d"></span><h3>procedure, private :: <strong>end_beam3d</strong>  
     
@@ -1879,7 +2437,7 @@ private subroutine <a href='../proc/init_beam3d.html'>init_beam3d</a>(this, pp, 
 private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
     
     
-	 
+   
 </h3>
     
     
@@ -1926,7 +2484,7 @@ private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-push_beam3d"></span><h3>procedure, private :: <strong>push_beam3d</strong>  
     
@@ -1943,7 +2501,7 @@ private subroutine <a href='../proc/end_beam3d.html'>end_beam3d</a>(this)
 private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, bf, dex, dez, rtag, stag, sid)
     
     
-	 
+   
 </h3>
     
     
@@ -2095,7 +2653,7 @@ private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, 
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-pmove_beam3d"></span><h3>procedure, private :: <strong>pmove_beam3d</strong>  
     
@@ -2112,7 +2670,7 @@ private subroutine <a href='../proc/push_beam3d.html'>push_beam3d</a>(this, ef, 
 private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd, rtag, stag, sid)
     
     
-	 
+   
 </h3>
     
     
@@ -2219,7 +2777,7 @@ private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-writehdf5_beam3d"></span><h3>procedure, private :: <strong>writehdf5_beam3d</strong>  
     
@@ -2236,7 +2794,7 @@ private subroutine <a href='../proc/pmove_beam3d.html'>pmove_beam3d</a>(this, fd
 private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(this, file, dspl, delta, rtag, stag, id)
     
     
-	 
+   
 </h3>
     
     
@@ -2373,7 +2931,7 @@ private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-qdeposit_beam3d"></span><h3>procedure, private :: <strong>qdeposit_beam3d</strong>  
     
@@ -2387,10 +2945,10 @@ private subroutine <a href='../proc/writehdf5_beam3d.html'>writehdf5_beam3d</a>(
           
     
     <h3>
-private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(this, q)
+private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(this, id1, id2, id3, tag1, tag2)
     
     
-	 
+   
 </h3>
     
     
@@ -2414,7 +2972,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 <tr>
   
   <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
-  <td>intent(in)</td>
+  <td>intent(inout)</td>
   <td></td>
   
   <td></td><td>::</td>
@@ -2428,12 +2986,72 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
   
 <tr>
   
-  <td><span class="anchor" ></span>class(<a href='../type/field3d.html'>field3d</a>),</td>
+  <td><span class="anchor" ></span>integer,</td>
   <td>intent(inout)</td>
   <td></td>
   
   <td></td><td>::</td>
-  <td><strong>q</strong></td><td></td>
+  <td><strong>id1</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id2</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id3</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>tag1</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>tag2</strong></td><td></td>
   
 </tr>
 
@@ -2452,7 +3070,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-readrst_beam3d"></span><h3>procedure, private :: <strong>readrst_beam3d</strong>  
     
@@ -2469,7 +3087,7 @@ private subroutine <a href='../proc/qdeposit_beam3d.html'>qdeposit_beam3d</a>(th
 private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this, file)
     
     
-	 
+   
 </h3>
     
     
@@ -2531,7 +3149,7 @@ private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this
 </div>
 
     
-	   
+     
 <div class="panel panel-default">
   <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-writerst_beam3d"></span><h3>procedure, private :: <strong>writerst_beam3d</strong>  
     
@@ -2548,7 +3166,7 @@ private subroutine <a href='../proc/readrst_beam3d.html'>readrst_beam3d</a>(this
 private subroutine <a href='../proc/writerst_beam3d.html'>writerst_beam3d</a>(this, file)
     
     
-	 
+   
 </h3>
     
     
@@ -2592,6 +3210,378 @@ private subroutine <a href='../proc/writerst_beam3d.html'>writerst_beam3d</a>(th
   
   <td></td><td>::</td>
   <td><strong>file</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-writeqslice_beam3d"></span><h3>procedure, private :: <strong>writeqslice_beam3d</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/writeqslice_beam3d.html'>writeqslice_beam3d</a>(this, file, slice, spos, rtag, stag, id)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/hdf5file.html'>hdf5file</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>file</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>slice</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>spos</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rtag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>stag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-writeq_beam3d"></span><h3>procedure, private :: <strong>writeq_beam3d</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/writeq_beam3d.html'>writeq_beam3d</a>(this, file, rtag, stag, id)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/hdf5file.html'>hdf5file</a>),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>file</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>rtag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>stag</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>id</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-qdpcopy_beam3d"></span><h3>procedure, private :: <strong>qdpcopy_beam3d</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/qdpcopy_beam3d.html'>qdpcopy_beam3d</a>(this, q, slice)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/beam3d.html'>beam3d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/field2d.html'>field2d</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>q</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>slice</strong></td><td></td>
   
 </tr>
 

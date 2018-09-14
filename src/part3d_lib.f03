@@ -7,14 +7,14 @@
 
 !
       interface
-         subroutine PRVDIST32_RANDOM(part,edges,npp,nps,vtx,vty,vtz,vdx,&
+         subroutine PRVDIST32_RANDOM(part,qm,edges,npp,nps,vtx,vty,vtz,vdx,&
          &vdy,vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,mblok,nblok,idps&
          &,sigx,sigy,sigz,x0,y0,z0,cx,cy,lquiet,ierr)
          implicit none
          integer, intent(in) :: npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,i&
          &dps,mblok,ipbc
          integer, intent(inout) :: nps,npp,ierr
-         real, intent(in) :: sigx,sigy,sigz,x0,y0,z0,cx,cy,edges,vtx,vty&
+         real, intent(in) :: qm,sigx,sigy,sigz,x0,y0,z0,cx,cy,edges,vtx,vty&
          &,vtz,vdx,vdy,vdz
          real, intent(inout) :: part
          logical, intent(in) :: lquiet
@@ -25,13 +25,12 @@
       end interface
 !
       interface
-         subroutine PGPOST32L(part,q,npp,noff,qm,idimp,npmax,mnblok,nxv,&
+         subroutine PGPOST32L(part,q,npp,noff,idimp,npmax,mnblok,nxv,&
          &nypmx,nzpmx,idds)
          implicit none
          integer, intent(in) :: npp,noff,idimp,npmax,mnblok,nxv,nypmx,nz&
          &pmx,idds
          real, intent(inout) :: part
-         real, intent(in) :: qm
          real, intent(inout) :: q
          dimension part(idimp,npmax,mnblok), q(nxv,nypmx,nzpmx,mnblok)
          dimension noff(idds,mnblok)
@@ -43,12 +42,13 @@
          &nx,ny,nz,idimp,npmax,mnblok,nxv,nypmx,nzpmx,idds,ipbc,deltax,d&
          &eltaz,cofd)
          implicit none
-         real, dimension(idimp,npmax,mnblok), intent(inout) :: part
+         real, intent(inout) :: part
          integer, intent(inout) :: npp
          real, intent(inout) :: fxyz,bxyz
          real, intent(in) :: qbm,dt,dtc,ek,deltax,deltaz,cofd
          integer, intent(in) :: noff,nx,ny,nz,idimp,npmax,mnblok,nxv,nyp&
          &mx,nzpmx,idds,ipbc
+         dimension part(idimp,npmax,mnblok)
          dimension fxyz(3,nxv,nypmx,nzpmx,mnblok)
          dimension bxyz(3,nxv,nypmx,nzpmx,mnblok)
          dimension noff(idds,mnblok)

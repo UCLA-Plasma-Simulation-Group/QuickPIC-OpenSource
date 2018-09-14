@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="">
+    
+    <meta name="author" content="Weiming An" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>sim_species &ndash; QuickPIC </title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">QuickPIC </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+        
+            <li><a href="../lists/absint.html">Abstract Interfaces</a></li>
+               
+            <li><a href="../lists/types.html">Derived Types</a></li>
+        
+        
+            <li><a href="../program/quickpic.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/absint.html">Abstract Interfaces</a></li>
+                             
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/quickpic.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>sim_species
+    <small>Derived Type</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title="<p> 2.3% of total for derived types.</p>Including implementation: 133 statements,  1.4% of total for derived types.">13 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/simulation_class.f03"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/simulation_class.f03.html'>simulation_class.f03</a></li>
+    
+     <li><a href='../module/simulation_class.html'>simulation_class</a></li>
+    
+  
+     <li class="active">sim_species</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-p%7E10">p</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-err%7E7">err</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-sp3%7E3">sp3</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-sp2%7E3">sp2</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-pf%7E2">pf</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-spe">spe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#boundprocs-0">Type-Bound Procedures</a></h3></div>
+  <div id="boundprocs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-new%7E8">new</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-del%7E7">del</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-end_sim_species">end_sim_species</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-init_sim_species">init_sim_species</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+      <h2>type, private :: sim_species</h2>
+    
+    <br>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Inherits</h3>
+      </div>
+      <div class="panel-body">
+    <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: type~~sim_species~~InheritsGraph Pages: 1 -->
+<svg id="typesim_speciesInheritsGraph" width="641pt" height="606pt"
+ viewBox="0.00 0.00 641.00 606.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~sim_species~~InheritsGraph" class="graph" transform="scale(.7038 .7038) rotate(0) translate(4 857.0253)">
+<title>type~~sim_species~~InheritsGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-857.0253 906.7571,-857.0253 906.7571,4 -4,4"/>
+<!-- type~sim_species -->
+<g id="type~~sim_species~~InheritsGraph_node1" class="node">
+<title>type~sim_species</title>
+<polygon fill="none" stroke="#000000" points="902.6427,-722.5307 833.1009,-722.5307 833.1009,-700.5199 902.6427,-700.5199 902.6427,-722.5307"/>
+<text text-anchor="middle" x="867.8718" y="-708.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">sim_species</text>
+</g>
+<!-- type~spect3d -->
+<g id="type~~sim_species~~InheritsGraph_node2" class="node">
+<title>type~spect3d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node2"><a xlink:href=".././type/spect3d.html" xlink:title="spect3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-125.5307 316.0491,-125.5307 316.0491,-103.5199 370.0491,-103.5199 370.0491,-125.5307"/>
+<text text-anchor="middle" x="343.0491" y="-111.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect3d</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~spect3d -->
+<g id="type~~sim_species~~InheritsGraph_edge3" class="edge">
+<title>type~sim_species&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M668.6218,-42.5253C546.0922,-27.7781 522.2568,-122.1894 399.3953,-110.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M399.3953,-110.5253C393.3197,-110.0508 386.8736,-110.0424 380.595,-110.3017"/>
+<polygon fill="#000000" stroke="#000000" points="380.0398,-106.8298 370.2814,-110.9558 380.4829,-113.8157 380.0398,-106.8298"/>
+<text text-anchor="middle" x="574.4565" y="-77.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp3</text>
+</g>
+<!-- type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_node3" class="node">
+<title>type~spect2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node3"><a xlink:href=".././type/spect2d.html" xlink:title="spect2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="268.4385,-555.5307 214.4385,-555.5307 214.4385,-533.5199 268.4385,-533.5199 268.4385,-555.5307"/>
+<text text-anchor="middle" x="241.4385" y="-541.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">spect2d</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge4" class="edge">
+<title>type~sim_species&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M832.9324,-701.2002C763.1696,-682.8173 604.4287,-652.4174 500.7415,-721.0253 484.6523,-731.6712 498.5192,-749.4231 482.7415,-760.5253 422.1254,-803.1784 380.3503,-802.3892 316.0491,-765.5253 259.607,-733.1671 271.1389,-603.8589 266.6629,-565.3159"/>
+<polygon fill="#000000" stroke="#000000" points="270.0336,-564.3705 264.1341,-555.5701 263.258,-566.1287 270.0336,-564.3705"/>
+<text text-anchor="middle" x="508.3999" y="-723.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp2</text>
+</g>
+<!-- type~species2d -->
+<g id="type~~sim_species~~InheritsGraph_node4" class="node">
+<title>type~species2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node4"><a xlink:href=".././type/species2d.html" xlink:title="species2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="781.8107,-413.5307 722.2479,-413.5307 722.2479,-391.5199 781.8107,-391.5199 781.8107,-413.5307"/>
+<text text-anchor="middle" x="752.0293" y="-399.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">species2d</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~species2d -->
+<g id="type~~sim_species~~InheritsGraph_edge6" class="edge">
+<title>type~sim_species&#45;&gt;type~species2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M863.6115,-700.1614C846.4373,-654.3504 782.1398,-482.8424 759.7639,-423.1568"/>
+<polygon fill="#000000" stroke="#000000" points="762.9939,-421.8017 756.2062,-413.6667 756.4393,-424.259 762.9939,-421.8017"/>
+<text text-anchor="middle" x="807.3281" y="-568.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">spe</text>
+</g>
+<!-- type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_node5" class="node">
+<title>type~parallel_pipe</title>
+<g id="a_type~~sim_species~~InheritsGraph_node5"><a xlink:href=".././type/parallel_pipe.html" xlink:title="parallel_pipe">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="166.6015,-475.5307 95.5098,-475.5307 95.5098,-453.5199 166.6015,-453.5199 166.6015,-475.5307"/>
+<text text-anchor="middle" x="131.0557" y="-461.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel_pipe</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge1" class="edge">
+<title>type~sim_species&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-75.5253C268.4088,-91.5816 264.3555,-98.1839 241.4385,-115.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M241.4385,-115.5253C224.6272,-128.2464 226.1436,-136.9915 214.4385,-154.5253 203.5817,-170.7884 206.557,-180.1766 190.6332,-191.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-191.5253C149.3447,-220.951 135.7614,-384.3326 132.1668,-443.2975"/>
+<polygon fill="#000000" stroke="#000000" points="128.6696,-443.1493 131.5915,-453.3332 135.6582,-443.5499 128.6696,-443.1493"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M668.6218,-42.5253C523.8935,-37.5361 469.7,40.6938 343.0491,-29.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M867.0713,-700.3529C860.4802,-612.4492 811.7637,-35.7004 668.6218,-42.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-29.5253C315.7552,-43.0486 317.5067,-58.507 292.2438,-75.5253"/>
+<text text-anchor="middle" x="455.7415" y="-6.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fdist2d_wrap -->
+<g id="type~~sim_species~~InheritsGraph_node6" class="node">
+<title>type~fdist2d_wrap</title>
+<g id="a_type~~sim_species~~InheritsGraph_node6"><a xlink:href=".././type/fdist2d_wrap.html" xlink:title="fdist2d_wrap">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="704.1575,-760.5307 633.0861,-760.5307 633.0861,-738.5199 704.1575,-738.5199 704.1575,-760.5307"/>
+<text text-anchor="middle" x="668.6218" y="-746.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist2d_wrap</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~fdist2d_wrap -->
+<g id="type~~sim_species~~InheritsGraph_edge5" class="edge">
+<title>type~sim_species&#45;&gt;type~fdist2d_wrap</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M832.9959,-721.2656C827.0121,-722.7909 820.8379,-724.2741 814.9866,-725.5253 781.5711,-732.6706 743.4693,-738.857 714.5188,-743.1587"/>
+<polygon fill="#000000" stroke="#000000" points="713.6797,-739.7442 704.2925,-744.6566 714.6942,-746.6703 713.6797,-739.7442"/>
+<text text-anchor="middle" x="807.3281" y="-730.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pf</text>
+</g>
+<!-- type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_node7" class="node">
+<title>type~perrors</title>
+<g id="a_type~~sim_species~~InheritsGraph_node7"><a xlink:href=".././type/perrors.html" xlink:title="perrors">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="158.0557,-516.5307 104.0557,-516.5307 104.0557,-494.5199 158.0557,-494.5199 158.0557,-516.5307"/>
+<text text-anchor="middle" x="131.0557" y="-502.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">perrors</text>
+</a>
+</g>
+</g>
+<!-- type~sim_species&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge2" class="edge">
+<title>type~sim_species&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M864.1972,-722.7796C852.9917,-754.7008 816.0586,-843.5253 752.0293,-843.5253 752.0293,-843.5253 752.0293,-843.5253 292.2438,-843.5253 256.1844,-843.5253 243.1603,-842.3275 214.4385,-820.5253 198.5646,-808.4757 206.5869,-794.469 190.6332,-782.5253"/>
+<text text-anchor="middle" x="455.7415" y="-845.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~spect3d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge7" class="edge">
+<title>type~spect3d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" d="M327.3094,-125.7227C322.976,-129.5979 318.7339,-134.2971 316.0491,-139.5253 313.6256,-144.2447 270.8157,-513.7824 268.4385,-518.5253 267.1263,-521.1433 265.4412,-523.6442 263.5548,-525.9884"/>
+<polygon fill="#000000" stroke="#000000" points="260.9629,-523.6351 256.6151,-533.2968 266.039,-528.4552 260.9629,-523.6351"/>
+</g>
+<!-- type~spect2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge9" class="edge">
+<title>type~spect2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M228.1342,-533.4364C223.4375,-529.1 218.3555,-523.884 214.4385,-518.5253 203.7646,-503.9229 210.422,-493.498 196.4385,-482.0253 190.6925,-477.3111 183.7947,-473.8581 176.6649,-471.3309"/>
+<polygon fill="#000000" stroke="#000000" points="177.4677,-467.9183 166.8851,-468.427 175.4751,-474.6287 177.4677,-467.9183"/>
+<text text-anchor="middle" x="190.6332" y="-484.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~spect2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge8" class="edge">
+<title>type~spect2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M214.4358,-534.9848C200.4042,-530.0272 183.0497,-523.8956 167.8129,-518.5122"/>
+<polygon fill="#000000" stroke="#000000" points="168.7569,-515.1338 158.1621,-515.1025 166.4249,-521.7339 168.7569,-515.1338"/>
+<text text-anchor="middle" x="190.6332" y="-530.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~species2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge10" class="edge">
+<title>type~species2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M668.6218,-619.5253C634.0466,-645.7857 617.3995,-639.1255 574.4565,-645.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M574.4565,-645.5253C546.866,-649.6371 542.7025,-630.7856 516.0583,-622.5253 428.9354,-595.5154 401.3205,-608.9092 316.0491,-576.5253 304.7795,-572.2454 303.6773,-567.3458 292.2438,-563.5253"/>
+<text text-anchor="middle" x="455.7415" y="-615.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~species2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge12" class="edge">
+<title>type~species2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.4512,-391.3687C743.9147,-369.0213 729.3261,-317.8057 704.3889,-281.5253 648.9362,-200.8487 428.4717,18.2941 343.0491,-29.5253"/>
+<text text-anchor="middle" x="399.3953" y="-32.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~species2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge11" class="edge">
+<title>type~species2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M574.4565,-645.5253C546.9578,-651.1152 542.592,-660.3935 516.0583,-669.5253 428.7716,-699.5659 402.7707,-693.8902 316.0491,-725.5253 258.5295,-746.5078 240.9512,-817.4089 190.6332,-782.5253"/>
+<text text-anchor="middle" x="399.3953" y="-705.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~fdist2d -->
+<g id="type~~sim_species~~InheritsGraph_node8" class="node">
+<title>type~fdist2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node8"><a xlink:href=".././type/fdist2d.html" xlink:title="fdist2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-756.5307 316.0491,-756.5307 316.0491,-734.5199 370.0491,-734.5199 370.0491,-756.5307"/>
+<text text-anchor="middle" x="343.0491" y="-742.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fdist2d</text>
+</a>
+</g>
+</g>
+<!-- type~species2d&#45;&gt;type~fdist2d -->
+<g id="type~~sim_species~~InheritsGraph_edge16" class="edge">
+<title>type~species2d&#45;&gt;type~fdist2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M574.4565,-645.5253C537.4616,-649.1223 528.7954,-660.6421 500.7415,-685.0253 475.1785,-707.2434 487.2289,-734.0493 455.7415,-746.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455.7415,-746.5253C431.3747,-754.0584 402.6036,-753.6605 380.2315,-751.4553"/>
+<polygon fill="#000000" stroke="#000000" points="380.4604,-747.9587 370.1266,-750.2959 379.6624,-754.9131 380.4604,-747.9587"/>
+<text text-anchor="middle" x="508.3999" y="-687.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pf</text>
+</g>
+<!-- type~field3d -->
+<g id="type~~sim_species~~InheritsGraph_node9" class="node">
+<title>type~field3d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node9"><a xlink:href=".././type/field3d.html" xlink:title="field3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="601.4565,-232.5307 547.4565,-232.5307 547.4565,-210.5199 601.4565,-210.5199 601.4565,-232.5307"/>
+<text text-anchor="middle" x="574.4565" y="-218.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field3d</text>
+</a>
+</g>
+</g>
+<!-- type~species2d&#45;&gt;type~field3d -->
+<g id="type~~sim_species~~InheritsGraph_edge15" class="edge">
+<title>type~species2d&#45;&gt;type~field3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M741.1886,-391.4754C711.6627,-361.3797 629.5712,-277.7037 592.7447,-240.1665"/>
+<polygon fill="#000000" stroke="#000000" points="595.1103,-237.5799 585.6086,-232.8926 590.1134,-242.4821 595.1103,-237.5799"/>
+<text text-anchor="middle" x="668.6218" y="-351.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">q3</text>
+</g>
+<!-- type~part2d -->
+<g id="type~~sim_species~~InheritsGraph_node10" class="node">
+<title>type~part2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node10"><a xlink:href=".././type/part2d.html" xlink:title="part2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-678.5307 316.0491,-678.5307 316.0491,-656.5199 370.0491,-656.5199 370.0491,-678.5307"/>
+<text text-anchor="middle" x="343.0491" y="-664.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">part2d</text>
+</a>
+</g>
+</g>
+<!-- type~species2d&#45;&gt;type~part2d -->
+<g id="type~~sim_species~~InheritsGraph_edge13" class="edge">
+<title>type~species2d&#45;&gt;type~part2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M574.4565,-645.5253C547.3486,-648.0581 542.9646,-631.1853 516.0583,-627.0253 509.3308,-625.9852 507.4953,-626.1719 500.7415,-627.0253 458.6101,-632.3492 411.6176,-645.3733 379.9807,-655.2258"/>
+<polygon fill="#000000" stroke="#000000" points="378.751,-651.9438 370.2742,-658.2995 380.8642,-658.6173 378.751,-651.9438"/>
+<text text-anchor="middle" x="508.3999" y="-629.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pd</text>
+</g>
+<!-- type~field2d -->
+<g id="type~~sim_species~~InheritsGraph_node11" class="node">
+<title>type~field2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node11"><a xlink:href=".././type/field2d.html" xlink:title="field2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="482.7415,-497.5307 428.7415,-497.5307 428.7415,-475.5199 482.7415,-475.5199 482.7415,-497.5307"/>
+<text text-anchor="middle" x="455.7415" y="-483.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">field2d</text>
+</a>
+</g>
+</g>
+<!-- type~species2d&#45;&gt;type~field2d -->
+<g id="type~~sim_species~~InheritsGraph_edge14" class="edge">
+<title>type~species2d&#45;&gt;type~field2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M668.6218,-619.5253C632.1954,-644.5488 519.8637,-546.4374 474.7671,-504.5971"/>
+<polygon fill="#000000" stroke="#000000" points="477.0963,-501.9833 467.4023,-497.7081 472.3144,-507.0954 477.0963,-501.9833"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M751.5996,-413.6561C749.5315,-450.201 737.5646,-567.1622 668.6218,-619.5253"/>
+<text text-anchor="middle" x="574.4565" y="-613.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">q, qn, cu, amu, dcu</text>
+</g>
+<!-- type~parallel -->
+<g id="type~~sim_species~~InheritsGraph_node12" class="node">
+<title>type~parallel</title>
+<g id="a_type~~sim_species~~InheritsGraph_node12"><a xlink:href=".././type/parallel.html" xlink:title="parallel">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-495.5307 0,-495.5307 0,-473.5199 54,-473.5199 54,-495.5307"/>
+<text text-anchor="middle" x="27" y="-481.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">parallel</text>
+</a>
+</g>
+</g>
+<!-- type~parallel_pipe&#45;&gt;type~parallel -->
+<g id="type~~sim_species~~InheritsGraph_edge17" class="edge">
+<title>type~parallel_pipe&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" d="M95.2456,-471.4082C85.2975,-473.3202 74.4705,-475.4012 64.4322,-477.3307"/>
+<polygon fill="#000000" stroke="#000000" points="63.4863,-473.9483 54.3267,-479.273 64.8076,-480.8225 63.4863,-473.9483"/>
+</g>
+<!-- type~fdist2d_wrap&#45;&gt;type~fdist2d -->
+<g id="type~~sim_species~~InheritsGraph_edge18" class="edge">
+<title>type~fdist2d_wrap&#45;&gt;type~fdist2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M632.7493,-741.6521C589.4248,-733.7882 514.9899,-725.5987 455.7415,-746.5253"/>
+<text text-anchor="middle" x="508.3999" y="-737.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~perrors&#45;&gt;type~parallel -->
+<g id="type~~sim_species~~InheritsGraph_edge19" class="edge">
+<title>type~perrors&#45;&gt;type~parallel</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.9879,-500.0626C91.9191,-497.6269 77.5018,-494.7173 64.4241,-492.0781"/>
+<polygon fill="#000000" stroke="#000000" points="64.7885,-488.5811 54.2937,-490.0336 63.4037,-495.4428 64.7885,-488.5811"/>
+<text text-anchor="middle" x="74.6417" y="-496.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fdist2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge20" class="edge">
+<title>type~fdist2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M328.379,-734.398C315.1328,-723.4829 296.2595,-705.5922 286.4385,-685.5253 263.5039,-638.664 292.9412,-615.586 268.4385,-569.5253 267.2309,-567.2552 265.7356,-565.081 264.0728,-563.0285"/>
+<polygon fill="#000000" stroke="#000000" points="266.5425,-560.5473 257.0852,-555.7713 261.5,-565.4025 266.5425,-560.5473"/>
+<text text-anchor="middle" x="292.2438" y="-705.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fdist2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge22" class="edge">
+<title>type~fdist2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.1882,-756.5486C332.5577,-773.2365 317.2533,-803.2272 292.2438,-805.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-805.5253C284.9694,-806.1937 217.4575,-706.1773 214.4385,-699.5253 204.3714,-677.3438 181.1678,-505.2163 166.8279,-485.5253 166.0409,-484.4447 165.18,-483.4104 164.26,-482.4214"/>
+<polygon fill="#000000" stroke="#000000" points="166.1986,-479.4779 156.297,-475.7083 161.6868,-484.8298 166.1986,-479.4779"/>
+<text text-anchor="middle" x="241.4385" y="-778.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fdist2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge21" class="edge">
+<title>type~fdist2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-805.5253C246.123,-809.6267 228.7493,-808.8142 190.6332,-782.5253"/>
+<text text-anchor="middle" x="241.4385" y="-808.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~field3d&#45;&gt;type~spect3d -->
+<g id="type~~sim_species~~InheritsGraph_edge23" class="edge">
+<title>type~field3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M508.3999,-156.5253C479.8496,-131.2156 463.6786,-139.8581 428.7415,-124.5253 415.5088,-118.7179 413.6654,-112.8039 399.3953,-110.5253"/>
+<text text-anchor="middle" x="455.7415" y="-142.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~field3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge25" class="edge">
+<title>type~field3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M563.2957,-210.4232C550.2095,-197.4337 527.8346,-175.3111 508.3999,-156.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M508.3999,-156.5253C494.2728,-142.8699 498.5401,-132.2064 482.7415,-120.5253 412.7895,-68.805 366.5897,-30.3483 292.2438,-75.5253"/>
+<text text-anchor="middle" x="343.0491" y="-65.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~field3d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge24" class="edge">
+<title>type~field3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M547.0595,-221.706C484.3116,-222.4989 332.0817,-226.686 286.4385,-248.5253 276.0901,-253.4768 220.2774,-312.6505 214.4385,-322.5253 191.4966,-361.3252 197.4239,-376.246 184.8279,-419.5253 176.4512,-448.3072 185.0894,-460.7538 166.8279,-484.5253 165.8956,-485.7389 164.8716,-486.8957 163.7776,-487.9968"/>
+<polygon fill="#000000" stroke="#000000" points="161.349,-485.4592 155.7701,-494.4663 165.7482,-490.9042 161.349,-485.4592"/>
+<text text-anchor="middle" x="343.0491" y="-241.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~ufield3d -->
+<g id="type~~sim_species~~InheritsGraph_node15" class="node">
+<title>type~ufield3d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node15"><a xlink:href=".././type/ufield3d.html" xlink:title="ufield3d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="482.7415,-206.5307 428.7415,-206.5307 428.7415,-184.5199 482.7415,-184.5199 482.7415,-206.5307"/>
+<text text-anchor="middle" x="455.7415" y="-192.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield3d</text>
+</a>
+</g>
+</g>
+<!-- type~field3d&#45;&gt;type~ufield3d -->
+<g id="type~~sim_species~~InheritsGraph_edge26" class="edge">
+<title>type~field3d&#45;&gt;type~ufield3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M547.2209,-215.5604C531.0838,-212.0262 510.414,-207.4992 492.8063,-203.6429"/>
+<polygon fill="#000000" stroke="#000000" points="493.3677,-200.183 482.8504,-201.4625 491.87,-207.0209 493.3677,-200.183"/>
+<text text-anchor="middle" x="508.3999" y="-210.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">rs</text>
+</g>
+<!-- type~part2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge27" class="edge">
+<title>type~part2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M336.7742,-656.1488C328.6851,-641.9168 313.7783,-617.1005 298.0491,-598.0253 286.4285,-583.9328 281.7206,-582.0642 268.4385,-569.5253 266.0229,-567.2449 263.4746,-564.8594 260.9473,-562.5056"/>
+<polygon fill="#000000" stroke="#000000" points="263.2941,-559.9086 253.5814,-555.6762 258.5348,-565.0418 263.2941,-559.9086"/>
+<text text-anchor="middle" x="292.2438" y="-600.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~part2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge29" class="edge">
+<title>type~part2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-671.5253C277.9346,-668.1591 222.5624,-576.7762 214.4385,-564.5253 191.7826,-530.3601 195.9821,-514.3451 166.8279,-485.5253 165.4067,-484.1204 163.8732,-482.7733 162.2686,-481.488"/>
+<polygon fill="#000000" stroke="#000000" points="164.0429,-478.4579 153.8422,-475.5949 160.0311,-484.1942 164.0429,-478.4579"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.922,-670.3548C308.274,-670.9638 299.9409,-671.4499 292.2438,-671.5253"/>
+<text text-anchor="middle" x="241.4385" y="-648.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~part2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge28" class="edge">
+<title>type~part2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-782.5253C147.2025,-754.7996 134.9559,-586.9459 131.9398,-526.88"/>
+<polygon fill="#000000" stroke="#000000" points="135.4262,-526.5028 131.4658,-516.676 128.4337,-526.8277 135.4262,-526.5028"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-671.5253C258.1017,-661.6406 239.8028,-665.1247 214.4385,-690.0253 184.1457,-719.7643 226.4143,-805.3676 190.6332,-782.5253"/>
+<text text-anchor="middle" x="241.4385" y="-692.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~field2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge30" class="edge">
+<title>type~field2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M399.3953,-559.5253C390.3462,-567.2751 303.7664,-566.5539 292.2438,-563.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-563.5253C287.6301,-561.9837 282.8097,-560.2906 278.0539,-558.5699"/>
+<polygon fill="#000000" stroke="#000000" points="279.0631,-555.2118 268.4696,-555.039 276.6432,-561.7802 279.0631,-555.2118"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M448.8604,-497.5517C439.0875,-512.6633 420.0637,-540.1392 399.3953,-559.5253"/>
+<text text-anchor="middle" x="343.0491" y="-568.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~field2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge32" class="edge">
+<title>type~field2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M451.7022,-475.3493C435.8056,-433.0462 373.2387,-281.4988 268.4385,-209.5253 239.1804,-189.4318 219.1991,-170.4593 190.6332,-191.5253"/>
+<text text-anchor="middle" x="292.2438" y="-234.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~field2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge31" class="edge">
+<title>type~field2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M399.3953,-559.5253C336.7508,-618.283 291.3573,-653.739 214.4385,-615.5253 176.9249,-596.8883 151.7655,-552.4182 139.5788,-526.0816"/>
+<polygon fill="#000000" stroke="#000000" points="142.6564,-524.3869 135.4129,-516.655 136.2538,-527.2164 142.6564,-524.3869"/>
+<text text-anchor="middle" x="292.2438" y="-633.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~fft2d -->
+<g id="type~~sim_species~~InheritsGraph_node13" class="node">
+<title>type~fft2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node13"><a xlink:href=".././type/fft2d.html" xlink:title="fft2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-395.5307 316.0491,-395.5307 316.0491,-373.5199 370.0491,-373.5199 370.0491,-395.5307"/>
+<text text-anchor="middle" x="343.0491" y="-381.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fft2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~fft2d -->
+<g id="type~~sim_species~~InheritsGraph_edge34" class="edge">
+<title>type~field2d&#45;&gt;type~fft2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M443.2508,-475.2198C423.7711,-457.5884 385.9904,-423.3923 362.7953,-402.398"/>
+<polygon fill="#000000" stroke="#000000" points="365.0159,-399.6871 355.2531,-395.5714 360.3184,-404.8769 365.0159,-399.6871"/>
+<text text-anchor="middle" x="399.3953" y="-447.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">ft</text>
+</g>
+<!-- type~fpois2d -->
+<g id="type~~sim_species~~InheritsGraph_node14" class="node">
+<title>type~fpois2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node14"><a xlink:href=".././type/fpois2d.html" xlink:title="fpois2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-516.5307 316.0491,-516.5307 316.0491,-494.5199 370.0491,-494.5199 370.0491,-516.5307"/>
+<text text-anchor="middle" x="343.0491" y="-502.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fpois2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~fpois2d -->
+<g id="type~~sim_species~~InheritsGraph_edge35" class="edge">
+<title>type~field2d&#45;&gt;type~fpois2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.4618,-491.1247C413.9274,-493.5752 395.8399,-496.6247 380.0564,-499.2859"/>
+<polygon fill="#000000" stroke="#000000" points="379.3564,-495.8544 370.0775,-500.9683 380.5203,-502.757 379.3564,-495.8544"/>
+<text text-anchor="middle" x="399.3953" y="-500.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">pt</text>
+</g>
+<!-- type~ufield2d -->
+<g id="type~~sim_species~~InheritsGraph_node16" class="node">
+<title>type~ufield2d</title>
+<g id="a_type~~sim_species~~InheritsGraph_node16"><a xlink:href=".././type/ufield2d.html" xlink:title="ufield2d">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="370.0491,-475.5307 316.0491,-475.5307 316.0491,-453.5199 370.0491,-453.5199 370.0491,-475.5307"/>
+<text text-anchor="middle" x="343.0491" y="-461.3753" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ufield2d</text>
+</a>
+</g>
+</g>
+<!-- type~field2d&#45;&gt;type~ufield2d -->
+<g id="type~~sim_species~~InheritsGraph_edge33" class="edge">
+<title>type~field2d&#45;&gt;type~ufield2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.4618,-481.1997C413.9274,-478.3623 395.8399,-474.8312 380.0564,-471.7499"/>
+<polygon fill="#000000" stroke="#000000" points="380.5629,-468.2828 370.0775,-469.8019 379.2216,-475.1531 380.5629,-468.2828"/>
+<text text-anchor="middle" x="399.3953" y="-479.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">rs, ks</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge36" class="edge">
+<title>type~fft2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M319.2897,-395.5772C307.6181,-402.2088 294.3885,-411.7549 286.4385,-424.0253 263.1903,-459.9074 288.7952,-480.9274 268.4385,-518.5253 267.0152,-521.1541 265.2332,-523.6767 263.2673,-526.0465"/>
+<polygon fill="#000000" stroke="#000000" points="260.5516,-523.8204 256.1278,-533.4474 265.5896,-528.6803 260.5516,-523.8204"/>
+<text text-anchor="middle" x="292.2438" y="-426.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge38" class="edge">
+<title>type~fft2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M335.1478,-373.3739C305.0713,-331.0758 199.0012,-183.3273 190.6332,-191.5253"/>
+<text text-anchor="middle" x="241.4385" y="-282.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fft2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge37" class="edge">
+<title>type~fft2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M316.0294,-382.2049C288.2121,-381.1887 244.7654,-383.5619 214.4385,-404.0253 179.982,-427.2752 196.2679,-455.181 166.8279,-484.5253 165.4125,-485.9361 163.8836,-487.2878 162.2825,-488.5766"/>
+<polygon fill="#000000" stroke="#000000" points="160.0433,-485.872 153.8657,-494.4795 164.0627,-491.6031 160.0433,-485.872"/>
+<text text-anchor="middle" x="241.4385" y="-406.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge39" class="edge">
+<title>type~fpois2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8193,-515.9766C304.3157,-520.3919 290.74,-525.6025 278.3567,-530.3554"/>
+<polygon fill="#000000" stroke="#000000" points="276.8252,-527.1942 268.7434,-534.0452 279.3335,-533.7294 276.8252,-527.1942"/>
+<text text-anchor="middle" x="292.2438" y="-528.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge41" class="edge">
+<title>type~fpois2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-505.5253C258.7961,-492.1234 297.1826,-449.754 268.4385,-428.0253 234.1837,-402.1309 183.0266,-428.2988 153.7686,-447.7194"/>
+<polygon fill="#000000" stroke="#000000" points="151.6812,-444.9072 145.4345,-453.4647 155.6543,-450.6705 151.6812,-444.9072"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.8458,-508.8627C308.0417,-508.936 299.6458,-508.1395 292.2438,-505.5253"/>
+<text text-anchor="middle" x="241.4385" y="-430.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~fpois2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge40" class="edge">
+<title>type~fpois2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-505.5253C250.1054,-489.2831 234.7771,-495.9985 190.6332,-505.5253"/>
+<text text-anchor="middle" x="241.4385" y="-502.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~spect3d -->
+<g id="type~~sim_species~~InheritsGraph_edge42" class="edge">
+<title>type~ufield3d&#45;&gt;type~spect3d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M443.2031,-184.2981C438.4905,-179.864 433.1987,-174.6181 428.7415,-169.5253 419.8427,-159.3577 421.2458,-153.524 410.7415,-145.0253 401.6115,-137.6385 390.4061,-131.6464 379.759,-126.9919"/>
+<polygon fill="#000000" stroke="#000000" points="380.7945,-123.6341 370.2135,-123.0917 378.1468,-130.1141 380.7945,-123.6341"/>
+<text text-anchor="middle" x="399.3953" y="-147.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge44" class="edge">
+<title>type~ufield3d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M428.6696,-184.6056C405.999,-175.6625 372.6855,-162.9868 343.0491,-153.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-153.5253C340.1902,-152.458 300.9024,-123.1075 298.0491,-122.0253 274.3695,-113.044 261.1583,-99.6347 241.4385,-115.5253"/>
+<text text-anchor="middle" x="292.2438" y="-124.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~ufield3d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge43" class="edge">
+<title>type~ufield3d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0491,-153.5253C283.9975,-133.5337 254.5149,-161.7693 214.4385,-209.5253 178.2932,-252.5968 194.7316,-277.1759 184.8279,-332.5253 178.8369,-366.0073 185.4373,-456.0538 166.8279,-484.5253 166.1187,-485.6104 165.3323,-486.6467 164.4832,-487.6357"/>
+<polygon fill="#000000" stroke="#000000" points="162.122,-485.0517 156.9832,-494.3169 166.7783,-490.2786 162.122,-485.0517"/>
+<text text-anchor="middle" x="292.2438" y="-152.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+<!-- type~ufield2d&#45;&gt;type~spect2d -->
+<g id="type~~sim_species~~InheritsGraph_edge45" class="edge">
+<title>type~ufield2d&#45;&gt;type~spect2d</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M315.7742,-468.2919C305.6566,-470.8119 294.6564,-475.0155 286.4385,-482.0253 272.6772,-493.7636 279.1123,-503.9229 268.4385,-518.5253 266.48,-521.2047 264.2302,-523.8483 261.883,-526.3642"/>
+<polygon fill="#000000" stroke="#000000" points="259.3846,-523.9126 254.7427,-533.4364 264.3106,-528.886 259.3846,-523.9126"/>
+<text text-anchor="middle" x="292.2438" y="-484.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">sp</text>
+</g>
+<!-- type~ufield2d&#45;&gt;type~parallel_pipe -->
+<g id="type~~sim_species~~InheritsGraph_edge47" class="edge">
+<title>type~ufield2d&#45;&gt;type~parallel_pipe</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M316.0082,-458.3326C307.9588,-455.7553 299.388,-452.2351 292.2438,-447.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-447.5253C249.9375,-419.635 307.3862,-368.4408 268.4385,-336.0253 249.9916,-320.6723 235.528,-324.5697 214.4385,-336.0253 172.2115,-358.9626 148.0533,-413.5399 137.4945,-443.664"/>
+<polygon fill="#000000" stroke="#000000" points="134.1553,-442.6139 134.3195,-453.2075 140.7974,-444.8237 134.1553,-442.6139"/>
+<text text-anchor="middle" x="241.4385" y="-338.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">p</text>
+</g>
+<!-- type~ufield2d&#45;&gt;type~perrors -->
+<g id="type~~sim_species~~InheritsGraph_edge46" class="edge">
+<title>type~ufield2d&#45;&gt;type~perrors</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M292.2438,-447.5253C259.793,-427.7347 245.9663,-461.7951 214.4385,-483.0253 202.3629,-491.1567 204.7993,-502.1697 190.6332,-505.5253"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M190.6332,-505.5253C183.453,-506.463 175.7445,-506.8878 168.3335,-507.0102"/>
+<polygon fill="#000000" stroke="#000000" points="168.1428,-503.5102 158.1406,-507.0036 168.1383,-510.5102 168.1428,-503.5102"/>
+<text text-anchor="middle" x="241.4385" y="-485.4253" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">err</text>
+</g>
+</g>
+</svg>
+</div><script>var pantypesim_speciesInheritsGraph = svgPanZoom('#typesim_speciesInheritsGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="176pt" height="31pt"
+ viewBox="0.00 0.00 175.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 171.8539,-26.5 171.8539,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="167.7082,-22.2554 72.2918,-22.2554 72.2918,-.2446 167.7082,-.2446 167.7082,-22.2554"/>
+<text text-anchor="middle" x="120" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a derived type to the parent type which it
+    extends. Dashed arrows point from a derived type to the other
+    types it contains as a components, with a label listing the name(s) of
+    said component(s).
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Inherited by</h3>
+      </div>
+      <div class="panel-body">
+     <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: type~~sim_species~~InheritedByGraph Pages: 1 -->
+<svg id="typesim_speciesInheritedByGraph" width="205pt" height="31pt"
+ viewBox="0.00 0.00 205.25 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~sim_species~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>type~~sim_species~~InheritedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 201.252,-26.5 201.252,4 -4,4"/>
+<!-- type~sim_species -->
+<g id="type~~sim_species~~InheritedByGraph_node1" class="node">
+<title>type~sim_species</title>
+<polygon fill="none" stroke="#000000" points="69.6561,-22.2554 .1144,-22.2554 .1144,-.2446 69.6561,-.2446 69.6561,-22.2554"/>
+<text text-anchor="middle" x="34.8853" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">sim_species</text>
+</g>
+<!-- type~simulation -->
+<g id="type~~sim_species~~InheritedByGraph_node2" class="node">
+<title>type~simulation</title>
+<g id="a_type~~sim_species~~InheritedByGraph_node2"><a xlink:href=".././type/simulation.html" xlink:title="simulation">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="197.3878,-22.2554 137.8456,-22.2554 137.8456,-.2446 197.3878,-.2446 197.3878,-22.2554"/>
+<text text-anchor="middle" x="167.6167" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">simulation</text>
+</a>
+</g>
+</g>
+<!-- type~simulation&#45;&gt;type~sim_species -->
+<g id="type~~sim_species~~InheritedByGraph_edge1" class="edge">
+<title>type~simulation&#45;&gt;type~sim_species</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M137.8292,-11.25C120.7249,-11.25 98.9066,-11.25 79.7625,-11.25"/>
+<polygon fill="#000000" stroke="#000000" points="79.7426,-7.7501 69.7426,-11.25 79.7426,-14.7501 79.7426,-7.7501"/>
+<text text-anchor="middle" x="103.876" y="-13.15" font-family="Helvetica,sans-Serif" font-size="9.50" fill="#000000">species</text>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="176pt" height="31pt"
+ viewBox="0.00 0.00 175.85 30.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 26.5)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-26.5 171.8539,-26.5 171.8539,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-22.2554 0,-22.2554 0,-.2446 54,-.2446 54,-22.2554"/>
+<text text-anchor="middle" x="27" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="167.7082,-22.2554 72.2918,-22.2554 72.2918,-.2446 167.7082,-.2446 167.7082,-22.2554"/>
+<text text-anchor="middle" x="120" y="-8.1" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a derived type to the parent type which it
+    extends. Dashed arrows point from a derived type to the other
+    types it contains as a components, with a label listing the name(s) of
+    said component(s).
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+    
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-p%7E10">p</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-err%7E7">err</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-sp3%7E3">sp3</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-sp2%7E3">sp2</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-pf%7E2">pf</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#variable-spe">spe</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#boundprocs-1">Type-Bound Procedures</a></h3></div>
+  <div id="boundprocs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-new%7E8">new</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-del%7E7">del</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-end_sim_species">end_sim_species</a>
+      
+      <a class="list-group-item" href="../type/sim_species.html#boundprocedure-init_sim_species">init_sim_species</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+    <section>
+    <h2>Components</h2>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-p%7E10"></span>class(<a href='../type/parallel_pipe.html'>parallel_pipe</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>p</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-err%7E7"></span>class(<a href='../type/perrors.html'>perrors</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>err</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sp3%7E3"></span>class(<a href='../type/spect3d.html'>spect3d</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>sp3</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sp2%7E3"></span>class(<a href='../type/spect2d.html'>spect2d</a>),</td>
+  
+  <td>private,</td>
+  <td>pointer</td><td>::</td>
+  <td><strong>sp2</strong></td><td>=> </td><td>null()</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-pf%7E2"></span>type(<a href='../type/fdist2d_wrap.html'>fdist2d_wrap</a>),</td>
+  
+  <td>private,</td>
+  <td>dimension(:), allocatable</td><td>::</td>
+  <td><strong>pf</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-spe"></span>type(<a href='../type/species2d.html'>species2d</a>),</td>
+  
+  <td>private,</td>
+  <td>dimension(:), allocatable</td><td>::</td>
+  <td><strong>spe</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+    
+    
+    
+    
+     
+    <section>
+    <h2>Type-Bound Procedures</h2>
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-new%7E8"></span><h3>generic, public :: <strong>new</strong>  => <a href='../type/sim_species.html#boundprocedure-init_sim_species'>init_sim_species</a> 
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/init_sim_species.html'>init_sim_species</a>(this, input, fields, s)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_species.html'>sim_species</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>type(<a href='../type/input_json.html'>input_json</a>),</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>input</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_fields.html'>sim_fields</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>fields</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>s</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-del%7E7"></span><h3>generic, public :: <strong>del</strong>  => <a href='../type/sim_species.html#boundprocedure-end_sim_species'>end_sim_species</a> 
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+         
+            
+    
+    <h3>
+private subroutine <a href='../proc/end_sim_species.html'>end_sim_species</a>(this)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_species.html'>sim_species</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+         
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-end_sim_species"></span><h3>procedure, private :: <strong>end_sim_species</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/end_sim_species.html'>end_sim_species</a>(this)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_species.html'>sim_species</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-init_sim_species"></span><h3>procedure, private :: <strong>init_sim_species</strong>  
+    
+  </h3></div>
+  
+  <ul class="list-group">
+    
+      <li class="list-group-item">
+      
+        
+          
+    
+    <h3>
+private subroutine <a href='../proc/init_sim_species.html'>init_sim_species</a>(this, input, fields, s)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_species.html'>sim_species</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>this</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>type(<a href='../type/input_json.html'>input_json</a>),</td>
+  <td>intent(inout),</td>
+  <td></td>
+  
+  <td>pointer</td><td>::</td>
+  <td><strong>input</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>class(<a href='../type/sim_fields.html'>sim_fields</a>),</td>
+  <td>intent(inout)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>fields</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>s</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+        
+      
+      </li>
+    
+  </ul>
+</div>
+
+    
+    </section>
+    
+    
+    
+    
+    </div>
+  </div>
+
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2018 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> QuickPIC was developed by Weiming An</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

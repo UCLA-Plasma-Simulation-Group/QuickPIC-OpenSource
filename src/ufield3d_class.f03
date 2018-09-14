@@ -45,6 +45,7 @@
          generic :: ag => acopyguard
          generic :: cp => copyin
          generic :: cb => copyout
+         generic :: ca => copyadd
          generic :: wr => writehdf5_3d, writehdf5_2dslice
          generic :: as => asc,asa
          generic :: add => sum
@@ -59,7 +60,7 @@
          procedure :: getnd3, getnvpz, getnd3p
          procedure :: getrf, getnoff
          procedure, private :: copyguard_pipe, acopyguard
-         procedure, private :: copyin, copyout
+         procedure, private :: copyin, copyout, copyadd
          procedure, private :: writehdf5_3d, writehdf5_2dslice
          procedure, private :: asc, asa, sum, minus, multiply
 
@@ -455,6 +456,38 @@
 !$OMP END PARALLEL DO
          call this%err%werrfl2(class//sname//' ended')
       end subroutine copyout
+!
+      subroutine copyadd(this,fd2d,lpos,sdim,ddim) 
+! copy 3d field from the local longitudinal position lpos to a 2d field
+         implicit none
+         
+         class(ufield3d), intent(inout) :: this
+         class(ufield2d), intent(in), target :: fd2d
+         integer, intent(in) :: lpos
+         integer, dimension(:), intent(in):: sdim, ddim
+! local data         
+         character(len=18), save :: sname = 'copyadd:'
+         real, dimension(:,:,:), pointer :: rf2d
+         integer :: i,j,k,rank,nd1,nd2
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         rf2d => fd2d%getrf()
+         rank = size(sdim)
+         nd1 = size(this%rf,2)
+         nd2 = size(this%rf,3)
+
+!$OMP PARALLEL DO PRIVATE(i,j,k)
+         do k = 1, nd2
+            do j = 1, nd1
+               do i = 1, rank
+                  rf2d(ddim(i),j,k) = rf2d(ddim(i),j,k) + this%rf(sdim(i),j,k,lpos)
+               enddo
+            enddo
+         enddo
+!$OMP END PARALLEL DO
+         call this%err%werrfl2(class//sname//' ended')
+      end subroutine copyadd
 !
       subroutine writehdf5_3d(this,file,dim,rtag,stag,id)
 
