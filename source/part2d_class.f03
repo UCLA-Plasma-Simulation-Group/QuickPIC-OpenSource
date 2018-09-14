@@ -214,7 +214,7 @@
          prof = pf%getnpf()         
          
          call pf%dist(this%part,this%npp,fd,s)
-         
+
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
          &this%xdim,this%npmax,mx,my,mx1,mxyp1,this%irc)
 ! check for errors
@@ -322,6 +322,12 @@
          &this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,this%dt,this%ci,ek,&
          &this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,this%ntmaxp,&
          &this%irc,dex)
+
+! check for errors
+         if (this%irc /= 0) then
+            write (erstr,*) 'PPGRBPPUSHF23L_QP error, irc=', this%irc
+            call this%err%equit(class//sname//erstr); return
+         endif
 
          call this%err%werrfl2(class//sname//' ended')
          
@@ -489,6 +495,12 @@
 
          call PPPCOPYOUT2(this%part,this%ppart,this%kpic,this%npp,&
          &this%npmax,this%nppmx0,this%xdim,mxyp1,this%irc)
+
+! check for errors
+         if (this%irc /= 0) then
+            write (erstr,*) 'PPPCOPYOUT2 overflow error, irc=', this%irc
+            call this%err%equit(class//sname//erstr); return
+         endif
 
          call this%err%werrfl2(class//sname//' ended')
          

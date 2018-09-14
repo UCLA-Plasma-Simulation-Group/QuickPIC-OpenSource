@@ -105,7 +105,7 @@
     "density" : 1.0,
     "center" : [6.389172934605045,6.389172934605045],
     "inner_radius" : [1.0,1.5],
-    "outer_radius" : [2.5, 2.0],
+    "outer_radius" : [2.5,2.0],
     "diag" :
     [
         {
