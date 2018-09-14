@@ -143,7 +143,7 @@
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
          call input%get(trim(s1)//'.density',den)
-         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
+         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4
          call input%get(trim(s1)//'.longitudinal_profile',this%long_prof)
          if (trim(this%long_prof) == 'piecewise') then
             call input%get(trim(s1)//'.piecewise_density',this%fs)
