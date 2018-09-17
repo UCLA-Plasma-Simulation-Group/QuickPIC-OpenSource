@@ -84,7 +84,7 @@
 
          integer :: npx, npy, npz
          real :: qm, sigx, sigy
-         real :: bcx, bcy, sigvx, sigvy, sigvz
+         real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
          real, dimension(:), allocatable :: fz, z
          logical :: quiet
@@ -311,7 +311,7 @@
          integer, intent(in) :: i        
 ! local data
          integer :: npf,npx,npy,npz,npmax
-         real :: qm,sigx,sigy,bcx,bcy,sigvx,sigvy,sigvz
+         real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
          logical :: quiet
          real :: min, max, cwp, n0
@@ -351,6 +351,8 @@
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
          alz = (max-min) 
          dz=alz/real(2**indz)
 
@@ -401,6 +403,7 @@
          this%qm = qm
          this%bcx = bcx/dx
          this%bcy = bcy/dy
+         this%bcz = bcz/dz
          this%sigx = sigx/dx
          this%sigy = sigy/dy
          this%sigvx = sigvx
@@ -461,7 +464,7 @@
          vtx = this%sigvx; vty = this%sigvy; vtz = this%sigvz
          vdx = 0.0; vdy = 0.0; vdz = this%gamma
          sigx = this%sigx; sigy = this%sigy
-         x0 = this%bcx; y0 = this%bcy
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
@@ -481,7 +484,7 @@
             end do
          end do
          
-         call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,0.0,sigx,sigy,&
+         call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,1,1,4,zf,lquiet,ierr)
 
