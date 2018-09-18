@@ -26,6 +26,7 @@
 !
 ! ndprof = profile type
          integer :: npf, npmax
+         logical :: evol = .true.
                          
          contains
          
@@ -35,7 +36,7 @@
          procedure(ab_init_fdist3d), deferred, private :: init_fdist3d
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
-         procedure :: getnpf, getnpmax
+         procedure :: getnpf, getnpmax, getevol
                   
       end type 
 
@@ -105,6 +106,17 @@
 
       end function getnpmax
 !      
+      function getevol(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: getevol
+         
+         getevol = this%evol
+
+      end function getevol
+!      
       subroutine end_fdist3d(this)
           
          implicit none
@@ -128,7 +140,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
-         logical :: quiet
+         logical :: quiet, evol
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz         
@@ -190,6 +202,8 @@
          call input%get(trim(s1)//'.gamma',gamma)
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+
 
 
          this%npf = npf
@@ -222,7 +236,7 @@
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
-
+         this%evol = evol
 
          call this%err%werrfl2(class//sname//' ended')
 
