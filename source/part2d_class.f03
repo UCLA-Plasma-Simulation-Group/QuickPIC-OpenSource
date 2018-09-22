@@ -322,6 +322,10 @@
          &this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,this%dt,this%ci,ek,&
          &this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,this%ntmaxp,&
          &this%irc,dex)
+         if (this%irc /= 0) then
+            write (erstr,*) 'PPGRBPPUSHF23L_QP error, irc=', this%irc
+            call this%err%equit(class//sname//erstr); return
+         endif
 
 ! check for errors
          if (this%irc /= 0) then
@@ -475,8 +479,7 @@
             write (erstr,*) 'PPPMOVIN2L overflow error, irc=', this%irc
             call this%err%equit(class//sname//erstr); return
          endif
-         
-         
+                  
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine partcopy
