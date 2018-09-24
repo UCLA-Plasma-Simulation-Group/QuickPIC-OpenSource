@@ -1,7 +1,7 @@
 {
 "simulation" : !note
 {
-    "nodes" : [32,2],  
+    "nodes" : [32,1], 
     "indx" : 8,
     "indy" : 8,
     "indz" : 8,
@@ -11,7 +11,7 @@
         "z" : [0,10.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 20.1,
+    "time" : 10.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -60,6 +60,7 @@
         }
     ]    
     },
+    
     {
     "evolution" : true,
     "profile" : 0,

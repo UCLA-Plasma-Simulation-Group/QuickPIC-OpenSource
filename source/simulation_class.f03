@@ -416,8 +416,11 @@
                allocate(fdist3d_001::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
 ! Add new distributions under this line
+            case (100)
+               allocate(fdist3d_100::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
             case default
-               write (erstr,*) 'Invalid species profile number:', npf
+               write (erstr,*) 'Invalid beam profile number:', npf
                call this%err%equit(class//sname//erstr)
             end select
 
