@@ -326,7 +326,7 @@
          call input%get(trim(s1)//'.inner_radius(2)',iry)
          call input%get(trim(s1)//'.outer_radius(1)',orx)
          call input%get(trim(s1)//'.outer_radius(2)',ory)
-         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()
+         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4
 
          this%npf = npf
          this%xppc = xppc
