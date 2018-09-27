@@ -415,10 +415,10 @@
             case (1)
                allocate(fdist3d_001::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
-! Add new distributions under this line
             case (100)
                allocate(fdist3d_100::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+! Add new distributions under this line
             case default
                write (erstr,*) 'Invalid beam profile number:', npf
                call this%err%equit(class//sname//erstr)
@@ -524,7 +524,13 @@
             case (10)
                allocate(fdist2d_010::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
-! Add new distributions under this line
+            case (11)
+               allocate(fdist2d_011::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+            case (12)
+               allocate(fdist2d_012::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
                call this%err%equit(class//sname//erstr)

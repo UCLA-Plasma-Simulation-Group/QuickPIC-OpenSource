@@ -569,7 +569,7 @@
          lb(1) = lb(1) - min
          ub(1) = ub(1) - min
          bcx = bcx - min
-         alx = (max-min)/cwp 
+         alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
@@ -579,7 +579,7 @@
          lb(2) = lb(2) - min
          ub(2) = ub(2) - min
          bcy = bcy -min
-         aly = (max-min)/cwp 
+         aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
@@ -589,7 +589,7 @@
          lb(3) = lb(3) - min
          ub(3) = ub(3) - min
          bcz = bcz -min
-         alz = (max-min)/cwp 
+         alz = (max-min) 
          dz=alz/real(2**indz)
 
          call input%get(trim(s1)//'.profile',npf)
@@ -608,17 +608,17 @@
          this%xppc = xppc
          this%yppc = yppc
          this%zppc = zppc
-         this%bcx = bcx/dx/cwp
-         this%bcy = bcy/dy/cwp
-         this%bcz = bcz/dz/cwp
-         this%lb(1) = lb(1)/dx/cwp
-         this%lb(2) = lb(2)/dy/cwp
-         this%lb(3) = lb(3)/dz/cwp
-         this%ub(1) = ub(1)/dx/cwp
-         this%ub(2) = ub(2)/dy/cwp
-         this%ub(3) = ub(3)/dz/cwp
-         this%r1 = r1/dx/cwp
-         this%r2 = r2/dx/cwp
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%lb(1) = lb(1)/dx
+         this%lb(2) = lb(2)/dy
+         this%lb(3) = lb(3)/dz
+         this%ub(1) = ub(1)/dx
+         this%ub(2) = ub(2)/dy
+         this%ub(3) = ub(3)/dz
+         this%r1 = r1/dx
+         this%r2 = r2/dx
          this%gamma = gamma
          this%np = np
 
@@ -636,7 +636,7 @@
          class(fdist3d_100), intent(inout) :: this
          real, dimension(:,:), pointer, intent(inout) :: part3d
          integer, intent(inout) :: npp
-         class(ufield3d), intent(in) :: fd
+         class(ufield3d), intent(in), pointer :: fd
 ! local data1
          real, dimension(:,:), pointer :: pt => null()
          integer :: xppc,yppc,zppc
@@ -679,8 +679,6 @@
          bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
          qm = this%qm
          bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
-
-         write (2,*) "bound2", bcx, bcy, bcz, r1, r2
 
          do i=int(lb(1)), int(ub(1))-1
             do j=int(lb(2)), int(ub(2))-1

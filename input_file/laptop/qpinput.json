@@ -11,7 +11,7 @@
         "z" : [0,10.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 10.1,
+    "time" : 30.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -20,7 +20,7 @@
     "read_restart" : false,
     "restart_timestep" : 1,
     "iter" : 1,
-    "verbose" : 0
+    "verbose" : 2
 },
 
 "beam" :
@@ -99,19 +99,73 @@
 "species" :
 [
     {
+    "profile" : 12,
+    "ppc" : [2,2],
+    "q" : -1.0,
+    "m" : 1.0,
+    "density" : 1.0,
+!    "longitudinal_profile" : "uniform",
+    "longitudinal_profile" : "piecewise",
+    "piecewise_density" : [1.0,1.5,2.5],
+    "piecewise_s" : [0.0,15.0,50.0],    
+    "center" : [0.0,0.0],
+    "piecewise_radial_density" : [0.0,1.0,1.0,0.0],
+    "piecewise_r" : [1.0,2.0,3.0,4.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge", "jx"],
+        "ndump" : 0
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        }
+    ]    
+    },
+    {
+    "profile" : 11,
+    "ppc" : [2,2],
+    "q" : -1.0,
+    "m" : 1.0,
+    "density" : 1.0,
+    "longitudinal_profile" : "piecewise",
+    "piecewise_density" : [1.0,1.5,2.5],
+    "piecewise_s" : [0.0,15.0,50.0],    
+    "center" : [0.0,0.0],
+    "radius" : 2.0,
+    "width" : 0.5,
+    "diag" :
+    [
+        {
+        "name" : ["charge", "jx"],
+        "ndump" : 0
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        }
+    ]    
+    },
+    {
     "profile" : 10,
     "ppc" : [2,2],
     "q" : -1.0,
     "m" : 1.0,
     "density" : 1.0,
-    "center" : [6.389172934605045,6.389172934605045],
+    "longitudinal_profile" : "piecewise",
+    "piecewise_density" : [1.0,1.5,2.5],
+    "piecewise_s" : [0.0,15.0,50.0],    
+    "center" : [0.0,0.0],
     "inner_radius" : [1.0,1.5],
     "outer_radius" : [2.5,2.0],
     "diag" :
     [
         {
         "name" : ["charge", "jx"],
-        "ndump" : 1
+        "ndump" : 0
         },
         {
         "name" : ["charge"],
