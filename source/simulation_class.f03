@@ -412,7 +412,13 @@
             case (0)
                allocate(fdist3d_000::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
-! Add new distributions under this line
+            case (1)
+               allocate(fdist3d_001::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+            case (2)
+               allocate(fdist3d_002::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
                call this%err%equit(class//sname//erstr)
@@ -515,7 +521,7 @@
             case (0)
                allocate(fdist2d_000::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
-! Add new distributions under this line
+! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
                call this%err%equit(class//sname//erstr)
