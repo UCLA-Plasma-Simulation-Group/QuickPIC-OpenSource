@@ -1,4 +1,540 @@
 c-----------------------------------------------------------------------
+      subroutine PRVDIST32_TWISS(part,qm,edges,npp,nps,alpha_x,alpha_y,
+     1beta_x,beta_y,emt_x,emt_y,sigz,vdx,vdy,vdz,vtz,npx,npy,npz,idimp ,
+     1npmax, nx, ny,nz,x0,y0,z0,mblok,nblok,idps,ierr,gamma,lquiet)
+c Cut-off at 3 sigma
+c cut-off by a circle
+c keep 1 + p^2 = gamma     
+c for 3d code, this subroutine calculates initial particle co-ordinates
+c and velocities using twiss parameters with 2D spatial decomposition.
+c part(1,n,m) = position x of particle n
+c part(2,n,m) = position y of particle n
+c part(3,n,m) = position z of particle n
+c part(4,n,m) = velocity vx of particle n
+c part(5,n,m) = velocity vy of particle n
+c part(6,n,m) = velocity vz of particle n
+c edges(1,m) = lower boundary in y of particle partition m
+c edges(2,m) = upper boundary in y of particle partition m
+c edges(3,m) = lower boundary in z of particle partition m
+c edges(4,m) = upper boundary in z of particle partition m
+c alpha, beta = twiss parameters
+c emt_x emt_y = normalized emittances
+c npx/npy/npz = initial number of particles distributed in x/y/z
+c direction
+c idimp = size of phase space = 6
+c npmax = max number of particles
+c nx/ny/nz = system length in x/y/z direction
+      implicit none
+      include "mpif.h"
+
+c      common /f77_common/ f77_log_unit, f77_output_unit
+c      integer f77_log_unit, f77_output_unit
+      character(len=60) strMessage
+
+c common block for parallel processing
+      integer nproc, lgrp, lstat, mreal, mint, mcplx, mdouble, lworld
+c lstat = length of status array
+      parameter(lstat=10)
+c lgrp = current communicator
+c mint = default datatype for integers
+c mreal = default datatype for reals
+      common /PPARMS/ nproc, lgrp, mreal, mint, mcplx, mdouble, lworld
+
+      real qm,x0,y0,z0,sigz,vdx,vdy,vdz,vtz, gamma
+      real part, edges, alpha_x, alpha_y, beta_x, beta_y, emt_x, emt_y
+      integer npx,npy,npz,idimp,nx,ny,nz
+      integer nps, npp, npmax, mblok, nblok, idps, ierr
+      dimension part(idimp,npmax,nblok)
+      dimension nps(nblok), npp(nblok)
+      dimension edges(idps,nblok)
+             
+      double precision randum, ranorm
+      real sigx,sigy,tvtx,tvty,tvtz,vtx,vty
+      integer isum2,iwork2
+      double precision sum0, sum1, sum2
+      real sum3,work3
+      dimension sum3(3), work3(3), isum2(2), iwork2(2)
+      integer one
+      integer pt,j,k,l, m, mnblok, npxy, npxyz
+      double precision r, tempz, tempx, tempy, dnpxyz
+      real tx,ty
+      real borderlx,borderly,borderlz, borderx, bordery, borderz
+      logical lquiet
+      integer my,mz,moff,k1,npt
+      double precision at1
+      real x2,y2
+
+      ierr = 0
+      npt = 1
+      dnpxyz = npx
+      dnpxyz = dnpxyz*npy
+      dnpxyz = dnpxyz*npz
+      x2 = 2.0 * x0
+      y2 = 2.0 * y0
+      
+      sigx = sqrt(beta_x*emt_x/gamma)
+      sigy = sqrt(beta_y*emt_y/gamma)
+      vtx = emt_x/sigx
+      vty = emt_y/sigy
+
+      borderlx = max((x0-3.0*sigx),1.0)
+      borderly = max((y0-3.0*sigy),1.0)
+      borderlz = max((z0-3.0*sigz),1.0)
+      borderx = min((x0+3.0*sigx),float(nx-1)) 
+      bordery = min((y0+3.0*sigy),float(ny-1))
+      borderz = min((z0+3.0*sigz),float(nz-1))
+      
+      j = 0
+      l = npz
+      do while (j<npx)
+      k = 0
+      do while (k<npy)
+      l = l - npz
+      do while (l<npz)
+
+  10    tempz = z0+sigz*ranorm()  
+        if (tempz>=(borderz) .or. tempz<=borderlz) goto 10
+        
+  20    tx = ranorm()
+        tempx = x0+sigx*tx
+        if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
+
+  30    ty = ranorm()
+        tempy = y0+sigy*ty
+        if (tempy>=(bordery) .or. tempy<=borderly) goto 30
+
+        if ((tx*tx+ty*ty) > 9.0) goto 20
+c  generate velocity 
+        tvtx = vtx*ranorm()
+        tvty = vty*ranorm()
+        tvtz = vtz*ranorm() + vdz
+
+        tvtx = tvtx - gamma*alpha_x/beta_x*(tempx-x0)
+        tvty = tvty - gamma*alpha_y/beta_y*(tempy-y0)
+!        tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
+        do 110 mz = 1, nblok
+        moff = mblok*(mz - 1)
+        do 100 my = 1, mblok
+        m = my + moff   
+c  check if particle belongs to this partition
+        if ((tempy.ge.edges(1,m)) .and. (tempy.lt.edges(2,m)) .and.     &
+     &      (tempz.ge.edges(3,m)) .and. (tempz.lt.edges(4,m)) ) then 
+          if (npt.le.npmax) then        
+            npt = npp(m) + 1
+            part(3,npt,m) = tempz 
+            part(1,npt,m) = tempx
+            part(2,npt,m) = tempy
+            part(4,npt,m) = tvtx
+            part(5,npt,m) = tvty
+            part(6,npt,m) = tvtz  
+            part(7,npt,m) = qm
+            npp(m) = npt
+          else
+            ierr = ierr + 1
+          endif
+c quiet start          
+          if (lquiet) then
+             if (npt.le.npmax) then
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = x2 - tempx
+                part(2,npt,m) = y2 - tempy
+                part(4,npt,m) = -tvtx
+                part(5,npt,m) = -tvty
+                part(6,npt,m) = tvtz  
+                part(7,npt,m) = qm
+                npp(m) = npt
+             else
+                ierr = ierr + 1
+             endif
+          endif
+        endif   
+  100   continue        
+  110   continue        
+        l = l + 1
+        if (lquiet) l = l + 1
+      enddo     
+      k = k + 1
+      enddo
+      j = j + 1
+      enddo
+c add correct drift
+      sum3(1) = 0.
+      sum3(2) = 0.
+      sum3(3) = 0.
+      mnblok = mblok*nblok
+      do 210 m = 1, mnblok
+      sum0 = 0.0d0
+      sum1 = 0.0d0
+      sum2 = 0.0d0
+      do 200 j = nps(m), npp(m)
+c      npxyz = npxyz + 1
+      sum0 = sum0 + part(4,j,m)
+      sum1 = sum1 + part(5,j,m)
+      sum2 = sum2 + part(6,j,m)
+  200 continue
+      sum3(1) = sum3(1) + sum0
+      sum3(2) = sum3(2) + sum1
+      sum3(3) = sum3(3) + sum2
+  210 continue
+      isum2(1) = ierr
+      isum2(2) = 0
+c use MPI call instead of PISUM      
+      iwork2 = isum2
+      call MPI_ALLREDUCE(iwork2,isum2,2,mint,MPI_SUM,lgrp,ierr) 
+      ierr = isum2(1)
+c process errors
+      if (ierr.gt.0) then
+         write (2,*) 'particle overflow error, ierr = ', ierr
+      endif
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine PRVDIST32_RAN_PFL(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
+     1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
+     2npmax,mblok,nblok,idps,dp,lquiet,ierr)
+c new quiet start
+c keep 1 + p^2 = gamma
+c for 3d code, this subroutine calculates initial particle co-ordinates
+c and velocities with 2D spatial decomposition. The longitudinal density 
+c profile is described by 1D array dp and transverse profile is gaussian.
+c velocity is maxwellian with drift. The method used is acceptance-
+c rejection method.
+c part(1,n,m) = position x of particle n in partition m
+c part(2,n,m) = position y of particle n in partition m
+c part(3,n,m) = position z of particle n in partition m
+c part(4,n,m) = velocity vx of particle n in partition m
+c part(5,n,m) = velocity vy of particle n in partition m
+c part(6,n,m) = velocity vz of particle n in partition m
+c edges(1,m) = lower boundary in y of particle partition m
+c edges(2,m) = upper boundary in y of particle partition m
+c edges(3,m) = lower boundary in z of particle partition m
+c edges(4,m) = upper boundary in z of particle partition m
+c npp(m) = number of particles in partition m
+c nps(m) = starting address of particles in partition m
+c vtx/vty/vtz = thermal velocity of electrons in x/y/z direction
+c vdx/vdy/vdz = drift velocity of beam electrons in x/y/z direction
+c npx/npy/npz = initial number of particles distributed in x/y/z
+c direction
+c nx/ny/nz = system length in x/y/z direction
+c idimp = size of phase space = 6
+c ipbc = particle boundary condition = (0,1,2,3) =
+c (none,xy periodic,xy reflecting, x reflecting/y periodic)
+c npmax = maximum number of particles in each partition
+c mblok/nblok = number of particle partitions in y/z
+c idps = number of partition boundaries
+c ierr = (0,1) = (no,yes) error condition exists
+c ranorm = gaussian random number with zero mean and unit variance
+c with spatial decomposition
+      implicit none
+
+c      common /f77_common/ f77_log_unit, f77_output_unit
+c      integer f77_log_unit, f77_output_unit
+      character(len=60) strMessage
+
+      integer nps,npp,npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,idps,ierr
+      integer mblok, ipbc
+      real part,edges,x0,y0,z0,sigx,sigy,vtx,vty,vtz,vdx,vdy,vdz,dp
+      double precision random,ranorm
+      real cx, cy, qm
+      real cdth,sdth
+      dimension part(idimp,npmax,nblok),dp(nz)
+      dimension edges(idps,nblok), npp(nblok), nps(nblok)
+      dimension cx(0:2),cy(0:2)
+      logical lquiet
+
+c local variables
+      real tmpu(1024),tmpz(1024)
+      integer xi, yi, zi 
+      integer npxyz,isum2,iwork2
+      integer j,k,l,m,my,mz,moff,mnblok,k1,npt
+      real xf, xs, yf, ys, zf, zs, u, amax, dpi
+      double precision sum0, sum1, sum2, dnpxyz
+      real at1,sum3,work3
+      real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
+      real tempx0,tempy0,tvtx0,tvty0
+      dimension sum3(3), work3(3), isum2(2), iwork2(2)
+c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
+      integer borderlx,borderly, borderx, bordery, nz1 
+      integer cnt
+
+      ierr = 0
+
+      cdth = sqrt(2.0)/2.0
+      sdth = sqrt(2.0)/2.0
+      
+      npt = 1
+!      npxyz = npx*npy*npz
+      dnpxyz = npx
+      dnpxyz = dnpxyz*npy
+      dnpxyz = dnpxyz*npz
+     
+      x2 = 2.0 * x0
+      y2 = 2.0 * y0
+      borderlx = max((x0-3.0*sigx),1.0)
+      borderly = max((y0-3.0*sigy),1.0)
+      borderx = min((x0+3.0*sigx),float(nx-1)) 
+      bordery = min((y0+3.0*sigy),float(ny-1))
+
+      nz1 = nz -1
+
+      
+      dp = abs(dp)
+      amax = maxval(dp)*1.2
+      dp = dp/amax
+      j=0
+      cnt = 0
+      l = npz
+      do while (j<npx)
+      k = 0
+      do while (k<npy)
+      l = l - npz
+      do while (l<npz)
+  495    if (cnt<=0) then
+            call RANDOM_NUMBER(tmpu)
+            call RANDOM_NUMBER(tmpz)
+            cnt=1024
+         endif
+         u=tmpu(cnt)
+         tempz=tmpz(cnt)*nz1
+         cnt=cnt-1
+         zi = int(tempz)
+         zf = tempz-zi
+         zs = 1.-zf
+         zi = zi+1
+        dpi = dp(zi)*zs + dp(zi+1)*zf    
+        if (u<=dpi) then  
+c particle is accepted        
+
+  20    tempx = x0+sigx*ranorm()
+        if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
+
+  30    tempy = y0+sigy*ranorm()
+        if (tempy>=(bordery) .or. tempy<=borderly) goto 30
+
+c  check if particle belongs to this partition
+             do m = 1, nblok
+              if ((tempy<edges(2,m)) .and. (tempy>edges(1,m)) .and.     &
+     & (tempz<edges(4,m)) .and. (tempz>edges(3,m))) then  
+                tvtx = vtx*ranorm()
+                tvty = vty*ranorm()
+                tvtz = vtz*ranorm() + vdz
+                tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
+                if (npt.le.npmax) then        
+                     npt = npp(m) + 1
+                     part(3,npt,m) = tempz
+                     tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
+     &,npt,m)-z0)-cx(0)                
+                     part(1,npt,m) = tempx + tempxx
+                     tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
+     &,npt,m)-z0)-cy(0)        
+                     part(2,npt,m) = tempy + tempyy 
+                     part(4,npt,m) = tvtx
+                     part(5,npt,m) = tvty
+                     part(6,npt,m) = tvtz  
+                     part(7,npt,m) = qm
+                     npp(m) = npt
+                else
+                     ierr = ierr + 1
+                endif     
+c quiet start
+                if (lquiet) then
+                   if (npt.le.npmax) then
+                tempx = tempx - x0
+                tempy = tempy - y0
+
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt                
+c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt
+c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                   else
+                      ierr = ierr + 1
+                   endif
+                endif
+
+              endif
+             enddo 
+
+        l = l + 1
+        if (lquiet) l = l + 7
+        endif
+      enddo 
+      k = k + 1
+      enddo
+      j = j + 1
+      enddo
+
+      write (2,*) "part. gen. done, now add drift" 
+      
+c      npxyz = 0
+c add correct drift
+      sum3(1) = 0.
+      sum3(2) = 0.
+      sum3(3) = 0.
+      mnblok = mblok*nblok
+      do 260 m = 1, mnblok
+      sum0 = 0.0d0
+      sum1 = 0.0d0
+      sum2 = 0.0d0
+      do 250 j = nps(m), npp(m)
+c      npxyz = npxyz + 1
+      sum0 = sum0 + part(4,j,m)
+      sum1 = sum1 + part(5,j,m)
+      sum2 = sum2 + part(6,j,m)
+  250 continue
+      sum3(1) = sum3(1) + sum0
+      sum3(2) = sum3(2) + sum1
+      sum3(3) = sum3(3) + sum2
+  260 continue
+      isum2(1) = ierr
+c      isum2(2) = npxyz
+c      call PISUM(isum2,iwork2,2,1)
+      ierr = isum2(1)
+c      npxyz = isum2(2)
+c      call PSUM(sum3,work3,3,1)
+c      at1 = 1./float(npxyz)
+c      sum3(1) = at1*sum3(1) - vdx
+c      sum3(2) = at1*sum3(2) - vdy
+c      sum3(3) = at1*sum3(3) - vdz
+c      do 280 m = 1, nblok
+c      do 270 j = nps(m), npp(m)
+c      part(4,j,m) = part(4,j,m) - sum3(1)
+c      part(5,j,m) = part(5,j,m) - sum3(2)
+c      part(6,j,m) = part(6,j,m) - sum3(3)
+c  270 continue
+c  280 continue
+c process errors
+      if (ierr.gt.0) then
+         write (2,*) 'particle overflow error, ierr = ', ierr
+      endif
+      return
+      end
+c-----------------------------------------------------------------------
       subroutine PRVDIST32_RANDOM(part,qm,edges,npp,nps,vtx,vty,vtz,vdx,
      1vdy,vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,mblok,nblok,idps,sig
      1x,sigy,sigz,x0,y0,z0,cx,cy,lquiet,ierr)

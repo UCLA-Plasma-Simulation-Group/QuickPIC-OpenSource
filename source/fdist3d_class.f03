@@ -14,7 +14,7 @@
 
       private
 
-      public :: fdist3d, fdist3d_000
+      public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002
 
       type, abstract :: fdist3d
 
@@ -26,6 +26,7 @@
 !
 ! ndprof = profile type
          integer :: npf, npmax
+         logical :: evol = .true.
                          
          contains
          
@@ -35,7 +36,7 @@
          procedure(ab_init_fdist3d), deferred, private :: init_fdist3d
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
-         procedure :: getnpf, getnpmax
+         procedure :: getnpf, getnpmax, getevol
                   
       end type 
 
@@ -77,7 +78,42 @@
          procedure, private :: dist3d => dist3d_000
 
       end type fdist3d_000
+!
+      type, extends(fdist3d) :: fdist3d_001
+! Bi Gaussian and piesewise in z (the same particle charge)
+         private
 
+         integer :: npx, npy, npz
+         real :: qm, sigx, sigy
+         real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
+         real, dimension(:), allocatable :: fz, z
+         logical :: quiet
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_001
+         procedure, private :: dist3d => dist3d_001
+
+      end type fdist3d_001
+!
+      type, extends(fdist3d) :: fdist3d_002
+! Twiss parameter and Gaussian in z (the same particle charge)
+         private
+
+         integer :: npx, npy, npz
+         real :: qm, sigvz, sigz
+         real :: bcx, bcy, bcz, alphax, alphay, betax, betay
+         real :: emitx, emity
+         real :: gamma,np
+         real, dimension(:), allocatable :: fz, z
+         logical :: quiet
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_002
+         procedure, private :: dist3d => dist3d_002
+
+      end type fdist3d_002
+!
       character(len=10), save :: class = 'fdist3d:'
       character(len=128), save :: erstr
       
@@ -105,6 +141,17 @@
 
       end function getnpmax
 !      
+      function getevol(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: getevol
+         
+         getevol = this%evol
+
+      end function getevol
+!      
       subroutine end_fdist3d(this)
           
          implicit none
@@ -128,7 +175,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
-         logical :: quiet
+         logical :: quiet, evol
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz         
@@ -190,6 +237,8 @@
          call input%get(trim(s1)//'.gamma',gamma)
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+
 
 
          this%npf = npf
@@ -222,7 +271,7 @@
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
-
+         this%evol = evol
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -284,5 +333,369 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_000
+!
+      subroutine init_fdist3d_001(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_001), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: npf,npx,npy,npz,npmax
+         real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
+         logical :: quiet
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz
+         integer :: ii
+         real :: sumz         
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_001:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.np(1)',npx)
+         call input%get(trim(s1)//'.np(2)',npy)
+         call input%get(trim(s1)//'.np(3)',npz)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.sigma(1)',sigx)
+         call input%get(trim(s1)//'.sigma(2)',sigy)
+         call input%get(trim(s1)//'.sigma_v(1)',sigvx)
+         call input%get(trim(s1)//'.sigma_v(2)',sigvy)
+         call input%get(trim(s1)//'.centroid_x(1)',cx1)
+         call input%get(trim(s1)//'.centroid_x(2)',cx2)
+         call input%get(trim(s1)//'.centroid_x(3)',cx3)
+         call input%get(trim(s1)//'.centroid_y(1)',cy1)
+         call input%get(trim(s1)//'.centroid_y(2)',cy2)
+         call input%get(trim(s1)//'.centroid_y(3)',cy3)
+         call input%get(trim(s1)//'.quiet_start',quiet)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.peak_density',np)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.piesewise_fz',this%fz)
+         call input%get(trim(s1)//'.piesewise_z',this%z)
+
+         sumz = 0.0
+         do ii = 2, size(this%z)
+            if (this%z(ii)<=this%z(ii-1)) then
+               write (erstr,*) 'Piesewise_z is not monotonically increasing'
+               call this%err%equit(class//sname//erstr)
+               return
+            end if
+            sumz = sumz + (this%fz(ii) + this%fz(ii-1))*&
+            &(this%z(ii) - this%z(ii-1))*0.5
+         end do
+         this%z = this%z/dz
+         this%npf = npf
+         this%npx = npx
+         this%npy = npy
+         this%npz = npz
+         this%npmax = npmax
+         qm = qm*abs(np)*(2*3.1415926535897932)*sigx*sigy*sumz
+         qm = qm*(2**indz)
+         qm = qm*(2**indx)
+         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/npy
+         qm = qm/npz
+         this%qm = qm
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%sigx = sigx/dx
+         this%sigy = sigy/dy
+         this%sigvx = sigvx
+         this%sigvy = sigvy
+         this%sigvz = sigvz
+         this%cx1 = cx1*dz*dz/dx
+         this%cx2 = cx2*dz/dx
+         this%cx3 = cx3/dx
+         this%cy1 = cy1*dz*dz/dy
+         this%cy2 = cy2*dz/dy
+         this%cy3 = cy3/dy
+         this%gamma = gamma
+         this%np = np
+         this%quiet = quiet
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_001
+!
+      subroutine dist3d_001(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_001), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: npx, npy, npz, nx, ny, nz, ipbc
+         real :: vtx, vty, vtz, vdx, vdy, vdz
+         real :: sigx, sigy, sigz, x0, y0, z0
+         real, dimension(3) :: cx, cy
+         real, dimension(4) :: edges
+         integer, dimension(2) :: noff
+         integer :: nps=1
+         logical :: lquiet = .false.
+         integer :: idimp, npmax, ierr = 0
+         integer :: nzf, i, j
+         real, dimension(:), allocatable :: zf
+         character(len=18), save :: sname = 'dist3d_001:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         npx = this%npx; npy = this%npy; npz = this%npz
+         nzf = size(this%z)
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         if ((this%z(1)>=nz) .or. (this%z(nzf)<=0)) then
+            npp = 0
+            return
+         end if
+         ipbc = this%sp%getpsolver()
+         pt => part3d
+         vtx = this%sigvx; vty = this%sigvy; vtz = this%sigvz
+         vdx = 0.0; vdy = 0.0; vdz = this%gamma
+         sigx = this%sigx; sigy = this%sigy
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
+         cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
+         lquiet = this%quiet
+         idimp = size(part3d,1); npmax = size(part3d,2)
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()
+         allocate(zf(nz))
+         zf = 0.0   
+         do i = 1, nz
+            do j = 2, nzf
+               if ((i>=this%z(j-1)) .and. (i<this%z(j))) then
+                  zf(i) = this%fz(j) + (this%fz(j-1)-this%fz(j))/&
+                  &(this%z(j-1)-this%z(j))*(real(i)-this%z(j))
+                  exit
+               end if
+            end do
+         end do
+         
+         call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
+         &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
+         &npmax,1,1,4,zf,lquiet,ierr)
+
+         if (ierr /= 0) then
+            write (erstr,*) 'PRVDIST32_RAN_PFL error'
+            call this%err%equit(class//sname//erstr)
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_001
+!
+      subroutine init_fdist3d_002(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_002), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: npf,npx,npy,npz,npmax
+         real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvz
+         real, dimension(2) :: alpha, beta, emit
+         real :: gamma,np
+         logical :: quiet, evol
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz         
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_002:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.np(1)',npx)
+         call input%get(trim(s1)//'.np(2)',npy)
+         call input%get(trim(s1)//'.np(3)',npz)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.sigmaz',sigz)
+         call input%get(trim(s1)//'.sigma_vz',sigvz)
+         call input%get(trim(s1)//'.alpha(1)',alpha(1))
+         call input%get(trim(s1)//'.alpha(2)',alpha(2))
+         call input%get(trim(s1)//'.beta(1)',beta(1))
+         call input%get(trim(s1)//'.beta(2)',beta(2))
+         call input%get(trim(s1)//'.emittance(1)',emit(1))
+         call input%get(trim(s1)//'.emittance(2)',emit(2))
+         call input%get(trim(s1)//'.quiet_start',quiet)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.peak_density',np)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+
+         this%npf = npf
+         this%npx = npx
+         this%npy = npy
+         this%npz = npz
+         this%npmax = npmax
+         sigx = sqrt(beta(1)*emit(1)/gamma)
+         sigy = sqrt(beta(2)*emit(2)/gamma)
+         qm = qm*np*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm*(2**indz)
+         qm = qm*(2**indx)
+         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/npy
+         qm = qm/npz
+         this%qm = qm
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%sigz = sigz/dz
+         this%sigvz = sigvz
+         this%alphax = alpha(1)
+         this%alphay = alpha(2)
+         this%betax = beta(1)/dx
+         this%betay = beta(2)/dy
+         this%emitx = emit(1)/dx
+         this%emity = emit(2)/dy
+         this%gamma = gamma
+         this%np = np
+         this%quiet = quiet
+         this%evol = evol
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_002
+!
+      subroutine dist3d_002(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_002), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: npx, npy, npz, nx, ny, nz, ipbc
+         real :: vtz, vdx, vdy, vdz
+         real :: sigz, x0, y0, z0
+         real :: alphax, betax, emitx
+         real :: alphay, betay, emity
+         real, dimension(4) :: edges
+         integer, dimension(2) :: noff
+         integer :: nps=1
+         logical :: lquiet = .false.
+         integer :: idimp, npmax, ierr = 0
+         character(len=18), save :: sname = 'dist3d_002:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         npx = this%npx; npy = this%npy; npz = this%npz
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         ipbc = this%sp%getpsolver()
+         pt => part3d
+         sigz = this%sigz; vtz = this%sigvz
+         vdx = 0.0; vdy = 0.0; vdz = this%gamma
+         alphax = this%alphax; alphay = this%alphay
+         betax = this%betax; betay = this%betay
+         emitx = this%emitx; emity = this%emity
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
+         lquiet = this%quiet
+         idimp = size(part3d,1); npmax = size(part3d,2)
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()         
+         
+         call PRVDIST32_TWISS(pt,this%qm,edges,npp, nps, alphax,alphay,   &
+         &betax,betay, emitx,emity,sigz,vdx,vdy,vdz,vtz,npx,npy,npz,idimp,&
+         &npmax,nx,ny,nz,x0,y0,z0,1,1,4,ierr,vdz,lquiet)
+
+         ! call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
+         ! &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
+         ! &x0,y0,z0,cx,cy,lquiet,ierr)
+
+         if (ierr /= 0) then
+            write (erstr,*) 'PRVDIST32_RANDOM error'
+            call this%err%equit(class//sname//erstr)
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_002
 !
       end module fdist3d_class
