@@ -27,6 +27,41 @@
 [
     {
     "evolution" : true,
+    "profile" : 2,
+    "np" : [64,64,128],
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "gamma" : 20000,
+    "peak_density" : 2.5,
+    "quiet_start" : true,
+    "center" : [0.0,0.0,2.5],
+    "alpha" : [5.0,2.0],
+    "beta" : [1666.6666667,1666.6666667],
+    "emittance" : [0.75,0.75],
+    "sigmaz" : 0.4,
+    "sigma_vz" : 100.0,
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
+    },
+
+    {
+    "evolution" : true,
     "profile" : 1,
     "np" : [64,64,128],
     "npmax" : 4000000,
@@ -60,7 +95,7 @@
         }
     ]    
     },
-    
+
     {
     "evolution" : true,
     "profile" : 0,

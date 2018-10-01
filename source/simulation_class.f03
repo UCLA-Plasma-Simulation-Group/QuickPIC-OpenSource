@@ -415,10 +415,13 @@
             case (1)
                allocate(fdist3d_001::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            case (2)
+               allocate(fdist3d_002::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
             case (100)
                allocate(fdist3d_100::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
-! Add new distributions under this line
+! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid beam profile number:', npf
                call this%err%equit(class//sname//erstr)

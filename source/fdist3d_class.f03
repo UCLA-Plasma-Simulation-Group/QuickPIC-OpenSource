@@ -14,7 +14,7 @@
 
       private
 
-      public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_100
+      public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
 
       type, abstract :: fdist3d
 
@@ -64,7 +64,7 @@
       end interface
 !
       type, extends(fdist3d) :: fdist3d_000
-
+! Tri Gaussian profile (the same particle charge)
          private
 
          integer :: npx, npy, npz
@@ -80,7 +80,7 @@
       end type fdist3d_000
 !
       type, extends(fdist3d) :: fdist3d_001
-
+! Bi Gaussian and piesewise in z (the same particle charge)
          private
 
          integer :: npx, npy, npz
@@ -96,8 +96,26 @@
 
       end type fdist3d_001
 !
-      type, extends(fdist3d) :: fdist3d_100
+      type, extends(fdist3d) :: fdist3d_002
+! Twiss parameter and Gaussian in z (the same particle charge)
+         private
 
+         integer :: npx, npy, npz
+         real :: qm, sigvz, sigz
+         real :: bcx, bcy, bcz, alphax, alphay, betax, betay
+         real :: emitx, emity
+         real :: gamma,np
+         real, dimension(:), allocatable :: fz, z
+         logical :: quiet
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_002
+         procedure, private :: dist3d => dist3d_002
+
+      end type fdist3d_002
+!
+      type, extends(fdist3d) :: fdist3d_100
+! Ring profile
          private
 
          integer :: xppc, yppc, zppc
@@ -527,6 +545,175 @@
          
       end subroutine dist3d_001
 !
+      subroutine init_fdist3d_002(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_002), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: npf,npx,npy,npz,npmax
+         real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvz
+         real, dimension(2) :: alpha, beta, emit
+         real :: gamma,np
+         logical :: quiet, evol
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz         
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_002:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.np(1)',npx)
+         call input%get(trim(s1)//'.np(2)',npy)
+         call input%get(trim(s1)//'.np(3)',npz)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.sigmaz',sigz)
+         call input%get(trim(s1)//'.sigma_vz',sigvz)
+         call input%get(trim(s1)//'.alpha(1)',alpha(1))
+         call input%get(trim(s1)//'.alpha(2)',alpha(2))
+         call input%get(trim(s1)//'.beta(1)',beta(1))
+         call input%get(trim(s1)//'.beta(2)',beta(2))
+         call input%get(trim(s1)//'.emittance(1)',emit(1))
+         call input%get(trim(s1)//'.emittance(2)',emit(2))
+         call input%get(trim(s1)//'.quiet_start',quiet)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.peak_density',np)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+
+         this%npf = npf
+         this%npx = npx
+         this%npy = npy
+         this%npz = npz
+         this%npmax = npmax
+         sigx = sqrt(beta(1)*emit(1)/gamma)
+         sigy = sqrt(beta(2)*emit(2)/gamma)
+         qm = qm*np*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm*(2**indz)
+         qm = qm*(2**indx)
+         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/npy
+         qm = qm/npz
+         this%qm = qm
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%sigz = sigz/dz
+         this%sigvz = sigvz
+         this%alphax = alpha(1)
+         this%alphay = alpha(2)
+         this%betax = beta(1)/dx
+         this%betay = beta(2)/dy
+         this%emitx = emit(1)/dx
+         this%emity = emit(2)/dy
+         this%gamma = gamma
+         this%np = np
+         this%quiet = quiet
+         this%evol = evol
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_002
+!
+      subroutine dist3d_002(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_002), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: npx, npy, npz, nx, ny, nz, ipbc
+         real :: vtz, vdx, vdy, vdz
+         real :: sigz, x0, y0, z0
+         real :: alphax, betax, emitx
+         real :: alphay, betay, emity
+         real, dimension(4) :: edges
+         integer, dimension(2) :: noff
+         integer :: nps=1
+         logical :: lquiet = .false.
+         integer :: idimp, npmax, ierr = 0
+         character(len=18), save :: sname = 'dist3d_002:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         npx = this%npx; npy = this%npy; npz = this%npz
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         ipbc = this%sp%getpsolver()
+         pt => part3d
+         sigz = this%sigz; vtz = this%sigvz
+         vdx = 0.0; vdy = 0.0; vdz = this%gamma
+         alphax = this%alphax; alphay = this%alphay
+         betax = this%betax; betay = this%betay
+         emitx = this%emitx; emity = this%emity
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
+         lquiet = this%quiet
+         idimp = size(part3d,1); npmax = size(part3d,2)
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()         
+         
+         call PRVDIST32_TWISS(pt,this%qm,edges,npp, nps, alphax,alphay,   &
+         &betax,betay, emitx,emity,sigz,vdx,vdy,vdz,vtz,npx,npy,npz,idimp,&
+         &npmax,nx,ny,nz,x0,y0,z0,1,1,4,ierr,vdz,lquiet)
+
+         ! call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
+         ! &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
+         ! &x0,y0,z0,cx,cy,lquiet,ierr)
+
+         if (ierr /= 0) then
+            write (erstr,*) 'PRVDIST32_RANDOM error'
+            call this%err%equit(class//sname//erstr)
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_002
+!
       subroutine init_fdist3d_100(this,input,i)
       
          implicit none
@@ -709,11 +896,6 @@
          enddo
 
          npp = nps - 1
-
-         ! if (ierr /= 0) then
-         !    write (erstr,*) 'PRVDIST32_RANDOM error'
-         !    call this%err%equit(class//sname//erstr)
-         ! endif
          
          call this%err%werrfl2(class//sname//' ended')
          
