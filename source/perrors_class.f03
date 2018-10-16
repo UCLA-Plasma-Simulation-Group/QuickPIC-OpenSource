@@ -48,16 +48,9 @@
          integer, intent(in) :: eunit, monitor
 ! local data
          character(len=20) :: str
-         character(len=8) :: cn
-         integer :: k, l
          integer :: ierror
 
-         write(str,*) prl%getidproc()
-         cn = '00000000'
-         str = trim(adjustl(str))
-         l = len_trim(str)
-         k = 8
-         cn(k+1-l:k) = str(1:l)
+         write(str,'(I8.8)') prl%getidproc()
                                    
          this%p => prl
          this%eunit = eunit
@@ -71,7 +64,7 @@
          
          call MPI_BARRIER(this%p%getlworld(),ierror)
          
-         call set_ename(eunit,'./ELOG/elog-'//cn)
+         call set_ename(eunit,'./ELOG/elog-'//trim(str))
          call dtimer(dtime,itime,-1)
                
       end subroutine init_perrors      
@@ -154,6 +147,7 @@
             return
             
          else
+
             call dtimer(dtime,itime,1)
             write (tstr,'(f12.3)') dtime
             write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
