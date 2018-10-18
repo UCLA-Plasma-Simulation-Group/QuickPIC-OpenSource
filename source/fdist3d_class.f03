@@ -80,7 +80,7 @@
       end type fdist3d_000
 !
       type, extends(fdist3d) :: fdist3d_001
-! Bi Gaussian and piesewise in z (the same particle charge)
+! Bi Gaussian and piecewise in z (the same particle charge)
          private
 
          integer :: npx, npy, npz
@@ -413,6 +413,7 @@
          call input%get(trim(s1)//'.sigma(2)',sigy)
          call input%get(trim(s1)//'.sigma_v(1)',sigvx)
          call input%get(trim(s1)//'.sigma_v(2)',sigvy)
+         call input%get(trim(s1)//'.sigma_v(3)',sigvz)
          call input%get(trim(s1)//'.centroid_x(1)',cx1)
          call input%get(trim(s1)//'.centroid_x(2)',cx2)
          call input%get(trim(s1)//'.centroid_x(3)',cx3)
@@ -423,13 +424,13 @@
          call input%get(trim(s1)//'.gamma',gamma)
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
-         call input%get(trim(s1)//'.piesewise_fz',this%fz)
-         call input%get(trim(s1)//'.piesewise_z',this%z)
+         call input%get(trim(s1)//'.piecewise_fz',this%fz)
+         call input%get(trim(s1)//'.piecewise_z',this%z)
 
          sumz = 0.0
          do ii = 2, size(this%z)
             if (this%z(ii)<=this%z(ii-1)) then
-               write (erstr,*) 'Piesewise_z is not monotonically increasing'
+               write (erstr,*) 'Piecewise_z is not monotonically increasing'
                call this%err%equit(class//sname//erstr)
                return
             end if
