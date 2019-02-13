@@ -964,7 +964,7 @@
                enddo
 
                do i = 1, 3
-                  buff(1:tnpp) = part((i+2),1:(1+(tnpp-1)*dspl):dspl) 
+                  buff(1:tnpp) = part((i+2),1:(1+(tnpp-1)*dspl):dspl)*delta(1) 
                   ldim(1) = tp
                   call h5screate_simple_f(1, ldim, dspace_id, ierr)
                   call h5dcreate_f(rootID, 'p'//char(iachar('0')+i), treal,&
@@ -983,7 +983,7 @@
                   call h5dclose_f(dset_id, ierr)
                enddo
 
-               buff(1:tnpp) = part((i+2),1:(1+(tnpp-1)*dspl):dspl) 
+               buff(1:tnpp) = part(8,1:(1+(tnpp-1)*dspl):dspl) 
                ldim(1) = tp
                call h5screate_simple_f(1, ldim, dspace_id, ierr)
                call h5dcreate_f(rootID, 'q', treal,&
