@@ -29,6 +29,7 @@
          class(part3d), pointer :: pd
          class(field3d), pointer :: q => null()
          class(fdist3d), pointer :: pf => null()
+         logical :: evol
          contains
          
          generic :: new => init_beam3d
@@ -82,6 +83,7 @@
          call this%err%werrfl2(class//sname//' started')
 
          allocate(this%pd,this%q)
+         this%evol = pf%getevol()
          call this%q%new(this%p,this%err,this%sp,dim=1)
          call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim)
          call this%pmv(this%q,1,1,id)
@@ -161,7 +163,12 @@
          character(len=18), save :: sname = 'partpush'
 
          call this%err%werrfl2(class//sname//' started')
-         
+
+         if (.not. this%evol) then
+            call this%err%werrfl2(class//sname//' ended')
+            return
+         end if
+
          call this%pd%push(ef%getrs(),bf%getrs(),dex,dez)
          
          call this%pmv(ef,rtag,stag,sid)
