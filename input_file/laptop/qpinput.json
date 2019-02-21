@@ -27,6 +27,33 @@
 [
     {
     "evolution" : true,
+    "profile" : 3,
+    "np" : 1000000,
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "center" : [0.0,0.0,2.5],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
+    },
+
+    {
+    "evolution" : true,
     "profile" : 2,
     "np" : [64,64,128],
     "npmax" : 4000000,
