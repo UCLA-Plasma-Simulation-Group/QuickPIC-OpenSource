@@ -122,7 +122,7 @@
 
          integer :: npt
          real :: bcx, bcy, bcz, dx, dy, dz, cwp
-         character(len=128), allocatable :: file
+         character(len=:), allocatable :: file
 
          contains
          procedure, private :: init_fdist3d => init_fdist3d_003
@@ -745,7 +745,6 @@
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz
-         character(len=:), allocatable :: file
          character(len=20) :: sn,s1
          character(len=18), save :: sname = 'init_fdist3d_003:'
 
@@ -788,12 +787,11 @@
          call input%get(trim(s1)//'.np',npt)
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
-         call input%get(trim(s1)//'.file_name',file)
+         call input%get(trim(s1)//'.file_name',this%file)
 
          this%npf = npf
          this%npt = npt
          this%npmax = npmax
-         this%file = trim(file)
          this%bcx = bcx/dx
          this%bcy = bcy/dy
          this%bcz = bcz/dz
