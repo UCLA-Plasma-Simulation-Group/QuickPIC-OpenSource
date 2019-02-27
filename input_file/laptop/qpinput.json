@@ -11,7 +11,7 @@
         "z" : [0,10.0]},
     "boundary" : "conducting",
     "n0" : 1.0e16,
-    "time" : 30.1,
+    "time" : 10.1,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -25,6 +25,67 @@
 
 "beam" :
 [
+    {
+    "evolution" : true,
+    "profile" : 0,
+    "np" : [64,64,128],
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "gamma" : 20000,
+    "peak_density" : 2.5,
+    "quiet_start" : true,
+    "center" : [0.0,0.0,3.75],
+    "sigma" : [0.25,0.25,0.4],
+    "sigma_v" : [3.0,3.0,100.0],
+    "centroid_x" : [0.0,0.0,0.0],
+    "centroid_y" : [0.0,0.0,0.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
+    },
+
+    {
+    "evolution" : true,
+    "profile" : 3,
+    "np" : 1000000,
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "center" : [0.0,0.0,2.5],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 1,
+        "sample" : 10
+        }
+    ]    
+    },
+
     {
     "evolution" : true,
     "profile" : 2,
@@ -75,40 +136,6 @@
     "sigma_v" : [3.0,3.0,100.0],
     "piecewise_fz" : [0.0,1.0,0.0],
     "piecewise_z" : [2.0,10.0,10.1],   
-    "centroid_x" : [0.0,0.0,0.0],
-    "centroid_y" : [0.0,0.0,0.0],
-    "diag" :
-    [
-        {
-        "name" : ["charge"],
-        "ndump" : 1
-        },
-        {
-        "name" : ["charge"],
-        "ndump" : 1,
-        "slice" : [["xz", 129],["yz",129],["xy",20]]
-        },
-        {
-        "name" : ["raw"],
-        "ndump" : 1,
-        "sample" : 10
-        }
-    ]    
-    },
-
-    {
-    "evolution" : true,
-    "profile" : 0,
-    "np" : [64,64,128],
-    "npmax" : 4000000,
-    "q" : 1.0,
-    "m" : 1.0,
-    "gamma" : 20000,
-    "peak_density" : 2.5,
-    "quiet_start" : true,
-    "center" : [0.0,0.0,3.75],
-    "sigma" : [0.25,0.25,0.4],
-    "sigma_v" : [3.0,3.0,100.0],
     "centroid_x" : [0.0,0.0,0.0],
     "centroid_y" : [0.0,0.0,0.0],
     "diag" :
