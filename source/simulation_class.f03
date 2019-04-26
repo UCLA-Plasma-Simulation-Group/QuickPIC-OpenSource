@@ -303,7 +303,7 @@
                      &//'('//trim(s3)//')',ff)
                      if (ff == 'jx' .or. ff == 'jy' .or. ff == 'jz') then
                         allocate(this%cu3d)
-                        call this%cu3d%new(this%p,this%err,this%sp3,dim=1)
+                        call this%cu3d%new(this%p,this%err,this%sp3,dim=3)
                         exit loop1
                      end if
                   end do
