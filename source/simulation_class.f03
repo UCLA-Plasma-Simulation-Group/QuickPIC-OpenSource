@@ -1257,7 +1257,7 @@
          n = size(this%diag)
 
          do i = 1, n
-            if (mod(this%tstep-1,this%diag(i)%df) == 0) then
+            if (mod(this%tstep,this%diag(i)%df) == 0) then
                call this%diag(i)%file%new(n = this%tstep, t = this%tstep*dt)
                select type (obj => this%diag(i)%obj)
                type is (field3d)
