@@ -15,6 +15,8 @@
       private
 
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
+      public :: fdist3d_003
+
 
       type, abstract :: fdist3d
 
@@ -113,6 +115,20 @@
          procedure, private :: dist3d => dist3d_002
 
       end type fdist3d_002
+!
+      type, extends(fdist3d) :: fdist3d_003
+! Read external particle data files
+         private
+
+         integer :: npt
+         real :: bcx, bcy, bcz, dx, dy, dz, cwp
+         character(len=:), allocatable :: file
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_003
+         procedure, private :: dist3d => dist3d_003
+
+      end type fdist3d_003
 !
       type, extends(fdist3d) :: fdist3d_100
 ! Ring profile
@@ -262,10 +278,9 @@
          this%npy = npy
          this%npz = npz
          this%npmax = npmax
-         qm = qm*np*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
-         qm = qm*(2**indz)
-         qm = qm*(2**indx)
-         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/abs(qm)*abs(np)*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm/dx/dy/dz
+         qm = qm/npx
          qm = qm/npy
          qm = qm/npz
          this%qm = qm
@@ -443,10 +458,9 @@
          this%npy = npy
          this%npz = npz
          this%npmax = npmax
-         qm = qm*abs(np)*(2*3.1415926535897932)*sigx*sigy*sumz
-         qm = qm*(2**indz)
-         qm = qm*(2**indx)
-         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/abs(qm)*abs(np)*(2*3.1415926535897932)*sigx*sigy*sumz
+         qm = qm/dx/dy/dz
+         qm = qm/npx
          qm = qm/npy
          qm = qm/npz
          this%qm = qm
@@ -625,10 +639,9 @@
          this%npmax = npmax
          sigx = sqrt(beta(1)*emit(1)/gamma)
          sigy = sqrt(beta(2)*emit(2)/gamma)
-         qm = qm*np*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
-         qm = qm*(2**indz)
-         qm = qm*(2**indx)
-         qm = qm*(2**indy)/(npx*alx*aly*alz) 
+         qm = qm/abs(qm)*abs(np)*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm/dx/dy/dz
+         qm = qm/npx
          qm = qm/npy
          qm = qm/npz
          this%qm = qm
@@ -714,6 +727,156 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_002
+!
+      subroutine init_fdist3d_003(this,input,i)
+
+         implicit none
+
+         class(fdist3d_003), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i
+! local data
+         integer :: npt, npmax, npf
+         real :: bcx, bcy, bcz
+         logical :: evol
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_003:'
+
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         cwp=5.32150254*1e9/sqrt(n0)
+         this%cwp = cwp
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.np',npt)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+         call input%get(trim(s1)//'.file_name',this%file)
+
+         this%npf = npf
+         this%npt = npt
+         this%npmax = npmax
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%dx = dx
+         this%dy = dy
+         this%dz = dz
+         this%evol = evol
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_003
+!
+      subroutine dist3d_003(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_003), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: part
+         integer :: npt, nx, ny, nz, ipbc, i
+         real :: x0, y0, z0, dx, dy, dz, cwp
+         real, dimension(4) :: edges
+         integer, dimension(2) :: noff
+         integer :: nps
+         integer :: idimp, npmax, ierr
+         real tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
+         character(len=18), save :: sname = 'dist3d_003:'
+
+         call this%err%werrfl2(class//sname//' started')
+
+         nps = 1
+         ierr = 0
+         npt = this%npt
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         ipbc = this%sp%getpsolver()
+         part => part3d
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
+         dx = this%dx; dy = this%dy; dz = this%dz; cwp = this%cwp
+         idimp = size(part3d,1); npmax = size(part3d,2)
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()         
+         
+         open(unit=85,file=trim(this%file),status='old',action='read')
+         
+         do i = 1, npt
+         
+            read(85,*,iostat=ierr) tempz,tempx,tempy,tempvz,tempvx,tempvy,tempq
+            
+            tempx = tempx/cwp/dx + x0
+            tempy = tempy/cwp/dy + y0
+            tempz = -tempz/cwp/dz
+
+            if ((tempx>=1) .and. tempx<=(nx-1) .and. (tempy >= edges(1))&
+            & .and. (tempy < edges(2)) .and. (tempz >= edges(3)) .and. (t&
+            &empz < edges(4))) then
+              part(1,nps) = tempx
+              part(4,nps) = tempvx
+              part(2,nps) = tempy
+              part(5,nps) = tempvy
+              part(3,nps) = tempz
+              part(6,nps) = tempvz
+              part(7,nps) = tempq
+              nps = nps + 1
+              cycle
+            endif     
+         enddo
+         
+         npp = nps - 1
+         close(85)
+
+         if (ierr /= 0) then
+            write (erstr,*) 'Read beam file error'
+            call this%err%equit(class//sname//erstr)
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_003
 !
       subroutine init_fdist3d_100(this,input,i)
       
@@ -833,13 +996,15 @@
          real :: r1, r2, tx, ty, tz, a1, a2, a3, a4
          real :: gamma, np
          integer, dimension(2) :: noff
-         integer :: nps = 1
+         integer :: nps
          integer :: i, j, k, ix, iy, iz
-         integer :: idimp, npmax, ierr = 0
+         integer :: idimp, npmax, ierr
          character(len=18), save :: sname = 'dist3d_100:'
 
          call this%err%werrfl2(class//sname//' started')
          
+         nps = 1
+         ierr = 0
          xppc = this%xppc; yppc = this%yppc; zppc = this%zppc;
          noff = fd%getnoff()
          lb(1) = max(this%lb(1),0.0)
