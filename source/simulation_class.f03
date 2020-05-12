@@ -204,8 +204,8 @@
          call this%in%get('simulation.nspecies',this%nspecies)
 
          call this%fields%new(this%in)
-         call this%beams%new(this%in,this%fields)
-         call this%species%new(this%in,this%fields,(this%start3d-1)*dt)
+         call this%beams%new(this%in)
+         call this%species%new(this%in,(this%start3d-1)*dt)
 
          call this%init_diag()
 
@@ -371,13 +371,12 @@
 
       end subroutine end_sim_fields
 !
-      subroutine init_sim_beams(this,input,fields)
+      subroutine init_sim_beams(this,input)
 
          implicit none
 
          class(sim_beams), intent(inout) :: this
          type(input_json), pointer, intent(inout) :: input
-         class(sim_fields), intent(inout) :: fields
 ! local data
          character(len=18), save :: class = 'sim_beams:'
          character(len=18), save :: sname = 'init_sim_beams:'
@@ -480,13 +479,12 @@
 
       end subroutine end_sim_beams
 !
-      subroutine init_sim_species(this,input,fields,s)
+      subroutine init_sim_species(this,input,s)
 
          implicit none
 
          class(sim_species), intent(inout) :: this
          type(input_json), pointer, intent(inout) :: input
-         class(sim_fields), intent(inout) :: fields
          real, intent(in) :: s
 ! local data
          character(len=18), save :: class = 'sim_species:'
