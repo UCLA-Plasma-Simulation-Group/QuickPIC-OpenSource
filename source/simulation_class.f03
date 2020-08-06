@@ -1,5 +1,5 @@
 ! simulation module for QuickPIC Open Source 1.0
-! update: 01/09/2018
+! update: 08/06/2020
 
       module simulation_class
 
@@ -419,6 +419,9 @@
                call this%pf(i)%p%new(input,i)
             case (3)
                allocate(fdist3d_003::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+            case (4)
+               allocate(fdist3d_004::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
             case (100)
                allocate(fdist3d_100::this%pf(i)%p)

@@ -1,5 +1,5 @@
 ! fdist3d class for QuickPIC Open Source 1.0
-! update: 04/18/2016
+! update: 08/06/2020
 
       module fdist3d_class
 
@@ -9,13 +9,14 @@
       use ufield3d_class
       use part3d_lib
       use input_class
+      use hdf5io_class
          
       implicit none
 
       private
 
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
-      public :: fdist3d_003
+      public :: fdist3d_003, fdist3d_004
 
 
       type, abstract :: fdist3d
@@ -117,7 +118,7 @@
       end type fdist3d_002
 !
       type, extends(fdist3d) :: fdist3d_003
-! Read external particle data files
+! Read external particle data files in text format
          private
 
          integer :: npt
@@ -129,6 +130,26 @@
          procedure, private :: dist3d => dist3d_003
 
       end type fdist3d_003
+!
+      type, extends(fdist3d) :: fdist3d_004
+! Read external particle data files in a h5 file of OSIRIS or QuickPIC particle raw data
+         private
+
+         real :: offset_x, offset_y, offset_z, dx, dy, dz, box_min_x, box_min_y, box_min_z
+! format can be 0 (OSIRIS, 1,2,3 correspond to z,x,y) or 1 (QuickPIC, 1,2,3 correspond to x,y,z)
+         integer :: format
+! The actual number of particles of a macro particle is (cell_volumn*n0_per_cc*1e6)*q
+! which should be constant between codes, thus
+! q_ratio = (cell_volumn_in_old_sim*n0_in_old_sim)/(cell_volumn_in_new_sim*n0_in_new_sim)
+! /raw_sampling_ratio.
+         real :: q_ratio
+         character(len=:), allocatable :: file
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_004
+         procedure, private :: dist3d => dist3d_004
+
+      end type fdist3d_004
 !
       type, extends(fdist3d) :: fdist3d_100
 ! Ring profile
@@ -877,6 +898,149 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_003
+!
+      subroutine init_fdist3d_004(this,input,i)
+
+         implicit none
+
+         class(fdist3d_004), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i
+! local data
+         real :: max
+         real :: alx, aly, alz
+         integer :: indx, indy, indz
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_004:'
+
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+         call input%get('simulation.box.x(1)',this%box_min_x)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.offset(1)',this%offset_x)
+         alx = (max-this%box_min_x) 
+         this%dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',this%box_min_y)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.offset(2)',this%offset_y)
+         aly = (max-this%box_min_y) 
+         this%dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',this%box_min_z)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.offset(3)',this%offset_z)
+         alz = (max-this%box_min_z) 
+         this%dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile', this%npf)
+         call input%get(trim(s1)//'.npmax', this%npmax)
+         call input%get(trim(s1)//'.evolution', this%evol)
+         call input%get(trim(s1)//'.file_name', this%file)
+         call input%get(trim(s1)//'.format', this%format)
+         call input%get(trim(s1)//'.q_ratio', this%q_ratio)
+
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_004
+!
+      subroutine dist3d_004(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_004), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: part
+         integer :: np_h5, nx, ny, nz, i
+         real, dimension(4) :: edges
+         integer, dimension(2) :: noff
+         integer :: np_count
+         integer :: ierr
+         character(len=18), save :: sname = 'dist3d_004:'
+         real, dimension(:), pointer :: x, y, z, ux, uy, uz, q
+
+         call this%err%werrfl2(class//sname//' started')
+
+         ierr = 0
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         part => part3d
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()
+
+         if (0==this%format) then
+! OSIRIS particle raw format
+            call read_particle_raw(trim(this%file), np_h5, z, x, y, uz, ux, uy, q, ierr)
+            do i = 1, np_h5
+               x(i) = (x(i) + this%offset_x - this%box_min_x)/this%dx
+               y(i) = (y(i) + this%offset_y - this%box_min_y)/this%dy
+               z(i) = (this%offset_z - z(i) - this%box_min_z)/this%dz
+            end do
+         else
+! QuickPIC particle raw format
+            call read_particle_raw(trim(this%file), np_h5, x, y, z, ux, uy, uz, q, ierr)
+            do i = 1, np_h5
+               x(i) = (x(i) + this%offset_x)/this%dx
+               y(i) = (y(i) + this%offset_y)/this%dy
+               z(i) = (z(i) + this%offset_z)/this%dz
+            end do
+         end if
+
+         if (np_h5>this%npmax) then
+            print *, "Warning! Number of particles in the h5 file is ", np_h5, ","
+            print *, "larger than npmax ", this%npmax, "."
+            print *, "This may cause overflow."
+         end if
+         np_count = 1
+         do i = 1, np_h5
+            if ((x(i)>=1) .and. x(i)<=(nx-1) .and. (y(i) >= edges(1))&
+            & .and. (y(i) < edges(2)) .and. (z(i) >= edges(3)) .and. (z(i) < edges(4))) then
+              part(1, np_count) = x(i)
+              part(2, np_count) = y(i)
+              part(3, np_count) = z(i)
+              part(4, np_count) = ux(i)
+              part(5, np_count) = uy(i)
+              part(6, np_count) = uz(i)
+              part(7, np_count) = q(i)*this%q_ratio
+              np_count = np_count + 1
+            end if     
+         end do
+
+         deallocate(x)
+         deallocate(y)
+         deallocate(z)
+         deallocate(ux)
+         deallocate(uy)
+         deallocate(uz)
+         deallocate(q)
+
+         npp = np_count - 1
+         if (ierr /= 0) then
+            write (erstr,*) 'Read beam raw h5 file error'
+            call this%err%equit(class//sname//erstr)
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_004
 !
       subroutine init_fdist3d_100(this,input,i)
       

@@ -1,5 +1,5 @@
 ! hdf5io module for QuickPIC Open Source 1.0
-! update: 04/18/2016
+! update: 08/06/2020
 
       module hdf5io_class
 
@@ -14,6 +14,7 @@
       
       public :: hdf5file, pwfield, pwfield_pipe, wfield_pipe, pwpart_pipe, pwpart,&
       &wpart,rpart
+      public :: read_h5_dataset, read_particle_raw
       
       type hdf5file
          
@@ -66,7 +67,11 @@
       interface pwpart
         module procedure pwpart_2d
       end interface
-      
+
+      interface read_h5_dataset
+        module procedure read_h5_dataset_real
+      end interface
+
       contains
       
       subroutine init_hdf5file(this,filename,timeunits,ty,n,t,dt,axisname,&
@@ -1419,6 +1424,79 @@
          end if
          
       end subroutine rpart
+!
+      subroutine read_h5_dataset_real( parentID, name, buf, ndims, dims )
+      !---------------------------------------------------------------------------
+      ! Determine the size of a dataset, allocate the same size and read dataset to a 1D array buf.
+      ! Also allocate a 1d array dims with the size of ndims, and save the dimensions of the dataset to dims.
+      ! After calling this subroutine, one may optinal reshape buf to the same shape as dataset
+      ! Reshape reference: https://software.intel.com/en-us/forums/intel-fortran-compiler/topic/269622
+         implicit none
+
+         integer(hid_t), intent(in) :: parentID
+         character( len = * ), intent(in) :: name
+
+         real, dimension(:), pointer, intent(out) :: buf
+         integer, intent(out) :: ndims
+         integer(hsize_t), dimension(:), pointer, intent(out) :: dims
+
+         integer(hsize_t), dimension(:), pointer :: maxdims
+         integer(hsize_t) :: npoints
+         integer(hid_t) :: dataspaceID, datasetID
+         integer :: ierr
+         integer(hid_t) :: treal
+
+         treal = detect_precision()
+
+         call h5dopen_f(parentID, name, datasetID, ierr)
+         call h5dget_space_f(datasetID, dataspaceID, ierr)
+         call h5sget_simple_extent_ndims_f(dataspaceID, ndims, ierr)
+         allocate(dims(ndims), maxdims(ndims))
+         call h5sget_simple_extent_dims_f(dataspaceID, dims, maxdims, ierr)
+         deallocate(maxdims)
+         call h5sget_simple_extent_npoints_f(dataspaceID, npoints, ierr)
+         allocate(buf(npoints))
+         call h5dread_f(datasetID, treal, buf, dims, ierr)
+         ! close the dataset
+         call h5sclose_f( dataspaceID, ierr )
+         call h5dclose_f( datasetID, ierr )
+      end subroutine read_h5_dataset_real
+!
+      subroutine read_particle_raw(filename, n_particles, x1, x2, x3, p1, p2, p3, q, ierr)
+         ! Read macro particle raw data file for beam initialization. File should be a h5 file in OSIRIS format or QuickPIC format.
+         implicit none
+
+         character( len = * ), intent(in) :: filename
+         integer, intent(out) :: n_particles
+         real, dimension(:), intent(out), pointer :: x1, x2, x3, p1, p2, p3, q
+
+         integer(hid_t) :: treal
+         integer(hid_t) :: file_id
+         integer :: ndims
+         integer(hsize_t), dimension(:), pointer :: dims
+         integer, intent(out) :: ierr
+
+         call h5open_f(ierr)
+         call h5fopen_f(filename, H5F_ACC_RDONLY_F, file_id, ierr)
+         call read_h5_dataset( file_id, 'x1', x1, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'x2', x2, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'x3', x3, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'p1', p1, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'p2', p2, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'p3', p3, ndims, dims )
+         deallocate(dims)
+         call read_h5_dataset( file_id, 'q', q, ndims, dims )
+         n_particles = dims(1)
+         deallocate(dims)
+         call h5fclose_f(file_id, ierr)
+         call h5close_f(ierr)
+         
+      end subroutine read_particle_raw
 !
       function detect_precision()
          integer(hid_t) :: detect_precision
