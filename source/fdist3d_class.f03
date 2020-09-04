@@ -88,7 +88,7 @@
          integer :: npx, npy, npz
          real :: qm, sigx, sigy
          real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
-         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
          real, dimension(:), allocatable :: fz, z
          logical :: quiet
 
@@ -375,7 +375,7 @@
 ! local data
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
-         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
          logical :: quiet
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
@@ -441,6 +441,8 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.piecewise_fz',this%fz)
          call input%get(trim(s1)//'.piecewise_z',this%z)
+         call input%get(trim(s1)//'.sigmanoise(1)',this%sigxnoise)
+         call input%get(trim(s1)//'.sigmanoise(2)',this%sigynoise)
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -478,6 +480,8 @@
          this%cy1 = cy1*dz*dz/dy
          this%cy2 = cy2*dz/dy
          this%cy3 = cy3/dy
+         this%sigxnoise = sigxnoise/dx/dz
+         this%sigynoise = sigynoise/dy/dz
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
@@ -504,6 +508,7 @@
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0
          real, dimension(3) :: cx, cy
+         real :: sigxnoise, sigynoise
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps=1
@@ -530,6 +535,7 @@
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          lquiet = this%quiet
+         sigxnoise = this%sigxnoise; sigynoise = this%sigynoise
          idimp = size(part3d,1); npmax = size(part3d,2)
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
@@ -549,7 +555,8 @@
          
          call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
-         &npmax,1,1,4,zf,lquiet,ierr)
+         &npmax,1,1,4,zf,lquiet,ierr,&
+         &sigxnoise,sigynoise)
 
          if (ierr /= 0) then
             write (erstr,*) 'PRVDIST32_RAN_PFL error'
