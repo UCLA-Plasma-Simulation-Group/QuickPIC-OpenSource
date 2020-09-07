@@ -367,8 +367,8 @@ c quiet start
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt                
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 tempx0 = cdth*tempx-sdth*tempy
@@ -388,8 +388,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -408,8 +408,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey 
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -428,8 +428,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -448,8 +448,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey 
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -468,8 +468,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey 
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey 
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -488,8 +488,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
-                part(8,npt,m) = tempx+x0+tempnoisex
-                part(9,npt,m) = tempy+y0+tempnoisey 
+                !part(8,npt,m) = tempx+x0+tempnoisex
+                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                    else
@@ -501,7 +501,7 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              enddo 
 
         l = l + 1
-        if (lquiet) l = l + 9
+        if (lquiet) l = l + 7
         endif
       enddo 
       k = k + 1
