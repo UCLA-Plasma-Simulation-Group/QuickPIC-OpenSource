@@ -192,7 +192,7 @@ c process errors
 c-----------------------------------------------------------------------
       subroutine PRVDIST32_RAN_PFL(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
      1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
-     2npmax,mblok,nblok,idps,dp,lquiet,ierr)
+     2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise)
 c new quiet start
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -236,11 +236,12 @@ c      integer f77_log_unit, f77_output_unit
       integer mblok, ipbc
       real part,edges,x0,y0,z0,sigx,sigy,vtx,vty,vtz,vdx,vdy,vdz,dp
       double precision random,ranorm
-      real cx, cy, qm
+      real cx, cy, qm, sigmanoise
       real cdth,sdth
       dimension part(idimp,npmax,nblok),dp(nz)
       dimension edges(idps,nblok), npp(nblok), nps(nblok)
       dimension cx(0:2),cy(0:2)
+      dimension sigmanoise(0:1)
       logical lquiet
 
 c local variables
@@ -252,6 +253,7 @@ c local variables
       double precision sum0, sum1, sum2, dnpxyz
       real at1,sum3,work3
       real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
+      real tempnoisex,tempnoisey
       real tempx0,tempy0,tvtx0,tvty0
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
@@ -333,6 +335,10 @@ c  check if particle belongs to this partition
                      part(5,npt,m) = tvty
                      part(6,npt,m) = tvtz  
                      part(7,npt,m) = qm
+                     tempnoisex = -sigmanoise(0)
+                     part(8,npt,m) = tempx+tempnoisex
+                     tempnoisey = -sigmanoise(1)
+                     part(9,npt,m) = tempy+tempnoisey
                      npp(m) = npt
                 else
                      ierr = ierr + 1
@@ -361,6 +367,8 @@ c quiet start
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt                
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 tempx0 = cdth*tempx-sdth*tempy
@@ -380,6 +388,28 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx
+                part(2,npt,m) = tempy+y0+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey 
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -398,6 +428,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -415,7 +447,9 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
+                part(7,npt,m) = qm
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey 
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -433,7 +467,9 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
+                part(7,npt,m) = qm
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey 
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -451,25 +487,9 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
+                part(7,npt,m) = qm
+                part(8,npt,m) = tempx+x0+tempnoisex
+                part(9,npt,m) = tempy+y0+tempnoisey 
                 npp(m) = npt
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                    else
@@ -481,7 +501,7 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              enddo 
 
         l = l + 1
-        if (lquiet) l = l + 7
+        if (lquiet) l = l + 9
         endif
       enddo 
       k = k + 1
