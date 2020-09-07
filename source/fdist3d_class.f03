@@ -480,8 +480,8 @@
          this%cy1 = cy1*dz*dz/dy
          this%cy2 = cy2*dz/dy
          this%cy3 = cy3/dy
-         this%sigxnoise = sigxnoise/dx/dz
-         this%sigynoise = sigynoise/dy/dz
+         this%sigxnoise = sigxnoise/dx
+         this%sigynoise = sigynoise/dy
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
