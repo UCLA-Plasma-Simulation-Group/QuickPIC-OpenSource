@@ -307,10 +307,10 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
         dpi = dp(zi)*zs + dp(zi+1)*zf    
         if (u<=dpi) then  
 c particle is accepted        
-
+        tempnoisex = sigmanoise(0)*ranorm()
   20    tempx = x0+sigx*ranorm()
         if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
-
+				tempnoisey = sigmanoise(1)*ranorm()
   30    tempy = y0+sigy*ranorm()
         if (tempy>=(bordery) .or. tempy<=borderly) goto 30
 
@@ -327,18 +327,14 @@ c  check if particle belongs to this partition
                      part(3,npt,m) = tempz
                      tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
      &,npt,m)-z0)-cx(0)                
-                     part(1,npt,m) = tempx + tempxx
+                     part(1,npt,m) = tempx + tempxx + tempnoisex
                      tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
      &,npt,m)-z0)-cy(0)        
-                     part(2,npt,m) = tempy + tempyy 
+                     part(2,npt,m) = tempy + tempyy + tempnoisey
                      part(4,npt,m) = tvtx
                      part(5,npt,m) = tvty
                      part(6,npt,m) = tvtz  
                      part(7,npt,m) = qm
-                     tempnoisex = -sigmanoise(0)
-                     part(8,npt,m) = tempx+tempnoisex
-                     tempnoisey = -sigmanoise(1)
-                     part(9,npt,m) = tempy+tempnoisey
                      npp(m) = npt
                 else
                      ierr = ierr + 1
@@ -361,14 +357,12 @@ c quiet start
 
                 npt = npp(m) + 1
                 part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
+                part(7,npt,m) = qm
                 npp(m) = npt                
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 tempx0 = cdth*tempx-sdth*tempy
@@ -382,14 +376,84 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 tvty = tvty0
                 npt = npp(m) + 1
                 part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm
+                npp(m) = npt
+                tempx0 = cdth*tempx-sdth*tempy
+                tempy0 = sdth*tempx+cdth*tempy
+                tempx = tempx0
+                tempy = tempy0
+
+                tvtx0 = cdth*tvtx-sdth*tvty
+                tvty0 = sdth*tvtx+cdth*tvty
+                tvtx = tvtx0
+                tvty = tvty0
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
                 tempx0 = cdth*tempx-sdth*tempy
                 tempy0 = sdth*tempx+cdth*tempy
@@ -402,94 +466,12 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 tvty = tvty0
                 npt = npp(m) + 1
                 part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
+                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
+                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
                 part(4,npt,m) = tvtx
                 part(5,npt,m) = tvty
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey 
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx
-                part(2,npt,m) = tempy+y0+tempyy
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                !part(8,npt,m) = tempx+x0+tempnoisex
-                !part(9,npt,m) = tempy+y0+tempnoisey
                 npp(m) = npt
 c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                    else
@@ -653,12 +635,12 @@ c  check if particle belongs to this partition
             npt = npp(m) + 1
             part(3,npt,m) = tempz 
 c calculate offset in x            
-            tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3,npt,m)  &
-     & - z0)-cx(2)                
+            tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3,npt,m)  &
+     & - z0)-cx(0)                
             part(1,npt,m) = tempx + tempxx
 c calculate offset in y            
             tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
-     & - z0)-cy(2)        
+     & - z0)-cy(0)        
             part(2,npt,m) = tempy + tempyy 
             part(4,npt,m) = tvtx
             part(5,npt,m) = tvty
