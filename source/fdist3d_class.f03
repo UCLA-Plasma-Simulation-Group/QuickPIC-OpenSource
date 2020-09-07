@@ -441,8 +441,8 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.piecewise_fz',this%fz)
          call input%get(trim(s1)//'.piecewise_z',this%z)
-         call input%get(trim(s1)//'.sigmanoise(1)',this%sigxnoise)
-         call input%get(trim(s1)//'.sigmanoise(2)',this%sigynoise)
+         call input%get(trim(s1)//'.sigma_noise(1)',this%sigxnoise)
+         call input%get(trim(s1)//'.sigma_noise(2)',this%sigynoise)
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -508,7 +508,7 @@
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0
          real, dimension(3) :: cx, cy
-         real :: sigxnoise, sigynoise
+         real, dimension(2) :: sigmanoise
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps=1
@@ -534,8 +534,8 @@
          sigx = this%sigx; sigy = this%sigy
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
+         sigmanoise = (/this%sigxnoise,this%sigynoise/)
          lquiet = this%quiet
-         sigxnoise = this%sigxnoise; sigynoise = this%sigynoise
          idimp = size(part3d,1); npmax = size(part3d,2)
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
@@ -556,7 +556,7 @@
          call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,1,1,4,zf,lquiet,ierr,&
-         &sigxnoise,sigynoise)
+         &sigmanoise)
 
          if (ierr /= 0) then
             write (erstr,*) 'PRVDIST32_RAN_PFL error'
