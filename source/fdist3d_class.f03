@@ -441,8 +441,8 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.piecewise_fz',this%fz)
          call input%get(trim(s1)//'.piecewise_z',this%z)
-         call input%get(trim(s1)//'.sigma_noise(1)',this%sigxnoise)
-         call input%get(trim(s1)//'.sigma_noise(2)',this%sigynoise)
+         call input%get(trim(s1)//'.sigma_noise(1)',sigxnoise)
+         call input%get(trim(s1)//'.sigma_noise(2)',sigynoise)
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -485,6 +485,7 @@
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
+
 
          call this%err%werrfl2(class//sname//' ended')
 
