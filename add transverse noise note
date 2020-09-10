@@ -1,3 +1,8 @@
+#######################################
+##Xiaoning Wang
+##10,Sep,2020
+#######################################
+
 Step one：Add sigmanoise parameters in ./source/fdist3d_class.f03
 1、Define sigmanoise in fdist3d_001 tpye part
 real::sigxnoise,sigynoise
