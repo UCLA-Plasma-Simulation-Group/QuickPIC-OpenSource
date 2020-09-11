@@ -1,0 +1,54 @@
+#######################################
+##Xiaoning Wang
+##10,Sep,2020
+#######################################
+
+Step one：Add sigmanoise parameters in ./source/fdist3d_class.f03
+1、Define sigmanoise in fdist3d_001 tpye part
+real::sigxnoise,sigynoise
+2、Set sigmanoise in input part:init_fdist3d_001(this,input,i)
+(1)Also define the sigmanoise
+real::sigxnoise,sigynoise
+(2)Set sigmanoise input format 
+call input%get(trim(s1)//'.sigma_noise(1)',sigxnoise)
+call input%get(trim(s1)//'.sigma_noise(2)',sigynoise)
+this%sigxnoise = sigxnoise/dx
+this%sigynoise = sigynoise/dy
+so in the qpinput.json, we have "sigma_noise" : [0.1,0.0],
+we should pay attention to the consistent of "this%" of the parameters input, 
+if we set call input%get(trim(s1)//'.sigma_noise(1)',this%sigxnoise),sigxnoise will be always zero.
+(3)Initialize sigmanoise we set in Initialization part:dist3d_001(this,part3d,npp,fd)
+ also define the sigmanoise
+ real, dimension(2) :: sigmanoise
+ sigmanoise = (/this%sigxnoise,this%sigynoise/)
+ call PRVDIST32_RAN_PFL(……,sigmanoise),…… point to other parameters.
+ in this part we call PRVDIST32_RAN_PFL, so next we need to add sigmanoise in the file in which we set up this function
+
+
+Step two：Set the initialization of sigmanoise in ./source/part3d_lib77.f
+1、we need to clear the meaning of sigmanoise
+sigmanoise: slice beam centroid with random distribution, actually we should add nosie in sigmax or sigmy parameters, 
+but in quickpic quiet start is used to make beam symmetric, so before we add sigmanoise, we should set quiet start to false to save file,
+and next add sigmanoise based on the file we saved.
+2、define sigmanoise
+real sigmanoise
+dimension sigmanoise(0:1)
+3、add tempnoise to change sigmanoise in the later
+real tempnoisex,tempnoisey
+4、add sigmanoise in sigmax or sigmy
+(1)tempnoisex = sigmanoise(0)*ranorm()
+tempnoisey = sigmanoise(1)*ranorm()
+in quickpic, ranorm() means Gaussian distribution, also eques to N(0,1) distribution
+(2)for quiet start
+in profile 1, except for 1 particle, quickpic set 7 particles for quiet start , in other words, 8 particles are a group.
+actulally, these 7 particles are getted through rotating partilce every 45°. 
+so we need to change sigmanoise every 8 particle, in other words, every 8 partices have the same sigmanoise：
+part(1,npt,m) = tempx + tempxx + tempnoisex
+part(2,npt,m) = tempy + tempyy + tempnoisey
+
+
+Step three：Statement sigmanoise in ./source/part3d_lib.f03
+if we want to call PRVDIST32_RAN_PFL, we also need to statement in interface file
+call PRVDIST32_RAN_PFL(……,sigmanoise),…… point to other parameters.
+real, intent(in) :: sigmanoise
+dimension sigmanoise(0:1) 
