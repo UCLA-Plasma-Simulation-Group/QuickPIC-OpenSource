@@ -2,7 +2,7 @@
 ! update: 01/09/2018
 
       module simulation_class
-      
+
       use parallel_class
       use parallel_pipe_class
       use perrors_class
@@ -19,7 +19,7 @@
       use mpi
 
       implicit none
-      
+
       private
 
       public :: simulation
@@ -46,12 +46,12 @@
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
 
          contains
-         
+
          generic :: new => init_sim_fields
          generic :: del => end_sim_fields
 
          procedure, private :: init_sim_fields, end_sim_fields
-         
+
       end type sim_fields
 !
       type sim_beams
@@ -64,16 +64,16 @@
          class(spect2d), pointer :: sp2 => null()
          type(beam3d), dimension(:), allocatable :: beam
          type(fdist3d_wrap), dimension(:), allocatable :: pf
-         
+
          contains
-         
+
          generic :: new => init_sim_beams
          generic :: del => end_sim_beams
 
          procedure, private :: init_sim_beams, end_sim_beams
 
       end type sim_beams
-!      
+!
       type sim_species
 
          private
@@ -86,14 +86,14 @@
          type(species2d), dimension(:), allocatable :: spe
 
          contains
-         
+
          generic :: new => init_sim_species
          generic :: del => end_sim_species
 
          procedure, private :: init_sim_species, end_sim_species
 
       end type sim_species
-!      
+!
       type sim_diag
 
          private
@@ -108,7 +108,7 @@
          integer :: df
 
       end type sim_diag
-!      
+!
       type simulation
 
          private
@@ -119,7 +119,7 @@
          class(perrors),pointer :: err => null()
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
-         
+
          type(sim_fields) :: fields
          type(sim_beams) :: beams
          type(sim_species) :: species
@@ -132,7 +132,7 @@
          real :: dex, dxi, dex2, dt
 
          contains
-         
+
          generic :: new => init_simulation
          generic :: del => end_simulation
          generic :: go => go_simulation
@@ -145,20 +145,20 @@
 !
       character(len=20), save :: class = 'simulation: '
       character(len=128), save :: erstr
-            
+
       contains
 !
       subroutine init_simulation(this)
 
          implicit none
-         
+
          class(simulation), intent(inout) :: this
 ! local data
          character(len=18), save :: sname = 'init_simulation:'
          real :: min, max, n0, dx, dy, dz, dt
          integer :: indx, indy, indz
          logical :: read_rst
-         
+
          allocate(this%in)
          call this%in%new()
          this%err => this%in%err
@@ -182,7 +182,7 @@
          call this%in%get('simulation.box.z(1)',min)
          call this%in%get('simulation.box.z(2)',max)
          dz=(max-min)/real(2**indz)
-         
+
          this%dex = dx
          this%dxi = dz
          this%dex2 = dx * dx
@@ -204,10 +204,10 @@
          call this%in%get('simulation.nspecies',this%nspecies)
 
          call this%fields%new(this%in)
-         call this%beams%new(this%in,this%fields)
-         call this%species%new(this%in,this%fields,(this%start3d-1)*dt)
+         call this%beams%new(this%in)
+         call this%species%new(this%in,(this%start3d-1)*dt)
 
-         call this%init_diag()                 
+         call this%init_diag()
 
          allocate(this%tag_spe(this%nspecies),this%tag_beam(this%nbeams))
          allocate(this%id_spe(this%nspecies),this%id_beam(this%nbeams))
@@ -216,13 +216,13 @@
          allocate(this%id(9+size(this%diag)))
          this%id(:) = MPI_REQUEST_NULL
          this%id_spe(:) = MPI_REQUEST_NULL
-         this%id_beam(:) = MPI_REQUEST_NULL                 
-         this%id_bq(:,:) = MPI_REQUEST_NULL                 
+         this%id_beam(:) = MPI_REQUEST_NULL
+         this%id_bq(:,:) = MPI_REQUEST_NULL
 
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_simulation
-!         
+!
       subroutine end_simulation(this)
 
          implicit none
@@ -231,9 +231,9 @@
 ! local data
          character(len=18), save :: sname = 'end_simulation:'
          integer :: ierr
-         
+
          call this%err%werrfl2(class//sname//' started')
-         
+
 !         call this%fields%del()
 !         call this%beams%del()
 !         call this%species%del()
@@ -253,7 +253,7 @@
          character(len=18), save :: sname = 'init_sim_fields:'
          character(len=18), save :: class = 'sim_fields:'
          character(len=20) :: s1, s2, s3
-         character(len=:), allocatable :: ff   
+         character(len=:), allocatable :: ff
          integer :: i,n,ndump,j,k,l,m
 
          this%err => input%err
@@ -271,7 +271,7 @@
 
          call this%bexyz%new(this%p,this%err,this%sp3,dim=3)
          call this%bbxyz%new(this%p,this%err,this%sp3,dim=3)
-         
+
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
@@ -287,7 +287,7 @@
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
 
          call input%get('simulation.nspecies',n)
-         
+
          loop1: do i = 1, n
             write (s1, '(I4.4)') i
             call input%info('species('//trim(s1)//').diag',n_children=m)
@@ -312,7 +312,7 @@
          end do loop1
 
          call input%info('field.diag',n_children=n)
-         
+
          loop2: do i = 1, n
             write (s1,'(I4.4)') i
             call input%get('field.diag('//trim(s1)//').ndump',ndump)
@@ -363,7 +363,7 @@
          character(len=18), save :: sname = 'end_sim_fields:'
          character(len=18), save :: class = 'sim_fields:'
          integer :: i, n
-         
+
          call this%err%werrfl2(class//sname//' started')
 
          call this%bexyz%del()
@@ -389,13 +389,12 @@
 
       end subroutine end_sim_fields
 !
-      subroutine init_sim_beams(this,input,fields)
+      subroutine init_sim_beams(this,input)
 
          implicit none
 
          class(sim_beams), intent(inout) :: this
          type(input_json), pointer, intent(inout) :: input
-         class(sim_fields), intent(inout) :: fields
 ! local data
          character(len=18), save :: class = 'sim_beams:'
          character(len=18), save :: sname = 'init_sim_beams:'
@@ -414,13 +413,13 @@
          this%p => input%pp
          this%sp3 => input%sp
          this%sp2 => input%sp
-         
+
          call this%err%werrfl2(class//sname//' started')
 
-         call input%get('simulation.nbeams',n)         
+         call input%get('simulation.nbeams',n)
 
          allocate(this%beam(n),this%pf(n))
-         
+
          do i = 1, n
             arg(:,:) = 0.0
             write (sn,'(I3.3)') i
@@ -451,9 +450,9 @@
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
-               
+
             call input%get('simulation.dt',dt)
-            
+
             call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
             &dt=dt,ci=1.0,xdim=7)
 
@@ -485,7 +484,7 @@
          character(len=18), save :: sname = 'end_sim_beams:'
          character(len=18), save :: class = 'sim_beams:'
          integer :: i, n
-         
+
          call this%err%werrfl2(class//sname//' started')
 
          n = size(this%beam)
@@ -498,13 +497,12 @@
 
       end subroutine end_sim_beams
 !
-      subroutine init_sim_species(this,input,fields,s)
+      subroutine init_sim_species(this,input,s)
 
          implicit none
 
          class(sim_species), intent(inout) :: this
          type(input_json), pointer, intent(inout) :: input
-         class(sim_fields), intent(inout) :: fields
          real, intent(in) :: s
 ! local data
          character(len=18), save :: class = 'sim_species:'
@@ -521,7 +519,7 @@
          this%p => input%pp
          this%sp3 => input%sp
          this%sp2 => input%sp
-         
+
          call this%err%werrfl2(class//sname//' started')
 
          call input%get('simulation.n0',n0)
@@ -535,7 +533,7 @@
          call input%get('simulation.nspecies',n)
 
          allocate(this%spe(n),this%pf(n))
-         
+
          do i = 1, n
 
             write (sn,'(I3.3)') i
@@ -579,7 +577,7 @@
          character(len=18), save :: sname = 'end_sim_species:'
          character(len=18), save :: class = 'sim_species:'
          integer :: i, n
-         
+
          call this%err%werrfl2(class//sname//' started')
 
          n = size(this%spe)
@@ -604,19 +602,25 @@
 
          call this%err%werrfl2(class//sname//' started')
 
+         ! dump initialization data
+         if (this%start3d == 1) then
+            this%tstep = 0
+            call this%diag_simulation()
+         endif
+
          do i = this%start3d, this%nstep3d
 
             this%tstep = i
-            write (erstr,*) '3D step:', i        
+            write (erstr,*) '3D step:', i
             call this%err%werrfl0(erstr)
-            
+
             do m = 1, this%nbeams
                this%tag_bq(m,1) = ntag()
                this%tag_bq(m,2) = ntag()
                call this%beams%beam(m)%qdp(this%id_bq(m,1),this%id_bq(m,2),&
                &this%id_bq(m,3),this%tag_bq(m,1),this%tag_bq(m,2))
             end do
-   
+
             do l =  1, this%nspecies
                this%tag_spe(l) = ntag()
                call this%species%spe(l)%precv(this%tag_spe(l))
@@ -631,11 +635,11 @@
             call this%fields%psit%precv(this%tag(6))
             this%tag(7) = ntag()
             call this%fields%bxyz%precv(this%tag(7))
-   
-            call this%fields%fxy%cb(this%fields%bexyz,1,(/1,2/),(/1,2/))         
+
+            call this%fields%fxy%cb(this%fields%bexyz,1,(/1,2/),(/1,2/))
             call this%fields%psit%cb(this%fields%bexyz,1,(/1/),(/3/))
             call this%fields%bxyz%cb(this%fields%bbxyz,1,(/1,2,3/),(/1,2,3/))
-   
+
             do j = 1, this%nstep2d
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
@@ -652,14 +656,14 @@
                call this%fields%qb%elf(this%fields%epwb)
                call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
-                  call this%species%spe(l)%qdp(this%fields%qe)                     
+                  call this%species%spe(l)%qdp(this%fields%qe)
                end do
                call this%fields%qe%fftrk(1)
                call this%fields%qe%pot(this%fields%psi)
                call this%fields%psi%grad(this%fields%fxy)
                call this%fields%fxy%fftkr(1)
                call this%fields%psi%fftkr(1)
-               do l = 1, this%nspecies            
+               do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
                end do
                call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
@@ -686,12 +690,12 @@
                   call this%fields%amu%mult(this%fields%amu,this%dex)
                   call this%fields%dcu%mult(this%fields%dcu,this%dex)
                   if (l == this%iter) then
-                     do m = 1, this%nspecies              
+                     do m = 1, this%nspecies
                         call this%species%spe(m)%cbq(j+1)
                      end do
                      if (allocated(this%fields%cu3d)) then
                         call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
-                     end if               
+                     end if
                   endif
                   call this%fields%cu%fftrk(1)
                   call this%fields%dcu%fftrk(1)
@@ -720,7 +724,7 @@
                call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/))
                call this%fields%dcu%mult(this%fields%dcu,this%dxi)
                call this%fields%cu%sub(this%fields%cu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
-               do m = 1, this%nspecies              
+               do m = 1, this%nspecies
                   call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%dex)
                end do
@@ -730,8 +734,8 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
             enddo
-            
-            do m = 1, this%nspecies                       
+
+            do m = 1, this%nspecies
                call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
             end do
             call MPI_WAIT(this%id(5),istat,ierr)
@@ -744,20 +748,20 @@
             call this%fields%psit%psend(this%tag(6),this%id(8))
             call MPI_WAIT(this%id(9),istat,ierr)
             call this%fields%bxyz%psend(this%tag(7),this%id(9))
-      
+
             do m = 1, this%nbeams
                this%tag_beam(m) = ntag()
                call MPI_WAIT(this%id_beam(m),istat,ierr)
                call this%beams%beam(m)%push(this%fields%bexyz,this%fields%bbxyz,this%dex,this%dxi,&
                &this%tag_beam(m),this%tag_beam(m),this%id_beam(m))
             end do
-            
+
             call this%diag_simulation()
 
-            do m = 1, this%nspecies                       
+            do m = 1, this%nspecies
                call MPI_WAIT(this%id_spe(m),istat,ierr)
                call this%species%spe(m)%renew(i*this%dt)
-            end do                             
+            end do
          end do
 
          call this%err%werrfl2(class//sname//' ended')
@@ -795,12 +799,12 @@
          alx2 = max
          call this%in%get('simulation.box.y(1)',min)
          call this%in%get('simulation.box.y(2)',max)
-         aly1 = min 
-         aly2 = max 
+         aly1 = min
+         aly2 = max
          call this%in%get('simulation.box.z(1)',min)
          call this%in%get('simulation.box.z(2)',max)
-         alz1 = min 
-         alz2 = max 
+         alz1 = min
+         alz2 = max
          call this%in%get('simulation.dt',dt)
 
          do i = 1, this%nbeams
@@ -877,7 +881,7 @@
                         if (this%in%found('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
                            call this%in%info('beam('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
                            do ii = 1, n
-                              n_diag = n_diag + 1 
+                              n_diag = n_diag + 1
                               this%diag(n_diag)%df = ndump
                               this%diag(n_diag)%obj => this%beams%beam(i)
                               allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
@@ -926,7 +930,7 @@
                               &label = 'Charge Density')
                            end do
                         else
-                           n_diag = n_diag + 1 
+                           n_diag = n_diag + 1
                            this%diag(n_diag)%df = ndump
                            this%diag(n_diag)%obj => this%beams%beam(i)
                            allocate(this%diag(n_diag)%dim)
@@ -949,7 +953,7 @@
                            &label = 'Charge Density')
                         end if
                      case ('raw')
-                        n_diag = n_diag + 1 
+                        n_diag = n_diag + 1
                         this%diag(n_diag)%df = ndump
                         this%diag(n_diag)%obj => this%beams%beam(i)
                         allocate(this%diag(n_diag)%psample)
@@ -1018,7 +1022,7 @@
                      if (this%in%found('species('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
                         call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
                         do ii = 1, n
-                           n_diag = n_diag + 1 
+                           n_diag = n_diag + 1
                            this%diag(n_diag)%df = ndump
                            this%diag(n_diag)%obj => obj
                            allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
@@ -1067,7 +1071,7 @@
                            &label = trim(sn4))
                         end do
                      else
-                        n_diag = n_diag + 1 
+                        n_diag = n_diag + 1
                         this%diag(n_diag)%df = ndump
                         this%diag(n_diag)%obj => obj
                         allocate(this%diag(n_diag)%dim)
@@ -1179,7 +1183,7 @@
                   if (this%in%found('field.diag('//trim(s1)//').slice')) then
                      call this%in%info('field.diag('//trim(s1)//').slice',n_children=l)
                      do k = 1, l
-                        n_diag = n_diag + 1 
+                        n_diag = n_diag + 1
                         this%diag(n_diag)%df = ndump
                         this%diag(n_diag)%obj => obj
                         allocate(this%diag(n_diag)%slice,this%diag(n_diag)%slice_pos)
@@ -1228,7 +1232,7 @@
                         &label = trim(sn4))
                      end do
                   else
-                     n_diag = n_diag + 1 
+                     n_diag = n_diag + 1
                      this%diag(n_diag)%df = ndump
                      this%diag(n_diag)%obj => obj
                      allocate(this%diag(n_diag)%dim)
@@ -1255,7 +1259,7 @@
          end do
 
          if (rst) then
-            call this%in%get('simulation.ndump_restart',ndump) 
+            call this%in%get('simulation.ndump_restart',ndump)
             do i = 1, this%nbeams
                write (s1,'(I4.4)') i
                write (s2,'(I10.10)') this%p%getidproc()
@@ -1296,7 +1300,7 @@
          n = size(this%diag)
 
          do i = 1, n
-            if (mod(this%tstep-1,this%diag(i)%df) == 0) then
+            if (mod(this%tstep,this%diag(i)%df) == 0) then
                call this%diag(i)%file%new(n = this%tstep, t = this%tstep*dt)
                select type (obj => this%diag(i)%obj)
                type is (field3d)
@@ -1338,7 +1342,7 @@
                      this%tag(1) = ntag()
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
-                  end if                  
+                  end if
                end select
             end if
          end do
@@ -1348,14 +1352,14 @@
       end subroutine diag_simulation
 !
       function ntag()
-      
+
          implicit none
          integer, save :: tag = 0
          integer :: ntag
-                 
+
          ntag = tag
          tag = tag + 1
-      
+
       end function ntag
-!                  
+!
       end module simulation_class

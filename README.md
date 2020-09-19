@@ -1,4 +1,4 @@
-# ![QUICKPIC](http://exodus.physics.ucla.edu/~uclapic/repo_images/quickpic.png)
+# ![QUICKPIC](https://ucla-plasma-simulation-group.github.io/QuickPIC-OpenSource/media/quickpic_logo.png)
 QuickPIC is a 3D parallel (MPI & OpenMP Hybrid) Quasi-Static PIC code, which is developed based on the framework UPIC. QuickPIC can efficiently simulate plasma based accelerator problems. This is the UCLA Plasma Simulation Group's official open-source repository for QuickPIC.
 
 # Upon cloning the repository
