@@ -89,6 +89,7 @@
          real :: qm, sigx, sigy
          real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
+         real :: tax, tay, sigma_tanx, sigma_tany
          real, dimension(:), allocatable :: fz, z
          logical :: quiet
 
@@ -379,6 +380,7 @@
          logical :: quiet
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
+         real :: tax, tay, sigma_tanx, sigma_tany
          integer :: indx, indy, indz
          integer :: ii
          real :: sumz         
@@ -429,6 +431,20 @@
          call input%get(trim(s1)//'.sigma_v(1)',sigvx)
          call input%get(trim(s1)//'.sigma_v(2)',sigvy)
          call input%get(trim(s1)//'.sigma_v(3)',sigvz)
+         if (input%found(trim(s1)//'.tilt_angle')) then            
+            call input%get(trim(s1)//'.tilt_angle(1)',tax)
+            call input%get(trim(s1)//'.tilt_angle(2)',tay)
+         else
+            tax = 0.0
+            tay = 0.0
+         end if
+         if (input%found(trim(s1)//'.sigma_tilt_angle_noise')) then            
+            call input%get(trim(s1)//'.sigma_tilt_angle_noise(1)',sigma_tanx)
+            call input%get(trim(s1)//'.sigma_tilt_angle_noise(2)',sigma_tany)
+         else
+            sigma_tanx = 0.0
+            sigma_tany = 0.0
+         end if
          call input%get(trim(s1)//'.centroid_x(1)',cx1)
          call input%get(trim(s1)//'.centroid_x(2)',cx2)
          call input%get(trim(s1)//'.centroid_x(3)',cx3)
@@ -471,6 +487,10 @@
          this%bcz = bcz/dz
          this%sigx = sigx/dx
          this%sigy = sigy/dy
+         this%tax = tan(tax)
+         this%tay = tan(tay)
+         this%sigma_tanx = tan(sigma_tanx)
+         this%sigma_tany = tan(sigma_tany)
          this%sigvx = sigvx
          this%sigvy = sigvy
          this%sigvz = sigvz
@@ -507,7 +527,7 @@
          real, dimension(:,:), pointer :: pt => null()
          integer :: npx, npy, npz, nx, ny, nz, ipbc
          real :: vtx, vty, vtz, vdx, vdy, vdz
-         real :: sigx, sigy, sigz, x0, y0, z0
+         real :: sigx, sigy, sigz, x0, y0, z0, tax, tay, sigma_tanx, sigma_tany
          real, dimension(3) :: cx, cy
          real, dimension(2) :: sigmanoise
          real, dimension(4) :: edges
@@ -533,6 +553,8 @@
          vtx = this%sigvx; vty = this%sigvy; vtz = this%sigvz
          vdx = 0.0; vdy = 0.0; vdz = this%gamma
          sigx = this%sigx; sigy = this%sigy
+         tax = this%tax; tay = this%tay;
+         sigma_tanx = this%sigma_tanx; sigma_tany = this%sigma_tany 
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          sigmanoise = (/this%sigxnoise,this%sigynoise/)
@@ -557,7 +579,7 @@
          call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,1,1,4,zf,lquiet,ierr,&
-         &sigmanoise)
+         &sigmanoise,tax,tay,sigma_tanx,sigma_tany)
 
          if (ierr /= 0) then
             write (erstr,*) 'PRVDIST32_RAN_PFL error'

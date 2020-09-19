@@ -40,7 +40,9 @@
     "sigma_v" : [3.0,3.0,0.0],
     "piecewise_fz" : [0.0,1.0,0.0],
     "piecewise_z" : [0.0,10.0,10.1], 
-    "sigma_noise" : [0.1,0.0],
+    "sigma_noise" : [0.0,0.0],
+    "tilt_angle" : [0.0,0.0],
+    "sigma_tilt_angle_noise" : [0.0,0.0],
     "centroid_x" : [0.0,0.0,0.0],
     "centroid_y" : [0.0,0.0,0.0],
     "diag" :

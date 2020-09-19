@@ -192,7 +192,8 @@ c process errors
 c-----------------------------------------------------------------------
       subroutine PRVDIST32_RAN_PFL(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
      1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
-     2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise)
+     2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tan
+     3x,sigma_tany)
 c new quiet start
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -243,6 +244,7 @@ c      integer f77_log_unit, f77_output_unit
       dimension cx(0:2),cy(0:2)
       dimension sigmanoise(0:1)
       logical lquiet
+      real tax, tay, sigma_tanx, sigma_tany
 
 c local variables
       real tmpu(1024),tmpz(1024)
@@ -259,6 +261,7 @@ c local variables
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
       integer borderlx,borderly, borderx, bordery, nz1 
       integer cnt
+      real tiltx, tilty, txn, tyn
 
       ierr = 0
 
@@ -322,6 +325,10 @@ c  check if particle belongs to this partition
                 tvty = vty*ranorm()
                 tvtz = vtz*ranorm() + vdz
                 tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
+                tiltx = tax*tvtz
+                tilty = tay*tvtz
+                txn = sigma_tanx*ranorm()*tvtz
+                tyn = sigma_tany*ranorm()*tvtz
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
@@ -331,8 +338,8 @@ c  check if particle belongs to this partition
                      tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
      &,npt,m)-z0)-cy(0)        
                      part(2,npt,m) = tempy + tempyy + tempnoisey
-                     part(4,npt,m) = tvtx
-                     part(5,npt,m) = tvty
+                     part(4,npt,m) = tvtx + tiltx + txn
+                     part(5,npt,m) = tvty + tilty + tyn
                      part(6,npt,m) = tvtz  
                      part(7,npt,m) = qm
                      npp(m) = npt
@@ -359,8 +366,8 @@ c quiet start
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt                
@@ -378,8 +385,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
@@ -396,8 +403,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
@@ -414,8 +421,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
@@ -432,8 +439,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
@@ -450,8 +457,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm 
                 npp(m) = npt
@@ -468,8 +475,8 @@ c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 part(3,npt,m) = tempz
                 part(1,npt,m) = tempx+x0+tempxx+tempnoisex
                 part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx
-                part(5,npt,m) = tvty
+                part(4,npt,m) = tvtx + tiltx + txn
+                part(5,npt,m) = tvty + tilty + tyn
                 part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
