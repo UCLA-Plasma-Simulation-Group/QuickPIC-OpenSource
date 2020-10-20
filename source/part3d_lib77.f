@@ -332,11 +332,11 @@ c  check if particle belongs to this partition
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
-                     tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
-     &,npt,m)-z0)-cx(0)                
+                     tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
+     &,npt,m)-z0)-cx(2)                
                      part(1,npt,m) = tempx + tempxx + tempnoisex
-                     tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
-     &,npt,m)-z0)-cy(0)        
+                     tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
+     &,npt,m)-z0)-cy(2)        
                      part(2,npt,m) = tempy + tempyy + tempnoisey
                      part(4,npt,m) = tvtx + tiltx + txn
                      part(5,npt,m) = tvty + tilty + tyn
@@ -561,11 +561,11 @@ c  check if particle belongs to this partition
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
-                     tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
-     &,npt,m)-z0)-cx(0)                
+                     tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
+     &,npt,m)-z0)-cx(2)                
                      part(1,npt,m) = tempx + tempxx + tempnoisex
-                     tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
-     &,npt,m)-z0)-cy(0)        
+                     tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
+     &,npt,m)-z0)-cy(2)        
                      part(2,npt,m) = tempy + tempyy + tempnoisey
                      part(4,npt,m) = tvtx + tiltx + txn
                      part(5,npt,m) = tvty + tilty + tyn
