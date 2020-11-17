@@ -193,7 +193,7 @@ c-----------------------------------------------------------------------
       subroutine PRVDIST32_RAN_PF1(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
      1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
      2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tan
-     3x,sigma_tany)
+     3x,sigma_tany,slice_num)
 c new quiet start
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -235,6 +235,7 @@ c      integer f77_log_unit, f77_output_unit
 
       integer nps,npp,npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,idps,ierr
       integer mblok, ipbc
+      integer slice_num
       real part,edges,x0,y0,z0,sigx,sigy,vtx,vty,vtz,vdx,vdy,vdz,dp
       double precision random,ranorm
       real cx, cy, qm, sigmanoise
@@ -251,17 +252,20 @@ c local variables
       integer xi, yi, zi 
       integer npxyz,isum2,iwork2
       integer j,k,l,m,my,mz,moff,mnblok,k1,npt
+      integer slice_intial,tempslicez
       real xf, xs, yf, ys, zf, zs, u, amax, dpi
       double precision sum0, sum1, sum2, dnpxyz
       real at1,sum3,work3
       real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
       real tempnoisex,tempnoisey
+      real tempslicex,tempslicey,tempzmax,tempzmin
       real tempx0,tempy0,tvtx0,tvty0
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
       integer borderlx,borderly, borderx, bordery, nz1 
       integer cnt
       real tiltx, tilty, txn, tyn
+      real,allocatable :: npslicex(:),npslicey(:)
 
       ierr = 0
 
@@ -282,6 +286,14 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
       bordery = min((y0+3.0*sigy),float(ny-1))
 
       nz1 = nz -1
+      
+      slice_intial = 0
+      do while (slice_intial<slice_num)
+      	tempslicex = sigmanoise(0)*ranorm()
+      	tempslicey = sigmanoise(1)*ranorm()
+      	npslicex(slice_intial) = tempslicex
+      	npslicey(slice_intial) = tempslicey
+      enddo
 
       
       dp = abs(dp)
@@ -294,6 +306,8 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
       k = 0
       do while (k<npy)
       l = l - npz
+      tempzmin = 0.0
+      tempzmax = 8.1049
       do while (l<npz)
   495    if (cnt<=0) then
             call RANDOM_NUMBER(tmpu)
@@ -307,13 +321,14 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
          zf = tempz-zi
          zs = 1.-zf
          zi = zi+1
-        dpi = dp(zi)*zs + dp(zi+1)*zf    
+        tempslicez = int((tempz-tempzmin)/((tempzmax-tempzmin)/(slice_num-1)))
+        dpi = dp(zi)*zs + dp(zi+1)*zf
         if (u<=dpi) then  
 c particle is accepted        
-        tempnoisex = sigmanoise(0)*ranorm()
+        tempnoisex = npslicex(tempslicez)
   20    tempx = x0+sigx*ranorm()
         if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
-				tempnoisey = sigmanoise(1)*ranorm()
+				tempnoisey = npslicey(tempslicez)
   30    tempy = y0+sigy*ranorm()
         if (tempy>=(bordery) .or. tempy<=borderly) goto 30
 
@@ -372,6 +387,7 @@ c quiet start
       enddo
       j = j + 1
       enddo
+      
 
       write (2,*) "part. gen. done, now add drift" 
       
