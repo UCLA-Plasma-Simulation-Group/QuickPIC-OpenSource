@@ -293,6 +293,7 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
       	tempslicey = sigmanoise(1)*ranorm()
       	npslicex(slice_intial) = tempslicex
       	npslicey(slice_intial) = tempslicey
+      	slice_intial = slice_intial+1
       enddo
 
       

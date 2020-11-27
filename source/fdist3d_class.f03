@@ -1107,7 +1107,7 @@
          call this%err%werrfl2(class//sname//' started')
          
          npx = this%npx; npy = this%npy; npz = this%npz
-         slice_num = this/slice_num
+         slice_num = this%slice_num
          nzf = size(this%z)
          nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
          if ((this%z(1)>=nz) .or. (this%z(nzf)<=0)) then
