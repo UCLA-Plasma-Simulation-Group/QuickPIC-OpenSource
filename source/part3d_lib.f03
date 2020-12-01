@@ -49,10 +49,10 @@
          subroutine PRVDIST32_RAN_PF1(part,qm,edges,npp,nps,x0,y0,z0,sigx,s&
          &igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tanx,&
-         &sigma_tany)
+         &sigma_tany,slice_num)
          implicit none
          integer, intent(in) :: npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,i&
-         &dps,mblok,ipbc
+         &dps,mblok,ipbc,slice_num
          integer, intent(inout) :: nps,npp,ierr
          real, intent(in) :: qm,sigx,sigy,x0,y0,z0,cx,cy,edges,vtx,vty&
          &,vtz,vdx,vdy,vdz,dp,sigmanoise

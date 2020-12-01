@@ -136,6 +136,7 @@
          private
 
          integer :: npx, npy, npz
+         integer :: slice_num
          real :: qm, sigx, sigy
          real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
@@ -935,6 +936,7 @@
          integer, intent(in) :: i        
 ! local data
          integer :: npf,npx,npy,npz,npmax
+         integer :: slice_num
          real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
          logical :: quiet
@@ -1019,6 +1021,7 @@
          call input%get(trim(s1)//'.piecewise_z',this%z)
          call input%get(trim(s1)//'.sigma_noise(1)',sigxnoise)
          call input%get(trim(s1)//'.sigma_noise(2)',sigynoise)
+         call input%get(trim(s1)//'.slice_num',slice_num)
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -1065,6 +1068,7 @@
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
+         this%slice_num = slice_num
 
 
          call this%err%werrfl2(class//sname//' ended')
@@ -1086,6 +1090,7 @@
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: pt => null()
          integer :: npx, npy, npz, nx, ny, nz, ipbc
+         integer :: slice_num
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0, tax, tay, sigma_tanx, sigma_tany
          real, dimension(3) :: cx, cy
@@ -1102,6 +1107,7 @@
          call this%err%werrfl2(class//sname//' started')
          
          npx = this%npx; npy = this%npy; npz = this%npz
+         slice_num = this%slice_num
          nzf = size(this%z)
          nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
          if ((this%z(1)>=nz) .or. (this%z(nzf)<=0)) then
@@ -1139,7 +1145,7 @@
          call PRVDIST32_RAN_PF1(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,1,1,4,zf,lquiet,ierr,&
-         &sigmanoise,tax,tay,sigma_tanx,sigma_tany)
+         &sigmanoise,tax,tay,sigma_tanx,sigma_tany,slice_num)
 
          if (ierr /= 0) then
             write (erstr,*) 'PRVDIST32_RAN_PFL error'
