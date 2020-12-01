@@ -9,6 +9,7 @@
       use ufield3d_class
       use part3d_lib
       use input_class
+      use mpi
          
       implicit none
 
@@ -17,6 +18,11 @@
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
       public :: fdist3d_003, fdist3d_004
 
+      interface
+         real function ranorm()
+         implicit none
+         end function
+      end interface
 
       type, abstract :: fdist3d
 
@@ -141,7 +147,7 @@
          real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
          real :: tax, tay, sigma_tanx, sigma_tany
-         real, dimension(:), allocatable :: fz, z
+         real, dimension(:), allocatable :: fz, z, jitter_x
          logical :: quiet
 
          contains
@@ -944,7 +950,7 @@
          real :: alx, aly, alz, dx, dy, dz
          real :: tax, tay, sigma_tanx, sigma_tany
          integer :: indx, indy, indz
-         integer :: ii
+         integer :: ii, ierr
          real :: sumz         
          character(len=20) :: sn,s1
          character(len=18), save :: sname = 'init_fdist3d_004:'
@@ -1022,6 +1028,18 @@
          call input%get(trim(s1)//'.sigma_noise(1)',sigxnoise)
          call input%get(trim(s1)//'.sigma_noise(2)',sigynoise)
          call input%get(trim(s1)//'.slice_num',slice_num)
+
+         if (.not. allocated(this%jitter_x)) then
+            allocate(this%jitter_x(slice_num))
+         end if
+
+         if (this%p%getidproc() == 0) then
+            do ii = 1, slice_num
+               this%jitter_x(ii) = sigxnoise*ranorm()/dx
+            end do
+         end if
+
+         call MPI_BCAST(this%jitter_x, slice_num, this%p%getmreal(), 0, this%p%getlworld(), ierr)
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -1145,7 +1163,7 @@
          call PRVDIST32_RAN_PF1(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
          &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,1,1,4,zf,lquiet,ierr,&
-         &sigmanoise,tax,tay,sigma_tanx,sigma_tany,slice_num)
+         &sigmanoise,tax,tay,sigma_tanx,sigma_tany,slice_num,this%jitter_x,this%z(1),this%z(nzf))
 
          if (ierr /= 0) then
             write (erstr,*) 'PRVDIST32_RAN_PFL error'

@@ -49,18 +49,18 @@
          subroutine PRVDIST32_RAN_PF1(part,qm,edges,npp,nps,x0,y0,z0,sigx,s&
          &igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
          &npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tanx,&
-         &sigma_tany,slice_num)
+         &sigma_tany,slice_num,jitter_x,zss,zff)
          implicit none
          integer, intent(in) :: npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,i&
          &dps,mblok,ipbc,slice_num
          integer, intent(inout) :: nps,npp,ierr
          real, intent(in) :: qm,sigx,sigy,x0,y0,z0,cx,cy,edges,vtx,vty&
-         &,vtz,vdx,vdy,vdz,dp,sigmanoise
+         &,vtz,vdx,vdy,vdz,dp,sigmanoise, jitter_x, zss, zff
          real, intent(inout) :: part
          logical, intent(in) :: lquiet
          dimension part(idimp,npmax,nblok)
          dimension edges(idps,nblok)
-         dimension dp(nz)
+         dimension dp(nz), jitter_x(slice_num)
          dimension cx(0:2),cy(0:2)
          dimension sigmanoise(0:1)
          real tax, tay, sigma_tanx, sigma_tany

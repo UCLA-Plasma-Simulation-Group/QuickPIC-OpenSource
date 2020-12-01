@@ -193,7 +193,7 @@ c-----------------------------------------------------------------------
       subroutine PRVDIST32_RAN_PF1(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
      1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
      2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tan
-     3x,sigma_tany,slice_num)
+     3x,sigma_tany,slice_num,jitter_x,zss,zff)
 c new quiet start
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -238,14 +238,14 @@ c      integer f77_log_unit, f77_output_unit
       integer slice_num
       real part,edges,x0,y0,z0,sigx,sigy,vtx,vty,vtz,vdx,vdy,vdz,dp
       double precision random,ranorm
-      real cx, cy, qm, sigmanoise
+      real cx, cy, qm, sigmanoise, jitter_x
       real cdth,sdth
       dimension part(idimp,npmax,nblok),dp(nz)
       dimension edges(idps,nblok), npp(nblok), nps(nblok)
-      dimension cx(0:2),cy(0:2)
+      dimension cx(0:2),cy(0:2),jitter_x(slice_num)
       dimension sigmanoise(0:1)
       logical lquiet
-      real tax, tay, sigma_tanx, sigma_tany
+      real tax, tay, sigma_tanx, sigma_tany, zss, zff
 
 c local variables
       real tmpu(1024),tmpz(1024)
@@ -322,7 +322,8 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
          zf = tempz-zi
          zs = 1.-zf
          zi = zi+1
-        tempslicez = int((tempz-tempzmin)/((tempzmax-tempzmin)/(slice_num-1)))
+        tempslicez = int((tempz-tempzmin)/((tempzmax-tempzmin)/(slice_nu&
+     &m-1)))
         dpi = dp(zi)*zs + dp(zi+1)*zf
         if (u<=dpi) then  
 c particle is accepted        
