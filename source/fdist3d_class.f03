@@ -452,7 +452,7 @@
             sumz = sumz + (this%fz(ii) + this%fz(ii-1))*&
             &(this%z(ii) - this%z(ii-1))*0.5
          end do
-         this%z = this%z/dz
+         this%z = (this%z-min)/dz
          this%npf = npf
          this%npx = npx
          this%npy = npy
