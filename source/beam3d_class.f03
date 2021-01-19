@@ -209,7 +209,7 @@
          character(len=18), save :: sname = 'writehdf5_beam3d:'
 
          call this%err%werrfl2(class//sname//' started')                  
-         call this%pd%wr(file,dspl,delta,rtag,stag,id)
+         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),rtag,stag,id)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_beam3d
