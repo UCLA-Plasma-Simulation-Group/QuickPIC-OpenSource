@@ -250,12 +250,12 @@ c local variables
       integer j,k,l,m,my,mz,moff,mnblok,k1,npt
       real xf, xs, yf, ys, zf, zs, u, amax, dpi
       double precision sum0, sum1, sum2, dnpxyz
-      real at1,sum3,work3
+      real at1,sum3,work3,borderlx,borderly, borderx, bordery
       real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
       real tempx0,tempy0,tvtx0,tvty0
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
-      integer borderlx,borderly, borderx, bordery, nz1 
+      integer nz1 
       integer cnt
 
       ierr = 0
@@ -271,14 +271,12 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
      
       x2 = 2.0 * x0
       y2 = 2.0 * y0
-      borderlx = max((x0-3.0*sigx),1.0)
-      borderly = max((y0-3.0*sigy),1.0)
-      borderx = min((x0+3.0*sigx),float(nx-1)) 
-      bordery = min((y0+3.0*sigy),float(ny-1))
+      borderlx = max((x0-5.0*sigx),1.0)
+      borderly = max((y0-5.0*sigy),1.0)
+      borderx = min((x0+5.0*sigx),float(nx-1)) 
+      bordery = min((y0+5.0*sigy),float(ny-1))
 
       nz1 = nz -1
-
-      
       dp = abs(dp)
       amax = maxval(dp)*1.2
       dp = dp/amax

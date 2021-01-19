@@ -28,6 +28,7 @@
 !
 ! ndprof = profile type
          integer :: npf, npmax
+         real, dimension(3) :: origin=(/0.0,0.0,0.0/)
          logical :: evol = .true.
                          
          contains
@@ -38,7 +39,7 @@
          procedure(ab_init_fdist3d), deferred, private :: init_fdist3d
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
-         procedure :: getnpf, getnpmax, getevol
+         procedure :: getnpf, getnpmax, getevol, getorigin
                   
       end type 
 
@@ -184,6 +185,17 @@
 
       end function getevol
 !      
+      function getorigin(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         real, dimension(3) :: getorigin
+         
+         getorigin = this%origin
+
+      end function getorigin
+!
       subroutine end_fdist3d(this)
           
          implicit none
@@ -231,18 +243,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -402,18 +417,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -596,18 +614,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -763,18 +784,21 @@
          this%cwp = cwp
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -914,6 +938,7 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          call input%get(trim(s1)//'.range_x(1)',lb(1))
          call input%get(trim(s1)//'.range_x(2)',ub(1))
@@ -924,6 +949,7 @@
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          call input%get(trim(s1)//'.range_y(1)',lb(2))
          call input%get(trim(s1)//'.range_y(2)',ub(2))
@@ -934,6 +960,7 @@
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          call input%get(trim(s1)//'.range_z(1)',lb(3))
          call input%get(trim(s1)//'.range_z(2)',ub(3))
