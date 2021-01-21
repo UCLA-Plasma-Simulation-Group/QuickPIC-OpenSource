@@ -34,7 +34,8 @@
 !
 ! ndprof = profile type
          integer :: npf, npmax
-         logical :: evol = .true.
+         real, dimension(3) :: origin=(/0.0,0.0,0.0/)
+         logical :: evol = .true., static = .false.
                          
          contains
          
@@ -44,7 +45,8 @@
          procedure(ab_init_fdist3d), deferred, private :: init_fdist3d
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
-         procedure :: getnpf, getnpmax, getevol
+         procedure :: getnpf, getnpmax, getevol, getorigin
+         procedure :: getstatic
                   
       end type 
 
@@ -94,8 +96,9 @@
          integer :: npx, npy, npz
          real :: qm, sigx, sigy
          real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
-         real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
-         real :: tax, tay, sigma_tanx, sigma_tany
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
+         ! real :: sigxnoise,sigynoise,gamma,np
+         ! real :: tax, tay, sigma_tanx, sigma_tany
          real, dimension(:), allocatable :: fz, z
          logical :: quiet
 
@@ -210,6 +213,28 @@
 
       end function getevol
 !      
+      function getstatic(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: getstatic
+         
+         getstatic = this%static
+
+      end function getstatic
+!
+      function getorigin(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         real, dimension(3) :: getorigin
+         
+         getorigin = this%origin
+
+      end function getorigin
+!
       subroutine end_fdist3d(this)
           
          implicit none
@@ -233,7 +258,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
-         logical :: quiet, evol
+         logical :: quiet, evol, static
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz         
@@ -257,18 +282,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -296,8 +324,12 @@
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
-
-
+         if (input%found(trim(s1)//'.static')) then
+            call input%get(trim(s1)//'.static',static)
+            if (static) evol = .false.
+         else
+            static = .false.
+         end if
 
          this%npf = npf
          this%npx = npx
@@ -329,6 +361,7 @@
          this%np = np
          this%quiet = quiet
          this%evol = evol
+         this%static = static
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -349,13 +382,16 @@
 ! edges(3) = lower boundary in z of particle partition
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: pt => null()
+         real, dimension(:,:,:,:), pointer :: qrf => null()        
          integer :: npx, npy, npz, nx, ny, nz, ipbc
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0
          real, dimension(3) :: cx, cy
          real, dimension(4) :: edges
+         real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
          integer, dimension(2) :: noff
          integer :: nps=1
+         integer :: i, j, k
          logical :: lquiet = .false.
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_000:'
@@ -378,14 +414,35 @@
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
          
-         call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
-         &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
-         &x0,y0,z0,cx,cy,lquiet,ierr)
+         if (this%static) then
+            npp = 0
+            np = this%np*this%qm/abs(this%qm)
+            nx = fd%getnd1p(); ny = fd%getnd2p(); nz = fd%getnd3p()
+            qrf => fd%getrf()
+            do k = 1, nz
+               zval = float(k+noff(2)-1)-z0
+               cx0 = -cx(1)*zval**2-cx(2)*zval-cx(3)
+               cy0 = -cy(1)*zval**2-cy(2)*zval-cy(3)
+               t1 = np*exp(-zval**2/2.0/sigz**2)
+               do i = 1, nx
+                  xval = float(i-1)
+                  t2 = t1*exp(-(xval-x0+cx0)**2/2.0/sigx**2)
+                  do j = 1, ny
+                     yval = float(j+noff(1)-1)
+                     qrf(1,i,j,k) = t2*exp(-(yval-y0+cy0)**2/2.0/sigy**2)                    
+                  end do
+               end do
+            end do
+         else
+            call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
+            &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
+            &x0,y0,z0,cx,cy,lquiet,ierr)
+            if (ierr /= 0) then
+               write (erstr,*) 'PRVDIST32_RANDOM error'
+               call this%err%equit(class//sname//erstr)
+            endif
+         end if
 
-         if (ierr /= 0) then
-            write (erstr,*) 'PRVDIST32_RANDOM error'
-            call this%err%equit(class//sname//erstr)
-         endif
          
          call this%err%werrfl2(class//sname//' ended')
          
@@ -402,7 +459,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,sigxnoise,sigynoise,gamma,np
-         logical :: quiet
+         logical :: quiet,evol,static
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          real :: tax, tay, sigma_tanx, sigma_tany
@@ -429,18 +486,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -456,20 +516,20 @@
          call input%get(trim(s1)//'.sigma_v(1)',sigvx)
          call input%get(trim(s1)//'.sigma_v(2)',sigvy)
          call input%get(trim(s1)//'.sigma_v(3)',sigvz)
-         if (input%found(trim(s1)//'.tilt_angle')) then            
-            call input%get(trim(s1)//'.tilt_angle(1)',tax)
-            call input%get(trim(s1)//'.tilt_angle(2)',tay)
-         else
-            tax = 0.0
-            tay = 0.0
-         end if
-         if (input%found(trim(s1)//'.sigma_tilt_angle_noise')) then            
-            call input%get(trim(s1)//'.sigma_tilt_angle_noise(1)',sigma_tanx)
-            call input%get(trim(s1)//'.sigma_tilt_angle_noise(2)',sigma_tany)
-         else
-            sigma_tanx = 0.0
-            sigma_tany = 0.0
-         end if
+         ! if (input%found(trim(s1)//'.tilt_angle')) then            
+         !    call input%get(trim(s1)//'.tilt_angle(1)',tax)
+         !    call input%get(trim(s1)//'.tilt_angle(2)',tay)
+         ! else
+         !    tax = 0.0
+         !    tay = 0.0
+         ! end if
+         ! if (input%found(trim(s1)//'.sigma_tilt_angle_noise')) then            
+         !    call input%get(trim(s1)//'.sigma_tilt_angle_noise(1)',sigma_tanx)
+         !    call input%get(trim(s1)//'.sigma_tilt_angle_noise(2)',sigma_tany)
+         ! else
+         !    sigma_tanx = 0.0
+         !    sigma_tany = 0.0
+         ! end if
          call input%get(trim(s1)//'.centroid_x(1)',cx1)
          call input%get(trim(s1)//'.centroid_x(2)',cx2)
          call input%get(trim(s1)//'.centroid_x(3)',cx3)
@@ -484,6 +544,13 @@
          call input%get(trim(s1)//'.piecewise_z',this%z)
          call input%get(trim(s1)//'.sigma_noise(1)',sigxnoise)
          call input%get(trim(s1)//'.sigma_noise(2)',sigynoise)
+         call input%get(trim(s1)//'.evolution',evol)
+         if (input%found(trim(s1)//'.static')) then
+            call input%get(trim(s1)//'.static',static)
+            if (static) evol = .false.
+         else
+            static = .false.
+         end if
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -512,10 +579,10 @@
          this%bcz = bcz/dz
          this%sigx = sigx/dx
          this%sigy = sigy/dy
-         this%tax = tan(tax)
-         this%tay = tan(tay)
-         this%sigma_tanx = tan(sigma_tanx)
-         this%sigma_tany = tan(sigma_tany)
+         ! this%tax = tan(tax)
+         ! this%tay = tan(tay)
+         ! this%sigma_tanx = tan(sigma_tanx)
+         ! this%sigma_tany = tan(sigma_tany)
          this%sigvx = sigvx
          this%sigvy = sigvy
          this%sigvz = sigvz
@@ -525,11 +592,13 @@
          this%cy1 = cy1*dz*dz/dy
          this%cy2 = cy2*dz/dy
          this%cy3 = cy3/dy
-         this%sigxnoise = sigxnoise/dx
-         this%sigynoise = sigynoise/dy
+         ! this%sigxnoise = sigxnoise/dx
+         ! this%sigynoise = sigynoise/dy
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
+         this%evol = evol
+         this%static = static
 
 
          call this%err%werrfl2(class//sname//' ended')
@@ -550,6 +619,7 @@
 ! edges(3) = lower boundary in z of particle partition
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: pt => null()
+         real, dimension(:,:,:,:), pointer :: qrf => null()        
          integer :: npx, npy, npz, nx, ny, nz, ipbc
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0, tax, tay, sigma_tanx, sigma_tany
@@ -560,7 +630,8 @@
          integer :: nps=1
          logical :: lquiet = .false.
          integer :: idimp, npmax, ierr = 0
-         integer :: nzf, i, j
+         integer :: nzf, i, j, k
+         real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
          real, dimension(:), allocatable :: zf
          character(len=18), save :: sname = 'dist3d_001:'
 
@@ -578,11 +649,11 @@
          vtx = this%sigvx; vty = this%sigvy; vtz = this%sigvz
          vdx = 0.0; vdy = 0.0; vdz = this%gamma
          sigx = this%sigx; sigy = this%sigy
-         tax = this%tax; tay = this%tay;
-         sigma_tanx = this%sigma_tanx; sigma_tany = this%sigma_tany 
+         ! tax = this%tax; tay = this%tay;
+         ! sigma_tanx = this%sigma_tanx; sigma_tany = this%sigma_tany 
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
-         sigmanoise = (/this%sigxnoise,this%sigynoise/)
+         ! sigmanoise = (/this%sigxnoise,this%sigynoise/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
          noff = fd%getnoff()
@@ -600,17 +671,40 @@
                end if
             end do
          end do
-         
-         call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
-         &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
-         &npmax,1,1,4,zf,lquiet,ierr,&
-         &sigmanoise,tax,tay,sigma_tanx,sigma_tany)
 
-         if (ierr /= 0) then
-            write (erstr,*) 'PRVDIST32_RAN_PFL error'
-            call this%err%equit(class//sname//erstr)
-         endif
-         
+         if (this%static) then
+            npp = 0
+            np = this%np*this%qm/abs(this%qm)
+            nx = fd%getnd1p(); ny = fd%getnd2p(); nz = fd%getnd3p()
+            qrf => fd%getrf()
+            do k = 1, nz
+               zval = float(k+noff(2)-1)-z0
+               cx0 = -cx(1)*zval**2-cx(2)*zval-cx(3)
+               cy0 = -cy(1)*zval**2-cy(2)*zval-cy(3)
+               t1 = np*zf(k+noff(2))
+               do i = 1, nx
+                  xval = float(i-1)
+                  t2 = t1*exp(-(xval-x0+cx0)**2/2.0/sigx**2)
+                  do j = 1, ny
+                     yval = float(j+noff(1)-1)
+                     qrf(1,i,j,k) = t2*exp(-(yval-y0+cy0)**2/2.0/sigy**2)                    
+                  end do
+               end do
+            end do
+         else
+            ! call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
+            ! &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
+            ! &npmax,1,1,4,zf,lquiet,ierr,&
+            ! &sigmanoise,tax,tay,sigma_tanx,sigma_tany)
+   
+            call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
+            &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
+            &npmax,1,1,4,zf,lquiet,ierr)
+            if (ierr /= 0) then
+               write (erstr,*) 'PRVDIST32_RAN_PFL error'
+               call this%err%equit(class//sname//erstr)
+            endif
+         end if         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_001
@@ -651,18 +745,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -818,18 +915,21 @@
          this%cwp = cwp
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -972,18 +1072,21 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          bcx = bcx - min
          alx = (max-min) 
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          bcy = bcy -min
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          bcz = bcz -min
          alz = (max-min) 
@@ -1210,6 +1313,7 @@
          cwp=5.32150254*1e9/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          call input%get(trim(s1)//'.center(1)',bcx)
          call input%get(trim(s1)//'.range_x(1)',lb(1))
          call input%get(trim(s1)//'.range_x(2)',ub(1))
@@ -1220,6 +1324,7 @@
          dx=alx/real(2**indx)
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          call input%get(trim(s1)//'.center(2)',bcy)
          call input%get(trim(s1)//'.range_y(1)',lb(2))
          call input%get(trim(s1)//'.range_y(2)',ub(2))
@@ -1230,6 +1335,7 @@
          dy=aly/real(2**indy)
          call input%get('simulation.box.z(1)',min)
          call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
          call input%get(trim(s1)//'.center(3)',bcz)
          call input%get(trim(s1)//'.range_z(1)',lb(3))
          call input%get(trim(s1)//'.range_z(2)',ub(3))

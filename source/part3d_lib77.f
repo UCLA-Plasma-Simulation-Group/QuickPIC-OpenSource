@@ -260,9 +260,10 @@ c local variables
       real tempnoisex,tempnoisey
       real tempslicex,tempslicey,tempzmax,tempzmin
       real tempx0,tempy0,tvtx0,tvty0
+      real borderlx,borderly, borderx, bordery
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
-      integer borderlx,borderly, borderx, bordery, nz1 
+      integer nz1 
       integer cnt
       real tiltx, tilty, txn, tyn
       real,allocatable :: npslicex(:),npslicey(:)
@@ -280,10 +281,10 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
      
       x2 = 2.0 * x0
       y2 = 2.0 * y0
-      borderlx = max((x0-3.0*sigx),1.0)
-      borderly = max((y0-3.0*sigy),1.0)
-      borderx = min((x0+3.0*sigx),float(nx-1)) 
-      bordery = min((y0+3.0*sigy),float(ny-1))
+      borderlx = max((x0-5.0*sigx),1.0)
+      borderly = max((y0-5.0*sigy),1.0)
+      borderx = min((x0+5.0*sigx),float(nx-1)) 
+      bordery = min((y0+5.0*sigy),float(ny-1))
 
       nz1 = nz -1
       
@@ -390,7 +391,6 @@ c quiet start
       j = j + 1
       enddo
       
-
       write (2,*) "part. gen. done, now add drift" 
       
 c      npxyz = 0
@@ -439,8 +439,7 @@ c process errors
 c-----------------------------------------------------------------------
       subroutine PRVDIST32_RAN_PFL(part,qm,edges,npp,nps,x0,y0,z0,sigx,s
      1igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,
-     2npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tan
-     3x,sigma_tany)
+     2npmax,mblok,nblok,idps,dp,lquiet,ierr)
 c new quiet start
 c keep 1 + p^2 = gamma
 c for 3d code, this subroutine calculates initial particle co-ordinates
@@ -484,14 +483,12 @@ c      integer f77_log_unit, f77_output_unit
       integer mblok, ipbc
       real part,edges,x0,y0,z0,sigx,sigy,vtx,vty,vtz,vdx,vdy,vdz,dp
       double precision random,ranorm
-      real cx, cy, qm, sigmanoise
+      real cx, cy, qm
       real cdth,sdth
       dimension part(idimp,npmax,nblok),dp(nz)
       dimension edges(idps,nblok), npp(nblok), nps(nblok)
       dimension cx(0:2),cy(0:2)
-      dimension sigmanoise(0:1)
       logical lquiet
-      real tax, tay, sigma_tanx, sigma_tany
 
 c local variables
       real tmpu(1024),tmpz(1024)
@@ -500,15 +497,13 @@ c local variables
       integer j,k,l,m,my,mz,moff,mnblok,k1,npt
       real xf, xs, yf, ys, zf, zs, u, amax, dpi
       double precision sum0, sum1, sum2, dnpxyz
-      real at1,sum3,work3
+      real at1,sum3,work3,borderlx,borderly, borderx, bordery
       real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
-      real tempnoisex,tempnoisey
       real tempx0,tempy0,tvtx0,tvty0
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
-      integer borderlx,borderly, borderx, bordery, nz1 
+      integer nz1 
       integer cnt
-      real tiltx, tilty, txn, tyn
 
       ierr = 0
 
@@ -523,14 +518,12 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
      
       x2 = 2.0 * x0
       y2 = 2.0 * y0
-      borderlx = max((x0-3.0*sigx),1.0)
-      borderly = max((y0-3.0*sigy),1.0)
-      borderx = min((x0+3.0*sigx),float(nx-1)) 
-      bordery = min((y0+3.0*sigy),float(ny-1))
+      borderlx = max((x0-5.0*sigx),1.0)
+      borderly = max((y0-5.0*sigy),1.0)
+      borderx = min((x0+5.0*sigx),float(nx-1)) 
+      bordery = min((y0+5.0*sigy),float(ny-1))
 
       nz1 = nz -1
-
-      
       dp = abs(dp)
       amax = maxval(dp)*1.2
       dp = dp/amax
@@ -557,10 +550,8 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
         dpi = dp(zi)*zs + dp(zi+1)*zf    
         if (u<=dpi) then  
 c particle is accepted        
-        tempnoisex = sigmanoise(0)*ranorm()
   20    tempx = x0+sigx*ranorm()
         if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
-        tempnoisey = sigmanoise(1)*ranorm()
   30    tempy = y0+sigy*ranorm()
         if (tempy>=(bordery) .or. tempy<=borderly) goto 30
 
@@ -572,21 +563,17 @@ c  check if particle belongs to this partition
                 tvty = vty*ranorm()
                 tvtz = vtz*ranorm() + vdz
                 tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
-                tiltx = tax*tvtz
-                tilty = tay*tvtz
-                txn = sigma_tanx*ranorm()*tvtz
-                tyn = sigma_tany*ranorm()*tvtz
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
                      tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
      &,npt,m)-z0)-cx(2)                
-                     part(1,npt,m) = tempx + tempxx + tempnoisex
+                     part(1,npt,m) = tempx + tempxx
                      tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
      &,npt,m)-z0)-cy(2)        
-                     part(2,npt,m) = tempy + tempyy + tempnoisey
-                     part(4,npt,m) = tvtx + tiltx + txn
-                     part(5,npt,m) = tvty + tilty + tyn
+                     part(2,npt,m) = tempy + tempyy 
+                     part(4,npt,m) = tvtx
+                     part(5,npt,m) = tvty
                      part(6,npt,m) = tvtz  
                      part(7,npt,m) = qm
                      npp(m) = npt
@@ -596,148 +583,23 @@ c  check if particle belongs to this partition
 c quiet start
                 if (lquiet) then
                    if (npt.le.npmax) then
-                tempx = tempx - x0
-                tempy = tempy - y0
-
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt                
-c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm 
-                npp(m) = npt
-                tempx0 = cdth*tempx-sdth*tempy
-                tempy0 = sdth*tempx+cdth*tempy
-                tempx = tempx0
-                tempy = tempy0
-
-                tvtx0 = cdth*tvtx-sdth*tvty
-                tvty0 = sdth*tvtx+cdth*tvty
-                tvtx = tvtx0
-                tvty = tvty0
-                npt = npp(m) + 1
-                part(3,npt,m) = tempz
-                part(1,npt,m) = tempx+x0+tempxx+tempnoisex
-                part(2,npt,m) = tempy+y0+tempyy+tempnoisey
-                part(4,npt,m) = tvtx + tiltx + txn
-                part(5,npt,m) = tvty + tilty + tyn
-                part(6,npt,m) = tvtz
-                part(7,npt,m) = qm
-                npp(m) = npt
-c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                      npt = npp(m) + 1
+                      part(3,npt,m) = tempz
+                      part(1,npt,m) = x2 - tempx+tempxx
+                      part(2,npt,m) = y2 - tempy+tempyy
+                      part(4,npt,m) = -tvtx
+                      part(5,npt,m) = -tvty
+                      part(6,npt,m) = tvtz  
+                      part(7,npt,m) = qm
+                      npp(m) = npt
                    else
                       ierr = ierr + 1
                    endif
                 endif
-
               endif
              enddo 
-
         l = l + 1
-        if (lquiet) l = l + 7
+        if (lquiet) l = l + 1
         endif
       enddo 
       k = k + 1
@@ -889,12 +751,12 @@ c  check if particle belongs to this partition
             npt = npp(m) + 1
             part(3,npt,m) = tempz 
 c calculate offset in x            
-            tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3,npt,m)  &
-     & - z0)-cx(0)                
+            tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3,npt,m)  &
+     & - z0)-cx(2)                
             part(1,npt,m) = tempx + tempxx
 c calculate offset in y            
-            tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
-     & - z0)-cy(0)        
+            tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
+     & - z0)-cy(2)        
             part(2,npt,m) = tempy + tempyy 
             part(4,npt,m) = tvtx
             part(5,npt,m) = tvty

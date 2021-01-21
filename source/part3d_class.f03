@@ -277,13 +277,13 @@
 
       end function getnpp
 !
-      subroutine writehdf5_part3d(this,file,dspl,delta,rtag,stag,id)
+      subroutine writehdf5_part3d(this,file,dspl,delta,origin,rtag,stag,id)
 
          implicit none
          
          class(part3d), intent(inout) :: this
          class(hdf5file), intent(in) :: file
-         real, dimension(3), intent(in) :: delta
+         real, dimension(3), intent(in) :: delta, origin
          integer, intent(in) :: dspl, rtag, stag
          integer, intent(inout) :: id
 ! local data
@@ -292,7 +292,7 @@
 
          call this%err%werrfl2(class//sname//' started')                  
          call pwpart_pipe(this%p,this%err,file,this%part,this%npp,dspl,delta,&
-         &rtag,stag,id,ierr)
+         &origin,rtag,stag,id,ierr)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_part3d

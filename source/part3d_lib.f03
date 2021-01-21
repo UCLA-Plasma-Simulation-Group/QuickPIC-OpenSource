@@ -26,22 +26,19 @@
       interface
          subroutine PRVDIST32_RAN_PFL(part,qm,edges,npp,nps,x0,y0,z0,sigx,s&
          &igy,vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
-         &npmax,mblok,nblok,idps,dp,lquiet,ierr,sigmanoise,tax,tay,sigma_tanx,&
-         &sigma_tany)
+         &npmax,mblok,nblok,idps,dp,lquiet,ierr)
          implicit none
          integer, intent(in) :: npmax,nblok,npx,npy,npz,idimp,nx,ny,nz,i&
          &dps,mblok,ipbc
          integer, intent(inout) :: nps,npp,ierr
          real, intent(in) :: qm,sigx,sigy,x0,y0,z0,cx,cy,edges,vtx,vty&
-         &,vtz,vdx,vdy,vdz,dp,sigmanoise
+         &,vtz,vdx,vdy,vdz,dp
          real, intent(inout) :: part
          logical, intent(in) :: lquiet
          dimension part(idimp,npmax,nblok)
          dimension edges(idps,nblok)
          dimension dp(nz)
          dimension cx(0:2),cy(0:2)
-         dimension sigmanoise(0:1)
-         real tax, tay, sigma_tanx, sigma_tany
          end subroutine
       end interface
 !

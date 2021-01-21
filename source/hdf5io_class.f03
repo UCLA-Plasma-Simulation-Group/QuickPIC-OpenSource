@@ -1016,7 +1016,7 @@
          
       end subroutine pwpart_2d
 !
-      subroutine pwpart_3d_pipe(pp,perr,file,part,npp,dspl,delta,rtag,stag,&
+      subroutine pwpart_3d_pipe(pp,perr,file,part,npp,dspl,delta,origin,rtag,stag,&
       &id,ierr)
      
          implicit none
@@ -1025,7 +1025,7 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: part
-         real, dimension(3), intent(in) :: delta
+         real, dimension(3), intent(in) :: delta,origin
          integer, intent(in) :: npp,dspl
          integer, intent(in) :: rtag, stag
          integer, intent(inout) :: id, ierr
@@ -1147,7 +1147,7 @@
                endif               
 
                do i = 1, 3
-                  buff(1:tnpp) = part(i,1:((tnpp-1)*dspl+1):dspl)*delta(i)
+                  buff(1:tnpp) = part(i,1:((tnpp-1)*dspl+1):dspl)*delta(i)+origin(i)
       
                   if (ori >=0 .and. tpo /= 0) then
                      call h5dopen_f(rootID, 'x'//char(iachar('0')+i), dset_id, ierr)

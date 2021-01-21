@@ -37,6 +37,7 @@
          generic :: new => init_fpois2d
          generic :: del => end_fpois2d
          generic :: potential => ipotd2
+         generic :: vpotential => ivpotd2
          generic :: smoothf => ismoothfd2
          generic :: elfield => ippoisd23
          generic :: bfield => ibfieldd2
@@ -44,6 +45,7 @@
          procedure, private :: init_fpois2d
          procedure, private :: end_fpois2d
          procedure, private :: ipotd2, ismoothfd2, ippoisd23, ibfieldd2
+         procedure, private :: ivpotd2
          procedure, private :: jpbpoisd23n_qp                  
       end type 
 !
@@ -208,6 +210,67 @@
          call this%err%werrfl2(class//sname//' ended')
 
          end subroutine ippoisd2
+!
+         subroutine ivpotd2(this,q,fx,we)
+! this subroutine solves poisson's equation for vector potential with 
+! dirichlet (zero potential) boundary conditions and 1d partition
+! this = fpois2d descriptor
+! q = input current density array, in fourier space
+! fx = output potential array, in fourier space
+! we = output potential energy
+         implicit none
+         class(fpois2d), intent(in) :: this
+         real, intent(inout) :: we
+         class(ufield2d), intent(inout) :: q, fx
+! local data
+         integer :: isign = 1
+         real, dimension(:,:,:), pointer :: pq => null(), pfx => null()
+         character(len=8), save :: sname = 'ivpotd2:'
+         
+         call this%err%werrfl2(class//sname//' started')
+         select case (this%sp%getpsolver())
+         case (1)
+            pq => q%getrf(); pfx => fx%getrf()
+            call ivppoisd2(this,pq,pfx,isign,we)
+         case default
+            pq => q%getrf(); pfx => fx%getrf()
+            call ivppoisd2(this,pq,pfx,isign,we)
+         end select
+         call this%err%werrfl2(class//sname//' ended')
+         end subroutine ivpotd2
+!
+         subroutine ivppoisd2(this,q,fx,isign,we)
+! this subroutine solves poisson's equation for vetor potential
+! with dirichlet (zero potential) boundary conditions and 1d partition
+! this = poisson solver descriptor, includes table pointers
+! q = input charge density array, in fourier space
+! fx = output potential array, in fourier space
+! isign = (1,2) = solve for (potential,smooth)
+! we = output potential energy
+         implicit none
+         class(fpois2d), intent(in) :: this
+         integer, intent(in) :: isign
+         real, intent(inout) :: we
+         real, dimension(:,:,:), pointer, intent(inout) :: q, fx
+! local data
+         integer :: nx, ny, nyv, kxp2, nyd
+         complex, dimension(:,:), pointer :: ffc
+         character(len=10), save :: sname = 'ivppoisd2:'
+
+         call this%err%werrfl2(class//sname//' started')
+! unpack common arguments
+         ffc => this%ffc
+         nx = this%nd(1); ny = this%nd(2)
+         nyv = size(q,2); nyd = size(ffc,1)
+         kxp2 = size(q,3)-1;
+
+         if (isign==1) then
+            call PBPOISD23(q,fx,isign,ffc,this%a(1),this%a(2),this%anorm,1.0,&
+            &we,nx,ny,this%p%getlkstrt(),nyv,kxp2,1,nyd)
+         endif
+         call this%err%werrfl2(class//sname//' ended')
+
+         end subroutine ivppoisd2
 !
          subroutine ismoothfd2(this,f,fs)
 ! this subroutine provides smoothing for fourier transformed data with
