@@ -1,19 +1,6 @@
 !-----------------------------------------------------------------------
-! part2d_lib77 library for QuickPIC Open Source 1.0
-! update: 02/8/2021 by Viktor Decyk
-! In order to support automatic recovery of buffer overflows,
-! procedures PPDBLKP2L,PPPMOVIN2L,PPPCHECK2L,PPPORDER2LA, PPPORDERF2LA,
-! PPPORDER2LB, and PPPCOPYOUT2 have been updated and procedures
-! PPPRSNCL2L,PPPORDERF2LAF,PPPRSTOR2L and PPPCOPYIN2 have been added from
-! UPIC 2.0.4.1
-! Modified PPGRBPPUSHF23L_QP to remove periodicity check (periodicity
-! check is now imposed in the new version of PPPORDER2LB), to return new
-! ntmax on error, and to remove the unused argument dtc and unused local
-! variables
-! Added PPGRBPPUSH23L_QP to support particle reflection
-!-----------------------------------------------------------------------
-      subroutine PPDBLKP2L(part,kpic,npp,noff,nppmx,idimp,npmax,mx,my,  &
-     &mx1,mxyp1,irc)
+      subroutine PPDBLKP2L(part,kpic,npp,noff,nppmx,idimp,npmax,mx,my,  
+     1mx1,mxyp1,irc)
 ! this subroutine finds the maximum number of particles in each tile of
 ! mx, my to calculate size of segmented particle array ppart
 ! linear interpolation, spatial decomposition in y direction
@@ -71,13 +58,13 @@
       if (ierr.gt.0) then
          irc = ierr
       else if (isum.ne.npp) then
-         irc = -1
+         irc = isum
       endif
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPPMOVIN2L(part,ppart,kpic,npp,noff,nppmx,idimp,npmax, &
-     &mx,my,mx1,mxyp1,irc)
+      subroutine PPPMOVIN2L(part,ppart,kpic,npp,noff,nppmx,idimp,npmax, 
+     1mx,my,mx1,mxyp1,irc)
 ! this subroutine sorts particles by x,y grid in tiles of
 ! mx, my and copies to segmented array ppart
 ! linear interpolation, spatial decomposition in y direction
@@ -130,8 +117,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPPCHECK2L(ppart,kpic,noff,nyp,idimp,nppmx,nx,mx,my,mx1&
-     &,myp1,irc)
+      subroutine PPPCHECK2L(ppart,kpic,noff,nyp,idimp,nppmx,nx,mx,my,mx1
+     1,myp1,irc)
 ! this subroutine performs a sanity check to make sure particles sorted
 ! by x,y grid in tiles of mx, my, are all within bounds.
 ! tiles are assumed to be arranged in 2D linear memory
@@ -160,8 +147,8 @@
       real edgelx, edgely, edgerx, edgery, dx, dy
       mxyp1 = mx1*myp1
 ! loop over tiles
-!$OMP PARALLEL DO                                                       &
-!$OMP& PRIVATE(j,k,noffp,moffp,nppp,nn,mm,ist,edgelx,edgely,edgerx,     &
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(j,k,noffp,moffp,nppp,nn,mm,ist,edgelx,edgely,edgerx,
 !$OMP& edgery,dx,dy)
       do 20 k = 1, mxyp1
       noffp = (k - 1)/mx1
@@ -767,305 +754,9 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGRBPPUSH23L_QP(ppart,fxy,bxy,psit,kpic,noff,nyp,qbm, &
-     &dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
-! for 2-1/2d code, this subroutine updates particle co-ordinates and
-! velocities using leap-frog scheme in time and first-order linear
-! interpolation in space, for relativistic particles with magnetic field
-! Using the Boris Mover.
-! OpenMP version using guard cells, for distributed data
-! data read in tiles
-! particles stored segmented array
-! 131 flops/particle, 4 divides, 2 sqrts, 25 loads, 5 stores
-! input: all output: ppart, ek
-! momentum equations used are:
-! px(t+dt/2) = rot(1)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(2)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(3)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fx(x(t),y(t))*dt)
-! py(t+dt/2) = rot(4)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(5)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(6)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fy(x(t),y(t))*dt)
-! pz(t+dt/2) = rot(7)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(8)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(9)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fz(x(t),y(t))*dt)
-! where q/m is charge/mass, and the rotation matrix is given by:
-!    rot(1) = (1 - (om*dt/2)**2 + 2*(omx*dt/2)**2)/(1 + (om*dt/2)**2)
-!    rot(2) = 2*(omz*dt/2 + (omx*dt/2)*(omy*dt/2))/(1 + (om*dt/2)**2)
-!    rot(3) = 2*(-omy*dt/2 + (omx*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(4) = 2*(-omz*dt/2 + (omx*dt/2)*(omy*dt/2))/(1 + (om*dt/2)**2)
-!    rot(5) = (1 - (om*dt/2)**2 + 2*(omy*dt/2)**2)/(1 + (om*dt/2)**2)
-!    rot(6) = 2*(omx*dt/2 + (omy*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(7) = 2*(omy*dt/2 + (omx*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(8) = 2*(-omx*dt/2 + (omy*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(9) = (1 - (om*dt/2)**2 + 2*(omz*dt/2)**2)/(1 + (om*dt/2)**2)
-! and om**2 = omx**2 + omy**2 + omz**2
-! the rotation matrix is determined by:
-! omx = (q/m)*bx(x(t),y(t))*gami, omy = (q/m)*by(x(t),y(t))*gami, and
-! omz = (q/m)*bz(x(t),y(t))*gami,
-! where gami = 1./sqrt(1.+(px(t)*px(t)+py(t)*py(t)+pz(t)*pz(t))*ci*ci)
-! position equations used are:
-! x(t+dt) = x(t) + px(t+dt/2)*dtg
-! y(t+dt) = y(t) + py(t+dt/2)*dtg
-! where dtg = dtc/sqrt(1.+(px(t+dt/2)*px(t+dt/2)+py(t+dt/2)*py(t+dt/2)+
-! pz(t+dt/2)*pz(t+dt/2))*ci*ci)
-! fx(x(t),y(t)), fy(x(t),y(t)), and fz(x(t),y(t))
-! bx(x(t),y(t)), by(x(t),y(t)), and bz(x(t),y(t))
-! are approximated by interpolation from the nearest grid points:
-! fx(x,y) = (1-dy)*((1-dx)*fx(n,m)+dx*fx(n+1,m)) + dy*((1-dx)*fx(n,m+1)
-!    + dx*fx(n+1,m+1))
-! where n,m = leftmost grid points and dx = x-n, dy = y-m
-! similarly for fy(x,y), fz(x,y), bx(x,y), by(x,y), bz(x,y)
-! ppart(1,n,m) = position x of particle n in partition in tile m
-! ppart(2,n,m) = position y of particle n in partition in tile m
-! ppart(3,n,m) = momentum vx of particle n in partition in tile m
-! ppart(4,n,m) = momentum vy of particle n in partition in tile m
-! ppart(5,n,m) = momentum vz of particle n in partition in tile m
-! fxy(1,j,k) = x component of force/charge at grid (j,kk)
-! fxy(2,j,k) = y component of force/charge at grid (j,kk)
-! fxy(3,j,k) = z component of force/charge at grid (j,kk)
-! that is, convolution of electric field over particle shape,
-! where kk = k + noff - 1
-! bxy(1,j,k) = x component of magnetic field at grid (j,kk)
-! bxy(2,j,k) = y component of magnetic field at grid (j,kk)
-! bxy(3,j,k) = z component of magnetic field at grid (j,kk)
-! that is, the convolution of magnetic field over particle shape,
-! where kk = k + noff - 1
-! kpic(k) = number of particles in tile k
-! noff = lowermost global gridpoint in particle partition.
-! nyp = number of primary (complete) gridpoints in particle partition
-! qbm = particle charge/mass ratio
-! dt = time interval between successive calculations
-! dtc = time interval between successive co-ordinate calculations
-! ci = reciprical of velocity of light
-! kinetic energy/mass at time t is also calculated, using
-! ek = gami*sum((px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt)**2 +
-!      (py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt)**2 +
-!      (pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt)**2)/(1. + gami)
-! idimp = size of phase space = 5
-! nppmx = maximum number of particles in tile
-! nx/ny = system length in x/y direction
-! mx/my = number of grids in sorting cell in x/y
-! nxv = first dimension of field arrays, must be >= nx+1
-! nypmx = maximum size of particle partition, including guard cells.
-! mx1 = (system length in x direction - 1)/mx + 1
-! mxyp1 = mx1*myp1, where myp1=(partition length in y direction-1)/my+1
-! ipbc = particle boundary condition = (0,1,2,3) =
-! (none,2d periodic,2d reflecting,mixed reflecting/periodic)
-      implicit none
-      integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
-      integer mx1, mxyp1, ipbc
-      real qbm, dt, ci, ek, dex
-      real ppart, fxy, bxy, psit
-      integer kpic
-      dimension ppart(idimp,nppmx,mxyp1)
-      dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
-      dimension psit(nxv,nypmx)
-      dimension kpic(mxyp1)
-! local data
-!      integer MXV, MYV
-!      parameter(MXV=33,MYV=33)
-      integer noffp, moffp, nppp
-      integer mnoff, i, j, k, nn, mm
-      real qtmh, ci2, dxp, dyp, amx, amy
-      real dx, dy, dz, ox, oy, oz, acx, acy, acz
-      real omxt, omyt, omzt, omt, anorm
-      real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
-      real edgelx, edgely, edgerx, edgery
-      real x, y
-      real sfxy, sbxy, spsit
-      dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
-!     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
-      double precision sum1, sum2
-      real idex,dtc1,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7
-      
-      idex = 1.0/dex
-      qtmh = 0.5*qbm*dt
-      ci2 = ci*ci
-! set boundary values
-      edgelx = 0.0
-      edgely = 1.0
-      edgerx = real(nx)
-      edgery = real(ny-1)
-      if ((ipbc.eq.2).or.(ipbc.eq.3)) then
-         edgelx = 1.0
-         edgerx = real(nx-1)
-      endif
-      sum2 = 0.0d0
-! error if local array is too small
-!     if ((mx.ge.MXV).or.(my.ge.MYV)) return
-! loop over tiles
-!$OMP PARALLEL DO                                                       &
-!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,dxp,dyp,amx,amy,  &
-!$OMP& dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1,rot2,&
-!$OMP& rot3,rot4,rot5,rot6,rot7,rot8,rot9,sum1,sfxy,sbxy,spsit,
-!$OMP& ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1) REDUCTION(+:sum2)
-      do 60 k = 1, mxyp1
-      noffp = (k - 1)/mx1
-      moffp = my*noffp
-      noffp = mx*(k - mx1*noffp - 1)
-      nppp = kpic(k)
-      mnoff = moffp + noff - 1
-! load local fields from global arrays
-      nn = min(mx,nx-noffp) + 1
-      mm = min(my,nyp-moffp) + 1
-! load local fields from global arrays
-      do 20 j = 1, mm
-      do 10 i = 1, nn
-      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
-      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
-   10 continue
-   20 continue
-      do 40 j = 1, mm
-      do 30 i = 1, nn
-      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
-      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
-      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
-   30 continue
-   40 continue
-      do 46 j = 1, mm
-      do 42 i = 1, nn
-      spsit(i,j) = psit(i+noffp,j+moffp)
-   42 continue
-   46 continue
-      sum1 = 0.0d0
-! loop over particles in tile
-      do 50 j = 1, nppp
-! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
-      nn = x
-      mm = y
-
-      p6 = ppart(6,j,k)
-      p7 = ppart(7,j,k)
-
-      qtmh1 = qtmh / p7 
-      qtmh2 = qtmh1 * p6
-
-      dxp = x - real(nn)
-      dyp = y - real(mm)
-      nn = nn - noffp + 1
-      mm = mm - mnoff
-      amx = 1.0 - dxp
-      amy = 1.0 - dyp
-! find electric field
-      dx = amx*sfxy(1,nn,mm)
-      dy = amx*sfxy(2,nn,mm)
-      dz = amx*spsit(nn,mm)
-      dx = amy*(dxp*sfxy(1,nn+1,mm) + dx)
-      dy = amy*(dxp*sfxy(2,nn+1,mm) + dy)
-      dz = amy*(dxp*spsit(nn+1,mm) + dz)
-      acx = amx*sfxy(1,nn,mm+1)
-      acy = amx*sfxy(2,nn,mm+1)
-      acz = amx*spsit(nn,mm+1)
-      dx = dx + dyp*(dxp*sfxy(1,nn+1,mm+1) + acx) 
-      dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
-      dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
-      
-      dz = dz * idex
-
-! find magnetic field
-      ox = amx*sbxy(1,nn,mm)
-      oy = amx*sbxy(2,nn,mm)
-      oz = amx*sbxy(3,nn,mm)
-      ox = amy*(dxp*sbxy(1,nn+1,mm) + ox)
-      oy = amy*(dxp*sbxy(2,nn+1,mm) + oy)
-      oz = amy*(dxp*sbxy(3,nn+1,mm) + oz)
-      acx = amx*sbxy(1,nn,mm+1)
-      acy = amx*sbxy(2,nn,mm+1)
-      acz = amx*sbxy(3,nn,mm+1)
-      ox = ox + dyp*(dxp*sbxy(1,nn+1,mm+1) + acx) 
-      oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
-      oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
-
-      ox = ox * dex
-      oy = oy * dex
-
-! calculate half impulse
-      dx = qtmh2*dx
-      dy = qtmh2*dy
-      dz = qtmh2*dz
-! half acceleration
-      acx = ppart(3,j,k) + dx
-      acy = ppart(4,j,k) + dy
-      acz = ppart(5,j,k) + dz
-! find inverse gamma
-!      p2 = acx*acx + acy*acy + acz*acz
-!      gami = 1.0/sqrt(1.0 + p2*ci2)
-! renormalize magnetic field
-!      qtmg = qtmh*gami
-! time-centered kinetic energy
-!      sum1 = sum1 + gami*p2/(1.0 + gami)
-! calculate cyclotron frequency
-      omxt = qtmh1*ox
-      omyt = qtmh1*oy
-      omzt = qtmh1*oz
-! calculate rotation matrix
-      omt = omxt*omxt + omyt*omyt + omzt*omzt
-      anorm = 2.0/(1.0 + omt)
-      omt = 0.5*(1.0 - omt)
-      rot4 = omxt*omyt
-      rot7 = omxt*omzt
-      rot8 = omyt*omzt
-      rot1 = omt + omxt*omxt
-      rot5 = omt + omyt*omyt
-      rot9 = omt + omzt*omzt
-      rot2 = omzt + rot4
-      rot4 = -omzt + rot4
-      rot3 = -omyt + rot7
-      rot7 = omyt + rot7
-      rot6 = omxt + rot8
-      rot8 = -omxt + rot8
-! new momentum
-      dx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
-      dy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
-      dz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
-      ppart(3,j,k) = dx
-      ppart(4,j,k) = dy
-      ppart(5,j,k) = dz
-! update inverse gamma
-      dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
-
-!      p2 = dx*dx + dy*dy + dz*dz
-!      dtg = dtc/sqrt(1.0 + p2*ci2)
-! new position
-      dx = x + dx*dtc1
-      dy = y + dy*dtc1
-! reflecting boundary conditions
-      if (ipbc.eq.2) then
-         if ((dx.lt.edgelx).or.(dx.ge.edgerx)) then
-            dx = ppart(1,j,k)
-            ppart(3,j,k) = -ppart(3,j,k)
-         endif
-         if ((dy.lt.edgely).or.(dy.ge.edgery)) then
-            dy = ppart(2,j,k)
-            ppart(4,j,k) = -ppart(4,j,k)
-         endif
-! mixed reflecting/periodic boundary conditions
-      else if (ipbc.eq.3) then
-         if ((dx.lt.edgelx).or.(dx.ge.edgerx)) then
-            dx = ppart(1,j,k)
-            ppart(3,j,k) = -ppart(3,j,k)
-         endif
-      endif
-! set new position
-      ppart(1,j,k) = dx
-      ppart(2,j,k) = dy
-   50 continue
-      sum2 = sum2 + sum1
-   60 continue
-!$OMP END PARALLEL DO
-! normalize kinetic energy
-      ek = ek + sum2
-      return
-      end
-!-----------------------------------------------------------------------
-      subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,   &
-     &noff,nyp,qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,&
-     &ntmax,irc,dex)
+      subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,nof&
+     &f,nyp,qbm,dt,dtc,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1&
+     &,ntmax,irc,dex)
 ! for 2-1/2d code, this subroutine updates particle co-ordinates and
 ! velocities using leap-frog scheme in time and first-order linear
 ! interpolation in space, for relativistic particles with magnetic field
@@ -1157,12 +848,11 @@
 ! mxyp1 = mx1*myp1, where myp1=(partition length in y direction-1)/my+1
 ! ntmax = size of hole array for particles leaving tiles
 ! irc = maximum overflow, returned only if error occurs, when irc > 0
-!       returns new ntmax required
 ! optimized version
       implicit none
       integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
       integer mx1, mxyp1, ntmax, irc
-      real qbm, dt, ci, ek, dex
+      real qbm, dt, dtc, ci, ek, dex
       real ppart, fxy, bxy, psit
       integer kpic, ncl, ihole
       dimension ppart(idimp,nppmx,mxyp1)
@@ -1176,7 +866,7 @@
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, ih, nh, nn, mm
       real qtmh, ci2, dxp, dyp, amx, amy
-      real dx, dy, dz, ox, oy, oz, acx, acy, acz
+      real dx, dy, dz, ox, oy, oz, acx, acy, acz, p2, gami, qtmg, dtg
       real omxt, omyt, omzt, omt, anorm
       real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
       real anx, any, edgelx, edgely, edgerx, edgery
@@ -1196,11 +886,12 @@
 ! error if local array is too small
 !     if ((mx.ge.MXV).or.(my.ge.MYV)) return
 ! loop over tiles
-!$OMP PARALLEL DO                                                       &
-!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,&
-!$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1, &
-!$OMP& rot2,rot3,rot4,rot5,rot6,rot7,rot8,rot9,edgelx,edgely,edgerx,    &
-!$OMP& edgery,sum1,sfxy,sbxy,spsit,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1)  &
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,
+!$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1,
+!$OMP& rot2,rot3,rot4,rot5,rot6,rot7,rot8,rot9,edgelx,edgely,edgerx,
+!$OMP& edgery,sum1,sfxy,sbxy,spsit,
+!$OMP& ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1)
 !$OMP& REDUCTION(+:sum2)
       do 70 k = 1, mxyp1
       noffp = (k - 1)/mx1
@@ -1343,39 +1034,45 @@
 ! new position
       dx = x + dx*dtc1
       dy = y + dy*dtc1
-! set new position
-      ppart(1,j,k) = dx
-      ppart(2,j,k) = dy
 ! find particles going out of bounds
       mm = 0
 ! count how many particles are going in each direction in ncl
 ! save their address and destination in ihole
-! check for roundoff error
+! use periodic boundary conditions and check for roundoff error
 ! mm = direction particle is going
       if (dx.ge.edgerx) then
+         if (dx.ge.anx) dx = dx - anx
          mm = 2
       else if (dx.lt.edgelx) then
-         mm = 1
          if (dx.lt.0.0) then
             dx = dx + anx
-            if (dx.ge.anx) then
-               ppart(1,j,k) = 0.0
-               mm = 0
+            if (dx.lt.anx) then
+               mm = 1
+            else
+               dx = 0.0
             endif
+         else
+            mm = 1
          endif
       endif
       if (dy.ge.edgery) then
+         if (dy.ge.any) dy = dy - any
          mm = mm + 6
       else if (dy.lt.edgely) then
-         mm = mm + 3
          if (dy.lt.0.0) then
             dy = dy + any
-            if (dy.ge.any) then
-               ppart(2,j,k) = 0.0
-               mm = mm - 3
+            if (dy.lt.any) then
+               mm = mm + 3
+            else
+               dy = 0.0
             endif
+         else
+            mm = mm + 3
          endif
       endif
+! set new position
+      ppart(1,j,k) = dx
+      ppart(2,j,k) = dy
 ! increment counters
       if (mm.gt.0) then
          ncl(mm,k) = ncl(mm,k) + 1
@@ -1390,18 +1087,14 @@
    60 continue
       sum2 = sum2 + sum1
 ! set error and end of file flag
-      if (nh.gt.0) irc = 1
+! ihole overflow
+      if (nh.gt.0) then
+         irc = ih
+         ih = -ih
+      endif
       ihole(1,1,k) = ih
    70 continue
 !$OMP END PARALLEL DO
-! ihole overflow
-      if (irc.gt.0) then
-         ih = 0
-         do 80 k = 1, mxyp1
-         ih = max(ih,ihole(1,1,k))
-   80    continue
-         irc = ih
-      endif
 ! normalize kinetic energy
       ek = ek + sum2
       return
@@ -1409,7 +1102,7 @@
 !-----------------------------------------------------------------------
       subroutine PPPORDER2LA(ppart,ppbuff,sbufl,sbufr,kpic,ncl,ihole,   &
      &ncll,nclr,noff,nyp,idimp,nppmx,nx,ny,mx,my,mx1,myp1,npbmx,ntmax,  &
-     &nbmax,irc2)
+     &nbmax,irc)
 ! this subroutine performs first part of a particle sort by x,y grid
 ! in tiles of mx, my
 ! linear interpolation, with periodic boundary conditions
@@ -1421,8 +1114,8 @@
 ! and departing particles are buffered in ppbuff in direction order.
 ! finally, we buffer particles leaving the processor in sbufl and sbufr,
 ! and store particle number offsets in ncll and nclr.
-! input: all except ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc2
-! output: ppart, ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc2
+! input: all except ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc
+! output: ppart, ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc
 ! ppart(1,n,k) = position x of particle n in tile k
 ! ppart(2,n,k) = position y of particle n in tile k
 ! ppbuff(i,n,k) = i co-ordinate of particle n in tile k
@@ -1438,7 +1131,7 @@
 ! nclr = number offset being sent to upper processor
 ! noff = lowermost global gridpoint in particle partition.
 ! nyp = number of primary (complete) gridpoints in particle partition
-! idimp = size of phase space = 4 or 5
+! idimp = size of phase space = 4
 ! nppmx = maximum number of particles in tile
 ! nx/ny = system length in x/y direction
 ! mx/my = number of grids in sorting cell in x/y
@@ -1447,22 +1140,18 @@
 ! npbmx = size of buffer array ppbuff
 ! ntmax = size of hole array for particles leaving tiles
 ! nbmax =  size of buffers for passing particles between processors
-! irc2 = error codes, returned only if error occurs, when irc2(1) > 0
-! when (irc2(1).eq.1), ihole overflow, irc2(2) = new ntmax required
-! when (irc2(1).eq.2), ppbuff overflow, irc2(2) = new npbmx required
-! when (irc2(1).eq.3), sbufr/sbufl overflow, irc2(2)=new nbmax required
+! irc = maximum overflow, returned only if error occurs, when irc > 0
       implicit none
       integer noff, nyp, idimp, nppmx, nx, ny, mx, my, mx1, myp1, npbmx
-      integer ntmax, nbmax
+      integer ntmax, nbmax, irc
       real ppart, ppbuff, sbufl, sbufr
-      integer kpic, ncl, ihole, ncll, nclr, irc2
+      integer kpic, ncl, ihole, ncll, nclr
       dimension ppart(idimp,nppmx,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension sbufl(idimp,nbmax), sbufr(idimp,nbmax)
       dimension kpic(mx1*myp1), ncl(8,mx1*myp1)
       dimension ihole(2,ntmax+1,mx1*myp1)
       dimension ncll(3,mx1), nclr(3,mx1)
-      dimension irc2(2)
 ! local data
       integer mxyp1, noffp, moffp, nppp
       integer i, j, k, ii, ih, nh, ist, nn, mm, isum, ip, j1, kk
@@ -1473,8 +1162,8 @@
 ! find and count particles leaving tiles and determine destination
 ! update ppart, ihole, ncl
 ! loop over tiles
-!$OMP PARALLEL DO                                                       &
-!$OMP& PRIVATE(j,k,noffp,moffp,nppp,nn,mm,ih,nh,ist,dx,dy,edgelx,edgely,&
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(j,k,noffp,moffp,nppp,nn,mm,ih,nh,ist,dx,dy,edgelx,edgely,
 !$OMP& edgerx,edgery)
       do 30 k = 1, mxyp1
       noffp = (k - 1)/mx1
@@ -1501,30 +1190,38 @@
       ist = 0
 ! count how many particles are going in each direction in ncl
 ! save their address and destination in ihole
-! check for roundoff error
+! use periodic boundary conditions and check for roundoff error
 ! ist = direction particle is going
       if (dx.ge.edgerx) then
+         if (dx.ge.anx) ppart(1,j,k) = dx - anx
          ist = 2
       else if (dx.lt.edgelx) then
-         ist = 1
          if (dx.lt.0.0) then
             dx = dx + anx
-            if (dx.ge.anx) then
-               ppart(1,j,k) = 0.0
-               ist = 0
+            if (dx.lt.anx) then
+               ist = 1
+            else
+               dx = 0.0
             endif
+            ppart(1,j,k) = dx
+         else
+            ist = 1
          endif
       endif
       if (dy.ge.edgery) then
+         if (dy.ge.any) ppart(2,j,k) = dy - any
          ist = ist + 6
       else if (dy.lt.edgely) then
-         ist = ist + 3
          if (dy.lt.0.0) then
             dy = dy + any
-            if (dy.ge.any) then
-               ppart(2,j,k) = 0.0
-               ist = ist - 3
+            if (dy.lt.any) then
+               ist = ist + 3
+            else
+               dy = 0.0
             endif
+            ppart(2,j,k) = dy
+         else
+            ist = ist + 3
          endif
       endif
       if (ist.gt.0) then
@@ -1539,76 +1236,66 @@
       endif
    20 continue
 ! set error and end of file flag
-      if (nh.gt.0) irc2(1) = 1
+      if (nh.gt.0) then
+         irc = ih
+         ih = -ih
+      endif
       ihole(1,1,k) = ih
    30 continue
 !$OMP END PARALLEL DO
 ! ihole overflow
-      if (irc2(1).gt.0) then
-         ih = 0
-         do 40 k = 1, mxyp1
-         ih = max(ih,ihole(1,1,k))
-   40    continue
-         irc2(2) = ih
-         return
-      endif
+      if (irc.gt.0) return
 !
 ! buffer particles that are leaving tile: update ppbuff, ncl
 ! loop over tiles
-!$OMP PARALLEL DO PRIVATE(i,j,k,isum,ist,nh,ip,j1,ii)
-      do 80 k = 1, mxyp1
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,isum,ist,nh,ip,j1,ii)
+      do 70 k = 1, mxyp1
 ! find address offset for ordered ppbuff array
       isum = 0
-      do 50 j = 1, 8
+      do 40 j = 1, 8
       ist = ncl(j,k)
       ncl(j,k) = isum
       isum = isum + ist
-   50 continue
+   40 continue
       nh = ihole(1,1,k)
       ip = 0
 ! loop over particles leaving tile
-      do 70 j = 1, nh
+      do 60 j = 1, nh
 ! buffer particles that are leaving tile, in direction order
       j1 = ihole(1,j+1,k)
       ist = ihole(2,j+1,k)
       ii = ncl(ist,k) + 1
       if (ii.le.npbmx) then
-         do 60 i = 1, idimp
+         do 50 i = 1, idimp
          ppbuff(i,ii,k) = ppart(i,j1,k)
-   60    continue
+   50    continue
       else
          ip = 1
       endif
       ncl(ist,k) = ii
-   70 continue
+   60 continue
 ! set error
-      if (ip.gt.0) irc2(1) = 2
-   80 continue
+      if (ip.gt.0) irc = ncl(8,k)
+   70 continue
 !$OMP END PARALLEL DO
 ! ppbuff overflow
-      if (irc2(1).gt.0) then
-         ii = 0
-         do 90 k = 1, mxyp1
-         ii = max(ii,ncl(8,k))
-   90    continue
-         irc2(2) = ii
-         return
-      endif
+      if (irc.gt.0) return
 !
 ! buffer particles and their number leaving the node:
 ! update sbufl, sbufr, ncll, nclr
       kk = mx1*(myp1 - 1)
 !$OMP PARALLEL DO PRIVATE(k)
-      do 100 k = 1, mx1
+      do 80 k = 1, mx1
       ncll(1,k) = ncl(5,k) - ncl(2,k)
       nclr(1,k) = ncl(8,k+kk) - ncl(5,k+kk)
-  100 continue
+   80 continue
 !$OMP END PARALLEL DO
 ! perform prefix scan
       kk = 1
-  110 if (kk.ge.mx1) go to 130
+   90 if (kk.ge.mx1) go to 110
 !$OMP PARALLEL DO PRIVATE(k,ii,nn,mm)
-      do 120 k = 1, mx1
+      do 100 k = 1, mx1
       ii = (k - 1)/kk
       nn = kk*ii
       mm = 2*nn + kk - 1
@@ -1617,47 +1304,45 @@
          ncll(1,nn) = ncll(1,nn) + ncll(1,mm+1)
          nclr(1,nn) = nclr(1,nn) + nclr(1,mm+1)
       endif
-  120 continue
+  100 continue
 !$OMP END PARALLEL DO
       kk = kk + kk
-      go to 110
-! load particle buffers
-  130 kk = mx1*(myp1 - 1)
+      go to 90
+  110 kk = mx1*(myp1 - 1)
 !$OMP PARALLEL DO PRIVATE(i,j,k,ii,nn,mm)
-      do 200 k = 1, mx1
+      do 180 k = 1, mx1
       ii = ncl(5,k) - ncl(2,k)
       nn = ncll(1,k) - ii
-      do 150 j = 1, min(ii,nbmax-nn)
-      do 140 i = 1, idimp
+      do 130 j = 1, min(ii,nbmax-nn)
+      do 120 i = 1, idimp
       sbufl(i,j+nn) = ppbuff(i,j+ncl(2,k),k)
-  140 continue
-  150 continue
-      do 160 i = 1, 3
+  120 continue
+  130 continue
+      do 140 i = 1, 3
       ncll(i,k) = ncl(i+2,k) - ncl(2,k) + nn
-  160 continue
+  140 continue
       ii = ncl(8,k+kk) - ncl(5,k+kk)
       mm = nclr(1,k) - ii
-      do 180 j = 1, min(ii,nbmax-mm)
-      do 170 i = 1, idimp
+      do 160 j = 1, min(ii,nbmax-mm)
+      do 150 i = 1, idimp
       sbufr(i,j+mm) = ppbuff(i,j+ncl(5,k+kk),k+kk)
+  150 continue
+  160 continue
+      do 170 i = 1, 3
+      nclr(i,k) = ncl(i+5,k+kk) - ncl(5,k+kk) + mm
   170 continue
   180 continue
-      do 190 i = 1, 3
-      nclr(i,k) = ncl(i+5,k+kk) - ncl(5,k+kk) + mm
-  190 continue
-  200 continue
 !$OMP END PARALLEL DO
 ! sbufl or sbufr overflow
       ii = max(ncll(3,mx1),nclr(3,mx1))
       if (ii.gt.nbmax) then
-         irc2(1) = 3
-         irc2(2) = ii
+         irc = ii
       endif
       return
-      end
+      end      
 !-----------------------------------------------------------------------
       subroutine PPPORDERF2LA(ppart,ppbuff,sbufl,sbufr,ncl,ihole,ncll,  &
-     &nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc2)
+     &nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
 ! this subroutine performs first part of a particle sort by x,y grid
 ! in tiles of mx, my
 ! linear interpolation, with periodic boundary conditions
@@ -1670,8 +1355,8 @@
 ! it assumes that the number, location, and destination of particles 
 ! leaving a tile have been previously stored in ncl and ihole by the
 ! PPGPPUSHF2L subroutine.
-! input: all except ppbuff, sbufl, sbufr, ncll, nclr, irc2
-! output: ppart, ppbuff, sbufl, sbufr, ncl, ncll, nclr, irc2
+! input: all except ppbuff, sbufl, sbufr, ncll, nclr, irc
+! output: ppart, ppbuff, sbufl, sbufr, ncl, ncll, nclr, irc
 ! ppart(1,n,k) = position x of particle n in tile k
 ! ppart(2,n,k) = position y of particle n in tile k
 ! ppbuff(i,n,k) = i co-ordinate of particle n in tile k
@@ -1684,33 +1369,32 @@
 ! ihole(1,1,k) = ih, number of holes left (error, if negative)
 ! ncll = number offset being sent to lower processor
 ! nclr = number offset being sent to upper processor
-! idimp = size of phase space = 4 or 5
+! idimp = size of phase space = 4
 ! nppmx = maximum number of particles in tile
 ! mx1 = (system length in x direction - 1)/mx + 1
 ! myp1 = (partition length in y direction - 1)/my + 1
 ! npbmx = size of buffer array ppbuff
 ! ntmax = size of hole array for particles leaving tiles
 ! nbmax =  size of buffers for passing particles between processors
-! when (irc2(1).eq.2), ppbuff overflow, irc2(2) = new npbmx required
-! when (irc2(1).eq.3), sbufr/sbufl overflow, irc2(2)=new nbmax required
+! irc = maximum overflow, returned only if error occurs, when irc > 0
       implicit none
-      integer idimp, nppmx, mx1, myp1, npbmx, ntmax, nbmax
+      integer idimp, nppmx, mx1, myp1, npbmx, ntmax, nbmax, irc
       real ppart, ppbuff, sbufl, sbufr
-      integer ncl, ihole, ncll, nclr, irc2
+      integer ncl, ihole, ncll, nclr
       dimension ppart(idimp,nppmx,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension sbufl(idimp,nbmax), sbufr(idimp,nbmax)
       dimension ncl(8,mx1*myp1)
       dimension ihole(2,ntmax+1,mx1*myp1)
       dimension ncll(3,mx1), nclr(3,mx1)
-      dimension irc2(2)
 ! local data
       integer mxyp1
       integer i, j, k, ii, nh, ist, nn, mm, isum, ip, j1, kk
       mxyp1 = mx1*myp1
 ! buffer particles that are leaving tile: update ppbuff, ncl
 ! loop over tiles
-!$OMP PARALLEL DO PRIVATE(i,j,k,isum,ist,nh,ip,j1,ii)
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,isum,ist,nh,ip,j1,ii)
       do 40 k = 1, mxyp1
 ! find address offset for ordered ppbuff array
       isum = 0
@@ -1737,33 +1421,26 @@
       ncl(ist,k) = ii
    30 continue
 ! set error
-      if (ip.gt.0) irc2(1) = 2
+      if (ip.gt.0) irc = ncl(8,k)
    40 continue
 !$OMP END PARALLEL DO
 ! ppbuff overflow
-      if (irc2(1).gt.0) then
-         ii = 0
-         do 50 k = 1, mxyp1
-         ii = max(ii,ncl(8,k))
-   50    continue
-         irc2(2) = ii
-         return
-      endif
+      if (irc.gt.0) return
 !
 ! buffer particles and their number leaving the node:
 ! update sbufl, sbufr, ncll, nclr
       kk = mx1*(myp1 - 1)
 !$OMP PARALLEL DO PRIVATE(k)
-      do 60 k = 1, mx1
+      do 50 k = 1, mx1
       ncll(1,k) = ncl(5,k) - ncl(2,k)
       nclr(1,k) = ncl(8,k+kk) - ncl(5,k+kk)
-   60 continue
+   50 continue
 !$OMP END PARALLEL DO
 ! perform prefix scan
       kk = 1
-   70 if (kk.ge.mx1) go to 90
+   60 if (kk.ge.mx1) go to 80
 !$OMP PARALLEL DO PRIVATE(k,ii,nn,mm)
-      do 80 k = 1, mx1
+      do 70 k = 1, mx1
       ii = (k - 1)/kk
       nn = kk*ii
       mm = 2*nn + kk - 1
@@ -1772,46 +1449,45 @@
          ncll(1,nn) = ncll(1,nn) + ncll(1,mm+1)
          nclr(1,nn) = nclr(1,nn) + nclr(1,mm+1)
       endif
-   80 continue
+   70 continue
 !$OMP END PARALLEL DO
       kk = kk + kk
-      go to 70
-   90 kk = mx1*(myp1 - 1)
+      go to 60
+   80 kk = mx1*(myp1 - 1)
 !$OMP PARALLEL DO PRIVATE(i,j,k,ii,nn,mm)
-      do 160 k = 1, mx1
+      do 150 k = 1, mx1
       ii = ncl(5,k) - ncl(2,k)
       nn = ncll(1,k) - ii
-      do 110 j = 1, min(ii,nbmax-nn)
-      do 100 i = 1, idimp
+      do 100 j = 1, min(ii,nbmax-nn)
+      do 90 i = 1, idimp
       sbufl(i,j+nn) = ppbuff(i,j+ncl(2,k),k)
+   90 continue
   100 continue
-  110 continue
-      do 120 i = 1, 3
+      do 110 i = 1, 3
       ncll(i,k) = ncl(i+2,k) - ncl(2,k) + nn
-  120 continue
+  110 continue
       ii = ncl(8,k+kk) - ncl(5,k+kk)
       mm = nclr(1,k) - ii
-      do 140 j = 1, min(ii,nbmax-mm)
-      do 130 i = 1, idimp
+      do 130 j = 1, min(ii,nbmax-mm)
+      do 120 i = 1, idimp
       sbufr(i,j+mm) = ppbuff(i,j+ncl(5,k+kk),k+kk)
+  120 continue
   130 continue
-  140 continue
-      do 150 i = 1, 3
+      do 140 i = 1, 3
       nclr(i,k) = ncl(i+5,k+kk) - ncl(5,k+kk) + mm
+  140 continue
   150 continue
-  160 continue
 !$OMP END PARALLEL DO
 ! sbufl or sbufr overflow
       ii = max(ncll(3,mx1),nclr(3,mx1))
       if (ii.gt.nbmax) then
-         irc2(1) = 3
-         irc2(2) = ii
+         irc = ii
       endif
       return
       end
 !-----------------------------------------------------------------------
       subroutine PPPORDER2LB(ppart,ppbuff,rbufl,rbufr,kpic,ncl,ihole,   &
-     &mcll,mclr,idimp,nppmx,nx,ny,mx1,myp1,npbmx,ntmax,nbmax,irc2)
+     &mcll,mclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
 ! this subroutine performs second part of a particle sort by x,y grid
 ! in tiles of mx, my
 ! linear interpolation, with periodic boundary conditions
@@ -1819,8 +1495,8 @@
 ! tiles are assumed to be arranged in 2D linear memory
 ! incoming particles from other tiles are copied from ppbuff, rbufl, and
 ! rbufr into ppart
-! input: all except ppart, kpic, irc2
-! output: ppart, kpic, irc2
+! input: all except ppart, kpic, irc
+! output: ppart, kpic, irc
 ! ppart(1,n,k) = position x of particle n in tile k
 ! ppart(2,n,k) = position y of particle n in tile k
 ! ppbuff(i,n,k) = i co-ordinate of particle n in tile k
@@ -1834,42 +1510,38 @@
 ! ihole(1,1,k) = ih, number of holes left (error, if negative)
 ! mcll = number offset being received from lower processor
 ! mclr = number offset being received from upper processor
-! idimp = size of phase space = 4 or 5
+! idimp = size of phase space = 4
 ! nppmx = maximum number of particles in tile
-! nx/ny = system length in x/y direction
 ! mx1 = (system length in x direction - 1)/mx + 1
 ! myp1 = (partition length in y direction - 1)/my + 1
 ! npbmx = size of buffer array ppbuff
 ! ntmax = size of hole array for particles leaving tiles
 ! nbmax =  size of buffers for passing particles between processors
-! when (irc2(1).eq.4), ppart overflow, irc2(2) = new nppmx required
+! irc = maximum overflow, returned only if error occurs, when irc > 0
       implicit none
-      integer idimp, nppmx, nx, ny, mx1, myp1, npbmx, ntmax, nbmax
+      integer idimp, nppmx, mx1, myp1, npbmx
+      integer ntmax, nbmax, irc
       real ppart, ppbuff, rbufl, rbufr
-      integer kpic, ncl, ihole, mcll, mclr, irc2
+      integer kpic, ncl, ihole, mcll, mclr
       dimension ppart(idimp,nppmx,mx1*myp1)
       dimension ppbuff(idimp,npbmx,mx1*myp1)
       dimension rbufl(idimp,nbmax), rbufr(idimp,nbmax)
       dimension kpic(mx1*myp1), ncl(8,mx1*myp1)
       dimension ihole(2,ntmax+1,mx1*myp1)
       dimension mcll(3,mx1), mclr(3,mx1)
-      dimension irc2(2)
 ! local data
       integer mxyp1, nppp, ncoff, noff, moff
       integer i, j, k, ii, kx, ky, ih, nh, ist
       integer ip, j1, j2, kxl, kxr, kk, kl, kr
-      real anx, any, dx, dy
       integer ks
       dimension ks(8)
       mxyp1 = mx1*myp1
-      anx = real(nx)
-      any = real(ny)
 ! copy incoming particles from buffer into ppart: update ppart, kpic
 ! loop over tiles
-!$OMP PARALLEL DO                                                       &
-!$OMP& PRIVATE(i,j,k,ii,kk,nppp,kx,ky,kl,kr,kxl,kxr,ih,nh,ncoff,noff,   &
-!$OMP& moff,ist,j1,ip,dx,dy,ks)
-      do 60 k = 1, mxyp1
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,ii,kk,nppp,kx,ky,kl,kr,kxl,kxr,ih,nh,ncoff,noff,
+!$OMP& moff,ist,j1,j2,ip,ks)
+      do 200 k = 1, mxyp1
       nppp = kpic(k)
       ky = (k - 1)/mx1 + 1
 ! loop over tiles in y
@@ -1907,7 +1579,7 @@
       ih = 0
       ist = 0
       j1 = 0
-      do 50 ii = 1, 8
+      do 170 ii = 1, 8
 ! ip = number of particles coming from direction ii
       if (ks(ii).le.0) then
          if (ii.gt.6) noff = mcll(ii-6,ks(ii)+mx1)
@@ -1919,7 +1591,7 @@
          if (ii.gt.1) ncoff = ncl(ii-1,ks(ii))
          ip = ncl(ii,ks(ii)) - ncoff
       endif
-      do 40 j = 1, ip
+      do 160 j = 1, ip
       ih = ih + 1
 ! insert incoming particles into holes
       if (ih.le.nh) then
@@ -1930,275 +1602,43 @@
          nppp = j1
       endif
       if (j1.le.nppmx) then
-! particle coming from left node
          if (ks(ii).le.0) then
-! check for periodic boundary conditions
-            dx = rbufl(1,j+noff)
-            if (dx.lt.0.0) dx = dx + anx
-            if (dx.ge.anx) dx = dx - anx
-            ppart(1,j1,k) = dx
-            dy = rbufl(2,j+noff)
-            if (dy.lt.0.0) dy = dy + any
-            if (dy.ge.any) dy = dy - any
-            ppart(2,j1,k) = dy
-! copy remaining particle data
-            do 10 i = 3, idimp
+            do 130 i = 1, idimp
             ppart(i,j1,k) = rbufl(i,j+noff)
-   10       continue
-! particle coming from right node
+  130       continue
          else if (ks(ii).gt.mxyp1) then
-! check for periodic boundary conditions
-            dx = rbufr(1,j+moff)
-            if (dx.lt.0.0) dx = dx + anx
-            if (dx.ge.anx) dx = dx - anx
-            ppart(1,j1,k) = dx
-            dy = rbufr(2,j+moff)
-            if (dy.lt.0.0) dy = dy + any
-            if (dy.ge.any) dy = dy - any
-            ppart(2,j1,k) = dy
-! copy remaining particle data
-            do 20 i = 3, idimp
+            do 140 i = 1, idimp
             ppart(i,j1,k) = rbufr(i,j+moff)
-   20       continue
-! particle coming from interior
+  140       continue
          else
-! check for periodic boundary conditions
-            dx = ppbuff(1,j+ncoff,ks(ii))
-            if (dx.lt.0.0) dx = dx + anx
-            if (dx.ge.anx) dx = dx - anx
-            ppart(1,j1,k) = dx
-            dy = ppbuff(2,j+ncoff,ks(ii))
-            if (dy.lt.0.0) dy = dy + any
-            if (dy.ge.any) dy = dy - any
-            ppart(2,j1,k) = dy
-! copy remaining particle data
-            do 30 i = 3, idimp
+            do 150 i = 1, idimp
             ppart(i,j1,k) = ppbuff(i,j+ncoff,ks(ii))
-   30       continue
+  150       continue
          endif
       else
          ist = 1
       endif
-   40 continue
-   50 continue
-! save parameters for next loop
-      if (ih.lt.nh) then
-         ihole(2,1,k) = -(ih+1)
-      else
-         ihole(2,1,k) = nppp
-      endif
+  160 continue
+  170 continue
 ! set error
-      if (ist.gt.0) irc2(1) = 4
-   60 continue
-!$OMP END PARALLEL DO
-! ppart overflow
-      if (irc2(1).gt.0) then
-         j1 = 0
-         do 70 k = 1, mxyp1
-         j1 = max(j1,ihole(2,1,k))
-   70    continue
-         irc2(2) = j1
-         return
-      endif
+      if (ist.gt.0) irc = j1
 ! fill up remaining holes in particle array with particles from bottom
-!$OMP PARALLEL DO PRIVATE(i,j,k,nppp,ih,nh,j1,j2,ip)
-      do 100 k = 1, mxyp1
-      ih = ihole(2,1,k)
-      if (ih.lt.0) then
-         nppp = kpic(k)
-         nh = ihole(1,1,k)
-         ip = nh + ih + 1
-         do 90 j = 1, ip
+      if (ih.lt.nh) then
+         ip = nh - ih
+         do 190 j = 1, ip
          j1 = nppp - j + 1
          j2 = ihole(1,nh-j+2,k)
          if (j1.gt.j2) then
 ! move particle only if it is below current hole
-            do 80 i = 1, idimp
+            do 180 i = 1, idimp
             ppart(i,j2,k) = ppart(i,j1,k)
-   80       continue
+  180       continue
          endif
-   90    continue
-         kpic(k) = nppp - ip
-      else
-         kpic(k) = ihole(2,1,k)
+  190    continue
+         nppp = nppp - ip
       endif
-  100 continue
-!$OMP END PARALLEL DO
-      return
-      end
-!-----------------------------------------------------------------------
-      subroutine PPPRSNCL2L(ncl,mxyp1)
-! this subroutine restores initial values of ncl array
-! for distributed data, with 1d domain decomposition in y.
-! input: all, output: ncl
-! ncl(i,k) = number of particles going to destination i, tile k
-! mxyp1 = total number of tiles
-      implicit none
-      integer mxyp1
-      integer ncl
-      dimension ncl(8,mxyp1)
-! local data
-      integer j, k, noff, ist
-! restores address offset array: update ncl
-! !$OMP PARALLEL DO PRIVATE(j,k,noff,ist)
-      do 20 k = 1, mxyp1
-! find restore ncl for ordered ppbuff array
-      noff = 0
-      do 10 j = 1, 8
-      ist = ncl(j,k)
-      ncl(j,k) = ist - noff
-      noff = ist
-   10 continue
-   20 continue
-! !$OMP END PARALLEL DO
-      return
-      end
-!-----------------------------------------------------------------------
-      subroutine PPPORDERF2LAF(ppbuff,sbufl,sbufr,ncl,ncll,nclr,idimp,  &
-     &mx1,myp1,npbmx,nbmax,irc2)
-! this subroutine performs the final section of first part of a particle
-! sort by x,y grid in tiles of mx, my
-! linear interpolation, with periodic boundary conditions
-! for distributed data, with 1d domain decomposition in y.
-! tiles are assumed to be arranged in 2D linear memory
-! particles leaving the processor are buffered in sbufl and sbufr, and
-! particle number offsets are stored in ncll and nclr.
-! input: all except sbufl, sbufr, ncll, nclr, irc2
-! output: sbufl, sbufr, ncll, nclr, irc2
-! ppbuff(i,n,k) = i co-ordinate of particle n in tile k
-! sbufl = buffer for particles being sent to lower processor
-! sbufr = buffer for particles being sent to upper processor
-! ncl(i,k) = number of particles going to destination i, tile k
-! ncll = number offset being sent to lower processor
-! nclr = number offset being sent to upper processor
-! idimp = size of phase space = 4 or 5
-! mx1 = (system length in x direction - 1)/mx + 1
-! myp1 = (partition length in y direction - 1)/my + 1
-! npbmx = size of buffer array ppbuff
-! nbmax =  size of buffers for passing particles between processors
-! when (irc2(1).eq.3), sbufr/sbufl overflow, irc2(2)=new nbmax required
-      implicit none
-      integer idimp, mx1, myp1, npbmx, nbmax
-      real ppbuff, sbufl, sbufr
-      integer ncl, ncll, nclr, irc2
-      dimension ppbuff(idimp,npbmx,mx1*myp1)
-      dimension sbufl(idimp,nbmax), sbufr(idimp,nbmax)
-      dimension ncl(8,mx1*myp1)
-      dimension ncll(3,mx1), nclr(3,mx1)
-      dimension irc2(2)
-! local data
-      integer i, j, k, ii, nn, mm, kk
-! buffer particles and their number leaving the node:
-! update sbufl, sbufr, ncll, nclr
-      kk = mx1*(myp1 - 1)
-!$OMP PARALLEL DO PRIVATE(k)
-      do 60 k = 1, mx1
-      ncll(1,k) = ncl(5,k) - ncl(2,k)
-      nclr(1,k) = ncl(8,k+kk) - ncl(5,k+kk)
-   60 continue
-!$OMP END PARALLEL DO
-! perform prefix scan
-      kk = 1
-   70 if (kk.ge.mx1) go to 90
-!$OMP PARALLEL DO PRIVATE(k,ii,nn,mm)
-      do 80 k = 1, mx1
-      ii = (k - 1)/kk
-      nn = kk*ii
-      mm = 2*nn + kk - 1
-      nn = nn + k + kk
-      if (nn.le.mx1) then
-         ncll(1,nn) = ncll(1,nn) + ncll(1,mm+1)
-         nclr(1,nn) = nclr(1,nn) + nclr(1,mm+1)
-      endif
-   80 continue
-!$OMP END PARALLEL DO
-      kk = kk + kk
-      go to 70
-   90 kk = mx1*(myp1 - 1)
-!$OMP PARALLEL DO PRIVATE(i,j,k,ii,nn,mm)
-      do 160 k = 1, mx1
-      ii = ncl(5,k) - ncl(2,k)
-      nn = ncll(1,k) - ii
-      do 110 j = 1, min(ii,nbmax-nn)
-      do 100 i = 1, idimp
-      sbufl(i,j+nn) = ppbuff(i,j+ncl(2,k),k)
-  100 continue
-  110 continue
-      do 120 i = 1, 3
-      ncll(i,k) = ncl(i+2,k) - ncl(2,k) + nn
-  120 continue
-      ii = ncl(8,k+kk) - ncl(5,k+kk)
-      mm = nclr(1,k) - ii
-      do 140 j = 1, min(ii,nbmax-mm)
-      do 130 i = 1, idimp
-      sbufr(i,j+mm) = ppbuff(i,j+ncl(5,k+kk),k+kk)
-  130 continue
-  140 continue
-      do 150 i = 1, 3
-      nclr(i,k) = ncl(i+5,k+kk) - ncl(5,k+kk) + mm
-  150 continue
-  160 continue
-!$OMP END PARALLEL DO
-! sbufl or sbufr overflow
-      ii = max(ncll(3,mx1),nclr(3,mx1))
-      if (ii.gt.nbmax) then
-         irc2(1) = 3
-         irc2(2) = ii
-      endif
-      return
-      end
-!-----------------------------------------------------------------------
-      subroutine PPPRSTOR2L(ppart,ppbuff,ncl,ihole,idimp,nppmx,mxyp1,   &
-     &npbmx,ntmax)
-! this subroutine restores particle coordinates from ppbuff
-! used in resizing segmented particle array ppart if overflow occurs
-! for distributed data, with 1d domain decomposition in y.
-! tiles are assumed to be arranged in 2D linear memory
-! input: all, output: ppart, ncl
-! ppart(i,n,k) = i co-ordinate of particle n in tile k
-! ppbuff(i,n,k) = i co-ordinate of particle n in tile k
-! ncl(i,k) = number of particles going to destination i, tile k
-! ihole(1,:,k) = location of hole in array left by departing particle
-! ihole(2,:,k) = direction destination of particle leaving hole
-! all for tile k
-! ihole(1,1,k) = ih, number of holes left (error, if negative)
-! idimp = size of phase space = 4 or 5
-! nppmx = maximum number of particles in tile
-! mxyp1 = total number of tiles
-! npbmx = size of buffer array ppbuff
-! ntmax = size of hole array for particles leaving tiles
-      implicit none
-      integer idimp, nppmx, mxyp1, npbmx, ntmax
-      real ppart, ppbuff
-      integer ncl, ihole
-      dimension ppart(idimp,nppmx,mxyp1)
-      dimension ppbuff(idimp,npbmx,mxyp1)
-      dimension ncl(8,mxyp1)
-      dimension ihole(2,ntmax+1,mxyp1)
-! local data
-      integer i, j, k, nh, j1, ist, ii
-! restores particles that are leaving tile: update ppart, ncl
-! loop over tiles
-!$OMP PARALLEL DO PRIVATE(i,j,k,nh,j1,ist,ii)
-      do 40 k = 1, mxyp1
-! find restore address offset for ordered ppbuff array
-      do 10 j = 1, 7
-      ncl(9-j,k) = ncl(8-j,k)
-   10 continue
-      ncl(1,k) = 0
-      nh = ihole(1,1,k)
-! loop over particles leaving tile
-      do 30 j = 1, nh
-! restore particles from buffer, in direction order
-      j1 = ihole(1,j+1,k)
-      ist = ihole(2,j+1,k)
-      ii = ncl(ist,k) + 1
-      do 20 i = 1, idimp
-      ppart(i,j1,k) = ppbuff(i,ii,k)
-   20 continue
-      ncl(ist,k) = ii
-   30 continue
-   40 continue
+      kpic(k) = nppp
+  200 continue
 !$OMP END PARALLEL DO
       return
       end
@@ -2286,7 +1726,7 @@
       subroutine PPPCOPYOUT2(part,ppart,kpic,npp,npmax,nppmx,idimp,mxyp1&
      &,irc)
 ! for 2d code, this subroutine copies segmented particle data ppart to
-! the linear array part
+! the array part with original tiled layout
 ! spatial decomposition in y direction
 ! input: all except part, npp, irc, output: part, npp, irc
 ! part(i,j) = i-th coordinate for particle j in partition
@@ -2305,74 +1745,25 @@
       dimension part(idimp,npmax), ppart(idimp,nppmx,mxyp1)
       dimension kpic(mxyp1)
 ! local data
-      integer i, j, k, npoff, nppp
-! check for overflow
-      nppp = 0
-      do 10 k = 1, mxyp1
-      nppp = nppp + kpic(k)
-   10 continue
-      if (nppp.gt.npmax) then
-         irc = nppp
-         return
-      endif
-      npp = nppp
-! loop over tiles
+      integer i, j, k, npoff, nppp, ne, ierr
       npoff = 0
-      do 40 k = 1, mxyp1
+      ierr = 0
+! loop over tiles
+      do 30 k = 1, mxyp1
       nppp = kpic(k)
+      ne = nppp + npoff
+      if (ne.gt.npmax) ierr = max(ierr,ne-npmax)
+      if (ierr.gt.0) nppp = 0
 ! loop over particles in tile
-      do 30 j = 1, nppp
-      do 20 i = 1, idimp
+      do 20 j = 1, nppp
+      do 10 i = 1, idimp
       part(i,j+npoff) = ppart(i,j,k)
+   10 continue
    20 continue
-   30 continue
       npoff = npoff + nppp
-   40 continue
+   30 continue
+      npp = npoff
+      if (ierr.gt.0) irc = ierr
       return
       end
 !-----------------------------------------------------------------------      
-      subroutine PPPCOPYIN2(part,ppart,kpic,npmax,nppmx,idimp,mxyp1,irc)
-! for 2d code, this subroutine copies linear array part to
-! segmented particle data ppart, assuming kpic values are known
-! spatial decomposition in y direction
-! used in resizing segmented particle array ppart if overflow occurs
-! input: all except ppart, irc, output: ppart, irc
-! part(i,j) = i-th coordinate for particle j in partition
-! ppart(i,j,k) = i-th coordinate for particle j in partition in tile k
-! kpic = number of particles per tile
-! npmax = maximum number of particles in each partition
-! nppmx = maximum number of particles in tile
-! idimp = size of phase space = 5
-! mxyp1 = total number of tiles in partition
-! irc = maximum overflow, returned only if error occurs, when irc > 0
-      implicit none
-      integer npmax, nppmx, idimp, mxyp1, irc
-      real part, ppart
-      integer kpic
-      dimension part(idimp,npmax), ppart(idimp,nppmx,mxyp1)
-      dimension kpic(mxyp1)
-! local data
-      integer i, j, k, npoff, nppp
-! check for overflow
-      nppp = 0
-      do 10 k = 1, mxyp1
-      nppp = nppp + kpic(k)
-   10 continue
-      if (nppp.gt.npmax) then
-         irc = nppp
-         return
-      endif
-! loop over tiles
-      npoff = 0
-      do 40 k = 1, mxyp1
-      nppp = kpic(k)
-! loop over particles in tile
-      do 30 j = 1, nppp
-      do 20 i = 1, idimp
-      ppart(i,j,k) = part(i,j+npoff)
-   20 continue
-   30 continue
-      npoff = npoff + nppp
-   40 continue
-      return
-      end
