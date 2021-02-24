@@ -20,7 +20,7 @@
     "read_restart" : false,
     "restart_timestep" : 1,
     "iter" : 1,
-    "verbose" : 2
+    "verbose" : 0
 },
 
 "beam" :
@@ -161,6 +161,29 @@
 "species" :
 [
     {
+    "profile" : 0,
+    "ppc" : [2,2],
+    "q" : -1.0,
+    "m" : 1.0,
+    "density" : 1.0,
+    "longitudinal_profile" : "uniform",
+    "piecewise_density" : [1.0,1.5,2.5],
+    "piecewise_s" : [0.0,100.0,200.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge", "jx"],
+        "ndump" : 1
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 1,
+        "slice" : [["xz", 129],["yz",129]]
+        }
+    ]    
+    },
+
+    {
     "profile" : 12,
     "ppc" : [2,2],
     "q" : -1.0,
@@ -235,28 +258,6 @@
         "slice" : [["xz", 129],["yz",129],["xy",20]]
         }
     ]    
-    },
-    {
-    "profile" : 0,
-    "ppc" : [2,2],
-    "q" : -1.0,
-    "m" : 1.0,
-    "density" : 1.0,
-    "longitudinal_profile" : "piecewise",
-    "piecewise_density" : [1.0,1.5,2.5],
-    "piecewise_s" : [0.0,100.0,200.0],
-    "diag" :
-    [
-        {
-        "name" : ["charge", "jx"],
-        "ndump" : 1
-        },
-        {
-        "name" : ["charge"],
-        "ndump" : 1,
-        "slice" : [["xz", 129],["yz",129]]
-        }
-    ]    
     }
 ],
 
@@ -269,7 +270,7 @@
         "ndump" : 1
         },
         {
-        "name" : ["ex","by","ez","psi"],
+        "name" : ["ex","by","ez","psi","vpotx","vpoty","vpotz"],
         "ndump" : 1,
         "slice" : [["xz", 129],["yz", 129]]
         }

@@ -17,7 +17,6 @@
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
       public :: fdist3d_003
 
-
       type, abstract :: fdist3d
 
          private
@@ -29,7 +28,7 @@
 ! ndprof = profile type
          integer :: npf, npmax
          real, dimension(3) :: origin=(/0.0,0.0,0.0/)
-         logical :: evol = .true.
+         logical :: evol = .true., static = .false.
                          
          contains
          
@@ -40,6 +39,7 @@
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
          procedure :: getnpf, getnpmax, getevol, getorigin
+         procedure :: getstatic
                   
       end type 
 
@@ -185,6 +185,17 @@
 
       end function getevol
 !      
+      function getstatic(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: getstatic
+         
+         getstatic = this%static
+
+      end function getstatic
+!
       function getorigin(this)
 
          implicit none
@@ -219,7 +230,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
-         logical :: quiet, evol
+         logical :: quiet, evol, static
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz         
@@ -285,8 +296,12 @@
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
-
-
+         if (input%found(trim(s1)//'.static')) then
+            call input%get(trim(s1)//'.static',static)
+            if (static) evol = .false.
+         else
+            static = .false.
+         end if
 
          this%npf = npf
          this%npx = npx
@@ -318,6 +333,7 @@
          this%np = np
          this%quiet = quiet
          this%evol = evol
+         this%static = static
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -338,13 +354,16 @@
 ! edges(3) = lower boundary in z of particle partition
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: pt => null()
+         real, dimension(:,:,:,:), pointer :: qrf => null()        
          integer :: npx, npy, npz, nx, ny, nz, ipbc
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0
          real, dimension(3) :: cx, cy
          real, dimension(4) :: edges
+         real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
          integer, dimension(2) :: noff
          integer :: nps=1
+         integer :: i, j, k
          logical :: lquiet = .false.
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_000:'
@@ -367,14 +386,35 @@
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
          
-         call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
-         &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
-         &x0,y0,z0,cx,cy,lquiet,ierr)
+         if (this%static) then
+            npp = 0
+            np = this%np*this%qm/abs(this%qm)
+            nx = fd%getnd1p(); ny = fd%getnd2p(); nz = fd%getnd3p()
+            qrf => fd%getrf()
+            do k = 1, nz
+               zval = float(k+noff(2)-1)-z0
+               cx0 = -cx(1)*zval**2-cx(2)*zval-cx(3)
+               cy0 = -cy(1)*zval**2-cy(2)*zval-cy(3)
+               t1 = np*exp(-zval**2/2.0/sigz**2)
+               do i = 1, nx
+                  xval = float(i-1)
+                  t2 = t1*exp(-(xval-x0+cx0)**2/2.0/sigx**2)
+                  do j = 1, ny
+                     yval = float(j+noff(1)-1)
+                     qrf(1,i,j,k) = t2*exp(-(yval-y0+cy0)**2/2.0/sigy**2)                    
+                  end do
+               end do
+            end do
+         else
+            call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
+            &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
+            &x0,y0,z0,cx,cy,lquiet,ierr)
+            if (ierr /= 0) then
+               write (erstr,*) 'PRVDIST32_RANDOM error'
+               call this%err%equit(class//sname//erstr)
+            endif
+         end if
 
-         if (ierr /= 0) then
-            write (erstr,*) 'PRVDIST32_RANDOM error'
-            call this%err%equit(class//sname//erstr)
-         endif
          
          call this%err%werrfl2(class//sname//' ended')
          
@@ -391,7 +431,7 @@
          integer :: npf,npx,npy,npz,npmax
          real :: qm,sigx,sigy,bcx,bcy,bcz,sigvx,sigvy,sigvz
          real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np
-         logical :: quiet
+         logical :: quiet,evol,static
          real :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz
@@ -459,6 +499,13 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.piecewise_fz',this%fz)
          call input%get(trim(s1)//'.piecewise_z',this%z)
+         call input%get(trim(s1)//'.evolution',evol)
+         if (input%found(trim(s1)//'.static')) then
+            call input%get(trim(s1)//'.static',static)
+            if (static) evol = .false.
+         else
+            static = .false.
+         end if
 
          sumz = 0.0
          do ii = 2, size(this%z)
@@ -499,6 +546,8 @@
          this%gamma = gamma
          this%np = np
          this%quiet = quiet
+         this%evol = evol
+         this%static = static
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -518,6 +567,7 @@
 ! edges(3) = lower boundary in z of particle partition
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: pt => null()
+         real, dimension(:,:,:,:), pointer :: qrf => null()        
          integer :: npx, npy, npz, nx, ny, nz, ipbc
          real :: vtx, vty, vtz, vdx, vdy, vdz
          real :: sigx, sigy, sigz, x0, y0, z0
@@ -527,7 +577,8 @@
          integer :: nps=1
          logical :: lquiet = .false.
          integer :: idimp, npmax, ierr = 0
-         integer :: nzf, i, j
+         integer :: nzf, i, j, k
+         real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
          real, dimension(:), allocatable :: zf
          character(len=18), save :: sname = 'dist3d_001:'
 
@@ -564,16 +615,36 @@
                end if
             end do
          end do
-         
-         call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
-         &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
-         &npmax,1,1,4,zf,lquiet,ierr)
 
-         if (ierr /= 0) then
-            write (erstr,*) 'PRVDIST32_RAN_PFL error'
-            call this%err%equit(class//sname//erstr)
-         endif
-         
+         if (this%static) then
+            npp = 0
+            np = this%np*this%qm/abs(this%qm)
+            nx = fd%getnd1p(); ny = fd%getnd2p(); nz = fd%getnd3p()
+            qrf => fd%getrf()
+            do k = 1, nz
+               zval = float(k+noff(2)-1)-z0
+               cx0 = -cx(1)*zval**2-cx(2)*zval-cx(3)
+               cy0 = -cy(1)*zval**2-cy(2)*zval-cy(3)
+               t1 = np*zf(k+noff(2))
+               do i = 1, nx
+                  xval = float(i-1)
+                  t2 = t1*exp(-(xval-x0+cx0)**2/2.0/sigx**2)
+                  do j = 1, ny
+                     yval = float(j+noff(1)-1)
+                     qrf(1,i,j,k) = t2*exp(-(yval-y0+cy0)**2/2.0/sigy**2)                    
+                  end do
+               end do
+            end do
+         else
+            call PRVDIST32_RAN_PFL(pt,this%qm,edges,npp,nps,x0,y0,z0,sigx,sigy,&
+            &vtx,vty,vtz,vdx,vdy,vdz,cx,cy,npx,npy,npz,nx,ny,nz,ipbc,idimp,&
+            &npmax,1,1,4,zf,lquiet,ierr)
+   
+            if (ierr /= 0) then
+               write (erstr,*) 'PRVDIST32_RAN_PFL error'
+               call this%err%equit(class//sname//erstr)
+            endif
+         end if         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_001

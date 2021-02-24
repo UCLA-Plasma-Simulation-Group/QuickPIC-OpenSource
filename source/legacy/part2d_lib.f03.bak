@@ -1,14 +1,5 @@
-!-----------------------------------------------------------------------
 ! part2d_lib_h module for QuickPIC Open Source 1.0
 ! update: 04/18/2016
-! update: 02/8/2021 by Viktor Decyk
-! In order to support automatic recovery of buffer overflows, interfaces
-! for procedures PPPORDER2LA,PPPORDERF2LA, and PPPORDER2LB have been
-! modified and interfaces PPPRSNCL2L,PPPORDERF2LAF,PPPRSTOR2L and
-! PPPCOPYIN2 have been added from UPIC 2.0.4.1.
-! Interface to PPGRBPPUSHF23L_QP has been
-! modified and a new interface to PPGRBPPUSH23L_QP has been added
-! MPI procedure PPIMAX added to find integer maximum across nodes
 
       module part2d_lib
 
@@ -91,29 +82,13 @@
       end interface
 !
       interface
-         subroutine PPGRBPPUSH23L_QP(ppart,fxy,bxy,psit,kpic,noff,nyp,  &
-     &qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
-         implicit none
-         integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
-         integer mx1, mxyp1, ipbc
-         real qbm, dt, ci, ek, dex
-         real ppart, fxy, bxy, psit
-         integer kpic, ncl, ihole
-         dimension ppart(idimp,nppmx,mxyp1)
-         dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
-         dimension psit(nxv,nypmx)
-         dimension kpic(mxyp1)   
-         end subroutine     
-      end interface
-!
-      interface
          subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,&
-     &noff,nyp,qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,&
-     &ntmax,irc,dex)
+     &noff,nyp,qbm,dt,dtc,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mx&
+     &yp1,ntmax,irc,dex)
          implicit none
          integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
          integer mx1, mxyp1, ntmax, irc
-         real qbm, dt, ci, ek, dex
+         real qbm, dt, dtc, ci, ek, dex
          real ppart, fxy, bxy, psit
          integer kpic, ncl, ihole
          dimension ppart(idimp,nppmx,mxyp1)
@@ -127,10 +102,11 @@
       interface
          subroutine PPPORDER2LA(ppart,ppbuff,sbufl,sbufr,kpic,ncl,ihole,&  
      &ncll,nclr,noff,nyp,idimp,nppmx,nx,ny,mx,my,mx1,myp1,npbmx,ntmax,  &
-     &nbmax,irc2)
+     &nbmax,irc)
          implicit none
          integer, intent(in) :: idimp, nppmx, nx, ny, mx, my, mx1, myp1
          integer, intent(in) :: npbmx, ntmax, nbmax, noff, nyp
+         integer, intent(inout) :: irc
          real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(inout) :: ppbuff
          real, dimension(idimp,nbmax), intent(inout) :: sbufl, sbufr
@@ -138,32 +114,32 @@
          integer, dimension(8,mx1*myp1), intent(inout) :: ncl
          integer, dimension(2,ntmax+1,mx1*myp1), intent(inout) :: ihole
          integer, dimension(3,mx1), intent(inout) :: ncll, nclr
-         integer, dimension(2), intent(inout) :: irc2
          end subroutine
       end interface
 !
       interface
          subroutine PPPORDERF2LA(ppart,ppbuff,sbufl,sbufr,ncl,ihole,ncll&
-     &,nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc2)
+     &,nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
          implicit none
          integer, intent(in) :: idimp, nppmx, mx1, myp1, npbmx, ntmax
          integer, intent(in) :: nbmax
+         integer, intent(inout) :: irc
          real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(inout) :: ppbuff
          real, dimension(idimp,nbmax), intent(inout) :: sbufl, sbufr
          integer, dimension(8,mx1*myp1), intent(inout) :: ncl
          integer, dimension(2,ntmax+1,mx1*myp1), intent(in) :: ihole
          integer, dimension(3,mx1), intent(inout) :: ncll, nclr
-         integer, dimension(2), intent(inout) :: irc2
          end subroutine
       end interface
 !
       interface
          subroutine PPPORDER2LB(ppart,ppbuff,rbufl,rbufr,kpic,ncl,ihole,&
-     &mcll,mclr,idimp,nppmx,nx,ny,mx1,myp1,npbmx,ntmax,nbmax,irc2)
+     &mcll,mclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
          implicit none
-         integer, intent(in) :: idimp, nppmx, nx, ny, mx1, myp1, npbmx
-         integer, intent(in) :: ntmax, nbmax
+         integer, intent(in) :: idimp, nppmx, mx1, myp1, npbmx, ntmax
+         integer, intent(in) :: nbmax
+         integer, intent(inout) :: irc
          real, dimension(idimp,nppmx,mx1*myp1), intent(inout) :: ppart
          real, dimension(idimp,npbmx,mx1*myp1), intent(in) :: ppbuff
          real, dimension(idimp,nbmax), intent(in) :: rbufl, rbufr
@@ -171,40 +147,6 @@
          integer, dimension(8,mx1*myp1), intent(in) :: ncl
          integer, dimension(2,ntmax+1,mx1*myp1), intent(in) :: ihole
          integer, dimension(3,mx1), intent(in) :: mcll, mclr
-         integer, dimension(2), intent(inout) :: irc2
-         end subroutine
-      end interface
-!
-      interface
-         subroutine PPPRSNCL2L(ncl,mxyp1)
-         implicit none
-         integer, intent(in) :: mxyp1
-         integer, dimension(8,mxyp1), intent(inout) :: ncl
-         end subroutine
-      end interface
-!
-      interface
-         subroutine PPPORDERF2LAF(ppbuff,sbufl,sbufr,ncl,ncll,nclr,idimp&
-     &,mx1,myp1,npbmx,nbmax,irc2)
-         implicit none
-         integer, intent(in) :: idimp, mx1, myp1, npbmx, nbmax
-         real, dimension(idimp,npbmx,mx1*myp1), intent(inout) :: ppbuff
-         real, dimension(idimp,nbmax), intent(inout) :: sbufl, sbufr
-         integer, dimension(8,mx1*myp1), intent(inout) :: ncl
-         integer, dimension(3,mx1), intent(inout) :: ncll, nclr
-         integer, dimension(2), intent(inout) :: irc2
-         end subroutine
-      end interface
-!
-      interface
-         subroutine PPPRSTOR2L(ppart,ppbuff,ncl,ihole,idimp,nppmx,mxyp1,&
-     &npbmx,ntmax)
-         implicit none
-         integer, intent(in) :: idimp, nppmx, mxyp1, npbmx, ntmax
-         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
-         real, dimension(idimp,npbmx,mxyp1), intent(in) :: ppbuff
-         integer, dimension(8,mxyp1), intent(in) :: ncl
-         integer, dimension(2,ntmax+1,mxyp1), intent(in) :: ihole
          end subroutine
       end interface
 !
@@ -233,21 +175,8 @@
          end subroutine
       end interface
 !
-      interface
-         subroutine PPPCOPYIN2(part,ppart,kpic,npmax,nppmx,idimp,mxyp1, &
-     &irc)
-         implicit none
-         integer, intent(in) :: npmax, nppmx, idimp, mxyp1
-         integer, intent(inout) :: irc
-         real, dimension(idimp,npmax), intent(in) :: part
-         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
-         integer, dimension(mxyp1), intent(in) :: kpic
-         end subroutine
-      end interface
-!
       contains
-!  
-!-----------------------------------------------------------------------    
+!      
       subroutine PPPMOVE2(sbufr,sbufl,rbufr,rbufl,ncll,nclr,mcll,mclr,  &
      &kstrt,nvp,idimp,nbmax,mx1)
 ! this subroutine moves particles into appropriate spatial regions
@@ -342,32 +271,5 @@
          enddo
       endif
       end subroutine PPPMOVE2
-!
-!-----------------------------------------------------------------------
-      subroutine PPIMAX(if,ig,nxp)
-! this subroutine finds parallel maximum for each element of a vector
-! that is, if(j,k) = maximum as a function of k of if(j,k)
-! at the end, all processors contain the same maximum.
-! if = input and output integer data
-! ig = scratch integer array
-! nxp = number of data values in vector
-      implicit none
-      integer, intent(in) :: nxp
-      integer, dimension(nxp), intent(inout) :: if, ig
-! nproc = number of real or virtual processors obtained
-! lgrp = current communicator
-! mint = default datatype for integers
-! mmax = MPI_MAX
-! local data
-      integer :: j, ierr
-! return if only one processor
-      if (nproc==1) return
-! find maximum
-      call MPI_ALLREDUCE(if,ig,nxp,mint,MPI_MAX,lgrp,ierr)
-! copy output from scratch array
-      do j = 1, nxp
-         if(j) = ig(j)
-      enddo
-      end subroutine
-!
+          
       end module part2d_lib
