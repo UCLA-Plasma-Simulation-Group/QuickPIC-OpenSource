@@ -736,10 +736,10 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
      
       x2 = 2.0 * x0
       y2 = 2.0 * y0
-      borderlx = max((x0-5.0*sigx),1.0)
-      borderly = max((y0-5.0*sigy),1.0)
-      borderx = min((x0+5.0*sigx),float(nx-1)) 
-      bordery = min((y0+5.0*sigy),float(ny-1))
+      borderlx = max((x0-5.0*sigx),1.0) - x0
+      borderly = max((y0-5.0*sigy),1.0) - y0
+      borderx = min((x0+5.0*sigx),float(nx-1)) - x0
+      bordery = min((y0+5.0*sigy),float(ny-1)) - y0
 
       nz1 = nz -1
       dp = abs(dp)
@@ -768,9 +768,9 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
         dpi = dp(zi)*zs + dp(zi+1)*zf    
         if (u<=dpi) then  
 c particle is accepted        
-  20    tempx = x0+sigx*ranorm()
+  20    tempx = sigx*ranorm()
         if (tempx>=(borderx) .or. tempx<=borderlx) goto 20
-  30    tempy = y0+sigy*ranorm()
+  30    tempy = sigy*ranorm()
         if (tempy>=(bordery) .or. tempy<=borderly) goto 30
 
 c  check if particle belongs to this partition
@@ -784,12 +784,8 @@ c                tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
-                     tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
-     &,npt,m)-z0)-cx(2)                
-                     part(1,npt,m) = tempx + tempxx
-                     tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
-     &,npt,m)-z0)-cy(2)        
-                     part(2,npt,m) = tempy + tempyy 
+                     part(1,npt,m) = tempx
+                     part(2,npt,m) = tempy
                      part(4,npt,m) = tvtx
                      part(5,npt,m) = tvty
                      part(6,npt,m) = tvtz  
@@ -804,8 +800,8 @@ c quiet start
                       npt = npp(m) + 1
                       tvtz = vtz*ranorm()
                       part(3,npt,m) = tempz
-                      part(1,npt,m) = x2 - tempx+tempxx
-                      part(2,npt,m) = y2 - tempy+tempyy
+                      part(1,npt,m) = - tempx
+                      part(2,npt,m) = - tempy
                       part(4,npt,m) = -tvtx
                       part(5,npt,m) = -tvty
                       part(6,npt,m) = tvtz  
@@ -857,7 +853,11 @@ c      npxyz = npxyz + 1
       tvtx = vtx/sqrt(work3(1)/npt)
       tvty = vty/sqrt(work3(2)/npt)
       tempx = work3(3)/npt
-      tvtz = vtz/sqrt(work3(4)/npt-tempx*tempx)
+      if (vtz .eq. 0.0) then
+        tvtz = 1.0
+      else
+        tvtz = vtz/sqrt(work3(4)/npt-tempx*tempx)
+      endif
 
       do 260 j = 1, npp(1)
       tempxx = tvtx * part(4,j,1)
@@ -868,6 +868,36 @@ c      npxyz = npxyz + 1
       part(6,j,1) = sqrt(tempy*tempy-1-tempxx*tempxx-tempyy*tempyy)
   260 continue
 
+      if (ierr.gt.0) then
+         write (2,*) 'particle correction error, ierr = ', ierr
+         return
+      endif
+
+      sum3(1) = 0.
+      sum3(2) = 0.
+
+      do 255 j = 1, npp(1)
+c      npxyz = npxyz + 1
+      sum0 = part(1,j,1)
+      sum1 = part(2,j,1)
+      sum3(1) = sum3(1) + sum0*sum0
+      sum3(2) = sum3(2) + sum1*sum1
+  255 continue
+
+      ierr = 0
+      call MPI_ALLREDUCE(sum3, work3, 2, mreal, MPI_SUM, lworld, ierr)
+      tvtx = sigx/sqrt(work3(1)/npt)
+      tvty = sigy/sqrt(work3(2)/npt)
+
+      do 265 j = 1, npp(1)
+      tempx = tvtx * part(1,j,1)
+      tempy = tvty * part(2,j,1)
+      tempz = part(3,j,1)
+      tempxx = -cx(0)*(tempz-z0)**2-cx(1)*(tempz-z0)-cx(2)                
+      part(1,j,1) = tempx + tempxx + x0
+      tempyy = -cy(0)*(tempz-z0)**2-cy(1)*(tempz-z0)-cy(2)        
+      part(2,j,1) = tempy + tempyy + y0
+  265 continue
       if (ierr.gt.0) then
          write (2,*) 'particle correction error, ierr = ', ierr
       endif
