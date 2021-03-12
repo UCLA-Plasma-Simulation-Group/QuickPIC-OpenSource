@@ -12,6 +12,10 @@
 ! npmax and it, and removed local logical list.
 ! In procedure end_part2d, added deallocation of internal buffers:
 ! ppbuff, sbufl, sbufr, rbufl, rbufr, ncll, nclr, mcll, mclr
+! update: 03/11/2021 by Viktor Decyk
+! In init_part2d, added 1 to initial values of this%ntmaxp, this%npbmx
+! to avoid possible zero-sized allocatable arrays in pmove
+! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y coordinates
 
       module part2d_class
 
@@ -126,7 +130,7 @@
 
 ! local data
          character(len=18), save :: sname = 'init_part2d:'
-         integer :: noff, nyp, nx, npmax, nbmax
+         integer :: j, k, noff, nyp, nx, npmax, nbmax
          real :: xtras
                   
          this%sp => psp
@@ -164,8 +168,8 @@
 !    
 ! allocate vector particle data
          this%nppmx0 = (1.0 + xtras)*this%nppmx
-         this%ntmaxp = xtras*this%nppmx
-         this%npbmx = xtras*this%nppmx
+         this%ntmaxp = xtras*this%nppmx + 1
+         this%npbmx = xtras*this%nppmx + 1
          this%nbmaxp = 0.25*mx1*this%npbmx
          allocate(this%ppart(xdim,this%nppmx0,mxyp1))
          allocate(this%ncl(8,mxyp1))
@@ -186,6 +190,9 @@
 ! check error
           if (this%irc /= 0) then
              write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
+             call this%err%werrfl0(class//sname//erstr)
+             j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
+             write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
              call this%err%equit(class//sname//erstr); return
           endif
 
@@ -365,7 +372,7 @@
          class(ufield2d), pointer, intent(in) :: fd
          character(len=18), save :: sname = 'pmove:'
 ! local data
-         integer :: noff, nyp, nx, ny, nxv, nypmx, kstrt, nvp
+         integer :: j, k, noff, nyp, nx, ny, nxv, nypmx, kstrt, nvp
          integer :: npbmx, nbmax, idimp, nppmx, ntmax, npmax, it, irc
          real, dimension(:,:,:), pointer :: ppart => null()
          integer, dimension(:,:), pointer :: ncl => null()
@@ -583,7 +590,10 @@
          &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
 ! check error
          if (this%irc /= 0) then
-            write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
+            write (erstr,*) 'pmove PPPCHECK2L error: irc=', this%irc
+             call this%err%werrfl0(class//sname//erstr)
+             j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
+             write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
             call this%err%equit(class//sname//erstr); return
          endif
 !

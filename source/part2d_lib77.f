@@ -11,6 +11,8 @@
 ! ntmax on error, and to remove the unused argument dtc and unused local
 ! variables
 ! Added PPGRBPPUSH23L_QP to support particle reflection
+! update: 03/11/2021 by Viktor Decyk
+! Modified PPPCHECK2L to report which particle failed in error return
 !-----------------------------------------------------------------------
       subroutine PPDBLKP2L(part,kpic,npp,noff,nppmx,idimp,npmax,mx,my,  &
      &mx1,mxyp1,irc)
@@ -184,7 +186,7 @@
       if (dx.ge.edgerx) ist = 2
       if (dy.lt.edgely) ist = ist + 3
       if (dy.ge.edgery) ist = ist + 6
-      if (ist.gt.0) irc = k
+      if (ist.gt.0) irc = k + mxyp1*(j - 1)
    10 continue
    20 continue
 !$OMP END PARALLEL DO
