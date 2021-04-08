@@ -25,6 +25,7 @@
 !
 ! ndprof = profile type 
          integer :: npf, npmax
+         logical :: ntd
                           
          contains
          generic :: new => init_fdist2d         
@@ -33,7 +34,7 @@
          procedure(ab_init_fdist2d), deferred, private :: init_fdist2d
          procedure, private :: end_fdist2d
          procedure(ab_dist2d), deferred, private :: dist2d
-         procedure :: getnpf, getnpmax
+         procedure :: getnpf, getnpmax, getntd
                   
       end type fdist2d
 
@@ -154,6 +155,17 @@
       
       end function getnpmax
 !
+      function getntd(this)
+
+         implicit none
+
+         class(fdist2d), intent(in) :: this
+         logical :: getntd
+         
+         getntd = this%ntd
+      
+      end function getntd
+!
       subroutine end_fdist2d(this)
           
          implicit none
@@ -189,6 +201,12 @@
          call input%get('simulation.indx',indx)
          call input%get('simulation.indy',indy)
          call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if
+
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
@@ -354,6 +372,11 @@
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
@@ -561,6 +584,11 @@
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
@@ -748,6 +776,11 @@
          aly = (max-min) 
          dy=aly/real(2**indy)
          call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
