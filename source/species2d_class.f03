@@ -31,7 +31,7 @@
          class(field2d), pointer :: amu => null(), dcu => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
-         
+
          contains
          
          generic :: new => init_species2d
@@ -85,6 +85,7 @@
 
 ! local data
          character(len=18), save :: sname = 'init_species2d:'
+         logical :: ntd
                   
          this%sp => psp
          this%err => perr
@@ -93,26 +94,45 @@
 
          call this%err%werrfl2(class//sname//' started')
          
-         allocate(this%pd,this%q,this%qn,this%cu,this%amu,this%dcu,this%q3)
+
+         ntd = this%pf%getntd()
+         if (ntd) allocate(this%qn)
+         allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3)
          call this%q%new(this%p,this%err,this%sp,dim=1,fftflag=.true.)
          call this%q3%new(this%p,this%err,psp,dim=1)
-         call this%qn%new(this%p,this%err,this%sp,dim=1,fftflag=.false.)
+         if (ntd) call this%qn%new(this%p,this%err,this%sp,dim=1,fftflag=.false.)
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
-         call this%qn%as(0.0)
-         call this%cu%as(0.0)
-         call this%pd%qdp(this%qn%getrs())
-         call this%qn%ag()
-         call this%q%as(this%qn)
-         if (this%p%getstageid() == 0) then
-            call this%q%fftrk(1)
-            call this%q%smooth(this%q)
-            call this%q%fftkr(1)
-            call this%q%cb(this%q3,1,(/1/),(/1/))         
+         if (ntd) then
+            call this%qn%as(0.0)
+         else
+            call this%q%as(0.0)
          end if
-         call this%qn%mult(this%qn,-1.0)
+         call this%cu%as(0.0)
+         if (ntd) then
+            call this%pd%qdp(this%qn%getrs())
+            call this%qn%ag()
+            call this%q%as(this%qn)
+            if (this%p%getstageid() == 0) then
+               call this%q%fftrk(1)
+               call this%q%smooth(this%q)
+               call this%q%fftkr(1)
+               call this%q%cb(this%q3,1,(/1/),(/1/))         
+            end if
+            call this%qn%mult(this%qn,-1.0)
+         else
+            call this%pd%qdp(this%q%getrs())
+            call this%q%ag()
+            if (this%p%getstageid() == 0) then
+               call this%q%fftrk(1)
+               call this%q%smooth(this%q)
+               call this%q%fftkr(1)
+               call this%q%cb(this%q3,1,(/1/),(/1/))         
+            end if
+         end if
+
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_species2d
@@ -127,7 +147,7 @@
          call this%err%werrfl2(class//sname//' started')
          call this%pd%del()
          call this%q%del()
-         call this%qn%del()
+         if (this%pf%getntd()) call this%qn%del()
          call this%cu%del()
          call this%dcu%del()
          call this%amu%del()
@@ -144,21 +164,38 @@
 
 ! local data
          character(len=18), save :: sname = 'renew_species2d:'
+         logical :: ntd
                   
          call this%err%werrfl2(class//sname//' started')
          
-         call this%pd%renew(this%pf,this%qn%getrs(),s)
-         call this%qn%as(0.0)
-         call this%pd%qdp(this%qn%getrs())
-         call this%qn%ag()
-         call this%q%as(this%qn)
-         if (this%p%getstageid() == 0) then
-            call this%q%fftrk(1)
-            call this%q%smooth(this%q)
-            call this%q%fftkr(1)
-            call this%q%cb(this%q3,1,(/1/),(/1/))         
+         ntd = this%pf%getntd()
+         call this%pd%renew(this%pf,this%q%getrs(),s)
+         if (ntd) then
+            call this%qn%as(0.0)
+         else
+            call this%q%as(0.0)
          end if
-         call this%qn%mult(this%qn,-1.0)
+         if (ntd) then
+            call this%pd%qdp(this%qn%getrs())
+            call this%qn%ag()
+            call this%q%as(this%qn)
+            if (this%p%getstageid() == 0) then
+               call this%q%fftrk(1)
+               call this%q%smooth(this%q)
+               call this%q%fftkr(1)
+               call this%q%cb(this%q3,1,(/1/),(/1/))         
+            end if
+            call this%qn%mult(this%qn,-1.0)
+         else
+            call this%pd%qdp(this%q%getrs())
+            call this%q%ag()
+            if (this%p%getstageid() == 0) then
+               call this%q%fftrk(1)
+               call this%q%smooth(this%q)
+               call this%q%fftkr(1)
+               call this%q%cb(this%q3,1,(/1/),(/1/))         
+            end if
+         end if
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_species2d
@@ -172,13 +209,15 @@
          class(field2d), intent(inout) :: q
 ! local data
          character(len=18), save :: sname = 'qdp_species2d:'
-                  
+         logical :: ntd
+
          call this%err%werrfl2(class//sname//' started')
+         ntd = this%pf%getntd()
          call this%q%as(0.0)
          call this%pd%qdp(this%q%getrs())
          call this%q%ag()
          call q%add(this%q,q)
-         call q%add(this%qn,q)
+         if (ntd) call q%add(this%qn,q)
                   
          call this%err%werrfl2(class//sname//' ended')
          
