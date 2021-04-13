@@ -15,7 +15,8 @@
 ! update: 03/11/2021 by Viktor Decyk
 ! In init_part2d, added 1 to initial values of this%ntmaxp, this%npbmx
 ! to avoid possible zero-sized allocatable arrays in pmove
-! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y coordinates
+! update: 03/19/2021 by Viktor Decyk
+! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y,vx,vy coordinates
 
       module part2d_class
 
@@ -193,6 +194,8 @@
              call this%err%werrfl0(class//sname//erstr)
              j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
              write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
+             call this%err%werrfl0(class//sname//erstr)
+             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
              call this%err%equit(class//sname//erstr); return
           endif
 
@@ -590,10 +593,12 @@
          &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
 ! check error
          if (this%irc /= 0) then
-            write (erstr,*) 'pmove PPPCHECK2L error: irc=', this%irc
+            write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
              call this%err%werrfl0(class//sname//erstr)
              j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
              write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
+             call this%err%werrfl0(class//sname//erstr)
+             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
             call this%err%equit(class//sname//erstr); return
          endif
 !
