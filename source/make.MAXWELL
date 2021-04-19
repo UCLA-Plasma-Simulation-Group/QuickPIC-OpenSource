@@ -1,0 +1,41 @@
+JSONFORTRAN_HOME=/home/zming/src/git/json-fortran/lib
+JSON_LIB=$(JSONFORTRAN_HOME)
+JSON_INC=$(JSONFORTRAN_HOME)/mod
+
+# name of the compiler 
+FC_MAXWELL = mpif90 -c -I$(JSON_INC) -fopenmp
+CC_MAXWELL = mpicc -c
+LINKER_MAXWELL = mpif90 -fopenmp -O3
+
+OPTS_DBL_MAXWELL = -O3 -r8
+OPTS_SGL_MAXWELL = -O3
+
+FORMAT_FREE_MAXWELL = -stand f03 -FR -Tf
+FORMAT_FIXED_MAXWELL = -FI
+
+# hdf5 libraries 
+#HDF5_HOME = /opt/hdf5/hdf5-1.10.6
+#HDF5_HOME = /data/netapp/fla/plasma/software-max/hdf5-1.12.0/intel.16.0.3.openmpi.1.10.3
+HDF5_HOME = /software/openmpi-intel/3.1.6/hdf5-1.10.6
+HDF5_LIB = $(HDF5_HOME)/lib
+HDF5_INC =$(HDF5_HOME)/include
+
+HDF_LIBPATH_MAXWELL= -L$(HDF5_LIB) \
+ -L/data/netapp/fla/plasma/software-max/szip-2.1/lib \
+ -L/usr/lib64 \
+                        -lhdf5_fortran -lhdf5_hl -lhdf5 -lz -lsz
+HDF_INCLUDE_PATH_MAXWELL= -I$(HDF5_INC) -I${HDF5_LIB} \
+  -I/data/netapp/fla/plasma/software-max/szip-2.1/include \
+              -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
+
+# other libs
+OTHER_LIBS_MAXWELL = -L$(JSON_LIB) -ljsonfortran 
+
+# memory options
+MEM_OPTIONS_MAXWELL = 
+
+# options for linking
+# use static libs
+STATIC_LINK_MAXWELL = 
+# use shared libs
+SHARED_LINK_MAXWELL = 
