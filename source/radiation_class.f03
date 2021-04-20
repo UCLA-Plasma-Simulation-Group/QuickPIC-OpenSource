@@ -7,7 +7,7 @@
         implicit none
 
         type radiation
-         real :: x0,x1,y0,y1,z
+         real :: x0,x1,y0,y1,z,dx,dy,dt
          real :: t0,t1
          real :: w0,w1
          integer::Nx,Ny,Nt,Nw
@@ -42,12 +42,6 @@
         cross(3) = a(1) * b(2) - a(2) * b(1)
         END FUNCTION cross
 
-        
-        subroutine calculate_radiation
-
-        end subroutine calculate_radiation
-
-
         subroutine new(this,input,i)
 
             implicit none
@@ -60,8 +54,8 @@
             real :: min, max
             real :: t0,t1
             real :: w0,w1
-            integer::Nx,Ny,Nt,Nw
-            character(len=20) :: sn,s1
+            integer::Nx,Ny,Nt,Nw,ii
+            character(len=20) :: sn,s1,diag
 
             real,allocatable :: intensity(:,:,:) 
             real,allocatable:: spectrum(:) 
@@ -88,64 +82,79 @@
             call input%get(s1//'.z',z)
             this%z = z
 
-            call input%get('s1.time(1)',min )
-            call input%get('s1.time(1)',max )
-            call input%get('s1.nt',Nt )
+            call input%get(s1//'.time(1)',min )
+            call input%get(s1//'.time(1)',max )
+            call input%get(s1//'.nt',Nt )
             this%t0 = min
             this%t1 = max
             this%Nt = Nt
 
-            call input%get('s1.spectrum.frequence(1)',min )
-            call input%get('s1.spectrum.frequence(2)',max)
-            call input%get('s1.spectrum.nw',Nw )
+            call input%get(s1//'.spectrum.frequence(1)',min )
+            call input%get(s1//'.spectrum.frequence(2)',max)
+            call input%get(s1//'.spectrum.nw',Nw )
             this%w0 = min
             this%w1 = max
             this%Nw = Nw
-            
-            allocate(this%intensity(Nx,Ny,Nt))
-            intensity = 0
 
-            allocate(this%spectrum(Nw))
-            spectrum(:) = 0
+            this%dx = (this%x1 - this%x0)/this%Nx
+            this%dy = (this%y1 - this%y0)/this%Ny
+            this%dt = (this%t1 - this%t0)/this%Nt
 
-            allocate(this%E(3,Nx,Ny,Nt))
-            this%E = 0
+            call input%in%info(s1//'diag',n_children=n)
 
-            allocate(this%B(3,this%Nx,this%Ny,this%Nt))
-            this%B = 0
-        
-            allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw))
-            this%Ew_re = 0
-
-            allocate(this%Ew_im(3,this%Nx,this%Ny,this%Nw))
-            this%Ew_im = 0
-
-            allocate(this%Bw_re(3,this%Nx,this%Ny,this%Nw)) 
-            this%Bw_re = 0
-            allocate(this%Bw_im(3,this%Nx,this%Ny,this%Nw))
-            this%Bw_im = 0
+            DO ii in 1:n
+                call input%get(s1//'.diag(ii)',diag)
+                select case(trim(diag))
+                case('intensity')
+                    allocate(this%intensity(Nx,Ny,Nt))
+                    intensity = 0
+                case('spectrum')
+                    allocate(this%spectrum(Nw))
+                    spectrum(:) = 0
+                case('field')
+                    allocate(this%E(3,Nx,Ny,Nt))
+                    this%E = 0
+                    allocate(this%B(3,this%Nx,this%Ny,this%Nt))
+                    this%B = 0
+                case('field_omega')
+                    allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw))
+                    this%Ew_re = 0
+                    allocate(this%Ew_im(3,this%Nx,this%Ny,this%Nw))
+                    this%Ew_im = 0
+                    allocate(this%Bw_re(3,this%Nx,this%Ny,this%Nw)) 
+                    this%Bw_re = 0
+                    allocate(this%Bw_im(3,this%Nx,this%Ny,this%Nw))
+                    this%Bw_im = 0
+                end select
 
             
         end subroutine new
+
+        subroutine calculate_radiation(this,part,s_beam,ds)
+            implicit none
+            if allocated(this%intensity)
+                call calculate_intensity(this,part,Np,s_beam,ds)
+            end if
+            if allocated(this%spectrum)
+                call calculate_spectrum(this,part,Np,s_beam,ds)
+            end if
+        end subroutine calculate_radiation
 
         subroutine calculate_intensity(this,part,Np,s_beam,ds)
             implicit none
 
             class(radiation), intent(inout) :: this
-            integer n,i,j,k,Np
-            integer t_n
-            real x,y,z,tempz
-            real t,t_obs,m0,m1
-            real s_beam,ds,delta_t
-            real dx,dy,dt
-            real r
-            real intensity
+            integer :: n,i,j,k,Np
+            integer :: t_n
+            real :: x,y,z,tempz
+            real :: t,t_obs,m0,m1
+            real :: s_beam,ds,delta_t
+            real :: dx,dy,dt
+            real ::r
+            real :: intensity
             real,dimension(10,Np) :: part
-            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p
-            real c
-            dx = (this%x1 - this%x0)/this%Nx
-            dy = (this%y1 - this%y0)/this%Ny
-            dt = (this%t1 - this%t0)/this%Nt
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2
+            real :: c
             z = s_beam
             DO n = 1,Np
                 x = part(1,n)
@@ -154,21 +163,23 @@
                 t = s_beam + tempz
                 posi = (/x,y,z/)
                 p = part(4:6,n)
-                vel = (p**2/(p**2+1))**0.5
+                vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
                 acc = part(8:10,n)
                 delta_t = ds/vel(3)
                 DO i=1,this%Ny,1
                     DO j = 1,this%Nx,1
-                        posi_x = (/this%x0+(j-1)*dx,this%y1-(i-1)*dy,this%z/)
+                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
                         vec_r = posi_x - posi
                         r = NORM2(vec_r)
                         vec_n = vec_r/r
                         t_obs = (t + r/c-this%t0)/dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
-                            t_n = int(t_obs)
+                            t_n = t_obs
                             m0 = t_obs - t_n
                             m1 = 1 - m0
-                            intensity =( NORM2(cross(vec_n,(cross(vec_n-vel,acc))))**2/(1 - DOT_PRODUCT(vec_n,vel))**5 )*delta_t
+                            temp1 = cross(vec_n-vel,acc)
+                            temp2 = cross(vec_n,temp1)
+                            intensity =((temp2(1)**2+temp2(2)**2+temp2(3)**2)/(1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(2)*vel(2)))**5 )*delta_t
                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
                             this%intensity(i,j,t_n + 1) = this%intensity(i,j,t_n+1) + intensity*m0
                         end if
