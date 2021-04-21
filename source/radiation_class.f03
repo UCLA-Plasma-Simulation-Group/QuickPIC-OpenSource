@@ -11,15 +11,11 @@
          real :: t0,t1
          real :: w0,w1
          integer::Nx,Ny,Nt,Nw
-         real,dimension(:,:,:),pointer:: intensity => null()
-         real,dimension(:),pointer:: spectrum => null()
-         real,dimension(:,:,:,:),pointer :: E => null()
-         real,dimension(:,:,:,:),pointer :: Ew_re => null()
-         real,dimension(:,:,:,:),pointer :: Ew_im => null()
-         real,dimension(:,:,:,:),pointer :: B => null()
-         real,dimension(:,:,:,:),pointer :: Bw_re => null()
-         real,dimension(:,:,:,:),pointer :: Bw_im => null()
-         
+
+         real,allocatable :: intensity(:,:,:) 
+         real,allocatable :: spectrum(:) 
+         real,allocatable :: E(:,:,:,:),Ew_re(:,:,:,:),Ew_im(:,:,:,:) 
+         real,allocatable :: B(:,:,:,:),Bw_re(:,:,:,:),Bw_im(:,:,:,:) 
          
          contains
          procedure :: new
@@ -49,19 +45,13 @@
             class(radiation), intent(inout) :: this
             type(input_json), intent(inout), pointer :: input
             integer, intent(in) :: i
-
             real :: x0,x1,y0,y1,z
             real :: min, max
             real :: t0,t1
             real :: w0,w1
-            integer::Nx,Ny,Nt,Nw,ii
-            character(len=20) :: sn,s1,diag
-
-            real,allocatable :: intensity(:,:,:) 
-            real,allocatable:: spectrum(:) 
-            real,allocatable :: E(:,:,:,:),Ew_re(:,:,:,:),Ew_im(:,:,:,:) 
-            real,allocatable :: B(:,:,:,:),Bw_re(:,:,:,:),Bw_im(:,:,:,:) 
-
+            integer::Nx,Ny,Nt,Nw,ii,n_children,n
+            character(len=20) :: sn,s1
+            character(len=:), allocatable :: diag
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//').radiation'
 
@@ -83,7 +73,7 @@
             this%z = z
 
             call input%get(s1//'.time(1)',min )
-            call input%get(s1//'.time(1)',max )
+            call input%get(s1//'.time(2)',max )
             call input%get(s1//'.nt',Nt )
             this%t0 = min
             this%t1 = max
@@ -100,23 +90,23 @@
             this%dy = (this%y1 - this%y0)/this%Ny
             this%dt = (this%t1 - this%t0)/this%Nt
 
-            call input%in%info(s1//'diag',n_children=n)
+            call input%info(s1//'.diag',n_children=n)
 
-            DO ii in 1:n
+            DO ii = 1,n
                 call input%get(s1//'.diag(ii)',diag)
                 select case(trim(diag))
                 case('intensity')
                     allocate(this%intensity(Nx,Ny,Nt))
-                    intensity = 0
+                    this%intensity = 0
                 case('spectrum')
                     allocate(this%spectrum(Nw))
-                    spectrum(:) = 0
+                    this%spectrum(:) = 0
                 case('field')
                     allocate(this%E(3,Nx,Ny,Nt))
                     this%E = 0
                     allocate(this%B(3,this%Nx,this%Ny,this%Nt))
                     this%B = 0
-                case('field_omega')
+                case('field_w')
                     allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw))
                     this%Ew_re = 0
                     allocate(this%Ew_im(3,this%Nx,this%Ny,this%Nw))
@@ -126,18 +116,26 @@
                     allocate(this%Bw_im(3,this%Nx,this%Ny,this%Nw))
                     this%Bw_im = 0
                 end select
+            end DO
 
             
         end subroutine new
 
-        subroutine calculate_radiation(this,part,s_beam,ds)
+        subroutine calculate_radiation(this,part,s_beam,ds,Np)
+
             implicit none
-            if allocated(this%intensity)
+
+            class(radiation), intent(inout) :: this
+            real :: s_beam,ds
+            real,dimension(10,Np) :: part
+            integer :: Np
+
+            if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
             end if
-            if allocated(this%spectrum)
-                call calculate_spectrum(this,part,Np,s_beam,ds)
-            end if
+!            if (allocated(this%spectrum)) then
+!               call calculate_spectrum(this,part,Np,s_beam,ds)
+!            end if
         end subroutine calculate_radiation
 
         subroutine calculate_intensity(this,part,Np,s_beam,ds)
@@ -154,6 +152,7 @@
             real :: intensity
             real,dimension(10,Np) :: part
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2
+            real :: temp3,temp4
             real :: c
             z = s_beam
             DO n = 1,Np
@@ -179,7 +178,9 @@
                             m1 = 1 - m0
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
-                            intensity =((temp2(1)**2+temp2(2)**2+temp2(3)**2)/(1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(2)*vel(2)))**5 )*delta_t
+                            temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
+                            temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(2)*vel(2))
+                            intensity =(temp3/temp4**5 )*delta_t
                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
                             this%intensity(i,j,t_n + 1) = this%intensity(i,j,t_n+1) + intensity*m0
                         end if
