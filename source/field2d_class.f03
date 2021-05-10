@@ -43,6 +43,7 @@
          generic :: grad => gradf_field2d
          generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
+         generic :: vpot => vpotential_field2d
          generic :: smooth => smoothf_field2d
          generic :: elf => elfield_field2d
          generic :: bf => bfield_field2d
@@ -68,7 +69,7 @@
          procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
-         procedure, private :: copyfrom, copyto, copyadd
+         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
          procedure :: getstate, getgcells, getrs, getks
                   
       end type 
@@ -312,8 +313,31 @@
          
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine potential_field2d      
+      end subroutine potential_field2d
 !            
+      subroutine vpotential_field2d(this,that)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this,that
+         character(len=18), save :: sname = 'vpotential_field2d:'
+         real :: we
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state /= 1) then 
+            call this%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         
+         call this%pt%vpotential(this%ks,that%ks,we)
+
+         that%state = 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine vpotential_field2d
+!
       subroutine smoothf_field2d(this,that)
       
          implicit none

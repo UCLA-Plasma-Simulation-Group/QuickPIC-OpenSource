@@ -1,22 +1,5 @@
-!-----------------------------------------------------------------------
 ! part2d class for QuickPIC Open Source 1.0
 ! update: 04/18/2016
-! update: 02/10/2021 by Viktor Decyk
-! In part2d type, added real component xtras and logical component list,
-! and removed nbmax, which was not used
-! In init_part2d, local variable nxyp renamed nyp for consistency, and
-! integer xtras redefined as real, restored sanity check PPPCHECK2L
-! In procedure partpush, added new procedure PPGRBPPUSH23L_QP and 
-! particle boundary value ipbc, removed return after error
-! In procedure pmove, added local arrays irc2, msg, nsg and integers
-! npmax and it, and removed local logical list.
-! In procedure end_part2d, added deallocation of internal buffers:
-! ppbuff, sbufl, sbufr, rbufl, rbufr, ncll, nclr, mcll, mclr
-! update: 03/11/2021 by Viktor Decyk
-! In init_part2d, added 1 to initial values of this%ntmaxp, this%npbmx
-! to avoid possible zero-sized allocatable arrays in pmove
-! update: 03/19/2021 by Viktor Decyk
-! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y,vx,vy coordinates
 
       module part2d_class
 
@@ -47,25 +30,22 @@
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
 ! xdim = dimension of the particle coordinates
+! nbmax = size of buffer for passing particles between processors
 ! np = total number of particles
-! npp = number of particles in current MPI partition
-! npmax = maximum number of particles in each MPI partition
+! npp = number of particles in current partition
+! npmax = maximum number of particles in each partition
 ! part(:,:) = initial particle coordinates
 ! ppart(:,:,:) = particle coordinates for OpenMP
 ! nppmx, nppmx0, nbmaxp, ntmaxp, npbmx, irc, ncl, ihole, kpic = parameters for OpenMP
-! xtras = fraction of extra particles needed for particle management
-! list = (true,false) = list of particles leaving tiles found in push
 !         
          real :: qbm, dt, ci
-         integer :: npmax, np, xdim, npp = 0
+         integer :: npmax, nbmax, np, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null()
          real, dimension(:,:,:), pointer :: ppart => null()
          integer :: nppmx, nppmx0, nbmaxp, ntmaxp, npbmx, irc = 0
          integer, dimension(:,:), pointer :: ncl => null()
          integer, dimension(:,:,:), pointer :: ihole => null()
          integer, dimension(:), pointer :: kpic => null()
-         real :: xtras = 0.2
-         logical :: list = .true.
          
          contains
          
@@ -131,8 +111,7 @@
 
 ! local data
          character(len=18), save :: sname = 'init_part2d:'
-         integer :: j, k, noff, nyp, nx, npmax, nbmax
-         real :: xtras
+         integer :: xtras, noff, nxyp, nx, npmax, nbmax
                   
          this%sp => psp
          this%err => perr
@@ -146,14 +125,15 @@
          this%xdim = xdim
          npmax = pf%getnpmax()
          this%npmax = npmax
+         nbmax = max(int(0.01*npmax),100)
+         this%nbmax = nbmax
          noff = fd%getnoff()
-         nyp = fd%getnd2p()
+         nxyp = fd%getnd2p()
          nx = fd%getnd1p()
-         xtras = this%xtras
          
          allocate(this%part(xdim,npmax))
          mx1 = (nx - 1)/mx + 1
-         myp1 = (nyp - 1)/my + 1; mxyp1 = mx1*myp1
+         myp1 = (nxyp - 1)/my + 1; mxyp1 = mx1*myp1
          allocate(this%kpic(mxyp1))
          
          call pf%dist(this%part,this%npp,fd,s)
@@ -166,11 +146,13 @@
             write (erstr,*) 'PPDBLKP2L error, irc=', this%irc
             call this%err%equit(class//sname//erstr); return
          endif
+         
+         xtras = 10
 !    
 ! allocate vector particle data
          this%nppmx0 = (1.0 + xtras)*this%nppmx
-         this%ntmaxp = xtras*this%nppmx + 1
-         this%npbmx = xtras*this%nppmx + 1
+         this%ntmaxp = xtras*this%nppmx
+         this%npbmx = xtras*this%nppmx
          this%nbmaxp = 0.25*mx1*this%npbmx
          allocate(this%ppart(xdim,this%nppmx0,mxyp1))
          allocate(this%ncl(8,mxyp1))
@@ -186,18 +168,13 @@
          endif
 ! 
 ! sanity check
-          call PPPCHECK2L(this%ppart,this%kpic,noff,nyp,this%xdim,&
-          &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
+!         call PPPCHECK2L(this%ppart,this%kpic,noff,nxyp,this%xdim,&
+!         &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
 ! check error
-          if (this%irc /= 0) then
-             write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
-             call this%err%werrfl0(class//sname//erstr)
-             j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
-             write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
-             call this%err%werrfl0(class//sname//erstr)
-             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
-             call this%err%equit(class//sname//erstr); return
-          endif
+!         if (this%irc /= 0) then
+!            write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
+!            call this%err%equit(class//sname//erstr); return
+!         endif
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -212,9 +189,6 @@
 
          call this%err%werrfl2(class//sname//' started')
          deallocate(this%part,this%ppart,this%ncl,this%ihole,this%kpic)
-         if (szpbuf > 0) deallocate(ppbuff); szpbuf = 0
-         if (szbufs > 0) deallocate(sbufl,sbufr,rbufl,rbufr); szbufs = 0
-         if (sznbufs > 0) deallocate(ncll,nclr,mcll,mclr); sznbufs = 0
          call this%err%werrfl2(class//sname//' ended')
          
          return
@@ -333,9 +307,6 @@
 ! local data
          real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
          real, dimension(:,:,:), pointer :: ppsit => null()
-! ipbc = particle boundary condition = (0,1,2,3) =
-! (none,2d periodic,2d reflecting,mixed reflecting/periodic)
-         integer :: ipbc = 2
          integer :: noff, nyp, nx, ny, nxv, nypmx
          real :: ek
          
@@ -346,21 +317,20 @@
          noff = ef%getnoff(); ny = ef%getnd2()
          nxv = size(pef,2); nypmx = size(pef,3)
          nx = ef%getnd1(); nyp = ef%getnd2p()
-! periodic push, calculates list of particles leaving tile
-         if (this%list) then
-            call PPGRBPPUSHF23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
-            &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
-            &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,&
-            &mx1,mxyp1,this%ntmaxp,this%irc,dex)
-            if (this%irc /= 0) then
-               write (erstr,*) 'PPGRBPPUSHF23L_QP ihole overflow, irc=',&
-               &this%irc
-            endif
-! push supports particle boundary conditions, does not calculate list
-         else
-            call PPGRBPPUSH23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
-            &this%kpic,noff,nyp,this%qbm,this%dt,this%ci,ek,this%xdim,&
-            &this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
+
+         call PPGRBPPUSHF23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),this%kpic,&
+         &this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,this%dt,this%ci,ek,&
+         &this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,this%ntmaxp,&
+         &this%irc,dex)
+         if (this%irc /= 0) then
+            write (erstr,*) 'PPGRBPPUSHF23L_QP error, irc=', this%irc
+            call this%err%equit(class//sname//erstr); return
+         endif
+
+! check for errors
+         if (this%irc /= 0) then
+            write (erstr,*) 'PPGRBPPUSHF23L_QP error, irc=', this%irc
+            call this%err%equit(class//sname//erstr); return
          endif
 
          call this%err%werrfl2(class//sname//' ended')
@@ -375,22 +345,22 @@
          class(ufield2d), pointer, intent(in) :: fd
          character(len=18), save :: sname = 'pmove:'
 ! local data
-         integer :: j, k, noff, nyp, nx, ny, nxv, nypmx, kstrt, nvp
-         integer :: npbmx, nbmax, idimp, nppmx, ntmax, npmax, it, irc
+! list = (true,false) = list of particles leaving tiles found in push
+         integer :: noff, nyp, nx, ny, nxv, nypmx, kstrt, nvp
+         integer :: npbmx, nbmax, idimp, nppmx, ntmax, irc
          real, dimension(:,:,:), pointer :: ppart => null()
          integer, dimension(:,:), pointer :: ncl => null()
          integer, dimension(:,:,:), pointer :: ihole => null()
          integer, dimension(:), pointer :: kpic => null()
-         integer, dimension(2) :: irc2 = 0
-         integer, dimension(1) :: msg, nsg
-!
+         logical :: list = .true.
+         
          call this%err%werrfl2(class//sname//' started')
          
          noff = fd%getnoff(); ny = fd%getnd2()
          nx = fd%getnd1(); nyp = fd%getnd2p()
          npbmx = this%npbmx; nbmax = this%nbmaxp
          idimp = this%xdim; nppmx = this%nppmx0
-         ntmax = this%ntmaxp; npmax = this%npmax; ppart => this%ppart
+         ntmax = this%ntmaxp; ppart => this%ppart
          kstrt = this%p%getlkstrt(); nvp = this%p%getlnvp()
          ncl => this%ncl; ihole => this%ihole; kpic => this%kpic
          irc = this%irc
@@ -417,116 +387,27 @@
             sznbufs = 3*mx1
          endif
 !
-! check if error occurred during previous partpush
-         if (irc /= 0) then
-            irc2(1) = 1; irc2(2) = irc; this%irc = 0; irc = 0
-! performs first part of particle reordering into tiles
-! does not calculate list of particles leaving tile
-         else if (this%list) then
-! updates: ppart, ppbuff, sbufl, sbufr, ncl, ncll, nclr, irc2
-            call PPPORDERF2LA(ppart,ppbuff,sbufl,sbufr,ncl,ihole,ncll,&
-            &nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc2)
-! performs first part of particle reordering into tiles
-! calculates list of particles leaving tile
+! first part of particle reorder on x and y cell with mx, my tiles:
+! list of particles leaving tile already calculated by push
+         if (list) then
+! updates: ppart, ppbuff, sbufl, sbufr, ncl, ncll, nclr, irc
+            call PPPORDERF2LA(ppart,ppbuff,sbufl,sbufr,ncl,ihole,ncll,nclr,&
+            &idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
+            if (irc /= 0) then
+               write (erstr,*) kstrt,'mporderf2a error: ntmax, irc=',ntmax,irc            
+            endif
+! calculate list of particles leaving tile
          else
-! updates ppart, ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc2
-            call PPPORDER2LA(ppart,ppbuff,sbufl,sbufr,kpic,ncl,ihole,&
-            &ncll,nclr,noff,nyp,idimp,nppmx,nx,ny,mx,my,mx1,myp1,npbmx,&
-            &ntmax,nbmax,irc2)
-         endif
-! process particle reordering with error recovery
-! ihole overflow
-         if (irc2(1)==1) then
-            this%ntmaxp = (1.0 + this%xtras)*irc2(2)
-            ntmax = this%ntmaxp
-            deallocate(this%ihole)
-            allocate(this%ihole(2,ntmax+1,mxyp1))
-            ihole => this%ihole
-            write (erstr,*) 'ihole reallocated, ntmax=', ntmax
-            call this%err%werrfl1(class//sname//erstr)
-            irc2 = 0
-! recalculate list of particles leaving tile
-            call PPPORDER2LA(ppart,ppbuff,sbufl,sbufr,kpic,ncl,ihole,&
-            &ncll,nclr,noff,nyp,idimp,nppmx,nx,ny,mx,my,mx1,myp1,npbmx,&
-            &ntmax,nbmax,irc2)
-            if (irc2(1)==1) then
-               write (erstr,*) 'PPPORDER2LA: ihole overflow retry failed'
-               call this%err%werrfl0(class//sname//erstr)
-               irc = 1
+! updates ppart, ppbuff, sbufl, sbufr, ncl, ihole, ncll, nclr, irc
+            call PPPORDER2LA(ppart,ppbuff,sbufl,sbufr,kpic,ncl,ihole,ncll,nclr&
+            &,noff,nyp,idimp,nppmx,nx,ny,mx,my,mx1,myp1,npbmx,ntmax,nbmax,irc)
+            if (irc /= 0) then
+               write (erstr,*) kstrt,'mporder2a error: ntmax, irc=',ntmax,irc
             endif
          endif
-! ppbuff overflow
-         if (irc2(1)==2) then
-            this%npbmx = (1.0 + this%xtras)*irc2(2)
-            npbmx = this%npbmx
-            if (szpbuf /= 0) deallocate(ppbuff)
-! allocate new buffer
-            allocate(ppbuff(idimp,npbmx,mxyp1))
-            szpbuf = idimp*npbmx*mxyp1
-            write (erstr,*) 'ppbuff reallocated, npbmx=', npbmx
-            call this%err%werrfl1(class//sname//erstr)
-! restores initial values of ncl
-            call PPPRSNCL2L(ncl,mxyp1)
-            irc2 = 0
-! reperforms first part of particle reordering into tiles
-            call PPPORDERF2LA(ppart,ppbuff,sbufl,sbufr,ncl,ihole,ncll,&
-            &nclr,idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc2)
-            if (irc2(1)==2) then
-               write (erstr,*) 'PPPORDERF2LA: ppbuff overflow retry failed'
-               call this%err%werrfl0(class//sname//erstr)
-               irc = 2
-            endif
-         endif
-! sbufr/sbufl overflow
-         if (irc2(1)==3) then
-            this%nbmaxp = (1.0 + this%xtras)*irc2(2)
-            nbmax = this%nbmaxp
-            if (szbufs /= 0) deallocate(sbufl,sbufr)
-! allocate new send buffers
-            allocate(sbufl(idimp,nbmax),sbufr(idimp,nbmax))
-            szbufs = idimp*nbmax
-            write (erstr,*) 'sbufs reallocated, nbmax=', nbmax
-            call this%err%werrfl1(class//sname//erstr)
-            irc2 = 0
-! reperforms final section of first part of particle reordering into tiles
-            call PPPORDERF2LAF(ppbuff,sbufl,sbufr,ncl,ncll,nclr,idimp,mx1,&
-            &myp1,npbmx,nbmax,irc2)
-            if (irc2(1)==3) then
-               write (erstr,*) 'PPPORDERF2LAF: sbufs retry failed'
-               call this%err%werrfl0(class//sname//erstr)
-               irc = 3
-            endif
-         endif
-!
-         if (irc > 0) call this%err%equit(class//sname//'recovery failed')
-         irc = 0
-!
-! verify that all mpi send/receive buffers are large enough
-! find largest value of nbmax across MPI nodes
-         msg = nbmax
-         call PPIMAX(msg,nsg,1)
-! rbufr/rbufl overflow
-         if ((msg(1) > size(rbufl,2)).or.(msg(1) > size(rbufr,2))) then
-            if (allocated(rbufl)) deallocate(rbufl)
-            if (allocated(rbufr)) deallocate(rbufr)
-            allocate(rbufl(idimp,msg(1)),rbufr(idimp,msg(1)))
-            szbufs = idimp*msg(1)
-            this%nbmaxp = msg(1)
-            write (erstr,*) 'rbufs reallocated, nbmax=',  msg(1)
-            call this%err%werrfl1(class//sname//erstr)
-! reallocate sbufl/sbufr if necessary
-            if (msg(1) > nbmax) then
-               rbufl(:,1:nbmax) = sbufl
-               rbufr(:,1:nbmax) = sbufr
-               if (allocated(sbufl)) deallocate(sbufl)
-               if (allocated(sbufr)) deallocate(sbufr)
-               allocate(sbufl(idimp,nbmax),sbufr(idimp,nbmax))
-               sbufl = rbufl
-               sbufr = rbufr
-               write (erstr,*) 'sbufs reallocated, nbmax=', msg(1)
-               call this%err%werrfl1(class//sname//erstr)
-            endif
-            nbmax = msg(1)
+         if (irc /= 0) then
+               call this%err%equit(class//sname//erstr)
+               return
          endif
 !
 ! move particles into appropriate spatial regions with MPI:
@@ -534,74 +415,17 @@
          call PPPMOVE2(sbufr,sbufl,rbufr,rbufl,ncll,nclr,mcll,mclr,kstrt,&
          &nvp,idimp,nbmax,mx1)
 !
-         irc2 = 0
-! performs second part of particle reordering into tiles:
+! second part of particle reorder on x and y cell with mx, my tiles:
 ! updates ppart, kpic
-         call PPPORDER2LB(ppart,ppbuff,rbufl,rbufr,kpic,ncl,ihole,mcll,&
-         &mclr,idimp,nppmx,nx,ny,mx1,myp1,npbmx,ntmax,nbmax,irc2)
-! ppart overflow
-         if (irc2(1)==4) then
-! restores electron coordinates from ppbuff: updates ppart, ncl
-            call PPPRSTOR2L(ppart,ppbuff,ncl,ihole,idimp,nppmx,mxyp1,&
-            &npbmx,ntmax)
-! copy ordered electrons to linear array: updates part
-            call PPPCOPYOUT2(this%part,ppart,kpic,it,npmax,nppmx,idimp,&
-            &mxyp1,irc)
-! part overflow
-            if (irc > 0) then
-               deallocate(this%part)
-               this%npmax = irc
-               npmax = this%npmax
-               allocate(this%part(idimp,npmax))
-               write (erstr,*) 'part reallocated, npmax=', npmax
-               call this%err%werrfl1(class//sname//erstr)
-               irc = 0
-               call PPPCOPYOUT2(this%part,ppart,kpic,it,npmax,nppmx,idimp,&
-               &mxyp1,irc)
-               if (irc > 0) then
-                  call this%err%equit(class//sname//'part recovery failed')
-               endif
-            endif
-            deallocate(this%ppart)
-            this%nppmx0 = (1.0 + this%xtras)*irc2(2)
-            nppmx = this%nppmx0
-            allocate(this%ppart(idimp,nppmx,mxyp1))
-            ppart => this%ppart
-            irc = 0
-! copies unordered electrons to ordered array: updates ppart    
-            call PPPCOPYIN2(this%part,ppart,kpic,npmax,nppmx,idimp,mxyp1,&
-            &irc)
-            if (irc > 0) then
-               call this%err%equit(class//sname//'ppart recovery failed')
-            endif
-            write (erstr,*) 'ppart reallocated, nppmx=', nppmx
-            call this%err%werrfl1(class//sname//erstr)
-! reperforms second part of particle reordering into tiles:
-! updates ppart, kpic
-            irc2 = 0
-            call PPPORDER2LB(ppart,ppbuff,rbufl,rbufr,kpic,ncl,ihole,&
-            &mcll,mclr,idimp,nppmx,nx,ny,mx1,myp1,npbmx,ntmax,nbmax,irc2)
-            if (irc2(1)==4) then
-               write (erstr,*) 'PPPORDER2LB: ppart overflow retry failed'
-               call this%err%werrfl0(class//sname//erstr)
-               call this%err%equit(class//sname//'recovery failed')
-            endif
+         call PPPORDER2LB(ppart,ppbuff,rbufl,rbufr,kpic,ncl,ihole,mcll,mclr,&
+         &idimp,nppmx,mx1,myp1,npbmx,ntmax,nbmax,irc)
+         
+         if (irc /= 0) then
+            write (erstr,*) kstrt,'mporder2b error: nppmx, irc=',nppmx,irc
+            call this%err%equit(class//sname//erstr)
+            stop
          endif
-!
-! sanity check
-         call PPPCHECK2L(this%ppart,this%kpic,noff,nyp,this%xdim,&
-         &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
-! check error
-         if (this%irc /= 0) then
-            write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
-             call this%err%werrfl0(class//sname//erstr)
-             j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
-             write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
-             call this%err%werrfl0(class//sname//erstr)
-             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
-            call this%err%equit(class//sname//erstr); return
-         endif
-!
+
          this%irc = irc
 
          call this%err%werrfl2(class//sname//' ended')

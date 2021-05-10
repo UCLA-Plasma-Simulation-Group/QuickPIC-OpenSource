@@ -41,9 +41,9 @@
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, psit, psi, div_vpot, reg
-         type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb
+         type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot         
          type(field3d), allocatable :: bexyz, bbxyz
-         type(field3d), allocatable :: psi3d,cu3d
+         type(field3d), allocatable :: psi3d,cu3d,vpot3d
 
          contains
 
@@ -330,7 +330,25 @@
                end do
             end if
          end do loop2
-
+         
+         loop3: do i = 1, n
+            write (s1,'(I4.4)') i
+            call input%get('field.diag('//trim(s1)//').ndump',ndump)
+            if (ndump > 0) then
+               call input%info('field.diag('//trim(s1)//').name',n_children=m)
+               do j = 1, m
+                  write (s2,'(I4.4)') j
+                  if(allocated(ff)) deallocate(ff)
+                  call input%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ff)
+                  if (ff == 'vpotx' .or. ff == 'vpoty' .or. ff == 'vpotz' ) then
+                     allocate(this%vpot,this%vpot3d)
+                     call this%vpot%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+                     call this%vpot3d%new(this%p,this%err,this%sp3,dim=3)
+                     exit loop3
+                  end if
+               end do
+            end if
+         end do loop3
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -693,6 +711,12 @@
                   call this%fields%psit%fftkr(1)
                   call this%fields%cu%bf(this%fields%bxyz)
                enddo
+               if (allocated(this%fields%vpot)) then
+                  call this%fields%cu%vpot(this%fields%vpot)
+                  call this%fields%vpot%fftkr(1)
+                  call this%fields%vpot%mult(this%fields%vpot,-this%dex)
+                  call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
+               end if               
                call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
                call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
@@ -1137,6 +1161,27 @@
                      sn4 = '\Psi'
                      dim = 1
                      obj => this%fields%psi3d
+                  case ('vpotx')
+                     sn1 = 'Ax'
+                     sn2 = 'ax'
+                     sn3 = 'mc^2/e'
+                     sn4 = 'Vector Potential'
+                     dim = 1
+                     obj => this%fields%vpot3d
+                  case ('vpoty')
+                     sn1 = 'Ay'
+                     sn2 = 'ay'
+                     sn3 = 'mc^2/e'
+                     sn4 = 'Vector Potential'
+                     dim = 2
+                     obj => this%fields%vpot3d
+                  case ('vpotz')
+                     sn1 = 'Az'
+                     sn2 = 'az'
+                     sn3 = 'mc^2/e'
+                     sn4 = 'Vector Potential'
+                     dim = 3
+                     obj => this%fields%vpot3d
                   end select
                   if (this%in%found('field.diag('//trim(s1)//').slice')) then
                      call this%in%info('field.diag('//trim(s1)//').slice',n_children=l)
