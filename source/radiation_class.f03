@@ -148,10 +148,10 @@
             real :: t,t_obs,m0,m1
             real :: s_beam,ds,delta_t
             real :: dx,dy,dt
-            real ::r
+            real :: r
             real :: intensity
             real,dimension(10,Np) :: part
-            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             real :: c
             z = s_beam
@@ -163,8 +163,13 @@
                 posi = (/x,y,z/)
                 p = part(4:6,n)
                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
-                acc = part(8:10,n)
+                force = part(8:10,n)
+                pold = p - acc
+                pnew = p + acc
+                vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+                vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
+                acc = (vnew-vold)/delta_t
                 DO i=1,this%Ny,1
                     DO j = 1,this%Nx,1
                         posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
@@ -179,8 +184,8 @@
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
                             temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
-                            temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(2)*vel(2))
-                            intensity =(temp3/temp4**5 )*delta_t
+                            temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+                            intensity =(temp3/temp4**5)*delta_t
                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
                             this%intensity(i,j,t_n + 1) = this%intensity(i,j,t_n+1) + intensity*m0
                         end if
