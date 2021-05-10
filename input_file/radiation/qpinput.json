@@ -70,8 +70,9 @@
         "time":[0,10],
         "nt": 100,
         "spectrum":{
-        "frequence":[0,10000],
-        "nw":1000}
+            "frequence":[0,10000],
+            "nw":1000},
+        "diag":["intensity","spectrum"]
     }        
     },
 
@@ -120,8 +121,10 @@
         "time":[0,10],
         "nt": 100,
         "spectrum":{
-        "frequence":[0,10000],
-        "nw":1000}
+            "frequence":[0,10000],
+            "nw":1000
+        },
+        "diag":["intensity"]
     }        
     }
 ],
