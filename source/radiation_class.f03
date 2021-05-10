@@ -3,7 +3,8 @@
         module radiation_class
         
         use input_class
-
+        use perrors_class
+        use parallel_pipe_class
         implicit none
 
         type radiation
@@ -38,13 +39,17 @@
         cross(3) = a(1) * b(2) - a(2) * b(1)
         END FUNCTION cross
 
-        subroutine new(this,input,i)
+        subroutine new(this,pp,perr,input,i)
 
             implicit none
 
             class(radiation), intent(inout) :: this
             type(input_json), intent(inout), pointer :: input
+            class(perrors), intent(in), pointer :: perr
+            class(parallel_pipe), intent(in), pointer :: pp
             integer, intent(in) :: i
+
+
             real :: x0,x1,y0,y1,z
             real :: min, max
             real :: t0,t1
@@ -126,9 +131,10 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            real :: s_beam,ds
-            real,dimension(10,Np) :: part
-            integer :: Np
+            real,intent(in) :: s_beam,ds
+            real,intent(in),dimension(10,Np) :: part
+            integer,intent(in) :: Np
+
 
             if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
@@ -142,15 +148,20 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            integer :: n,i,j,k,Np
+            real,dimension(10,Np),intent(in) :: part
+            integer,intent(in) :: Np
+            real,intent(in) :: s_beam,ds
+
+
+            integer :: n,i,j,k
             integer :: t_n
             real :: x,y,z,tempz
             real :: t,t_obs,m0,m1
-            real :: s_beam,ds,delta_t
+            real :: delta_t
             real :: dx,dy,dt
             real :: r
             real :: intensity
-            real,dimension(10,Np) :: part
+
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             real :: c
