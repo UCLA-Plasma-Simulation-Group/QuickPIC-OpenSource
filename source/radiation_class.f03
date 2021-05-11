@@ -8,11 +8,14 @@
         implicit none
 
         type radiation
+         class(perrors), pointer, public :: err => null()
+         class(parallel_pipe), pointer, public :: p => null()
+
          real :: x0,x1,y0,y1,z,dx,dy,dt
          real :: t0,t1
          real :: w0,w1
          integer::Nx,Ny,Nt,Nw
-
+         
          real,allocatable :: intensity(:,:,:) 
          real,allocatable :: spectrum(:) 
          real,allocatable :: E(:,:,:,:),Ew_re(:,:,:,:),Ew_im(:,:,:,:) 
