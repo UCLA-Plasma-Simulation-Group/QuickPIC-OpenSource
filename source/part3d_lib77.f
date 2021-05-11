@@ -1321,7 +1321,7 @@ c find interpolation weights
       inpp = npp(m)
       do 10 j = 1, npp(m)
       if (j.gt.inpp) exit
-   11 nn = part(1,j,m)
+      nn = part(1,j,m)
       mm = part(2,j,m)
       ll = part(3,j,m)
       dxp = part(1,j,m) - float(nn)
@@ -1425,7 +1425,7 @@ c find interpolation weights
       inpp = npp(m)
       do 10 j = 1, npp(m)
       if (j.gt.inpp) exit
-      delx = part(8,j,m)
+   11 delx = part(8,j,m)
       dely = part(9,j,m)
       delz = part(10,j,m)
 C c half acceleration

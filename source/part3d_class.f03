@@ -30,13 +30,14 @@
 ! qbm = particle charge/mass ratio
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
+! s = propagation distance
 ! xdim = dimension of the particle coordinates
 ! nbmax = size of buffer for passing particles between processors
 ! npp = number of particles in current partition
 ! npmax = maximum number of particles in each partition
 ! part(:,:) = initial particle coordinates
 !         
-         real :: qbm, dt, ci
+         real :: qbm, dt, ci, s
          integer :: npmax, nbmax, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null(), pbuff => null()
          
@@ -73,7 +74,7 @@
       
       contains
 !
-      subroutine init_part3d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim)
+      subroutine init_part3d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim,s)
       
          implicit none
          
@@ -83,7 +84,7 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout) :: pf
          class(ufield3d), pointer, intent(in) :: fd
-         real, intent(in) :: qbm, dt, ci
+         real, intent(in) :: qbm, dt, ci, s
          integer, intent(in) :: xdim
 
 ! local data
@@ -99,6 +100,7 @@
          this%qbm = qbm
          this%dt = dt
          this%ci = ci
+         this%s = s
          this%xdim = xdim
          npmax = pf%getnpmax()
          this%npmax = npmax
@@ -203,6 +205,8 @@
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
          end select
 
+         this%s = this%s + dt
+
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine partpush
@@ -238,13 +242,17 @@
          case (1)
             call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
-            call rad%calculate_radiation(this%part,s_beam,dt,this%npp)
+            this%s = this%s + 0.5*dt
+            ! call rad%calculate_radiation(this%part,this%s,dt,this%npp)
             call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
+            this%s = this%s + 0.5*dt
          case default
             call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
-            call rad%calculate_radiation(this%part,s_beam,dt,this%npp)
+            this%s = this%s + 0.5*dt
+            ! call rad%calculate_radiation(this%part,this%s,dt,this%npp)
+            this%s = this%s + 0.5*dt
             call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
          end select

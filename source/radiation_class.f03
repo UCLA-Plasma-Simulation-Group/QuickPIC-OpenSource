@@ -29,7 +29,11 @@
         
         
         contains
+
         FUNCTION cross(a, b)
+
+        implicit none
+        
         REAL, DIMENSION(3) :: cross
         real, DIMENSION(3), INTENT(IN) :: a, b
 
@@ -126,9 +130,9 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            real :: s_beam,ds
-            real,dimension(10,Np) :: part
-            integer :: Np
+            real, intent(inout) :: s_beam,ds
+            real,dimension(:,:),pointer,intent(inout) :: part
+            integer,intent(inout) :: Np
 
             if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
@@ -142,15 +146,17 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            integer :: n,i,j,k,Np
+            real, intent(inout) :: s_beam,ds
+            integer, intent(inout) :: Np
+            real,dimension(:,:), pointer, intent(inout) :: part
+            integer :: n,i,j,k
             integer :: t_n
             real :: x,y,z,tempz
             real :: t,t_obs,m0,m1
-            real :: s_beam,ds,delta_t
+            real :: delta_t
             real :: dx,dy,dt
             real ::r
             real :: intensity
-            real,dimension(10,Np) :: part
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2
             real :: temp3,temp4
             real :: c

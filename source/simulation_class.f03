@@ -456,12 +456,10 @@
 
             call input%get('simulation.dt',dt)
 
-            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-            &dt=dt,ci=1.0,xdim=7)
-
             call input%get('simulation.read_restart',read_rst)
 
             if (read_rst) then
+
                call input%get('simulation.restart_timestep',rst_timestep)
                write (sn,'(I4.4)') i
                write (sid,'(I10.10)') this%p%getidproc()
@@ -470,7 +468,12 @@
                &filename = './RST/Beam-'//trim(sn)//'/',&
                &dataname = 'RST-beam'//trim(sn)//'-'//trim(sid),&
                &n = rst_timestep)
+               call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+               &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt)
                call this%beam(i)%rrst(file_rst)
+            else
+               call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+               &dt=dt,ci=1.0,xdim=7,s=0.0)
             end if
          end do
          call MPI_BARRIER(this%p%getlworld(),ierr)

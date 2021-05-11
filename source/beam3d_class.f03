@@ -58,7 +58,7 @@
       
       contains
 !
-      subroutine init_beam3d(this,pp,perr,psp,pf,qbm,dt,ci,xdim)
+      subroutine init_beam3d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s)
       
          implicit none
          
@@ -67,7 +67,7 @@
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout), target :: pf
-         real, intent(in) :: qbm, dt, ci
+         real, intent(in) :: qbm, dt, ci, s
          integer, intent(in) :: xdim
 
 ! local data
@@ -86,7 +86,7 @@
          this%evol = pf%getevol()
          this%static = pf%getstatic()
          call this%q%new(this%p,this%err,this%sp,dim=1)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim)
+         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          call this%pmv(this%q,1,1,id)
          call MPI_WAIT(id,istat,ierr)
          
