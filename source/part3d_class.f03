@@ -218,7 +218,7 @@
          class(part3d), intent(inout) :: this
          class(ufield3d), pointer, intent(in) :: ef, bf
          real, intent(in) :: dex, dez
-         class(radiation), intent(in) :: rad
+         class(radiation), intent(inout) :: rad
          character(len=18), save :: sname = 'radpush'
 ! local data
          real, dimension(:,:,:,:), pointer :: pef => null(), pbf => null()
@@ -243,7 +243,7 @@
             call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
             this%s = this%s + 0.5*dt
-            ! call rad%calculate_radiation(this%part,this%s,dt,this%npp)
+            call rad%dp(this%part,this%s,dt,this%npp)
             call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
             this%s = this%s + 0.5*dt
@@ -251,7 +251,7 @@
             call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
             this%s = this%s + 0.5*dt
-            ! call rad%calculate_radiation(this%part,this%s,dt,this%npp)
+            call rad%dp(this%part,this%s,dt,this%npp)
             this%s = this%s + 0.5*dt
             call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)

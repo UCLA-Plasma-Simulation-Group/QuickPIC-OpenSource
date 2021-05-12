@@ -14,6 +14,7 @@
       use beam3d_class
       use species2d_class
       use fdist3d_class
+      use radiation_class
       use hdf5io_class
       use input_class
       use mpi
@@ -63,6 +64,7 @@
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
          type(beam3d), dimension(:), allocatable :: beam
+         type(radiation), dimension(:), allocatable :: rad
          type(fdist3d_wrap), dimension(:), allocatable :: pf
 
          contains
@@ -104,7 +106,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(hdf5file) :: file
          class(*), pointer :: obj => null()
-         integer, allocatable :: slice, slice_pos, psample, dim
+         integer, allocatable :: slice, slice_pos, psample, dim, rad
          integer :: df
 
       end type sim_diag
@@ -398,13 +400,13 @@
 ! local data
          character(len=18), save :: class = 'sim_beams:'
          character(len=18), save :: sname = 'init_sim_beams:'
-         integer :: i,n
+         integer :: i,n,nrad=0
          integer :: npf,npx,npy,npz,npp
          real, dimension(3,100) :: arg
          logical :: quiet
          real :: gamma
          real :: qm, qbm, dt
-         logical :: read_rst
+         logical :: read_rst, lrad
          integer :: rst_timestep, ierr
          type(hdf5file) :: file_rst
          character(len=20) :: sn, sid, stime,s1
@@ -421,9 +423,26 @@
          allocate(this%beam(n),this%pf(n))
 
          do i = 1, n
+            write (sn,'(I3.3)') i
+            s1 = 'beam('//trim(sn)//')'
+            if(input%found(trim(s1)//'.radiation')) nrad=nrad+1
+         end do
+
+         if (nrad>0) allocate(this%rad(nrad))
+
+         nrad = 1
+
+         do i = 1, n
             arg(:,:) = 0.0
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//')'
+            if(input%found(trim(s1)//'.radiation')) then
+               lrad = .true.
+               call this%rad(nrad)%new(this%p,this%err,input,i)
+               nrad = nrad + 1
+            else
+               lrad = .false.
+            end if
             call input%get(trim(s1)//'.profile',npf)
             select case (npf)
             case (0)
@@ -468,12 +487,22 @@
                &filename = './RST/Beam-'//trim(sn)//'/',&
                &dataname = 'RST-beam'//trim(sn)//'-'//trim(sid),&
                &n = rst_timestep)
-               call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-               &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt)
+               if (lrad) then 
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt,rad=this%rad(nrad-1))
+               else
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt)
+               end if
                call this%beam(i)%rrst(file_rst)
             else
-               call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-               &dt=dt,ci=1.0,xdim=7,s=0.0)
+               if (lrad) then 
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=7,s=0.0,rad=this%rad(nrad-1))
+               else
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=7,s=0.0)
+               end if                  
             end if
          end do
          call MPI_BARRIER(this%p%getlworld(),ierr)
@@ -829,6 +858,10 @@
                   end if
                end if
             end do
+            if(this%in%found('beam('//trim(s1)//')'//'.radiation')) then
+               call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
+               n_diag = n_diag+m
+            end if
          end do
 
          do i = 1, this%nspecies
@@ -871,6 +904,40 @@
          n_diag = 0
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
+            if(this%in%found('beam('//trim(s1)//')'//'.radiation')) then
+               call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
+               do j = 1, m
+                  write (s2, '(I4.4)') j
+                  call this%in%get('beam('//trim(s1)//').radiation.diag'//'('//trim(s2)//')',ss)
+                  select case (trim(ss))
+                  case ('intensity')
+                     n_diag = n_diag+1
+                     this%diag(n_diag)%df = this%nstep3d
+                     this%diag(n_diag)%obj => this%beams%beam(i) 
+                     allocate(this%diag(n_diag)%rad)
+                     this%diag(n_diag)%rad = 1
+                     call this%diag(n_diag)%file%new(&
+                     &axismin = (/alx1,aly1,alz1/),&
+                     &axismax = (/alx2,aly2,alz2/),&
+                     &axisname  = (/'x','y','z'/),&
+                     &axislabel = (/'x','y','z'/))
+                     if (this%p%getidproc() == 0) then
+                        call system('mkdir -p ./Beam'//trim(s1)//'/Radiation'//'/')
+                     end if
+                     call this%diag(n_diag)%file%new(&
+                     &timeunits = '1 / \omega_p',&
+                     &dt = dt,&
+                     &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                     &rank = 2,&
+                     &filename = './Beam'//trim(s1)//'/Radiation'//'/',&
+                     &dataname = 'intensity'//sl,&
+                     &units = '',&
+                     &label = 'Radiation Intenisty')
+                  end select
+               end do
+            end if
+
+
             call this%in%info('beam('//trim(s1)//').diag',n_children=m)
             do j = 1, m
                write (s2, '(I4.4)') j
@@ -1335,6 +1402,8 @@
                      this%tag(1) = ntag()
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
+                  else if (allocated(this%diag(i)%rad)) then
+                     call obj%wrr(this%diag(i)%file,'intensity')
                   else
                      call obj%wrst(this%diag(i)%file)
                   end if

@@ -98,7 +98,7 @@ part3d_class.o : part3d_class.f03 fdist3d_class.o ufield3d_class.o spect3d_class
                   radiation_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} part3d_class.f03 -o part3d_class.o
 
-radiation_class.o : radiation_class.f03
+radiation_class.o : radiation_class.f03 hdf5io_class.o perrors_class.o parallel_pipe_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} radiation_class.f03 -o radiation_class.o
 
 part3d_lib77.o : part3d_lib77.f

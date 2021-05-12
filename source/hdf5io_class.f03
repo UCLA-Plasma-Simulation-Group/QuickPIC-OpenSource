@@ -13,7 +13,7 @@
       private
       
       public :: hdf5file, pwfield, pwfield_pipe, wfield_pipe, pwpart_pipe, pwpart,&
-      &wpart,rpart
+      &wpart,rpart, pwrad
       
       type hdf5file
          
@@ -67,6 +67,10 @@
         module procedure pwpart_2d
       end interface
       
+      interface pwrad
+        module procedure pwrad_2d
+      end interface
+
       contains
       
       subroutine init_hdf5file(this,filename,timeunits,ty,n,t,dt,axisname,&
@@ -513,6 +517,65 @@
          call h5close_f(ierr)
                
       end subroutine pwfield_2d
+!
+      subroutine pwrad_2d(pp,perr,file,fd,gs,ierr)
+
+         implicit none
+        
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         class(hdf5file), intent(in) :: file
+         real, dimension(:,:), intent(in) :: fd
+         integer, dimension(2), intent(in) :: gs
+         integer, intent(inout) :: ierr
+! local data
+         integer(hid_t) :: treal, memspaceID 
+         integer(hid_t) :: file_id, rootID, dset_id, dspace_id
+         integer(hsize_t), dimension(2) :: gsize
+         real, dimension(:,:), allocatable :: sfd
+         ! integer :: info
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+                  
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+                  
+         ierr = 0
+         gsize = gs
+
+         allocate(sfd(gs(1),gs(2)))
+
+         call MPI_REDUCE(fd, sfd, gs(1)*gs(2), MPI_REAL, MPI_SUM, 0, pp%getlworld(),ierr)
+
+         if (pp%getnvp() == 0) then
+
+             call h5open_f(ierr)
+             treal = detect_precision()      
+             call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr)
+             call wrattr_file(file,file_id,H5P_DEFAULT_F)
+
+             call h5screate_simple_f(2, gsize, dspace_id, ierr)
+             call h5screate_simple_f(2, gsize, memspaceID, ierr )
+             call h5gopen_f(file_id, '/', rootID, ierr)
+             call h5dcreate_f(rootID, file%dataname, treal, dspace_id, dset_id,&
+             &ierr)
+      
+             call h5dwrite_f(dset_id, treal, sfd(1:gsize(1),1:gsize(2)),gsize, ierr,&
+             &memspaceID, dspace_id)
+
+             call wrattr_dataset(file,dset_id)
+             call h5sclose_f(memspaceID, ierr)
+             call h5sclose_f(dspace_id, ierr)
+             call h5gclose_f(rootID, ierr)
+             call h5dclose_f(dset_id, ierr)
+             call h5fclose_f(file_id, ierr)
+             call h5close_f(ierr)
+
+         end if
+               
+      end subroutine pwrad_2d
 !
       subroutine pwfield_3d_pipe(pp,perr,file,fd,gs,ls,noff,rtag,&
       &stag,id,ierr)
