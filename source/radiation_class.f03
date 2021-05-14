@@ -109,11 +109,11 @@
                     this%intensity = 0
                 case('spectrum')
                     allocate(this%spectrum(3,this%Nx,this%Ny,Nw))
-                    this%spectrum(:,:,:,:) = 0
+                    this%spectrum = 0
                 case('field')
-                    allocate(this%field_E(3,Nx,Ny,Nt))
+                    allocate(this%field_E(3,Nx,Ny,Nt+1))
                     this%field_E = 0
-                    allocate(this%field_B(3,this%Nx,this%Ny,this%Nt))
+                    allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
                     this%field_B = 0
                 case('field_w')
                     allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw))
