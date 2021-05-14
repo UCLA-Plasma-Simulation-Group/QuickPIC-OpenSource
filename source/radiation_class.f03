@@ -11,7 +11,7 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
 
-         real :: x0,x1,y0,y1,z,dx,dy,dt
+         real :: x0,x1,y0,y1,z,dx,dy,dt,dw
          real :: t0,t1
          real :: w0,w1
          integer::Nx,Ny,Nt,Nw
@@ -97,6 +97,7 @@
             this%dx = (this%x1 - this%x0)/this%Nx
             this%dy = (this%y1 - this%y0)/this%Ny
             this%dt = (this%t1 - this%t0)/this%Nt
+            this%dw = (this%w1 - this%w0)/this%Nw
 
             call input%info(s1//'.diag',n_children=n)
 
@@ -287,8 +288,9 @@
             real :: delta_t
             real :: dx,dy,dt
             real :: r 
+            real :: w
             
-            real,dimension(3) :: field_E,field_B
+            real,dimension(3) :: Ew_im,Ew_re
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4,temp5_im,temp5_Re
             real :: c
@@ -319,6 +321,7 @@
                         temp2 = cross(vec_n,temp1)
                         temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
                         Do k = 1,this%Nw,1
+                            w = this%w0 + (k-1)*this%dw
                             temp5_Re = cos(w*t_obs)
                             temp5_im = sin(w*t_obs)
                             Ew_re = (temp2*temp5_re/temp4**2)*delta_t                        
