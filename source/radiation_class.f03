@@ -95,7 +95,7 @@
             this%y1 = max
             this%Ny = Ny
 
-            call input%get(s1//'.z',z)
+            call input%get(s1//'.detector.z',z)
             this%z = z
 
             call input%get(s1//'.time(1)',min )
@@ -103,7 +103,7 @@
             call input%get(s1//'.nt',Nt )
             this%t0 = min
             this%t1 = max
-            this%Nt = Nt
+            this%Nt = Nt+1
 
             call input%get(s1//'.spectrum.frequence(1)',min )
             call input%get(s1//'.spectrum.frequence(2)',max)
@@ -119,16 +119,17 @@
             call input%info(s1//'.diag',n_children=n)
 
             DO ii = 1,n
-                call input%get(s1//'.diag(ii)',diag)
+                write (sn,'(I3.3)') ii
+                call input%get(s1//'.diag('//trim(sn)//')',diag)
                 select case(trim(diag))
                 case('intensity')
-                    allocate(this%intensity(Nx,Ny,Nt))
+                    allocate(this%intensity(this%Nx,this%Ny,this%Nt))
                     this%intensity = 0
                 case('spectrum')
-                    allocate(this%spectrum(Nw))
+                    allocate(this%spectrum(this%Nw))
                     this%spectrum(:) = 0
                 case('field')
-                    allocate(this%E(3,Nx,Ny,Nt))
+                    allocate(this%E(3,this%Nx,this%Ny,this%Nt))
                     this%E = 0
                     allocate(this%B(3,this%Nx,this%Ny,this%Nt))
                     this%B = 0
@@ -220,7 +221,8 @@
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
                             m0 = t_obs - t_n
-                            m1 = 1 - m0
+                            m1 = 1.0 - m0
+                            t_n = t_n + 1
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
                             temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
@@ -258,14 +260,13 @@
             integer :: ierr = 0
 
             allocate(trad(this%Nx,this%Ny))
-
             trad = sum(this%intensity,3)
             gs(1) = this%Nx
             gs(2) = this%Ny
 
             call pwrad(this%p,this%err,file,trad,gs,ierr)
 
-            deallocate(trad)
+            ! deallocate(trad)
         
         end subroutine write_radiation
 

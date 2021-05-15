@@ -489,7 +489,7 @@
                &n = rst_timestep)
                if (lrad) then 
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt,rad=this%rad(nrad-1))
+                  &dt=dt,ci=1.0,xdim=10,s=rst_timestep*dt,rad=this%rad(nrad-1))
                else
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
                   &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt)
@@ -498,7 +498,7 @@
             else
                if (lrad) then 
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=7,s=0.0,rad=this%rad(nrad-1))
+                  &dt=dt,ci=1.0,xdim=10,s=0.0,rad=this%rad(nrad-1))
                else
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
                   &dt=dt,ci=1.0,xdim=7,s=0.0)
@@ -841,7 +841,6 @@
          alz1 = min
          alz2 = max
          call this%in%get('simulation.dt',dt)
-
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
             call this%in%info('beam('//trim(s1)//').diag',n_children=m)
@@ -899,7 +898,6 @@
 
          call this%in%get('simulation.dump_restart',rst)
          if (rst) n_diag = n_diag + this%nbeams
-
          allocate(this%diag(n_diag))
          n_diag = 0
          do i = 1, this%nbeams
@@ -908,6 +906,7 @@
                call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
                do j = 1, m
                   write (s2, '(I4.4)') j
+                     if (allocated(ss)) deallocate(ss)
                   call this%in%get('beam('//trim(s1)//').radiation.diag'//'('//trim(s2)//')',ss)
                   select case (trim(ss))
                   case ('intensity')
@@ -922,16 +921,16 @@
                      &axisname  = (/'x','y','z'/),&
                      &axislabel = (/'x','y','z'/))
                      if (this%p%getidproc() == 0) then
-                        call system('mkdir -p ./Beam'//trim(s1)//'/Radiation'//'/')
+                        call system('mkdir -p ./Beam'//trim(s1)//'/Radiation/')
                      end if
                      call this%diag(n_diag)%file%new(&
                      &timeunits = '1 / \omega_p',&
                      &dt = dt,&
                      &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
                      &rank = 2,&
-                     &filename = './Beam'//trim(s1)//'/Radiation'//'/',&
-                     &dataname = 'intensity'//sl,&
-                     &units = '',&
+                     &filename = './Beam'//trim(s1)//'/Radiation/',&
+                     &dataname = 'intensity',&
+                     &units = ' ',&
                      &label = 'Radiation Intenisty')
                   end select
                end do
@@ -1403,6 +1402,7 @@
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
                   else if (allocated(this%diag(i)%rad)) then
+                     if (this%tstep == 0) exit
                      call obj%wrr(this%diag(i)%file,'intensity')
                   else
                      call obj%wrst(this%diag(i)%file)
