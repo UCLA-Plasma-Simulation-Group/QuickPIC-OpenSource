@@ -25,7 +25,7 @@
          procedure :: new
          procedure :: calculate_radiation
          procedure :: calculate_intensity
-!        procedure :: calculate_spectrum
+        procedure :: calculate_spectrum
         procedure :: calculate_field
         procedure :: calculate_field_w
 !        procedure :: write_radiation
@@ -192,13 +192,14 @@
                             t_n = t_obs
                             m0 = t_obs - t_n
                             m1 = 1 - m0
+                            t_n = t_n + 1
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
                             temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
                             temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
                             intensity =(temp3/temp4**5)*delta_t
                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
-                            this%intensity(i,j,t_n + 1) = this%intensity(i,j,t_n+1) + intensity*m0
+                            this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
                         end if
                     end DO
                 end DO
@@ -257,6 +258,7 @@
                             t_n = t_obs
                             m0 = t_obs - t_n
                             m1 = 1 - m0
+                            t_n = t_n + 1
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
                             temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
