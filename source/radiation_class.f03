@@ -25,9 +25,16 @@
          procedure :: new
          procedure :: calculate_radiation
          procedure :: calculate_intensity
-        procedure :: calculate_spectrum
-        procedure :: calculate_field
-        procedure :: calculate_field_w
+    !     procedure :: calculate_spectrum
+         procedure :: calculate_field
+         procedure :: calculate_field_w
+
+
+         procedure :: calculate_radiation2
+         procedure :: calculate_intensity2
+!         procedure :: calculate_spectrum2
+!         procedure :: calculate_field2
+!         procedure :: calculate_field_w2
 !        procedure :: write_radiation
         end type radiation
         
@@ -139,9 +146,12 @@
             if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
             end if
-!            if (allocated(this%spectrum)) then
-!               call calculate_spectrum(this,part,Np,s_beam,ds)
-!            end if
+            if (allocated(this%spectrum)) then
+               call calculate_field_w(this,part,Np,s_beam,ds)
+            end if 
+            if (allocated(this%Ew_re)) then 
+                call calculate_field(this,part,Np,s_beam,ds)
+            end if
         end subroutine calculate_radiation
 
         subroutine calculate_intensity(this,part,Np,s_beam,ds)
@@ -185,9 +195,9 @@
                     DO j = 1,this%Nx,1
                         posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
                         vec_r = posi_x - posi
-                        r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
+                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                         vec_n = vec_r/r
-                        t_obs = (t + r/c-this%t0)/dt
+                        t_obs = (t + r/c-this%t0)/this%dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
                             m0 = t_obs - t_n
@@ -337,4 +347,131 @@
         end subroutine
 
 
+
+
+        subroutine calculate_radiation2(this,input,part,Np,s_beam,ds)
+
+            implicit none
+
+            class(radiation), intent(inout) :: this
+            type(input_json), intent(inout), pointer :: input
+            real,intent(in) :: s_beam,ds
+            real,dimension(10,Np),intent(in) :: part
+            integer,intent(in) :: Np
+
+
+            real,dimension(3,Np,this%Nx,this%Ny) :: temp_up
+            real,dimension(Np,this%Nx,this%Ny) :: temp_down,temp_r,temp_t
+
+            call calculate_temp(this,temp_up,&
+            temp_down,temp_r,temp_t,part,Np,s_beam,ds) 
+
+            if (allocated(this%intensity)) then
+                call calculate_intensity2(this,temp_up,&
+                temp_down,temp_r,temp_t,Np,s_beam,ds)
+            end if
+            if (allocated(this%spectrum)) then
+                call calculate_field_w2(this,temp_up,&
+                temp_down,temp_r,temp_t,Np,s_beam,ds)
+            end if
+            if (allocated(this%Ew_re)) then 
+                call calculate_field2(this,temp_up,&
+                temp_down,temp_r,temp_t,Np,s_beam,ds)
+            end if
+
+        end subroutine calculate_radiation2
+
+        subroutine calculate_temp(this,temp_up,temp_down,temp_r,temp_t,part,Np,s_beam,ds)
+            implicit none
+
+            class(radiation), intent(inout) :: this
+            real,dimension(10,Np),intent(in) :: part
+            integer,intent(in) :: Np
+            real,intent(in) :: s_beam,ds
+            real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
+            real,dimension(Np,this%Nx,this%Ny),intent(inout) :: temp_down,temp_r,temp_t
+
+            integer :: n,i,j,k
+            integer :: t_n
+            real :: x,y,z,tempz
+            real :: t,t_obs,m0,m1
+            real :: delta_t
+            real :: dx,dy,dt
+            real :: r
+            real :: intensity
+
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
+            real :: temp3,temp4
+            real :: c
+            z = s_beam
+            DO n = 1,Np
+                x = part(1,n)
+                y = part(2,n)
+                tempz = part(3,n)
+                t = s_beam + tempz
+                posi = (/x,y,z/)
+                p = part(4:6,n)
+                vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
+                force = part(8:10,n)
+                pold = p - acc
+                pnew = p + acc
+                vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+                vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
+                delta_t = ds/vel(3)
+                acc = (vnew-vold)/delta_t
+                DO i=1,this%Ny,1
+                    DO j = 1,this%Nx,1
+                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
+                        vec_r = posi_x - posi
+                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+                        vec_n = vec_r/r
+                        t_obs = (t + r/c)
+                        temp1 = cross(vec_n-vel,acc)
+                        temp2 = cross(vec_n,temp1)
+                        temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+                        temp_up(:,n,i,j) = temp2
+                        temp_down(n,i,j) = temp4
+                        temp_r(n,i,j) = r
+                        temp_t(n,i,j) = t_obs
+                    end DO
+                end DO
+            end DO            
+        end subroutine calculate_temp
+        
+        subroutine calculate_intensity2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)
+            implicit none
+
+            class(radiation), intent(inout) :: this
+            integer,intent(in) :: Np
+            real,intent(in) :: s_beam,ds
+            real,dimension(3,Np,this%Nx,this%Ny),intent(in) :: temp_up
+            real,dimension(Np,this%Nx,this%Ny),intent(in) :: temp_down,temp_r,temp_t
+
+            integer :: n,i,j
+            integer :: t_n
+            real :: temp
+            real :: t_obs,m0,m1
+            real :: dx,dy,dt
+            real :: r
+            real :: intensity
+            
+            
+            DO n = 1,Np,1
+                DO i=1,this%Ny,1
+                    DO j = 1,this%Nx,1
+                        t_obs = (temp_t(n,i,j) - this%t0)/this%dt
+                        if (t_obs > 0 .AND. t_obs < this%Nt) then                            
+                            t_n = t_obs
+                            m0 = t_obs - t_n
+                            m1 = 1 - m0
+                            t_n = t_n + 1
+                            temp = (temp_up(1,n,i,j)**2+temp_up(2,n,i,j)**2+temp_up(3,n,i,j)**2)
+                            intensity =(temp/temp_down(n,i,j)**5)
+                            this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
+                            this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
+                        end if
+                    end DO
+                end DO
+            end DO
+        end subroutine calculate_intensity2                
         end module radiation_class
