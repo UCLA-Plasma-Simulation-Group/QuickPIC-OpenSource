@@ -9,6 +9,7 @@
 
         type radiation
          class(perrors), pointer, public :: err => null()
+!         class(spect3d), pointer, public :: sp => null()
          class(parallel_pipe), pointer, public :: p => null()
 
          real :: x0,x1,y0,y1,z,dx,dy,dt,dw
@@ -37,7 +38,8 @@
 !         procedure :: calculate_field_w2
 !        procedure :: write_radiation
         end type radiation
-        
+      character(len=10) :: class = "radiation"
+      character(len=128) :: erstr 
         
         contains
         FUNCTION cross(a, b)
@@ -67,6 +69,12 @@
             integer::Nx,Ny,Nt,Nw,ii,n_children,n
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
+            character(len=25), save :: sname = 'new:'
+!            this%sp => psp
+            this%err => perr
+            this%p => pp
+
+            call this%err%werrfl2(class//sname//' started')
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//').radiation'
 
@@ -130,7 +138,7 @@
                 end select
             end DO
 
-            
+            call this%err%werrfl2(class//sname//' ended')
         end subroutine new
 
         subroutine calculate_radiation(this,part,s_beam,ds,Np)
@@ -141,8 +149,8 @@
             real,intent(in) :: s_beam,ds
             real,intent(in),dimension(10,Np) :: part
             integer,intent(in) :: Np
-
-
+            character(len=18), save :: sname = 'calculate_radiation:'
+            call this%err%werrfl2(class//sname//' started')
             if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
             end if
@@ -152,6 +160,7 @@
             if (allocated(this%Ew_re)) then 
                 call calculate_field(this,part,Np,s_beam,ds)
             end if
+            call this%err%werrfl2(class//sname//' ended')
         end subroutine calculate_radiation
 
         subroutine calculate_intensity(this,part,Np,s_beam,ds)
@@ -175,6 +184,8 @@
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             real :: c
+            character(len=25), save :: sname = 'calculate_intensity:'
+            call this%err%werrfl2(class//sname//' started')
             z = s_beam
             DO n = 1,Np
                 x = part(1,n)
@@ -214,6 +225,7 @@
                     end DO
                 end DO
             end DO
+            call this%err%werrfl2(class//sname//' ended')
         end subroutine calculate_intensity
 !
 !        subroutine calculate_spectrum(this,part,t_beam)
@@ -241,7 +253,10 @@
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             real :: c
+            character(len=25), save :: sname = 'calculate_field:'
+            call this%err%werrfl2(class//sname//' started')
             z = s_beam
+
             DO n = 1,Np
                 x = part(1,n)
                 y = part(2,n)
@@ -281,7 +296,8 @@
                         end if
                     end DO
                 end DO
-            end DO          
+            end DO    
+            call this%err%werrfl2(class//sname//' ended')      
         end subroutine
 !
         subroutine calculate_field_w(this,part,Np,s_beam,ds)
@@ -306,6 +322,8 @@
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4,temp5_im,temp5_Re
             real :: c
+            character(len=25), save :: sname = 'calculate_field_w:'
+            call this%err%werrfl2(class//sname//' started')
             z = s_beam
             DO n = 1,Np
                 x = part(1,n)
@@ -343,7 +361,8 @@
                         end DO
                     end DO
                 end DO
-            end DO             
+            end DO       
+            call this%err%werrfl2(class//sname//' ended')      
         end subroutine
 
 
@@ -362,7 +381,8 @@
 
             real,dimension(3,Np,this%Nx,this%Ny) :: temp_up
             real,dimension(Np,this%Nx,this%Ny) :: temp_down,temp_r,temp_t
-
+            character(len=25), save :: sname = 'calculate_radiation2:'
+            call this%err%werrfl2(class//sname//' started')
             call calculate_temp(this,temp_up,&
             temp_down,temp_r,temp_t,part,Np,s_beam,ds) 
 
@@ -370,15 +390,15 @@
                 call calculate_intensity2(this,temp_up,&
                 temp_down,temp_r,temp_t,Np,s_beam,ds)
             end if
-            if (allocated(this%spectrum)) then
-                call calculate_field_w2(this,temp_up,&
-                temp_down,temp_r,temp_t,Np,s_beam,ds)
-            end if
-            if (allocated(this%Ew_re)) then 
-                call calculate_field2(this,temp_up,&
-                temp_down,temp_r,temp_t,Np,s_beam,ds)
-            end if
-
+!           if (allocated(this%spectrum)) then
+!               call calculate_field_w2(this,temp_up,&
+!               temp_down,temp_r,temp_t,Np,s_beam,ds)
+!           end if
+!           if (allocated(this%Ew_re)) then 
+!               call calculate_field2(this,temp_up,&
+!               temp_down,temp_r,temp_t,Np,s_beam,ds)
+!           end if
+!           call this%err%werrfl2(class//sname//' ended')
         end subroutine calculate_radiation2
 
         subroutine calculate_temp(this,temp_up,temp_down,temp_r,temp_t,part,Np,s_beam,ds)
@@ -403,6 +423,8 @@
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             real :: c
+            character(len=25), save :: sname = 'calculate_temp:'
+            call this%err%werrfl2(class//sname//' started')
             z = s_beam
             DO n = 1,Np
                 x = part(1,n)
@@ -435,7 +457,8 @@
                         temp_t(n,i,j) = t_obs
                     end DO
                 end DO
-            end DO            
+            end DO      
+            call this%err%werrfl2(class//sname//' ended')      
         end subroutine calculate_temp
         
         subroutine calculate_intensity2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)
@@ -454,8 +477,8 @@
             real :: dx,dy,dt
             real :: r
             real :: intensity
-            
-            
+            character(len=25), save :: sname = 'calculate_intensity2:'
+            call this%err%werrfl2(class//sname//' started')
             DO n = 1,Np,1
                 DO i=1,this%Ny,1
                     DO j = 1,this%Nx,1
@@ -473,5 +496,58 @@
                     end DO
                 end DO
             end DO
-        end subroutine calculate_intensity2                
+            call this%err%werrfl2(class//sname//' ended')
+        end subroutine calculate_intensity2
+
+
+
+!      subroutine calculate_field2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)     
+!          implicit none
+!
+!          class(radiation), intent(inout) :: this
+!          integer,intent(in) :: Np
+!          real,intent(in) :: s_beam,ds
+!
+!
+!          integer :: n,i,j,k
+!          integer :: t_n
+!          real :: x,y,z,tempz
+!          real :: t,t_obs,m0,m1
+!          real :: delta_t
+!          real :: dx,dy,dt
+!          real :: r 
+!          
+!          real,dimension(3) :: field_E,field_B
+!          real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
+!          real :: temp3,temp4
+!          real :: c
+!
+!      end subroutine calculate_field2
+!
+!      subroutine calculate_field_w2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)     
+!          implicit none
+!
+!          class(radiation), intent(inout) :: this
+!          integer,intent(in) :: Np
+!          real,intent(in) :: s_beam,ds
+!
+!
+!          integer :: n,i,j,k
+!          integer :: t_n
+!          real :: x,y,z,tempz
+!          real :: t,t_obs,m0,m1
+!          real :: delta_t
+!          real :: dx,dy,dt
+!          real :: r 
+!          
+!          real,dimension(3) :: field_E,field_B
+!          real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
+!          real :: temp3,temp4
+!          real :: c
+!
+!      end subroutine calculate_field_w2
+
+
+
+
         end module radiation_class
