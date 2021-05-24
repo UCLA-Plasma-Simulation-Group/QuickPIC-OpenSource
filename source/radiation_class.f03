@@ -78,6 +78,10 @@
             integer::Nx,Ny,Nt,Nw,ii,n_children,n
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
+
+            this%err => perr
+            this%p => pp
+
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//').radiation'
 
@@ -264,9 +268,11 @@
             gs(1) = this%Nx
             gs(2) = this%Ny
 
+            ! write (2,*) "trad", trad
+
             call pwrad(this%p,this%err,file,trad,gs,ierr)
 
-            ! deallocate(trad)
+            deallocate(trad)
         
         end subroutine write_radiation
 

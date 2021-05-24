@@ -89,6 +89,8 @@
          if (present(rad)) then
             this%rad => rad
             this%lrad = .true.
+         else
+            this%lrad = .false.
          end if
 
          allocate(this%pd,this%q)

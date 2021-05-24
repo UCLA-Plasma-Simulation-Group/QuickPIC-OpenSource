@@ -540,15 +540,14 @@
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
-         write (2,*) "filename", filename
          ierr = 0
          gsize = gs
 
          allocate(sfd(gs(1),gs(2)))
-         write (2,*) "aa"
+
+         sfd = 0.0
 
          call MPI_REDUCE(fd, sfd, gs(1)*gs(2), MPI_REAL, MPI_SUM, 0, pp%getlworld(),ierr)
-         write (2,*) "cc"
 
          if (pp%getidproc() == 0) then
 
@@ -573,7 +572,6 @@
              call h5dclose_f(dset_id, ierr)
              call h5fclose_f(file_id, ierr)
              call h5close_f(ierr)
-
          end if
                
       end subroutine pwrad_2d

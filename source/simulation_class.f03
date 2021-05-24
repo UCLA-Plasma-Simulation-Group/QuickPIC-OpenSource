@@ -1402,8 +1402,9 @@
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
                   else if (allocated(this%diag(i)%rad)) then
-                     if (this%tstep == 0) exit
-                     call obj%wrr(this%diag(i)%file,'intensity')
+                     if (this%tstep /= 0) then
+                        call obj%wrr(this%diag(i)%file,'intensity')
+                     end if
                   else
                      call obj%wrst(this%diag(i)%file)
                   end if
