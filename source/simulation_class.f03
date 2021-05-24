@@ -816,6 +816,7 @@
          character(len=:), allocatable :: ss,sl
          real :: min, max, n0, dt
          real :: alx1, aly1, alz1, alx2, aly2, alz2
+         real :: radx0,radx1,rady0,rady1
          logical :: rst
          integer :: ierr, indx, indy, indz, dim
          class (*), pointer :: obj => null()
@@ -908,6 +909,10 @@
                   write (s2, '(I4.4)') j
                      if (allocated(ss)) deallocate(ss)
                   call this%in%get('beam('//trim(s1)//').radiation.diag'//'('//trim(s2)//')',ss)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.x(1)',radx0)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.x(2)',radx1)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.y(1)',rady0)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.y(2)',rady1)
                   select case (trim(ss))
                   case ('intensity')
                      n_diag = n_diag+1
@@ -916,8 +921,8 @@
                      allocate(this%diag(n_diag)%rad)
                      this%diag(n_diag)%rad = 1
                      call this%diag(n_diag)%file%new(&
-                     &axismin = (/alx1,aly1,alz1/),&
-                     &axismax = (/alx2,aly2,alz2/),&
+                     &axismin = (/radx0,rady0,alz1/),&
+                     &axismax = (/radx1,rady1,alz2/),&
                      &axisname  = (/'x','y','z'/),&
                      &axislabel = (/'x','y','z'/))
                      if (this%p%getidproc() == 0) then
