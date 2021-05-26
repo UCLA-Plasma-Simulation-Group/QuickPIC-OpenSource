@@ -10,6 +10,7 @@
       use ufield3d_class
       use part3d_lib
       use hdf5io_class
+      use radiation_class
       use mpi
                
       implicit none
@@ -29,13 +30,14 @@
 ! qbm = particle charge/mass ratio
 ! dt = time interval between successive calculations
 ! ci = reciprical of velocity of light
+! s = propagation distance
 ! xdim = dimension of the particle coordinates
 ! nbmax = size of buffer for passing particles between processors
 ! npp = number of particles in current partition
 ! npmax = maximum number of particles in each partition
 ! part(:,:) = initial particle coordinates
 !         
-         real :: qbm, dt, ci
+         real :: qbm, dt, ci, s
          integer :: npmax, nbmax, xdim, npp = 0
          real, dimension(:,:), pointer :: part => null(), pbuff => null()
          
@@ -43,7 +45,7 @@
          
          generic :: new => init_part3d
          generic :: del => end_part3d
-         generic :: push => partpush
+         generic :: push => partpush, radpush
          generic :: pmv => pmove
          generic :: qdp => qdeposit  
          generic :: wr => writehdf5_part3d
@@ -51,7 +53,7 @@
          generic :: rrst => readrst_part3d
          procedure, private :: init_part3d
          procedure, private :: end_part3d
-         procedure, private :: partpush
+         procedure, private :: partpush, radpush
          procedure, private :: pmove         
          procedure, private :: qdeposit, writehdf5_part3d
          procedure, private :: writerst_part3d, readrst_part3d
@@ -72,7 +74,7 @@
       
       contains
 !
-      subroutine init_part3d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim)
+      subroutine init_part3d(this,pp,perr,psp,pf,fd,qbm,dt,ci,xdim,s)
       
          implicit none
          
@@ -82,7 +84,7 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout) :: pf
          class(ufield3d), pointer, intent(in) :: fd
-         real, intent(in) :: qbm, dt, ci
+         real, intent(in) :: qbm, dt, ci, s
          integer, intent(in) :: xdim
 
 ! local data
@@ -98,6 +100,7 @@
          this%qbm = qbm
          this%dt = dt
          this%ci = ci
+         this%s = s
          this%xdim = xdim
          npmax = pf%getnpmax()
          this%npmax = npmax
@@ -202,9 +205,61 @@
             &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
          end select
 
+         this%s = this%s + dt
+
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine partpush
+!
+      subroutine radpush(this,ef,bf,dex,dez,rad)
+      
+         implicit none
+         
+         class(part3d), intent(inout) :: this
+         class(ufield3d), pointer, intent(in) :: ef, bf
+         real, intent(in) :: dex, dez
+         class(radiation), intent(inout) :: rad
+         character(len=18), save :: sname = 'radpush'
+! local data
+         real, dimension(:,:,:,:), pointer :: pef => null(), pbf => null()
+         integer :: nx, ny, nz, ipbc
+         real :: qbm, dt, dtc, ek
+         integer, dimension(2) :: noff
+         integer :: idimp, npmax, nxv, nypmx, nzpmx, nxyzp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         pef => ef%getrf(); pbf => bf%getrf()
+         qbm = this%qbm; dt = this%dt
+         nx = ef%getnd1(); ny = ef%getnd2(); nz = ef%getnd3()
+         idimp = this%xdim; npmax = this%npmax;
+         ipbc = this%sp%getpsolver()
+         noff = ef%getnoff()
+         nxv = size(pef,2); nypmx = size(pef,3); nzpmx = size(pef,4)
+         nxyzp = nxv*nypmx*nzpmx
+         
+         select case (this%sp%getinorder())
+         case (1)
+            call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
+            &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
+            this%s = this%s + 0.5*dt
+            call rad%dp(this%part,this%s,dt,this%npp)
+            call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
+            &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
+            this%s = this%s + 0.5*dt
+         case default
+            call PGBPUSH1HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
+            &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
+            this%s = this%s + 0.5*dt
+            call rad%dp(this%part,this%s,dt,this%npp)
+            this%s = this%s + 0.5*dt
+            call PGBPUSH2HF_QP(this%part,pef,pbf,this%npp,noff,qbm,dt,dt,ek,&
+            &nx,ny,nz,idimp,npmax,1,nxv,nypmx,nzpmx,2,ipbc,dex,dez,0.0)
+         end select
+
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine radpush
 !
       subroutine pmove(this,fd,rtag,stag,sid)
       

@@ -2,7 +2,7 @@
 JSON_LIB = /usr/local/jsonfortran-gnu-6.3.0/lib/
 JSON_INC = /usr/local/jsonfortran-gnu-6.3.0/lib/
 
-FC_GF_OPENMPI = mpif90 -c -I$(JSON_INC) -fopenmp
+FC_GF_OPENMPI = mpif90 -c -I$(JSON_INC) -fopenmp 
 CC_GF_OPENMPI = mpicc -c -O3 -std=c99
 LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
 
