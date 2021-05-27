@@ -13,7 +13,7 @@
     "n0" : 1.0e16,
     "time" : 10.1,
     "dt" : 10.0,
-    "nbeams" : 2,
+    "nbeams" : 1,
     "nspecies" : 1,
     "dump_restart" : false,
     "ndump_restart" : 1,
@@ -28,12 +28,12 @@
     {
     "evolution" : true,
     "profile" : 0,
-    "np" : [64,64,128],
+    "np" : [32,32,64],
     "npmax" : 4000000,
     "q" : -1.0,
     "m" : 1.0,
     "gamma" : 20000,
-    "peak_density" : 80.0,
+    "peak_density" : 60.0,
     "quiet_start" : true,
     "center" : [0.0,0.0,0.0],
     "sigma" : [0.1,0.1,1.0],
@@ -53,7 +53,7 @@
         },
         {
         "name" : ["raw"],
-        "ndump" : 1,
+        "ndump" : 0,
         "sample" : 1
         }
     ],
@@ -62,12 +62,12 @@
     {
         "detector":{
             "x":[-40,40],
-            "nx":100,
-            "y":[-40,40],
-            "ny":100,
+            "nx":20,
+            "y":[0,40],
+            "ny":30,
             "z":40000
         },
-        "time":[39990,40020],
+        "time":[39990,40100],
         "nt": 1,
         "spectrum":{
             "frequence":[0,10000],
@@ -113,9 +113,9 @@
     {
         "detector":{
             "x":[-40,40],
-            "nx":100,
+            "nx":20,
             "y":[-40,40],
-            "ny":100,
+            "ny":20,
             "z":40000
         },
         "time":[39990,40020],
@@ -124,7 +124,7 @@
             "frequence":[0,10000],
             "nw":1000
         },
-        "diag":["intensity"]
+        "diag":[]
     }        
     }
 ],
