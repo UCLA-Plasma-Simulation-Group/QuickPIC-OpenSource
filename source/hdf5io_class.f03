@@ -547,7 +547,7 @@
 
          sfd = 0.0
 
-         call MPI_REDUCE(fd, sfd, gs(1)*gs(2), MPI_REAL, MPI_SUM, 0, pp%getlworld(),ierr)
+         call MPI_REDUCE(fd, sfd, gs(1)*gs(2), pp%getmreal(), MPI_SUM, 0, pp%getlworld(),ierr)
 
          if (pp%getidproc() == 0) then
 
