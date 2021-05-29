@@ -592,9 +592,9 @@
 
             allocate(trad(this%Ny,this%Nx))
             trad = sum(this%intensity,3)
-            print *,trad
-            gs(1) = this%Nx
-            gs(2) = this%Ny
+            print *,trad(:,1)
+            gs(1) = this%Ny
+            gs(2) = this%Nx
 
             call pwrad(this%p,this%err,file,trad,gs,ierr)
             !call pwrad(this%p,this%err,file,this%intensity(:,:,1),gs,ierr)
