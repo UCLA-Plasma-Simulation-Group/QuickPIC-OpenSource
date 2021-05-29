@@ -138,20 +138,20 @@
                 call input%get(s1//'.diag('//trim(sn)//')',diag)
                 select case(trim(diag))
                 case('intensity')
-                    allocate(this%intensity(this%Ny,this%Nx,this%Nt+1))
+                    allocate(this%intensity(this%Nx,this%Ny,this%Nt+1))
                     this%intensity = 0
                 case('spectrum')
-                    allocate(this%spectrum(3,this%Ny,this%Nx,this%Nw))
+                    allocate(this%spectrum(3,this%Nx,this%Ny,this%Nw))
                     this%spectrum = 0
                 case('field')
-                    allocate(this%field_E(3,this%Ny,this%Nx,this%Nt+1))
+                    allocate(this%field_E(3,this%Nx,this%Ny,this%Nt+1))
                     this%field_E = 0
-                    allocate(this%field_B(3,this%Ny,this%Nx,this%Nt+1))
+                    allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
                     this%field_B = 0
                 case('field_w')
-                    allocate(this%Ew_re(3,this%Ny,this%Nx,this%Nw+1))
+                    allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw+1))
                     this%Ew_re = 0
-                    allocate(this%Ew_im(3,this%Ny,this%Nx,this%Nw+1))
+                    allocate(this%Ew_im(3,this%Nx,this%Ny,this%Nw+1))
                     this%Ew_im = 0
                 end select
             end DO
@@ -232,9 +232,9 @@
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
-                DO i = 1,this%Ny,1
-                    DO j = 1,this%Nx,1
-                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,this%z/)
+                DO j = 1,this%Ny,1
+                    DO i = 1,this%Nx,1
+                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
                         vec_r = posi_x - posi
                         r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                         vec_n = vec_r/r
@@ -289,7 +289,6 @@
             real,dimension(3) :: field_E,field_B
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
-            real :: c
             character(len=25), save :: sname = 'calculate_field:'
             call this%err%werrfl2(class//sname//' started')
             z = s_beam
@@ -309,13 +308,13 @@
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
-                DO i=1,this%Ny,1
-                    DO j = 1,this%Nx,1
-                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
+                DO i=1,this%Nx,1
+                    DO j = 1,this%Ny,1
+                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
                         vec_r = posi_x - posi
                         r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
                         vec_n = vec_r/r
-                        t_obs = (t + r/c-this%t0)/dt
+                        t_obs = (t + r-this%t0)/dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
                             m0 = t_obs - t_n
@@ -377,9 +376,9 @@
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
-                DO i=1,this%Ny,1
-                    DO j = 1,this%Nx,1
-                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
+                DO i=1,this%Nx,1
+                    DO j = 1,this%Ny,1
+                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
                         vec_r = posi_x - posi
                         r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
                         vec_n = vec_r/r
@@ -475,9 +474,9 @@
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
-                DO i=1,this%Ny,1
-                    DO j = 1,this%Nx,1
-                        posi_x = (/this%x0+(j-1)*this%dx,this%y1-(i-1)*this%dy,z/)
+                DO i=1,this%Nx,1
+                    DO j = 1,this%Ny,1
+                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
                         vec_r = posi_x - posi
                         r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                         vec_n = vec_r/r
@@ -514,8 +513,8 @@
             character(len=25), save :: sname = 'calculate_intensity2:'
             call this%err%werrfl2(class//sname//' started')
             DO n = 1,Np,1
-                DO i=1,this%Ny,1
-                    DO j = 1,this%Nx,1
+                DO i=1,this%Nx,1
+                    DO j = 1,this%Ny,1
                         t_obs = (temp_t(n,i,j) - this%t0)/this%dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
@@ -590,14 +589,12 @@
             integer, dimension(2) :: gs
             integer :: ierr = 0
 
-            allocate(trad(this%Ny,this%Nx))
+            allocate(trad(this%Nx,this%Ny))
             trad = sum(this%intensity,3)
-            print *,trad(:,1)
-            gs(1) = this%Ny
-            gs(2) = this%Nx
+            gs(1) = this%Nx
+            gs(2) = this%Ny
 
             call pwrad(this%p,this%err,file,trad,gs,ierr)
-            !call pwrad(this%p,this%err,file,this%intensity(:,:,1),gs,ierr)
             deallocate(trad)
         
         end subroutine write_radiation
