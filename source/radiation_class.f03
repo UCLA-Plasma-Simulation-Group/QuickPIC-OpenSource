@@ -592,7 +592,7 @@
 
             allocate(trad(this%Ny,this%Nx))
             trad = sum(this%intensity,3)
-            print *,trad(:,1)
+            print *,trad
             gs(1) = this%Nx
             gs(2) = this%Ny
 
