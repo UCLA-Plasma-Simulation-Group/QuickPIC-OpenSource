@@ -86,7 +86,6 @@
             character(len=:), allocatable :: diag
             character(len=25), save :: sname = 'init_radiation:'
 
-            print *, "init_radiation_begin"
             this%err => perr
             this%p => pp
 
@@ -180,7 +179,6 @@
 
             character(len=18), save :: sname = 'calculate_radiation:'
             call this%err%werrfl2(class//sname//' started')
-            print *, "calculate_radiation_begin"
             if (allocated(this%intensity)) then
                 call calculate_intensity(this,part,Np,s_beam,ds)
             end if
@@ -216,7 +214,6 @@
             character(len=25), save :: sname = 'calculate_intensity:'
             call this%err%werrfl2(class//sname//' started')
             z = s_beam
-            print *,Np
             DO n = 1,Np
                 x = part(1,n)
                 y = part(2,n)
@@ -240,7 +237,6 @@
                         vec_n = vec_r/r
                         t_obs = (t + r - this%t0)/this%dt
                         if (t_obs > 1 .OR. t_obs < 0) then 
-                            print *, t + r - this%t0
                         end if 
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
@@ -273,7 +269,7 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            real,dimension(10,Np),intent(in) :: part
+            real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
 
@@ -340,7 +336,7 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            real,dimension(10,Np),intent(in) :: part
+            real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
 
@@ -408,7 +404,7 @@
             class(radiation), intent(inout) :: this
             type(input_json), intent(inout), pointer :: input
             real,intent(in) :: s_beam,ds
-            real,dimension(10,Np),intent(in) :: part
+            real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
 
 
@@ -438,7 +434,7 @@
             implicit none
 
             class(radiation), intent(inout) :: this
-            real,dimension(10,Np),intent(in) :: part
+            real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
             real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
