@@ -24,7 +24,8 @@
          real :: x0,x1,y0,y1,z,dx,dy,dt,dw
          real :: t0,t1
          real :: w0,w1
-         integer::Nx,Ny,Nt,Nw
+         real, dimension(3) :: delta
+         integer :: Nx,Ny,Nt,Nw
          
          real,allocatable :: intensity(:,:,:) 
          real,allocatable :: spectrum(:,:,:,:) 
@@ -75,13 +76,13 @@
             class(perrors), intent(in), pointer :: perr
             class(parallel_pipe), intent(in), pointer :: pp
             integer, intent(in) :: i
-
-
+!
             real :: x0,x1,y0,y1,z
             real :: min, max
             real :: t0,t1
             real :: w0,w1
             integer::Nx,Ny,Nt,Nw,ii,n_children,n
+            integer :: indx, indy, indz         
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
             character(len=25), save :: sname = 'init_radiation:'
@@ -90,6 +91,10 @@
             this%p => pp
 
             call this%err%werrfl2(class//sname//' started')
+
+            call input%get('simulation.indx',indx)
+            call input%get('simulation.indy',indy)
+            call input%get('simulation.indz',indz)
 
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//').radiation'
@@ -100,6 +105,11 @@
             this%x0 = min
             this%x1 = max
             this%Nx = Nx
+            call input%get('simulation.box.x(1)',min)
+            call input%get('simulation.box.x(2)',max)
+            this%delta(1) = (max-min) / real(2**indx)
+            this%x0 = this%x0 - min
+            this%x1 = this%x1 - min
 
             call input%get(s1//'.detector.y(1)',min)
             call input%get(s1//'.detector.y(2)',max)
@@ -107,9 +117,18 @@
             this%y0 = min
             this%y1 = max
             this%Ny = Ny
+            call input%get('simulation.box.y(1)',min)
+            call input%get('simulation.box.y(2)',max)
+            this%delta(2) = (max-min) / real(2**indy)
+            this%y0 = this%y0 - min
+            this%y1 = this%y1 - min
 
             call input%get(s1//'.detector.z',z)
+            call input%get('simulation.box.z(1)',min)
+            call input%get('simulation.box.z(2)',max)
+            this%delta(3) = (max-min)/real(2**indz)
             this%z = z
+
 
             call input%get(s1//'.time(1)',min )
             call input%get(s1//'.time(2)',max )
@@ -204,6 +223,7 @@
             real :: x,y,z,tempz
             real :: t,t_obs,m0,m1
             real :: delta_t
+            real :: deltax, deltay, deltaz
             real :: dx,dy,dt
             real :: r
             real :: intensity
@@ -213,11 +233,16 @@
             real :: c
             character(len=25), save :: sname = 'calculate_intensity:'
             call this%err%werrfl2(class//sname//' started')
+            
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
+
             z = s_beam
             DO n = 1,Np
-                x = part(1,n)
-                y = part(2,n)
-                tempz = part(3,n)
+                x = part(1,n)*deltax
+                y = part(2,n)*deltay
+                tempz = part(3,n)*deltaz
                 t = s_beam + tempz
                 posi = (/x,y,z/)
                 p = part(4:6,n)
