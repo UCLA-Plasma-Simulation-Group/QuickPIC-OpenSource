@@ -2,18 +2,18 @@
 "simulation" : !note
 {
     "nodes" : [32,1], 
-    "indx" : 8,
-    "indy" : 8,
-    "indz" : 8,
+    "indx" : 9,
+    "indy" : 9,
+    "indz" : 9,
     "box" : {
-        "x" : [-6.0,6.0],
-        "y" : [-6.0,6.0],
-        "z" : [0,11.0]},
+        "x" : [-9.0,9.0],
+        "y" : [-9.0,9.0],
+        "z" : [0.0,8.27]},
     "boundary" : "conducting",
-    "n0" : 1.0e16,
-    "time" : 10.1,
+    "n0" : 4.0e16,
+    "time" : 5.1e1,
     "dt" : 10.0,
-    "nbeams" : 1,
+    "nbeams" : 2,
     "nspecies" : 1,
     "dump_restart" : false,
     "ndump_restart" : 1,
@@ -28,16 +28,16 @@
     {
     "evolution" : true,
     "profile" : 0,
-    "np" : [32,32,64],
+    "np" : [64,64,128],
     "npmax" : 4000000,
     "q" : -1.0,
     "m" : 1.0,
     "gamma" : 20000,
-    "peak_density" : 60.0,
+    "peak_density" : 49.72,
     "quiet_start" : true,
-    "center" : [0.0,0.0,0.0],
-    "sigma" : [0.1,0.1,1.0],
-    "sigma_v" : [3.0,3.0,3.0],
+    "center" : [0.0,0.0,3.0],
+    "sigma" : [0.1879,0.1879,0.48],
+    "sigma_v" : [2.0,2.0,200.0],
     "centroid_x" : [0.0,0.0,0.0],
     "centroid_y" : [0.0,0.0,0.0],
     "diag" :
@@ -48,8 +48,60 @@
         },
         {
         "name" : ["charge"],
-        "ndump" : 1,
-        "slice" : [["xz", 129],["yz",129],["xy",20]]
+        "ndump" : 20,
+        "slice" : [["xz", 257],["yz",257]]
+        },
+        {
+        "name" : ["raw"],
+        "ndump" : 0,
+        "sample" : 1
+        }
+    ],
+    "radiation":
+    {
+        "detector":{
+            "x":[-40,40],
+            "nx":100,
+            "y":[-40,40],
+            "ny":100,
+            "z":40000
+        },
+        "time":[39990,40300],
+        "nt": 1,
+        "spectrum":{
+            "frequence":[0,10000],
+            "nw":1000
+        },
+        "diag":["intensity"]
+    }        
+
+    },
+
+    {
+    "evolution" : true,
+    "profile" : 0,
+    "np" : [64,64,64],
+    "npmax" : 4000000,
+    "q" : -1.0,
+    "m" : 1.0,
+    "gamma" : 20000,
+    "peak_density" : 31.0,
+    "quiet_start" : true,
+    "center" : [0.0,0.0,4.0],
+    "sigma" : [0.1879,0.1879,0.23978],
+    "sigma_v" : [2.0,2.0,200.0],
+    "centroid_x" : [0.0,0.0,0.0],
+    "centroid_y" : [0.0,0.0,0.0],
+    "diag" :
+    [
+        {
+        "name" : ["charge"],
+        "ndump" : 0
+        },
+        {
+        "name" : ["charge"],
+        "ndump" : 20,
+        "slice" : [["xz", 257],["yz",257]]
         },
         {
         "name" : ["raw"],
@@ -62,69 +114,18 @@
     {
         "detector":{
             "x":[-40,40],
-            "nx":20,
-            "y":[0,40],
-            "ny":30,
-            "z":40000
-        },
-        "time":[39990,40100],
-        "nt": 1,
-        "spectrum":{
-            "frequence":[0,10000],
-            "nw":1000},
-        "diag":["intensity"]
-    }        
-    },
-
-    {
-    "evolution" : true,
-    "profile" : 0,
-    "np" : [64,64,128],
-    "npmax" : 4000000,
-    "q" : -1.0,
-    "m" : 1.0,
-    "gamma" : 20000,
-    "peak_density" : 60.0,
-    "quiet_start" : true,
-    "center" : [0.0,0.0,0.0],
-    "sigma" : [0.1,0.1,0.8],
-    "sigma_v" : [3.0,3.0,6.0],
-    "centroid_x" : [0.0,0.0,0.0],
-    "centroid_y" : [0.0,0.0,0.0],
-    "diag" :
-    [
-        {
-        "name" : ["charge"],
-        "ndump" : 0
-        },
-        {
-        "name" : ["charge"],
-        "ndump" : 1,
-        "slice" : [["xz", 129],["yz",129],["xy",20]]
-        },
-        {
-        "name" : ["raw"],
-        "ndump" : 1,
-        "sample" : 1
-        }
-    ],
-
-    "radiation":
-    {
-        "detector":{
-            "x":[-40,40],
-            "nx":20,
+            "nx":100,
             "y":[-40,40],
-            "ny":20,
+            "ny":100,
             "z":40000
         },
-        "time":[39990,40020],
-        "nt": 100,
+        "time":[39990,40300],
+        "nt": 1,
         "spectrum":{
             "frequence":[0,10000],
             "nw":1000
         },
-        "diag":[]
+        "diag":["intensity"]
     }        
     }
 ],
@@ -146,8 +147,8 @@
         },
         {
         "name" : ["charge"],
-        "ndump" : 1,
-        "slice" : [["xz", 129],["yz",129]]
+        "ndump" : 20,
+        "slice" : [["xz", 257],["yz",257]]
         }
     ]    
     }
