@@ -31,7 +31,7 @@
          class(field3d), pointer :: q => null()
          class(fdist3d), pointer :: pf => null()
          class(radiation), pointer :: rad => null()
-         logical :: evol, static, lrad
+         logical :: evol, static, lrad, tagged
          contains
          
          generic :: new => init_beam3d
@@ -95,6 +95,8 @@
 
          allocate(this%pd,this%q)
          this%evol = pf%getevol()
+         this%tagged = pf%gettagged()
+
          this%static = pf%getstatic()
          call this%q%new(this%p,this%err,this%sp,dim=1)
          call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
@@ -226,7 +228,7 @@
          character(len=18), save :: sname = 'writehdf5_beam3d:'
 
          call this%err%werrfl2(class//sname//' started')                  
-         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),rtag,stag,id)
+         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),this%pf%gettagged(),rtag,stag,id)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_beam3d

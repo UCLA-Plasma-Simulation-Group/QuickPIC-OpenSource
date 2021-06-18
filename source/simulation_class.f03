@@ -402,6 +402,7 @@
          character(len=18), save :: sname = 'init_sim_beams:'
          integer :: i,n,nrad=0
          integer :: npf,npx,npy,npz,npp
+         integer :: ix
          real, dimension(3,100) :: arg
          logical :: quiet
          real :: gamma
@@ -419,6 +420,8 @@
          call this%err%werrfl2(class//sname//' started')
 
          call input%get('simulation.nbeams',n)
+
+         ix = 7
 
          allocate(this%beam(n),this%pf(n))
 
@@ -443,6 +446,7 @@
             else
                lrad = .false.
             end if
+
             call input%get(trim(s1)//'.profile',npf)
             select case (npf)
             case (0)
@@ -473,6 +477,9 @@
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
 
+            if (lrad) ix = ix+3
+            if (this%pf(i)%p%gettagged()) ix = ix+3
+
             call input%get('simulation.dt',dt)
 
             call input%get('simulation.read_restart',read_rst)
@@ -487,21 +494,22 @@
                &filename = './RST/Beam-'//trim(sn)//'/',&
                &dataname = 'RST-beam'//trim(sn)//'-'//trim(sid),&
                &n = rst_timestep)
+
                if (lrad) then 
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=10,s=rst_timestep*dt,rad=this%rad(nrad-1))
+                  &dt=dt,ci=1.0,xdim=ix,s=rst_timestep*dt,rad=this%rad(nrad-1))
                else
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=7,s=rst_timestep*dt)
+                  &dt=dt,ci=1.0,xdim=ix,s=rst_timestep*dt)
                end if
                call this%beam(i)%rrst(file_rst)
             else
                if (lrad) then 
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=10,s=0.0,rad=this%rad(nrad-1))
+                  &dt=dt,ci=1.0,xdim=ix,s=0.0,rad=this%rad(nrad-1))
                else
                   call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-                  &dt=dt,ci=1.0,xdim=7,s=0.0)
+                  &dt=dt,ci=1.0,xdim=ix,s=0.0)
                end if                  
             end if
          end do

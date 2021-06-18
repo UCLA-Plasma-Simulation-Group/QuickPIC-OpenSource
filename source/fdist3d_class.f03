@@ -33,9 +33,10 @@
          class(parallel_pipe), pointer, public :: p => null()
 !
 ! ndprof = profile type
-         integer :: npf, npmax
+         integer :: npf, npmax, sf=1
          real, dimension(3) :: origin=(/0.0,0.0,0.0/)
          logical :: evol = .true., static = .false.
+         logical :: tagged = .false.
                          
          contains
          
@@ -46,7 +47,7 @@
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
          procedure :: getnpf, getnpmax, getevol, getorigin
-         procedure :: getstatic
+         procedure :: getstatic, gettagged
                   
       end type 
 
@@ -202,6 +203,17 @@
 
       end function getnpmax
 !      
+      function getsf(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         integer :: getsf
+         
+         getsf = this%sf
+
+      end function getsf
+!      
       function getevol(this)
 
          implicit none
@@ -223,6 +235,17 @@
          getstatic = this%static
 
       end function getstatic
+!
+      function gettagged(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: gettagged
+         
+         gettagged = this%tagged
+
+      end function gettagged
 !
       function getorigin(this)
 
@@ -330,6 +353,12 @@
          else
             static = .false.
          end if
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
 
          this%npf = npf
          this%npx = npx
@@ -393,6 +422,7 @@
          integer :: nps=1
          integer :: i, j, k
          logical :: lquiet = .false.
+         integer :: tt1, tt2, tt3, gid, sf
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_000:'
 
@@ -409,6 +439,8 @@
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
+         t1 = idimp - 2; t2 = idimp -1; t3 = idimp
+         gid = this%p%getidproc(); sf = this%sf
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
@@ -441,9 +473,18 @@
                write (erstr,*) 'PRVDIST32_RANDOM error'
                call this%err%equit(class//sname//erstr)
             endif
+            if (this%tagged) then
+               do i = 1, npp
+                  if (mod(i,sf) == 0) then
+                     pt(tt3,i) = transfer(1,1.0)
+                  else
+                     pt(tt3,i) = transfer(0,1.0)
+                  endif
+                  pt(tt1,i) = transfer(gid,1.0)
+                  pt(tt2,i) = transfer(i,1.0)
+               end do
+            end if
          end if
-
-         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_000
