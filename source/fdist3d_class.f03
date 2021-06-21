@@ -439,7 +439,7 @@
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
-         t1 = idimp - 2; t2 = idimp -1; t3 = idimp
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
          gid = this%p%getidproc(); sf = this%sf
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)

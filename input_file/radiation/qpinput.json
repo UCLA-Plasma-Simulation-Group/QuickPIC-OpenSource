@@ -11,7 +11,7 @@
         "z" : [0.0,8.27]},
     "boundary" : "conducting",
     "n0" : 4.0e16,
-    "time" : 2.1e1,
+    "time" : 1.1e2,
     "dt" : 10.0,
     "nbeams" : 1,
     "nspecies" : 1,
@@ -30,7 +30,7 @@
     "profile" : 0,
     "np" : [64,64,128],
     "fsample" : 100,
-    "tagged" .true.,
+    "tagged" : true,
     "npmax" : 4000000,
     "q" : -1.0,
     "m" : 1.0,
@@ -59,13 +59,14 @@
         "sample" : 100
         }
     ],
+
     "radiation":
     {
         "detector":{
             "x":[-40,40],
-            "nx":100,
+            "nx":20,
             "y":[-40,40],
-            "ny":100,
+            "ny":20,
             "z":40000
         },
         "time":[39990,40300],
@@ -76,6 +77,7 @@
         },
         "diag":["intensity"]
     }        
+    }
 
     },
 
