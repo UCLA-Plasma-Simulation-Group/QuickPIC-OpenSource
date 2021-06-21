@@ -218,7 +218,7 @@
             integer, intent(inout) :: Np
             real,dimension(:,:), pointer, intent(inout) :: part
 
-            integer :: n,i,j,k
+            integer :: n,i,j,k,tt3
             integer :: t_n
             real :: x,y,z,tempz
             real :: t,t_obs,m0,m1
@@ -239,49 +239,50 @@
             deltaz = this%delta(3)
 
             z = s_beam
+            tt3 = size(part,1)
             DO n = 1,Np
-                x = part(1,n)*deltax
-                y = part(2,n)*deltay
-                tempz = part(3,n)*deltaz
-                t = s_beam + tempz
-                posi = (/x,y,z/)
-                p = part(4:6,n)
-                vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
-                force = part(8:10,n)
-                pold = p - force
-                pnew = p + force
-                vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
-                vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
-                delta_t = ds/vel(3)
-                acc = (vnew-vold)/delta_t
-                DO j = 1,this%Ny,1
-                    DO i = 1,this%Nx,1
-                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
-                        vec_r = posi_x - posi
-                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
-                        vec_n = vec_r/r
-                        t_obs = (t + r - this%t0)/this%dt
-                        if (t_obs > 1 .OR. t_obs < 0) then 
-                        end if 
-                        if (t_obs > 0 .AND. t_obs < this%Nt) then                            
-                            t_n = t_obs
-                            m0 = t_obs - t_n
-                            m1 = 1.0 - m0
-                            t_n = t_n + 1
-                            temp0 = vec_n-vel
-!                          temp1(1) = temp0(2)*acc(3) - temp0(3)*acc(2)
-!                          temp1(2) = temp0(3)*acc(1) - temp0(1)*acc(3)
-!                          temp1(3) = temp0(1)*acc(2) - temp0(2)*acc(1)
-                            temp1 = cross(temp0,acc)
-                            temp2 = cross(vec_n,temp1)
-                            temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
-                            temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
-                            intensity =(temp3/temp4**5)*delta_t
-                            this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
-                            this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
-                        end if
+               if (transfer(part(tt3,n),1) == 1) then
+                    x = part(1,n)*deltax
+                    y = part(2,n)*deltay
+                    tempz = part(3,n)*deltaz
+                    t = s_beam + tempz
+                    posi = (/x,y,z/)
+                    p = part(4:6,n)
+                    vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
+                    force = part(8:10,n)
+                    pold = p - force
+                    pnew = p + force
+                    vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+                    vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
+                    delta_t = ds/vel(3)
+                    acc = (vnew-vold)/delta_t
+                    DO j = 1,this%Ny,1
+                        DO i = 1,this%Nx,1
+                            posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
+                            vec_r = posi_x - posi
+                            r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+                            vec_n = vec_r/r
+                            t_obs = (t + r - this%t0)/this%dt
+                            if (t_obs > 0 .AND. t_obs < this%Nt) then                            
+                                t_n = t_obs
+                                m0 = t_obs - t_n
+                                m1 = 1.0 - m0
+                                t_n = t_n + 1
+                                temp0 = vec_n-vel
+    !                          temp1(1) = temp0(2)*acc(3) - temp0(3)*acc(2)
+    !                          temp1(2) = temp0(3)*acc(1) - temp0(1)*acc(3)
+    !                          temp1(3) = temp0(1)*acc(2) - temp0(2)*acc(1)
+                                temp1 = cross(temp0,acc)
+                                temp2 = cross(vec_n,temp1)
+                                temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
+                                temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+                                intensity =(temp3/temp4**5)*delta_t
+                                this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
+                                this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
+                            end if
+                        end DO
                     end DO
-                end DO
+                end if
             end DO
             call this%err%werrfl2(class//sname//' ended')
         end subroutine calculate_intensity
@@ -306,18 +307,21 @@
             real :: delta_t
             real :: dx,dy,dt
             real :: r 
-            
+            real :: deltax, deltay, deltaz
             real,dimension(3) :: field_E,field_B
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             character(len=25), save :: sname = 'calculate_field:'
             call this%err%werrfl2(class//sname//' started')
             z = s_beam
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
 
             DO n = 1,Np
-                x = part(1,n)
-                y = part(2,n)
-                tempz = part(3,n)
+                x = part(1,n)*deltax
+                y = part(2,n)*deltay
+                tempz = part(3,n)*deltaz
                 t = s_beam + tempz
                 posi = (/x,y,z/)
                 p = part(4:6,n)
@@ -365,7 +369,7 @@
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
 
-
+            real :: deltax, deltay, deltaz
             integer :: n,i,j,k
             integer :: t_n
             real :: x,y,z,tempz
@@ -464,7 +468,7 @@
             real,intent(in) :: s_beam,ds
             real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
             real,dimension(Np,this%Nx,this%Ny),intent(inout) :: temp_down,temp_r,temp_t
-
+            real :: deltax, deltay, deltaz
             integer :: n,i,j,k
             integer :: t_n
             real :: x,y,z,tempz
