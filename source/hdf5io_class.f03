@@ -1408,7 +1408,6 @@
             tt3 = size(part,1)
             tt2 = tt3 - 1
             tt1 = tt2 - 1
-            write (2,*) "tt3", tt3, tt2, tt1
             allocate(ptrack(npp))
             tnpp = 0
             do i = 1, npp

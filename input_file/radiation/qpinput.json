@@ -13,7 +13,7 @@
     "n0" : 4.0e16,
     "time" : 1.1e2,
     "dt" : 10.0,
-    "nbeams" : 1,
+    "nbeams" : 2,
     "nspecies" : 1,
     "dump_restart" : false,
     "ndump_restart" : 1,
@@ -29,7 +29,7 @@
     "evolution" : true,
     "profile" : 0,
     "np" : [64,64,128],
-    "fsample" : 100,
+    "fsample" : 128,
     "tagged" : true,
     "npmax" : 4000000,
     "q" : -1.0,
@@ -56,7 +56,7 @@
         {
         "name" : ["raw"],
         "ndump" : 1,
-        "sample" : 100
+        "sample" : 128
         }
     ],
 
@@ -85,6 +85,8 @@
     "evolution" : true,
     "profile" : 0,
     "np" : [64,64,64],
+    "fsample" : 128,
+    "tagged" : true,
     "npmax" : 4000000,
     "q" : -1.0,
     "m" : 1.0,
@@ -110,7 +112,7 @@
         {
         "name" : ["raw"],
         "ndump" : 0,
-        "sample" : 1
+        "sample" : 128
         }
     ],
 
