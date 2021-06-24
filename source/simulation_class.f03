@@ -912,6 +912,7 @@
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
             if(this%in%found('beam('//trim(s1)//')'//'.radiation')) then
+               call this%in%get('beam('//trim(s1)//').radiation.ndump',ndump)
                call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
                do j = 1, m
                   write (s2, '(I4.4)') j
@@ -924,7 +925,7 @@
                   select case (trim(ss))
                   case ('intensity')
                      n_diag = n_diag+1
-                     this%diag(n_diag)%df = this%nstep3d
+                     this%diag(n_diag)%df = ndump
                      this%diag(n_diag)%obj => this%beams%beam(i) 
                      allocate(this%diag(n_diag)%rad)
                      this%diag(n_diag)%rad = 1
