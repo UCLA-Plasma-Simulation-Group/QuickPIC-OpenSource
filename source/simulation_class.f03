@@ -421,8 +421,6 @@
 
          call input%get('simulation.nbeams',n)
 
-         ix = 7
-
          allocate(this%beam(n),this%pf(n))
 
          do i = 1, n
@@ -476,6 +474,8 @@
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
+
+            ix = 7
 
             if (lrad) ix = ix+3
             if (this%pf(i)%p%gettagged()) ix = ix+3
