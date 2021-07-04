@@ -68,7 +68,7 @@
       end interface
       
       interface pwrad
-        module procedure pwrad_2d
+        module procedure pwrad_2d, pwrad_2d_pipe
       end interface
 
       contains
@@ -517,6 +517,92 @@
          call h5close_f(ierr)
                
       end subroutine pwfield_2d
+!
+      subroutine pwrad_2d_pipe(pp,perr,file,fd,gs,tag,id,ierr)
+
+         implicit none
+        
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         class(hdf5file), intent(in) :: file
+         real, dimension(:,:), intent(inout) :: fd
+         integer, dimension(2), intent(in) :: gs
+         integer, intent(inout) :: id
+         integer, intent(in) :: tag
+         integer, intent(inout) :: ierr
+! local data
+         integer(hid_t) :: treal, memspaceID 
+         integer(hid_t) :: file_id, rootID, dset_id, dspace_id
+         integer(hsize_t), dimension(2) :: gsize
+         real, dimension(:,:), allocatable :: sfd
+         integer :: ori, des, nvyp, mid, message!, stageid, mid, info
+         integer, dimension(10) :: istat         
+         character(len=:), allocatable :: filename
+         character(len=8) :: st
+
+         allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+         write (st,'(I8.8)') file%n
+         filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+         ierr = 0
+         gsize = gs
+         nvyp = pp%getlnvp()
+         ori = pp%getkstrt() - nvyp - 1
+         des = pp%getkstrt() + nvyp - 1
+
+         allocate(sfd(gs(1),gs(2)))
+
+         sfd = 0.0
+         if (ori >= 0) then
+            call MPI_IRECV(message,1,pp%getmint(),ori,tag,pp%getlworld(),&
+            &mid,ierr)
+            call MPI_WAIT(mid,istat,ierr)
+         endif
+         call MPI_REDUCE(fd, sfd, gs(1)*gs(2), pp%getmreal(), MPI_SUM, 0, pp%getlgrp(),ierr)
+         if (pp%getlidproc() == 0) then
+            call h5open_f(ierr)
+            treal = detect_precision()    
+            call h5screate_simple_f(2, gsize, dspace_id, ierr)
+            call h5screate_simple_f(2, gsize, memspaceID, ierr )
+            if (ori >= 0) then  
+               call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr)
+               call h5gopen_f(file_id, '/', rootID, ierr)
+               call h5dopen_f(rootID, file%dataname, dset_id, ierr, H5P_DEFAULT_F)
+               call h5dread_f(dset_id, treal, fd(1:gsize(1),1:gsize(2)),gsize, ierr,&
+               &memspaceID, dspace_id)
+               sfd = sfd + fd
+               call h5dwrite_f(dset_id, treal, sfd(1:gsize(1),1:gsize(2)),gsize, ierr,&
+               &memspaceID, dspace_id)
+               call h5gclose_f(rootID, ierr)
+               call h5dclose_f(dset_id, ierr)
+               call h5fclose_f(file_id, ierr)
+               call h5close_f(ierr)
+            else
+               call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr)
+               call wrattr_file(file,file_id,H5P_DEFAULT_F)
+               call h5gopen_f(file_id, '/', rootID, ierr)
+               call h5dcreate_f(rootID, file%dataname, treal, dspace_id, dset_id,&
+               &ierr)
+      
+               call h5dwrite_f(dset_id, treal, sfd(1:gsize(1),1:gsize(2)),gsize, ierr,&
+               &memspaceID, dspace_id)
+               call wrattr_dataset(file,dset_id)
+               call h5gclose_f(rootID, ierr)
+               call h5dclose_f(dset_id, ierr)
+               call h5fclose_f(file_id, ierr)
+               call h5close_f(ierr)
+            end if
+            call h5sclose_f(memspaceID, ierr)
+            call h5sclose_f(dspace_id, ierr)
+         end if
+         if (des < pp%getnvp()) then
+            call MPI_WAIT(id,istat,ierr)
+            call MPI_ISEND(message,1,pp%getmint(),des,tag,pp%getlworld(),&
+            &id,ierr)
+         else
+            id = MPI_REQUEST_NULL
+         end if         
+         deallocate(sfd)          
+      end subroutine pwrad_2d_pipe
 !
       subroutine pwrad_2d(pp,perr,file,fd,gs,ierr)
 

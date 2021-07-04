@@ -603,12 +603,14 @@
 !
 !      end subroutine calculate_field_w2
 !
-        subroutine write_radiation(this,file)
+        subroutine write_radiation(this,file,tag,id)
 
             implicit none
 
             class(radiation), intent(inout) :: this
             class(hdf5file), intent(in) :: file
+            integer, intent(in) :: tag
+            integer, intent(inout) :: id
 
             real, dimension(:,:), allocatable :: trad
             integer, dimension(2) :: gs
@@ -619,7 +621,7 @@
             gs(1) = this%Nx
             gs(2) = this%Ny
 
-            call pwrad(this%p,this%err,file,trad,gs,ierr)
+            call pwrad(this%p,this%err,file,trad,gs,tag,id,ierr)
             deallocate(trad)
         
         end subroutine write_radiation

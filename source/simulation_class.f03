@@ -1417,7 +1417,8 @@
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
                   else if (allocated(this%diag(i)%rad)) then
                      if (this%tstep /= 0) then
-                        call obj%wrr(this%diag(i)%file,'intensity')
+                        this%tag(1) = ntag()
+                        call obj%wrr(this%diag(i)%file,'intensity',this%tag(1),this%id(idn+i))
                      end if
                   else
                      call obj%wrst(this%diag(i)%file)
