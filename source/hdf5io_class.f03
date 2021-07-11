@@ -1599,8 +1599,14 @@
                endif               
 
                do i = 1, 3
-                  buff(1:tnpp) = part(i,1:((tnpp-1)*dspl+1):dspl)*delta(i)+origin(i)
-      
+                  if (tagged) then
+                     do j = 1, tnpp
+                        buff(j) = part(i,ptrack(j))*delta(i)+origin(i)
+                     enddo
+                  else
+                     buff(1:tnpp) = part(i,1:((tnpp-1)*dspl+1):dspl)*delta(i)+origin(i)
+                  end if
+
                   if (ori >=0 .and. tpo /= 0) then
                      call h5dopen_f(rootID, 'x'//char(iachar('0')+i), dset_id, ierr)
                      ldim(1) = tp
@@ -1643,7 +1649,13 @@
                enddo
 
                do i = 1, 3
-                  buff(1:tnpp) = part((i+3),1:((tnpp-1)*dspl+1):dspl) 
+                  if (tagged) then
+                     do j = 1, tnpp
+                        buff(j) = part(i+3,ptrack(j))
+                     enddo
+                  else
+                     buff(1:tnpp) = part(i+3,1:((tnpp-1)*dspl+1):dspl) 
+                  end if
                   if (ori >= 0 .and. tpo /= 0) then
                      call h5dopen_f(rootID, 'p'//char(iachar('0')+i), dset_id, ierr)
                      ldim(1) = tp
@@ -1685,7 +1697,13 @@
                   call h5dclose_f(dset_id, ierr)
                enddo
 
-               buff(1:tnpp) = part(7,1:((tnpp-1)*dspl+1):dspl) 
+               if (tagged) then
+                  do j = 1, tnpp
+                     buff(j) = part(7,ptrack(j))
+                  enddo
+               else
+                  buff(1:tnpp) = part(7,1:((tnpp-1)*dspl+1):dspl)
+               end if
                if (ori >= 0 .and. tpo /= 0) then
                   call h5dopen_f(rootID, 'q', dset_id, ierr)
                   ldim(1) = tp
