@@ -1494,15 +1494,15 @@
             tt3 = size(part,1)
             tt2 = tt3 - 1
             tt1 = tt2 - 1
-            allocate(ptrack(npp))
+            if (npp /= 0) allocate(ptrack(npp))
             tnpp = 0
             do i = 1, npp
-               if (transfer(part(tt3,i),1) == 1) then
+               if (part(tt3,i) > 0.5) then
                   tnpp = tnpp + 1
                   ptrack(tnpp) = i
                endif
             end do
-            allocate( tagbuff(2,tnpp) , stat = ierr )
+            if (tnpp /= 0) allocate( tagbuff(2,tnpp) , stat = ierr )
          else
             tnpp = int(npp/dspl)         
          endif
@@ -1744,59 +1744,59 @@
                call h5sclose_f(dspace_id, ierr)
                call h5dclose_f(dset_id, ierr)
 
-               do j = 1, tnpp
-                  tagbuff(1,j) = transfer(part(tt1,ptrack(j)),1)
-                  tagbuff(2,j) = transfer(part(tt2,ptrack(j)),1)
-               enddo
+               if (tagged) then
+                  do j = 1, tnpp
+                     tagbuff(1,j) = transfer(part(tt1,ptrack(j)),1)
+                     tagbuff(2,j) = transfer(part(tt2,ptrack(j)),1)
+                  enddo
 
-               if (ori >= 0 .and. tpo /= 0) then
-                  call h5dopen_f(rootID, 'tag', dset_id, ierr)
-                  tdim(1) = 2
-                  tdim(2) = tp
-                  call h5dextend_f(dset_id, tdim, ierr)
-                  call h5screate_simple_f(2, tdim, dspace_id, ierr)
-                  tdim(2) = tnpp
-                  call h5screate_simple_f(2, tdim, memspaceID, ierr )
-                  tstart(1) = 0
-                  tstart(2) = tpo + dims(1,pid+1) - 1
-                  call h5sselect_hyperslab_f(dspace_id,H5S_SELECT_SET_F,tstart,&
-                  &tdim,ierr)
-                  call h5dwrite_f(dset_id, H5T_NATIVE_INTEGER, tagbuff, tdim, ierr, memspaceID,&
-                  &dspace_id, xfer_prp=xferID)
-               else
-                  maxtdim = (/H5S_UNLIMITED_F,H5S_UNLIMITED_F/)
-                  tdim(1) = 2
-                  tdim(2) = 1
-                  call h5screate_simple_f(2, tdim, dspace_id, ierr, maxtdim)
-                  call h5pcreate_f(H5P_DATASET_CREATE_F, dcplID, ierr)
-                  tdim(2) = tp
-                  call h5pset_chunk_f(dcplID, 2, tdim, ierr)
-                  call h5dcreate_f(rootID, 'tag', H5T_NATIVE_INTEGER,&
-                  &dspace_id, dset_id, ierr, dcplID)
-                  tdim(2) = tp
-                  call h5dextend_f(dset_id, tdim, ierr)
+                  if (ori >= 0 .and. tpo /= 0) then
+                     call h5dopen_f(rootID, 'tag', dset_id, ierr)
+                     tdim(1) = 2
+                     tdim(2) = tp
+                     call h5dextend_f(dset_id, tdim, ierr)
+                     call h5screate_simple_f(2, tdim, dspace_id, ierr)
+                     tdim(2) = tnpp
+                     call h5screate_simple_f(2, tdim, memspaceID, ierr )
+                     tstart(1) = 0
+                     tstart(2) = tpo + dims(1,pid+1) - 1
+                     call h5sselect_hyperslab_f(dspace_id,H5S_SELECT_SET_F,tstart,&
+                     &tdim,ierr)
+                     call h5dwrite_f(dset_id, H5T_NATIVE_INTEGER, tagbuff, tdim, ierr, memspaceID,&
+                     &dspace_id, xfer_prp=xferID)
+                  else
+                     maxtdim = (/H5S_UNLIMITED_F,H5S_UNLIMITED_F/)
+                     tdim(1) = 2
+                     tdim(2) = 1
+                     call h5screate_simple_f(2, tdim, dspace_id, ierr, maxtdim)
+                     call h5pcreate_f(H5P_DATASET_CREATE_F, dcplID, ierr)
+                     tdim(2) = tp
+                     call h5pset_chunk_f(dcplID, 2, tdim, ierr)
+                     call h5dcreate_f(rootID, 'tag', H5T_NATIVE_INTEGER,&
+                     &dspace_id, dset_id, ierr, dcplID)
+                     tdim(2) = tp
+                     call h5dextend_f(dset_id, tdim, ierr)
+                     call h5sclose_f(dspace_id, ierr)
+                     call h5screate_simple_f(2, tdim, dspace_id, ierr)
+                     tdim(2) = tnpp
+                     call h5screate_simple_f(2, tdim, memspaceID, ierr )
+                     tstart(1) = 0
+                     tstart(2) = tpo + dims(1,pid+1) - 1
+                     call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F,tstart,&
+                     &tdim, ierr)
+                     call h5dwrite_f(dset_id, H5T_NATIVE_INTEGER, tagbuff, tdim, ierr, memspaceID,&
+                     &dspace_id, xfer_prp=xferID)
+                     call h5pclose_f(dcplID, ierr)
+                  endif
+                  call h5sclose_f(memspaceID, ierr)
                   call h5sclose_f(dspace_id, ierr)
-                  call h5screate_simple_f(2, tdim, dspace_id, ierr)
-                  tdim(2) = tnpp
-                  call h5screate_simple_f(2, tdim, memspaceID, ierr )
-                  tstart(1) = 0
-                  tstart(2) = tpo + dims(1,pid+1) - 1
-                  call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F,tstart,&
-                  &tdim, ierr)
-                  call h5dwrite_f(dset_id, H5T_NATIVE_INTEGER, tagbuff, tdim, ierr, memspaceID,&
-                  &dspace_id, xfer_prp=xferID)
-                  call h5pclose_f(dcplID, ierr)
+                  call h5dclose_f(dset_id, ierr)
                endif
-               call h5sclose_f(memspaceID, ierr)
-               call h5sclose_f(dspace_id, ierr)
-               call h5dclose_f(dset_id, ierr)
-
-
                call h5pclose_f(xferID, ierr)
                call h5pclose_f(flplID, ierr)
                call h5gclose_f(rootID, ierr)
                call h5fclose_f(file_id, ierr)
-               deallocate(np,dims,buff,tagbuff,ptrack)
+               deallocate(np,dims,buff)
             endif
          endif
 
@@ -1810,8 +1810,11 @@
          if (pgrp /= MPI_COMM_NULL) then
             call MPI_COMM_FREE(pgrp, ierr )
          endif
-         
+
          call h5close_f(ierr)
+
+         if (associated(tagbuff)) deallocate(tagbuff)
+         if (associated(ptrack)) deallocate(ptrack)
          
       end subroutine pwpart_3d_pipe
 !

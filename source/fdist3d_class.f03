@@ -476,9 +476,9 @@
             if (this%tagged) then
                do i = 1, npp
                   if (mod(i,sf) == 0) then
-                     pt(tt3,i) = transfer(1,1.0)
+                     pt(tt3,i) = 1.0
                   else
-                     pt(tt3,i) = transfer(0,1.0)
+                     pt(tt3,i) = 0.0
                   endif
                   pt(tt1,i) = transfer(gid,1.0)
                   pt(tt2,i) = transfer(i,1.0)

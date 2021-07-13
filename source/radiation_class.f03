@@ -241,7 +241,7 @@
             z = s_beam
             tt3 = size(part,1)
             DO n = 1,Np
-               if (transfer(part(tt3,n),1) == 1) then
+               if (part(tt3,n) > 0.5) then
                     x = part(1,n)*deltax
                     y = part(2,n)*deltay
                     tempz = part(3,n)*deltaz
