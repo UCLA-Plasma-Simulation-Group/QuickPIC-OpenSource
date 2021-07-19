@@ -64,7 +64,7 @@
          integer, dimension(:,:), pointer :: ncl => null()
          integer, dimension(:,:,:), pointer :: ihole => null()
          integer, dimension(:), pointer :: kpic => null()
-         real :: xtras = 0.2
+         real :: xtras = 4.0
          logical :: list = .true.
          
          contains

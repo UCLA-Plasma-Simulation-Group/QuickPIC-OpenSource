@@ -79,7 +79,7 @@
          real, dimension(3,nyv,kxp2+1,j2blok), intent(inout) :: cu, amu
          real, dimension(nyv,kxp2+1,j2blok), intent(inout) :: bz
          complex, dimension(nyd,kxp2,j2blok), intent(in) :: ffd
-		 end subroutine
+         end subroutine
       end interface
 !
       interface
