@@ -124,7 +124,7 @@
          type(sim_beams) :: beams
          type(sim_species) :: species
          type(sim_diag), dimension(:), allocatable :: diag
-         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep
+         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep, tstep2
          integer, dimension(8) :: tag
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
@@ -561,8 +561,13 @@
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
-            call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
+            if (npf == 200) then
+               call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
+               &qbm=qbm,dt=dz,ci=1.0,xdim=10,s=s)
+            else
+               call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
+               &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
+            end if               
 
          end do
          call this%err%werrfl2(class//sname//' ended')
@@ -643,6 +648,7 @@
             do j = 1, this%nstep2d
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
+               this%tstep2 = j
                if (j == this%nstep2d) then
                   do m = 1, this%nbeams
                      call MPI_WAIT(this%id_bq(m,2),istat,ierr)

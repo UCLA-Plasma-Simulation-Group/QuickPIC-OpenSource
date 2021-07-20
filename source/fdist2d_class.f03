@@ -14,6 +14,7 @@
       private
 
       public :: fdist2d, fdist2d_000, fdist2d_010, fdist2d_011, fdist2d_012
+      public :: fdist2d_200
 
       type, abstract :: fdist2d
 
@@ -128,6 +129,18 @@
                   
       end type fdist2d_012
 !
+      type, extends(fdist2d) :: fdist2d_200
+! Test particle aligned in a line
+         private
+         integer :: np
+         real :: x0, x1, y0, y1
+                          
+         contains
+         procedure, private :: init_fdist2d => init_fdist2d_200
+         procedure, private :: dist2d => dist2d_200
+                  
+      end type fdist2d_200
+
       character(len=10), save :: class = 'fdist2d:'
       character(len=128), save :: erstr
       
@@ -982,4 +995,105 @@
 
       end subroutine dist2d_012
 !
+      subroutine init_fdist2d_200(this,input,i)
+      
+         implicit none
+         
+         class(fdist2d_200), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i
+! local data
+         integer :: npf,npm,indx,indy
+         real :: x0,x1,y0,y1,min,max,dx,dy
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist2d_200:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+         write (sn,'(I3.3)') i
+         s1 = 'species('//trim(sn)//')'
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if
+
+         call input%get(trim(s1)//'.x0',this%x0)
+         call input%get(trim(s1)//'.x1',this%x1)
+         call input%get(trim(s1)//'.y0',this%y0)
+         call input%get(trim(s1)//'.y1',this%y1)
+         call input%get(trim(s1)//'.np',this%np)
+         this%npmax = this%np
+         this%npf = npf
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         dx = (max-min) /real(2**indx)
+         this%x0 = (this%x0-min)/dx
+         this%x1 = (this%x1-min)/dx
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         dy=(max-min)/real(2**indy)
+         this%y0 = (this%y0-min)/dy
+         this%y1 = (this%y1-min)/dy
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist2d_200
+!
+      subroutine dist2d_200(this,part2d,npp,fd,s)
+         implicit none
+         class(fdist2d_200), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part2d
+         integer, intent(inout) :: npp
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: s 
+! local data
+         character(len=18), save :: sname = 'dist2d_200:'
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: nps, nx, ny, noff, x0, x1, y0, y1, i, j
+         real :: ix, iy, dx, dy
+         real :: qm, den_temp
+         integer :: gid
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
+         x0 = this%x0; y0 = this%y0
+         x1 = this%x1; y1 = this%y1
+         dx = (x1 - x0)/real(this%np-1)
+         dy = (y1 - y0)/real(this%np-1)
+         gid = this%p%getidproc();         
+         den_temp = 1.0
+         pt => part2d
+         nps = 1
+! initialize the particle positions
+         do i=0, this%np-1
+            ix = x0 + dx*i
+            iy = y0 + dy*i
+            if (iy >= real(noff) .and. iy < real(noff+ny)) then
+               pt(1,nps) = ix
+               pt(2,nps) = iy
+               pt(3,nps) = 0.0
+               pt(4,nps) = 0.0
+               pt(5,nps) = 0.0
+               pt(6,nps) = 1.0
+               pt(7,nps) = 1.0
+               pt(8,nps) = 0.0
+               pt(9,nps) = transfer(gid,1.0)
+               pt(10,nps) = transfer(i,1.0)
+               nps = nps + 1
+            end if
+         enddo
+         
+         npp = nps - 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine dist2d_200
       end module fdist2d_class

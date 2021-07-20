@@ -31,7 +31,6 @@
          class(field2d), pointer :: amu => null(), dcu => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
-         logical :: test
 
          contains
          
@@ -95,7 +94,6 @@
 
          call this%err%werrfl2(class//sname//' started')
          
-         this%test = this%pf%gettest()
          ntd = this%pf%getntd()
          if (ntd) allocate(this%qn)
          allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3)
@@ -212,7 +210,6 @@
          character(len=18), save :: sname = 'qdp_species2d:'
          logical :: ntd
 
-         if (this%test) return
          call this%err%werrfl2(class//sname//' started')
          ntd = this%pf%getntd()
          call this%q%as(0.0)
@@ -237,7 +234,6 @@
 ! local data
          character(len=18), save :: sname = 'amjdp_species2d'
 
-         if (this%test) return
          call this%err%werrfl2(class//sname//' started')
          call this%cu%as(0.0)
          call this%dcu%as(0.0)
