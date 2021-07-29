@@ -106,6 +106,7 @@
          class(*), pointer :: obj => null()
          integer, allocatable :: slice, slice_pos, psample, dim
          integer :: df
+         character(len=128) :: path2
 
       end type sim_diag
 !
@@ -123,7 +124,7 @@
          type(sim_fields) :: fields
          type(sim_beams) :: beams
          type(sim_species) :: species
-         type(sim_diag), dimension(:), allocatable :: diag
+         type(sim_diag), dimension(:), allocatable :: diag, diag2
          integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep, tstep2
          integer, dimension(8) :: tag
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
@@ -138,7 +139,7 @@
          generic :: go => go_simulation
 
          procedure, private :: init_simulation, end_simulation
-         procedure, private :: init_diag, diag_simulation
+         procedure, private :: init_diag, diag_simulation, diag2_simulation
          procedure, private :: go_simulation
 
       end type simulation
@@ -552,6 +553,9 @@
             case (12)
                allocate(fdist2d_012::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            case (200)
+               allocate(fdist2d_200::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
 ! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
@@ -649,6 +653,7 @@
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
                this%tstep2 = j
+               call this%diag2_simulation()
                if (j == this%nstep2d) then
                   do m = 1, this%nbeams
                      call MPI_WAIT(this%id_bq(m,2),istat,ierr)
@@ -782,7 +787,7 @@
 ! local data
          character(len=18), save :: sname = 'init_diag:'
          integer :: n_diag = 0, ndump, slice, slice_pos, sample
-         integer :: n, m, l, i, j, k, ii
+         integer :: n, m, l, i, j, k, ii, n_diag2 = 0
          character(len=20) :: s1, s2, s3, s4, sn1, sn2, sn3, sn4
          character(len=:), allocatable :: ss,sl
          real :: min, max, n0, dt
@@ -843,7 +848,14 @@
                      call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
                      n_diag = n_diag + l*n
                   else
-                     n_diag = n_diag + l
+                     if (allocated(ss)) deallocate(ss)
+                     call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').name'&
+                     &//'(1)',ss)
+                     if (ss == 'raw') then
+                        n_diag2 = n_diag2 + 1
+                     else
+                        n_diag = n_diag + l
+                     end if
                   end if
                end if
             end do
@@ -867,8 +879,9 @@
          call this%in%get('simulation.dump_restart',rst)
          if (rst) n_diag = n_diag + this%nbeams
 
-         allocate(this%diag(n_diag))
+         allocate(this%diag(n_diag), this%diag2(n_diag2))
          n_diag = 0
+         n_diag2 = 0
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
             call this%in%info('beam('//trim(s1)//').diag',n_children=m)
@@ -974,7 +987,7 @@
                         &ty = 'particles',&
                         &filename = './Beam'//trim(s1)//'/Raw/',&
                         &dataname = 'raw',&
-                        &units = '',&
+                        &units = ' ',&
                         &label = 'Beam Raw')
                      end select
                   end do
@@ -1024,6 +1037,8 @@
                         sn4 = 'J_z'
                         dim = 3
                         obj => this%fields%cu3d
+                     case ('raw')
+                         obj => this%species%spe(i)                       
                      end select
                      if (this%in%found('species('//trim(s1)//').diag'//'('//trim(s2)//').slice')) then
                         call this%in%info('species('//trim(s1)//').diag'//'('//trim(s2)//').slice',n_children=n)
@@ -1077,27 +1092,48 @@
                            &label = trim(sn4))
                         end do
                      else
-                        n_diag = n_diag + 1
-                        this%diag(n_diag)%df = ndump
-                        this%diag(n_diag)%obj => obj
-                        allocate(this%diag(n_diag)%dim)
-                        this%diag(n_diag)%dim = dim
-                        if (this%p%getidproc() == 0) then
-                           call system('mkdir -p ./Species'//trim(s1)//'/'//trim(sn1)//'/')
+                        if (ss == 'raw') then
+                           n_diag2 = n_diag2 + 1
+                           this%diag2(n_diag2)%df = ndump
+                           this%diag2(n_diag2)%obj => obj
+                           this%diag2(n_diag2)%path2 = './Species'//trim(s1)//'/Raw/'
+                           ! allocate(this%diag(n_diag)%psample)
+                           ! call this%in%get('beam('//trim(s1)//').diag'//'('//trim(s2)//').&
+                           ! &sample',this%diag(n_diag)%psample)
+                           if (this%p%getidproc() == 0) then
+                              call system('mkdir -p ./Species'//trim(s1)//'/Raw/')
+                           end if
+                           call this%diag2(n_diag2)%file%new(&
+                           &timeunits = '1 / \omega_p',&
+                           &dt = dt,&
+                           &ty = 'particles',&
+                           &filename = './Species'//trim(s1)//'/Raw/',&
+                           &dataname = 'raw',&
+                           &units = ' ',&
+                           &label = 'Test Particles Raw Data')
+                        else
+                           n_diag = n_diag + 1
+                           this%diag(n_diag)%df = ndump
+                           this%diag(n_diag)%obj => obj
+                           allocate(this%diag(n_diag)%dim)
+                           this%diag(n_diag)%dim = dim
+                           if (this%p%getidproc() == 0) then
+                              call system('mkdir -p ./Species'//trim(s1)//'/'//trim(sn1)//'/')
+                           end if
+                           call this%diag(n_diag)%file%new(&
+                           &timeunits = '1 / \omega_p',&
+                           &dt = dt,&
+                           &axisname  = (/'x  ','y  ','\xi'/),&
+                           &axislabel = (/'x  ','y  ','\xi'/),&
+                           &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                           &axismin = (/alx1,aly1,alz1/),&
+                           &axismax = (/alx2,aly2,alz2/),&
+                           &rank = 3,&
+                           &filename = './Species'//trim(s1)//'/'//trim(sn1)//'/',&
+                           &dataname = trim(sn2),&
+                           &units = trim(sn3),&
+                           &label = trim(sn4))
                         end if
-                        call this%diag(n_diag)%file%new(&
-                        &timeunits = '1 / \omega_p',&
-                        &dt = dt,&
-                        &axisname  = (/'x  ','y  ','\xi'/),&
-                        &axislabel = (/'x  ','y  ','\xi'/),&
-                        &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
-                        &axismin = (/alx1,aly1,alz1/),&
-                        &axismax = (/alx2,aly2,alz2/),&
-                        &rank = 3,&
-                        &filename = './Species'//trim(s1)//'/'//trim(sn1)//'/',&
-                        &dataname = trim(sn2),&
-                        &units = trim(sn3),&
-                        &label = trim(sn4))
                      end if
                   end do
                end if
@@ -1288,6 +1324,43 @@
 
       end subroutine init_diag
 !
+      subroutine diag2_simulation(this)
+
+         implicit none
+
+         class(simulation), intent(inout) :: this
+! local data
+         character(len=18), save :: sname = 'diag2_simulation:'
+         character(len=20) :: s1
+         integer :: n, m, l, i, j, k, ierr, idn = 9
+         integer, dimension(10) :: istat
+         real :: dt
+
+         call this%err%werrfl2(class//sname//' started')
+
+         call this%in%get('simulation.dt',dt)
+
+         n = size(this%diag2)
+
+         do i = 1, n
+            if (mod(this%tstep,this%diag(i)%df) == 0) then
+               write (s1, '(I8.8)') this%tstep
+               if (this%p%getidproc() == 0) then
+                  call system('mkdir -p '//trim(this%diag2(i)%path2)//trim(s1)//'/')
+               end if               
+               call this%diag2(i)%file%new(n = this%tstep2, t = real(this%tstep2),filename = trim(this%diag2(i)%path2)&
+               &//trim(s1)//'/')
+               select type (obj => this%diag2(i)%obj)
+               type is (species2d)
+                  call obj%wr(this%diag2(i)%file,(/this%dex,this%dex/))
+               end select
+            end if
+         end do
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine diag2_simulation
+!      
       subroutine diag_simulation(this)
 
          implicit none

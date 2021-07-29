@@ -64,7 +64,7 @@
          integer, dimension(:,:), pointer :: ncl => null()
          integer, dimension(:,:,:), pointer :: ihole => null()
          integer, dimension(:), pointer :: kpic => null()
-         real :: xtras = 0.2
+         real :: xtras = 4.0
          logical :: list = .true.
          
          contains
@@ -395,6 +395,7 @@
          ncl => this%ncl; ihole => this%ihole; kpic => this%kpic
          irc = this%irc
 ! check if required size of buffer has increased
+         write(2,*) "szpbuf", szpbuf, idimp*npbmx*mxyp1
          if (szpbuf < idimp*npbmx*mxyp1) then
             if (szpbuf /= 0) deallocate(ppbuff)
 ! allocate new buffer
@@ -402,6 +403,7 @@
             szpbuf = idimp*npbmx*mxyp1
          endif
 ! check if required size of buffers has increased
+         write(2,*) "szbuf", szbufs, idimp*nbmax
          if (szbufs < idimp*nbmax) then
             if (szbufs /= 0) deallocate(sbufl,sbufr,rbufl,rbufr)
 ! allocate new buffers
@@ -683,7 +685,7 @@
 
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine partcopyback  
+      end subroutine partcopyback
 !
       subroutine pipesend_part2d(this,tag,id)
       

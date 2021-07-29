@@ -857,10 +857,13 @@
 ! local data
          integer :: tnpp, tp, color, pgrp, pid, pnvp, i, j
          integer(hsize_t), dimension(1) :: ldim
+         integer(hsize_t), dimension(2) :: tdim
          integer, dimension(:), pointer :: np
          integer, dimension(:,:), pointer:: dims
          real, dimension(:), pointer :: buff
-         integer(hsize_t), dimension(1) :: start,maxdim
+         integer, dimension(:,:), pointer :: tagbuff
+         integer(hsize_t), dimension(1) :: start
+         integer(hsize_t), dimension(2) :: tstart         
          integer(hid_t) :: treal
          integer(hid_t) :: flplID, xferID, memspaceID, aid
          integer(hid_t) :: file_id, rootID, dset_id, dspace_id, aspace_id
@@ -926,6 +929,7 @@
                   dims(2,i) = dims(1,i) + np(i) - 1
                enddo
                allocate(buff(tnpp), stat = ierr)
+               allocate(tagbuff(2,tnpp), stat = ierr)
 
                call h5pcreate_f(H5P_FILE_ACCESS_F, flplID, ierr)         
                call h5pcreate_f(H5P_DATASET_XFER_F, xferID, ierr)  
@@ -1001,19 +1005,39 @@
                call h5sclose_f(dspace_id, ierr)
                call h5dclose_f(dset_id, ierr)
 
+               do j = 1, tnpp
+                  tagbuff(1,j) = transfer(part(9,j),1)
+                  tagbuff(2,j) = transfer(part(10,j),1)
+               enddo
+
+               tdim(1) = 2
+               tdim(2) = tp
+               call h5screate_simple_f(2, tdim, dspace_id, ierr)
+               call h5dcreate_f(rootID, 'tag', H5T_NATIVE_INTEGER,&
+               &dspace_id, dset_id, ierr)
+               tdim(2) = tnpp
+               call h5screate_simple_f(2, tdim, memspaceID, ierr )
+               tstart(1) = 0
+               tstart(2) = dims(1,pid+1) - 1
+               call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F,tstart,&
+               &tdim, ierr)
+               call h5dwrite_f(dset_id, H5T_NATIVE_INTEGER, tagbuff, tdim, ierr, memspaceID,&
+               &dspace_id, xfer_prp=xferID)
+               call h5sclose_f(memspaceID, ierr)
+               call h5sclose_f(dspace_id, ierr)
+               call h5dclose_f(dset_id, ierr)
 
                call h5pclose_f(xferID, ierr)
                call h5pclose_f(flplID, ierr)
                call h5gclose_f(rootID, ierr)
                call h5fclose_f(file_id, ierr)
-               deallocate(np,dims,buff)
+               deallocate(np,dims,buff,tagbuff)
             endif            
             if (pgrp /= MPI_COMM_NULL) then
                call MPI_COMM_FREE(pgrp, ierr)
             endif
             call h5close_f(ierr)
          endif
-         
       end subroutine pwpart_2d
 !
       subroutine pwpart_3d_pipe(pp,perr,file,part,npp,dspl,delta,origin,rtag,stag,&
