@@ -1,7 +1,7 @@
 {
 "simulation" : !note
 {
-    "nodes" : [32,1], 
+    "nodes" : [32,2], 
     "indx" : 8,
     "indy" : 8,
     "indz" : 8,

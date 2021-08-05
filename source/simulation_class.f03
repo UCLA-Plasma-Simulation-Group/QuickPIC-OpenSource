@@ -125,7 +125,7 @@
          type(sim_beams) :: beams
          type(sim_species) :: species
          type(sim_diag), dimension(:), allocatable :: diag, diag2
-         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep, tstep2
+         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep, tstep2, noffstep2d
          integer, dimension(8) :: tag
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
@@ -188,6 +188,7 @@
          this%dxi = dz
          this%dex2 = dx * dx
          this%nstep2d = 2**this%sp3%getindz()/this%p%getnstage()
+         this%noffstep2d = this%p%getstageid()*this%nstep2d
          call this%in%get('simulation.time',min)
          call this%in%get('simulation.dt',max)
          this%nstep3d = min/max
@@ -652,7 +653,7 @@
             do j = 1, this%nstep2d
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
-               this%tstep2 = j
+               this%tstep2 = j+this%noffstep2d
                call this%diag2_simulation()
                if (j == this%nstep2d) then
                   do m = 1, this%nbeams
