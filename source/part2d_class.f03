@@ -770,20 +770,20 @@
          
       end subroutine piperecv_part2d
 !      
-      subroutine writehdf5_part2d(this,file,delta)
+      subroutine writehdf5_part2d(this,file,delta,origin)
 
          implicit none
          
          class(part2d), intent(inout) :: this
          class(hdf5file), intent(in) :: file
-         real, dimension(2), intent(in) :: delta
+         real, dimension(2), intent(in) :: delta, origin
 ! local data
          character(len=18), save :: sname = 'writehdf5_part2d:'
          integer :: ierr
 
          call this%err%werrfl2(class//sname//' started')                  
          call this%pcb()
-         call pwpart(this%p,this%err,file,this%part,this%npp,1,delta,ierr)
+         call pwpart(this%p,this%err,file,this%part,this%npp,1,delta,origin,ierr)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_part2d

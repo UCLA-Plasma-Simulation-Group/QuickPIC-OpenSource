@@ -843,7 +843,7 @@
                         
       end subroutine wfield_2d_pipe
 !
-      subroutine pwpart_2d(pp,perr,file,part,npp,dspl,delta,ierr)
+      subroutine pwpart_2d(pp,perr,file,part,npp,dspl,delta,origin,ierr)
      
          implicit none
 
@@ -851,7 +851,7 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: part
-         real, dimension(2), intent(in) :: delta
+         real, dimension(2), intent(in) :: delta, origin
          integer, intent(in) :: npp,dspl
          integer, intent(inout) :: ierr
 ! local data
@@ -948,7 +948,7 @@
                call h5sclose_f(aspace_id, ierr)
 
                do i = 1, 2
-                  buff(1:tnpp) = part(i,1:(1+(tnpp-1)*dspl):dspl)*delta(i)
+                  buff(1:tnpp) = part(i,1:(1+(tnpp-1)*dspl):dspl)*delta(i)+origin(i)
                   ldim(1) = tp
                   call h5screate_simple_f(1, ldim, dspace_id, ierr)
                   call h5dcreate_f(rootID, 'x'//char(iachar('0')+i), treal,&

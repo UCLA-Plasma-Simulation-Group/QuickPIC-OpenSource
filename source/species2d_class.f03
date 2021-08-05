@@ -390,7 +390,7 @@
 
          call this%err%werrfl2(class//sname//' started')                  
          
-         call this%pd%wr(file,delta) 
+         call this%pd%wr(file,delta,this%pf%getorigin()) 
 
          call this%err%werrfl2(class//sname//' ended')
       

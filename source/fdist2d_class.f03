@@ -26,6 +26,7 @@
 !
 ! ndprof = profile type 
          integer :: npf, npmax
+         real, dimension(2) :: origin=(/0.0,0.0/)
          logical :: ntd
                           
          contains
@@ -35,7 +36,7 @@
          procedure(ab_init_fdist2d), deferred, private :: init_fdist2d
          procedure, private :: end_fdist2d
          procedure(ab_dist2d), deferred, private :: dist2d
-         procedure :: getnpf, getnpmax, getntd
+         procedure :: getnpf, getnpmax, getntd, getorigin
                   
       end type fdist2d
 
@@ -178,6 +179,17 @@
          getntd = this%ntd
       
       end function getntd
+!
+      function getorigin(this)
+
+         implicit none
+
+         class(fdist2d), intent(in) :: this
+         real, dimension(2) :: getorigin
+         
+         getorigin = this%origin
+
+      end function getorigin
 !
       subroutine end_fdist2d(this)
           
@@ -1033,11 +1045,13 @@
          this%npf = npf
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
          dx = (max-min) /real(2**indx)
          this%x0 = (this%x0-min)/dx
          this%x1 = (this%x1-min)/dx
          call input%get('simulation.box.y(1)',min)
          call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
          dy=(max-min)/real(2**indy)
          this%y0 = (this%y0-min)/dy
          this%y1 = (this%y1-min)/dy
@@ -1056,8 +1070,8 @@
 ! local data
          character(len=18), save :: sname = 'dist2d_200:'
          real, dimension(:,:), pointer :: pt => null()
-         integer :: nps, nx, ny, noff, x0, x1, y0, y1, i, j
-         real :: ix, iy, dx, dy
+         integer :: nps, nx, ny, noff, i, j
+         real :: ix, iy, dx, dy, x0, x1, y0, y1
          real :: qm, den_temp
          integer :: gid
 
