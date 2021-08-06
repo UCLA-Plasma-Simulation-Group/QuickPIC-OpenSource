@@ -825,6 +825,13 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
 
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+
          this%npf = npf
          this%npx = npx
          this%npy = npy
@@ -881,7 +888,9 @@
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps=1
+         integer :: i, j, k
          logical :: lquiet = .false.
+         integer :: tt1, tt2, tt3, gid, sf
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_002:'
 
@@ -899,11 +908,14 @@
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
          
+
          call PRVDIST32_TWISS(pt,this%qm,edges,npp, nps, alphax,alphay,   &
          &betax,betay, emitx,emity,sigz,vdx,vdy,vdz,vtz,npx,npy,npz,idimp,&
          &npmax,nx,ny,nz,x0,y0,z0,1,1,4,ierr,vdz,lquiet)
@@ -916,6 +928,18 @@
             write (erstr,*) 'PRVDIST32_RANDOM error'
             call this%err%equit(class//sname//erstr)
          endif
+
+         if (this%tagged) then
+            do i = 1, npp
+               if (mod(i,sf) == 0) then
+                  pt(tt3,i) = 1.0
+               else
+                  pt(tt3,i) = 0.0
+               endif
+               pt(tt1,i) = transfer(gid,1.0)
+               pt(tt2,i) = transfer(i,1.0)
+            end do
+         end if
          
          call this%err%werrfl2(class//sname//' ended')
          
