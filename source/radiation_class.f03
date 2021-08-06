@@ -21,7 +21,7 @@
 !         class(spect3d), pointer, public :: sp => null()
          class(parallel_pipe), pointer, public :: p => null()
 
-         real :: x0,x1,y0,y1,z,dx,dy,dt,dw
+         real :: x0,x1,y0,y1,z,dx,dy,dt,dw,n0
          real :: t0,t1
          real :: w0,w1
          real, dimension(3) :: delta
@@ -81,6 +81,7 @@
             real :: min, max
             real :: t0,t1
             real :: w0,w1
+            real(8) :: n0
             integer::Nx,Ny,Nt,Nw,ii,n_children,n
             integer :: indx, indy, indz         
             character(len=20) :: sn,s1
@@ -95,7 +96,8 @@
             call input%get('simulation.indx',indx)
             call input%get('simulation.indy',indy)
             call input%get('simulation.indz',indz)
-
+            call input%get('simulation.n0',n0)
+            this%n0 = n0
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//').radiation'
 
@@ -227,6 +229,7 @@
             real :: dx,dy,dt
             real :: r
             real :: intensity
+            real(8) :: A,n0
             real(8),dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp0,temp1,temp2,pnew,pold,&
                                  &vnew,vold,force
             real :: temp3,temp4
@@ -237,7 +240,9 @@
             deltax = this%delta(1)
             deltay = this%delta(2)
             deltaz = this%delta(3)
-
+            A = 1.15239e-41*this%n0**0.5
+            print *, this%n0
+            !print *, A
             z = s_beam
             tt3 = size(part,1)
             DO n = 1,Np
@@ -276,7 +281,7 @@
                                 temp2 = cross(vec_n,temp1)
                                 temp3 = (temp2(1)**2+temp2(2)**2+temp2(3)**2)
                                 temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
-                                intensity =(temp3/temp4**5)*delta_t
+                                intensity = A*(temp3/temp4**5)*delta_t
                                 this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
                                 this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
                             end if
