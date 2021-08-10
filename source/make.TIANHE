@@ -1,0 +1,35 @@
+JSON_INC=/PARA2/grid305/git/json-fortran/lib/mod
+JSON_LIB=/PARA2/grid305/git/json-fortran/lib
+
+FC_TIANHE = mpif90 -c -I$(JSON_INC) -fopenmp
+CC_TIANHE = mpicc -c
+LINKER_TIANHE = mpif90 -fopenmp -O3
+
+OPTS_DBL_TIANHE = -O3 -r8
+OPTS_SGL_TIANHE = -O3
+
+FORMAT_FREE_TIANHE = -stand f03 -FR -Tf 
+FORMAT_FIXED_TIANHE = -FI
+
+# hdf5 libraries 
+
+#HDF5_LIB =/WORK/app/hdf5/1.10.6-gcc-5.4.0/lib
+#HDF5_INC =/WORK/app/hdf5/1.10.6-gcc-5.4.0/include
+HDF5_ROOT = /WORK/app/hdf5/1.8.21-icc-18
+HDF5_LIB =$(HDF5_ROOT)/lib
+HDF5_INC =$(HDF5_ROOT)/include
+
+HDF_LIBPATH_TIANHE= -L$(HDF5_LIB) -lhdf5_fortran -lhdf5_hl -lhdf5 -lz 
+HDF_INCLUDE_PATH_TIANHE= -I$(HDF5_INC) -I${HDF5_LIB} -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
+
+# other libs
+OTHER_LIBS_TIANHE = -L$(JSON_LIB) -ljsonfortran
+
+# memory options
+MEM_OPTIONS_TIANHE = 
+
+# options for linking
+# use static libs
+STATIC_LINK_TIANHE = 
+# use shared libs
+SHARED_LINK_TIANHE = 
