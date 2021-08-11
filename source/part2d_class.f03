@@ -173,7 +173,6 @@
          this%ntmaxp = xtras*this%nppmx + 1
          this%npbmx = xtras*this%nppmx + 1
          this%nbmaxp = 0.25*mx1*this%npbmx
-         write (2,*) "nppmx", this%nppmx, npmax, this%npp, this%nbmaxp
 
          allocate(this%ppart(xdim,this%nppmx0,mxyp1))
          allocate(this%ncl(8,mxyp1))
@@ -398,7 +397,6 @@
          ncl => this%ncl; ihole => this%ihole; kpic => this%kpic
          irc = this%irc
 ! check if required size of buffer has increased
-         write(2,*) "szpbuf", szpbuf, idimp*npbmx*mxyp1
          if (szpbuf < idimp*npbmx*mxyp1) then
             if (szpbuf /= 0) deallocate(ppbuff)
 ! allocate new buffer
@@ -406,7 +404,6 @@
             szpbuf = idimp*npbmx*mxyp1
          endif
 ! check if required size of buffers has increased
-         write(2,*) "szbuf", szbufs, idimp, nbmax
          if (szbufs < idimp*nbmax) then
             if (szbufs /= 0) deallocate(sbufl,sbufr,rbufl,rbufr)
 ! allocate new buffers
