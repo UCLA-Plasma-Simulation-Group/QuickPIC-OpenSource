@@ -240,7 +240,7 @@
             deltax = this%delta(1)
             deltay = this%delta(2)
             deltaz = this%delta(3)
-            A = 1.15239e-41*this%n0**0.5
+            A = 3.4548e-33*this%n0**0.5
             print *, this%n0
             !print *, A
             z = s_beam
