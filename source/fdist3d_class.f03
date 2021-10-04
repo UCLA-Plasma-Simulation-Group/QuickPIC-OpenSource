@@ -33,7 +33,7 @@
          class(parallel_pipe), pointer, public :: p => null()
 !
 ! ndprof = profile type
-         integer :: npf, npmax, sf=1
+         integer :: npf, npmax, sf=1,sf1=1
          real, dimension(3) :: origin=(/0.0,0.0,0.0/)
          logical :: evol = .true., static = .false.
          logical :: tagged = .false.
@@ -213,6 +213,17 @@
          getsf = this%sf
 
       end function getsf
+
+      function getsf1(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         integer :: getsf1
+         
+         getsf1 = this%sf1
+
+      end function getsf1
 !      
       function getevol(this)
 
@@ -358,6 +369,7 @@
          end if
          if (input%found(trim(s1)//'.fsample')) then
             call input%get(trim(s1)//'.fsample',this%sf)
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
          end if
 
          this%npf = npf
@@ -422,7 +434,7 @@
          integer :: nps=1
          integer :: i, j, k
          logical :: lquiet = .false.
-         integer :: tt1, tt2, tt3, gid, sf
+         integer :: tt1, tt2, tt3, gid, sf,sf1
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_000:'
 
@@ -440,7 +452,7 @@
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
          tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
-         gid = this%p%getidproc(); sf = this%sf
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
@@ -477,8 +489,12 @@
                do i = 1, npp
                   if (mod(i,sf) == 0) then
                      pt(tt3,i) = 1.0
+                     if (mod(i,sf1*sf)==0) then 
+                     pt(tt3,i) = 2.0
+                     end if 
                   else
                      pt(tt3,i) = 0.0
+                     
                   endif
                   pt(tt1,i) = transfer(gid,1.0)
                   pt(tt2,i) = transfer(i,1.0)
@@ -831,6 +847,9 @@
          if (input%found(trim(s1)//'.fsample')) then
             call input%get(trim(s1)//'.fsample',this%sf)
          end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
+         end if
 
          this%npf = npf
          this%npx = npx
@@ -890,7 +909,7 @@
          integer :: nps=1
          integer :: i, j, k
          logical :: lquiet = .false.
-         integer :: tt1, tt2, tt3, gid, sf
+         integer :: tt1, tt2, tt3, gid, sf,sf1
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_002:'
 
@@ -909,7 +928,7 @@
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
          tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
-         gid = this%p%getidproc(); sf = this%sf
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
@@ -933,6 +952,9 @@
             do i = 1, npp
                if (mod(i,sf) == 0) then
                   pt(tt3,i) = 1.0
+                 if (mod(i,sf1*sf)==0) then 
+                  pt(tt3,i) = 2.0
+                 end if 
                else
                   pt(tt3,i) = 0.0
                endif
