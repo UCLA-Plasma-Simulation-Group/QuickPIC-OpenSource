@@ -946,6 +946,30 @@
                      &dataname = 'intensity',&
                      &units = ' ',&
                      &label = 'Radiation Intenisty')
+
+                  case ('spectrum')
+                     n_diag = n_diag+1
+                     this%diag(n_diag)%df = ndump
+                     this%diag(n_diag)%obj => this%beams%beam(i) 
+                     allocate(this%diag(n_diag)%rad)
+                     this%diag(n_diag)%rad = 2
+                     call this%diag(n_diag)%file%new(&
+                     &axismin = (/radx0,rady0,alz1/),&
+                     &axismax = (/radx1,rady1,alz2/),&
+                     &axisname  = (/'x','y','z'/),&
+                     &axislabel = (/'x','y','z'/))
+                     if (this%p%getidproc() == 0) then
+                        call system('mkdir -p ./Beam'//trim(s1)//'/Radiation/')
+                     end if
+                     call this%diag(n_diag)%file%new(&
+                     &timeunits = '1 / \omega_p',&
+                     &dt = dt,&
+                     &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                     &rank = 2,&
+                     &filename = './Beam'//trim(s1)//'/Radiation/',&
+                     &dataname = 'spectrum',&
+                     &units = ' ',&
+                     &label = 'Radiation Spectrum')
                   end select
                end do
             end if
@@ -1418,7 +1442,8 @@
                   else if (allocated(this%diag(i)%rad)) then
                      if (this%tstep /= 0) then
                         this%tag(1) = ntag()
-                        call obj%wrr(this%diag(i)%file,'intensity',this%tag(1),this%id(idn+i))
+                        call obj%wrr(this%diag(i)%file,this%tag(1),this%id(idn+i),this%diag(i)%rad)
+                        print*,this%diag(i)%rad
                      end if
                   else
                      call obj%wrst(this%diag(i)%file)

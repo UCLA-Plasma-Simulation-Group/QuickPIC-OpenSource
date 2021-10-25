@@ -44,11 +44,12 @@
          procedure, private :: calculate_spectrum
          procedure, private :: calculate_field
          procedure, private :: calculate_field_w
+         procedure, private :: calculate_field_w2
          procedure, private :: calculate_radiation2
          procedure, private :: calculate_intensity2
 !         procedure :: calculate_spectrum2
 !         procedure :: calculate_field2
-!         procedure :: calculate_field_w2
+!         
         end type radiation
         character(len=10) :: class = "radiation"
         character(len=128) :: erstr 
@@ -313,13 +314,10 @@
 !
         subroutine calculate_field(this,part,Np,s_beam,ds)
             implicit none
-
             class(radiation), intent(inout) :: this
             real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
-
-
             integer :: n,i,j,k,tt3
             integer :: t_n
             real :: x,y,z,tempz
@@ -356,11 +354,11 @@
                 acc = (vnew-vold)/delta_t
                 DO i=1,this%Nx,1
                     DO j = 1,this%Ny,1
-                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
+                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
                         vec_r = posi_x - posi
                         r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
                         vec_n = vec_r/r
-                        t_obs = (t + r-this%t0)/dt
+                        t_obs = (t + r-this%t0)/this%dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
                             m0 = t_obs - t_n
@@ -733,7 +731,7 @@
         end subroutine calculate_spectrum
 
 
-        subroutine write_radiation(this,file,tag,id)
+        subroutine write_radiation(this,file,tag,id,rad)
 
             implicit none
 
@@ -741,6 +739,7 @@
             class(hdf5file), intent(in) :: file
             integer, intent(in) :: tag
             integer, intent(inout) :: id
+            integer, intent(in) :: rad
 
             real, dimension(:,:), allocatable :: trad
             real, dimension(:,:), allocatable :: spectrum
@@ -750,21 +749,20 @@
             real(8) :: delta_O
             allocate(trad(this%Nx,this%Ny))
             allocate(spectrum(1,this%Nw+1))
-            trad = sum(this%intensity,3)
-            gs(1) = this%Nx
-            gs(2) = this%Ny
-            call pwrad(this%p,this%err,file,"intensity",trad,gs,tag,id,ierr)
-            if (allocated(this%spectrum)) then
+            if (rad == 1) then 
+                trad = sum(this%intensity,3)
+                gs(1) = this%Nx
+                gs(2) = this%Ny
+                call pwrad(this%p,this%err,file,trad,gs,tag,id,ierr)  
+                deallocate(trad)  
+            else if (rad == 2) then
                 delta_O = this%dx1*this%dy1/(this%z**2)
                 spectrum = reshape(sum(sum(this%spectrum,1),1),(/1,this%Nw+1/))*delta_O
-                write(2,*) "spectrum=",spectrum
                 gs1(1) = 1
                 gs1(2) = this%Nw+1
-                call pwrad(this%p,this%err,file,"spectrum",spectrum,gs1,tag,id,ierr)
+                call pwrad(this%p,this%err,file,spectrum,gs1,tag,id,ierr)
+                deallocate(spectrum)
             end if
-            deallocate(trad)
-            deallocate(spectrum)
-        
         end subroutine write_radiation
 !
         end module radiation_class
