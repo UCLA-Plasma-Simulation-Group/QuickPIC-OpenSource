@@ -185,8 +185,8 @@
                 case('field')
                     allocate(this%field_E(3,this%Nx,this%Ny,this%Nt+1))
                     this%field_E = 0
-                    !allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
-                    !this%field_B = 0
+                    allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
+                    this%field_B = 0
                 case('field_w')
                     allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw+1))
                     this%Ew_re = 0
@@ -400,8 +400,8 @@
                             field_B = cross(vec_n,field_E)
                             this%field_E(:,i,j,t_n) = this%field_E(:,i,j,t_n) + field_E*m1
                             this%field_E(:,i,j,t_n + 1) = this%field_E(:,i,j,t_n+1) + field_E*m0
-                            !this%field_B(:,i,j,t_n) = this%field_B(:,i,j,t_n) + field_B*m1
-                            !this%field_B(:,i,j,t_n + 1) = this%field_B(:,i,j,t_n+1) + field_B*m0
+                            this%field_B(:,i,j,t_n) = this%field_B(:,i,j,t_n) + field_B*m1
+                            this%field_B(:,i,j,t_n + 1) = this%field_B(:,i,j,t_n+1) + field_B*m0
                         else 
                             print*,r
                         end if
@@ -813,8 +813,7 @@
                 DO j = 1,this%Ny,1
                     DO i = 1,this%Nx,1
                         Do k = 1,this%Nt+1,1
-                            S(i,j,k) = this%field_E(1)**2+this%field_E(2)**2+this%field_E(3)**2
-                            !S(i,j,k) = this%field_E(1,i,j,k)*this%field_B(2,i,j,k) - this%field_E(2,i,j,k)*this%field_B(1,i,j,k)
+                            S(i,j,k) = this%field_E(1,i,j,k)*this%field_B(2,i,j,k) - this%field_E(2,i,j,k)*this%field_B(1,i,j,k)
                         end DO
                     end DO
                 end DO
