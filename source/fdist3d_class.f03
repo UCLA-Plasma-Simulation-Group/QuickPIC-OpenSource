@@ -369,9 +369,10 @@
          end if
          if (input%found(trim(s1)//'.fsample')) then
             call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
             call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
          end if
-
          this%npf = npf
          this%npx = npx
          this%npy = npy
