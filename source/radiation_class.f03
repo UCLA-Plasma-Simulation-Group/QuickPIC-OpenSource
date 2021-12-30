@@ -134,11 +134,7 @@
             call input%get('beam('//trim(sn)//').center(3)',beam_z)
             this%delta(3) = (max-min)/real(2**indz)
             this%type = type
-            if (this%type==1) then
-                this%z = z
-            else if (this%type==2) then
-                this%z = z - beam_z
-            end if 
+            this%z = z
             call input%get(s1//'.time(1)',min )
             call input%get(s1//'.time(2)',max )
             call input%get(s1//'.nt',Nt )
@@ -280,7 +276,6 @@
                     y = part(2,n)*deltay
                     tempz = part(3,n)*deltaz
                     t = s_beam + tempz
-!                    posi = (/x,y,n1*z-n2*tempz/)
                     posi = (/x,y,z/)
                     p = part(4:6,n)
                     vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
@@ -298,7 +293,7 @@
                             r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                             vec_n = vec_r/r
 !                            t_obs = (t + r - this%t0)/this%dt
-                            t_obs = (n1*t + r - this%t0)/this%dt
+                            t_obs = (n1*t +n2*tempz + r - this%t0)/this%dt
                             if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                                 t_n = t_obs
                                 m0 = t_obs - t_n
