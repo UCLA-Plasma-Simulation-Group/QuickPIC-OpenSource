@@ -132,7 +132,7 @@
          private
 
          integer :: npt
-         real :: bcx, bcy, bcz, dx, dy, dz, cwp
+         real(8) :: bcx, bcy, bcz, dx, dy, dz, cwp
          character(len=:), allocatable :: file
 
          contains
@@ -313,7 +313,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -541,7 +543,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -800,7 +804,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -977,9 +983,9 @@
          integer, intent(in) :: i
 ! local data
          integer :: npt, npmax, npf
-         real :: bcx, bcy, bcz
+         real(8) :: bcx, bcy, bcz
          logical :: evol
-         real :: min, max, cwp, n0
+         real(8) :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz
          character(len=20) :: sn,s1
@@ -999,7 +1005,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          this%cwp = cwp
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
@@ -1060,12 +1068,12 @@
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: part
          integer :: npt, nx, ny, nz, ipbc, i
-         real :: x0, y0, z0, dx, dy, dz, cwp
+         real(8) :: x0, y0, z0, dx, dy, dz, cwp
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps
          integer :: idimp, npmax, ierr
-         real tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
+         real(8) :: tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
          character(len=18), save :: sname = 'dist3d_003:'
 
          call this%err%werrfl2(class//sname//' started')
@@ -1157,7 +1165,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -1398,7 +1408,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
