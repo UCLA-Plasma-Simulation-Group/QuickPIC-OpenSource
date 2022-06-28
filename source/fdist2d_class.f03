@@ -164,7 +164,7 @@
          
          getntd = this%ntd
       
--      end function getntd
+      end function getntd
 !
       subroutine end_fdist2d(this)
           
