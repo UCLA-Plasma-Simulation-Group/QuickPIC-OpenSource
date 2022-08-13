@@ -325,15 +325,17 @@
          character(len=38), save :: sname = 'json_file_get_double:'
          character(len=:), allocatable :: error
          logical :: st
+         double precision:: val1
 
          call this%err%werrfl2(class//sname//' started')
 
-         call this%input%get(path, val)
+         call this%input%get(path, val1)
          if (this%input%failed()) then
             call this%input%check_for_errors(st, error)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
-         end if         
+         end if
+         val = val1         
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -425,16 +427,19 @@
          character(len=38), save :: sname = 'json_file_get_double_vec:'
          character(len=:), allocatable :: error
          logical :: st
+         double precision, dimension(:),allocatable :: vec1
+
 
          call this%err%werrfl2(class//sname//' started')
 
-         call this%input%get(path, vec)
+         call this%input%get(path, vec1)
          if (this%input%failed()) then
             call this%input%check_for_errors(st, error)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
-
+         allocate(vec(sizeof(vec1)))
+         vec = vec1
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine json_file_get_double_vec
