@@ -11,6 +11,7 @@
       use field2d_class
       use part3d_class
       use hdf5io_class
+      use radiation_class
       use mpi
                
       implicit none
@@ -29,7 +30,8 @@
          class(part3d), pointer :: pd
          class(field3d), pointer :: q => null()
          class(fdist3d), pointer :: pf => null()
-         logical :: evol, static
+         class(radiation), pointer :: rad => null()
+         logical :: evol, static, lrad, tagged
          contains
          
          generic :: new => init_beam3d
@@ -38,6 +40,7 @@
          generic :: pmv => pmove_beam3d
          generic :: qdp => qdeposit_beam3d, qdpcopy_beam3d  
          generic :: wr => writehdf5_beam3d
+         generic :: wrr => writerad_beam3d
          generic :: wrq => writeq_beam3d, writeqslice_beam3d
          generic :: wrst => writerst_beam3d       
          generic :: rrst => readrst_beam3d       
@@ -47,7 +50,7 @@
          procedure, private :: pmove_beam3d   
          procedure, private :: qdeposit_beam3d, writehdf5_beam3d
          procedure, private :: writerst_beam3d, readrst_beam3d
-         procedure, private :: writeq_beam3d, writeqslice_beam3d 
+         procedure, private :: writeq_beam3d, writeqslice_beam3d, writerad_beam3d
          procedure, private :: qdpcopy_beam3d                 
       end type 
 
@@ -58,7 +61,7 @@
       
       contains
 !
-      subroutine init_beam3d(this,pp,perr,psp,pf,qbm,dt,ci,xdim)
+      subroutine init_beam3d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s,rad)
       
          implicit none
          
@@ -67,7 +70,8 @@
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist3d), intent(inout), target :: pf
-         real, intent(in) :: qbm, dt, ci
+         class(radiation), intent(inout), target, optional :: rad
+         real, intent(in) :: qbm, dt, ci, s
          integer, intent(in) :: xdim
 
 ! local data
@@ -82,11 +86,20 @@
 
          call this%err%werrfl2(class//sname//' started')
 
+         if (present(rad)) then
+            this%rad => rad
+            this%lrad = .true.
+         else
+            this%lrad = .false.
+         end if
+
          allocate(this%pd,this%q)
          this%evol = pf%getevol()
+         this%tagged = pf%gettagged()
+
          this%static = pf%getstatic()
          call this%q%new(this%p,this%err,this%sp,dim=1)
-         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim)
+         call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          call this%pmv(this%q,1,1,id)
          call MPI_WAIT(id,istat,ierr)
          
@@ -171,8 +184,12 @@
             return
          end if
 
-         call this%pd%push(ef%getrs(),bf%getrs(),dex,dez)
-         
+         if (this%lrad) then
+            call this%pd%push(ef%getrs(),bf%getrs(),dex,dez,this%rad)
+         else
+            call this%pd%push(ef%getrs(),bf%getrs(),dex,dez)
+         end if
+
          call this%pmv(ef,rtag,stag,sid)
          
          call this%err%werrfl2(class//sname//' ended')
@@ -211,7 +228,7 @@
          character(len=18), save :: sname = 'writehdf5_beam3d:'
 
          call this%err%werrfl2(class//sname//' started')                  
-         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),rtag,stag,id)
+         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),this%tagged,rtag,stag,id)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_beam3d
@@ -264,6 +281,24 @@
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writeqslice_beam3d
+!            
+      subroutine writerad_beam3d(this,file,tag,id,rad)
+
+         implicit none
+         
+         class(beam3d), intent(inout) :: this
+         class(hdf5file), intent(in) :: file
+         !character(len=*), intent(in) :: rname   
+         integer, intent(in) :: rad
+         integer, intent(in) :: tag 
+         integer, intent(inout) :: id     
+! local data
+         character(len=18), save :: sname = 'writerad_beam3d:'
+         call this%err%werrfl2(class//sname//' started')                  
+         call this%rad%wrr(file,tag,id,rad)
+         call this%err%werrfl2(class//sname//' ended')
+      
+      end subroutine writerad_beam3d
 !            
       subroutine readrst_beam3d(this,file)
 

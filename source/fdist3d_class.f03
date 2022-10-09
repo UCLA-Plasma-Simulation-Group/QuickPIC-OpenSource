@@ -33,9 +33,10 @@
          class(parallel_pipe), pointer, public :: p => null()
 !
 ! ndprof = profile type
-         integer :: npf, npmax
+         integer :: npf, npmax, sf=1,sf1=1
          real, dimension(3) :: origin=(/0.0,0.0,0.0/)
          logical :: evol = .true., static = .false.
+         logical :: tagged = .false.
                          
          contains
          
@@ -46,7 +47,7 @@
          procedure, private :: end_fdist3d
          procedure(ab_dist3d), deferred, private :: dist3d
          procedure :: getnpf, getnpmax, getevol, getorigin
-         procedure :: getstatic
+         procedure :: getstatic, gettagged
                   
       end type 
 
@@ -131,7 +132,7 @@
          private
 
          integer :: npt
-         real :: bcx, bcy, bcz, dx, dy, dz, cwp
+         real(8) :: bcx, bcy, bcz, dx, dy, dz, cwp
          character(len=:), allocatable :: file
 
          contains
@@ -202,6 +203,28 @@
 
       end function getnpmax
 !      
+      function getsf(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         integer :: getsf
+         
+         getsf = this%sf
+
+      end function getsf
+
+      function getsf1(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         integer :: getsf1
+         
+         getsf1 = this%sf1
+
+      end function getsf1
+!      
       function getevol(this)
 
          implicit none
@@ -223,6 +246,17 @@
          getstatic = this%static
 
       end function getstatic
+!
+      function gettagged(this)
+
+         implicit none
+
+         class(fdist3d), intent(in) :: this
+         logical :: gettagged
+         
+         gettagged = this%tagged
+
+      end function gettagged
 !
       function getorigin(this)
 
@@ -279,7 +313,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -330,7 +366,15 @@
          else
             static = .false.
          end if
-
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
+         end if
          this%npf = npf
          this%npx = npx
          this%npy = npy
@@ -393,6 +437,7 @@
          integer :: nps=1
          integer :: i, j, k
          logical :: lquiet = .false.
+         integer :: tt1, tt2, tt3, gid, sf,sf1
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_000:'
 
@@ -409,6 +454,8 @@
          cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
@@ -441,9 +488,22 @@
                write (erstr,*) 'PRVDIST32_RANDOM error'
                call this%err%equit(class//sname//erstr)
             endif
+            if (this%tagged) then
+               do i = 1, npp
+                  if (mod(i,sf) == 0) then
+                     pt(tt3,i) = 1.0
+                     if (mod(i,sf1*sf)==0) then 
+                     pt(tt3,i) = 2.0
+                     end if 
+                  else
+                     pt(tt3,i) = 0.0
+                     
+                  endif
+                  pt(tt1,i) = transfer(gid,1.0)
+                  pt(tt2,i) = transfer(i,1.0)
+               end do
+            end if
          end if
-
-         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_000
@@ -483,7 +543,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -742,7 +804,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -783,6 +847,16 @@
          call input%get(trim(s1)//'.peak_density',np)
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
+
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
+         end if
 
          this%npf = npf
          this%npx = npx
@@ -840,7 +914,9 @@
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps=1
+         integer :: i, j, k
          logical :: lquiet = .false.
+         integer :: tt1, tt2, tt3, gid, sf,sf1
          integer :: idimp, npmax, ierr = 0
          character(len=18), save :: sname = 'dist3d_002:'
 
@@ -858,11 +934,14 @@
          x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
          
+
          call PRVDIST32_TWISS(pt,this%qm,edges,npp, nps, alphax,alphay,   &
          &betax,betay, emitx,emity,sigz,vdx,vdy,vdz,vtz,npx,npy,npz,idimp,&
          &npmax,nx,ny,nz,x0,y0,z0,1,1,4,ierr,vdz,lquiet)
@@ -875,6 +954,21 @@
             write (erstr,*) 'PRVDIST32_RANDOM error'
             call this%err%equit(class//sname//erstr)
          endif
+
+         if (this%tagged) then
+            do i = 1, npp
+               if (mod(i,sf) == 0) then
+                  pt(tt3,i) = 1.0
+                 if (mod(i,sf1*sf)==0) then 
+                  pt(tt3,i) = 2.0
+                 end if 
+               else
+                  pt(tt3,i) = 0.0
+               endif
+               pt(tt1,i) = transfer(gid,1.0)
+               pt(tt2,i) = transfer(i,1.0)
+            end do
+         end if
          
          call this%err%werrfl2(class//sname//' ended')
          
@@ -889,9 +983,9 @@
          integer, intent(in) :: i
 ! local data
          integer :: npt, npmax, npf
-         real :: bcx, bcy, bcz
+         real(8) :: bcx, bcy, bcz
          logical :: evol
-         real :: min, max, cwp, n0
+         real(8) :: min, max, cwp, n0
          real :: alx, aly, alz, dx, dy, dz
          integer :: indx, indy, indz
          character(len=20) :: sn,s1
@@ -911,7 +1005,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          this%cwp = cwp
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
@@ -972,12 +1068,12 @@
 ! edges(4) = upper boundary in z of particle partition
          real, dimension(:,:), pointer :: part
          integer :: npt, nx, ny, nz, ipbc, i
-         real :: x0, y0, z0, dx, dy, dz, cwp
+         real(8) :: x0, y0, z0, dx, dy, dz, cwp
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
          integer :: nps
          integer :: idimp, npmax, ierr
-         real tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
+         real(8) :: tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
          character(len=18), save :: sname = 'dist3d_003:'
 
          call this%err%werrfl2(class//sname//' started')
@@ -1069,7 +1165,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min
@@ -1310,7 +1408,9 @@
          call input%get('simulation.indy',indy)
          call input%get('simulation.indz',indz)
 
-         cwp=5.32150254*1e9/sqrt(n0)
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
          call input%get('simulation.box.x(1)',min)
          call input%get('simulation.box.x(2)',max)
          this%origin(1) = min

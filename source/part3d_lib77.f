@@ -1281,6 +1281,223 @@ c comment this line to shut off longitudinal push
       return
       end
 c-----------------------------------------------------------------------
+      subroutine PGBPUSH1HF_QP(part,fxyz,bxyz,npp,noff,qbm,dt,dtc,ek,nx,
+     1ny,nz,idimp,npmax,mnblok,nxv,nypmx,nzpmx,idds,ipbc,deltax,deltaz ,
+     2cofd)
+
+      double precision sum1
+      dimension part(idimp,npmax,mnblok)
+      dimension fxyz(3,nxv,nypmx,nzpmx,mnblok)
+      dimension bxyz(3,nxv,nypmx,nzpmx,mnblok)
+      dimension npp(mnblok), noff(idds,mnblok)
+
+      real qtmg,dtgx,dtgy,cofd
+      real delx, dely, delz, ngamma
+      real p2t,p2l, cofd1 
+      real dtc_over_deltax, dtc_over_deltaz
+      real one_minus_vz0, one_minus_vz
+
+      qtmh = qbm*dt*0.5
+      sum1 = 0.0d0
+      dtc_over_deltax = dtc/deltax
+      dtc_over_deltaz = dtc/deltaz
+
+      one_minus_vz0 = 0. 
+      cofd1 = cofd/dt
+c set boundary values
+      if (ipbc.eq.1) then
+         edgelx = 1.
+         edgely = 1.
+         edgelz = 1.
+         edgerx = float(nx-1)
+         edgery = float(ny-1)
+         edgerz = float(nz-1)
+      endif
+
+      do 20 m = 1, mnblok
+      mnoff = noff(1,m) - 1
+      lnoff = noff(2,m) - 1
+c find interpolation weights
+      inpp = npp(m)
+      do 10 j = 1, npp(m)
+      if (j.gt.inpp) exit
+      nn = part(1,j,m)
+      mm = part(2,j,m)
+      ll = part(3,j,m)
+      dxp = part(1,j,m) - float(nn)
+      dyp = part(2,j,m) - float(mm)
+      dzp = part(3,j,m) - float(ll)
+      nn = nn + 1
+      amx = 1. - dxp
+      amy = 1. - dyp
+      np = nn + 1
+      mm = mm - mnoff
+      dx1 = dxp*dyp
+      dyp = amx*dyp
+      mp = mm + 1
+      amx = amx*amy
+      amz = 1. - dzp
+      ll = ll - lnoff
+      amy = dxp*amy
+      lp = ll + 1
+c find electric field
+      dx = amz*(amx*fxyz(1,nn,mm,ll,m) + amy*fxyz(1,np,mm,ll,m) + dyp*fx
+     1yz(1,nn,mp,ll,m) + dx1*fxyz(1,np,mp,ll,m)) + dzp*(amx*fxyz(1,nn,mm
+     2,lp,m) + amy*fxyz(1,np,mm,lp,m) + dyp*fxyz(1,nn,mp,lp,m) + dx1*fxy
+     3z(1,np,mp,lp,m))
+      dy = amz*(amx*fxyz(2,nn,mm,ll,m) + amy*fxyz(2,np,mm,ll,m) + dyp*fx
+     1yz(2,nn,mp,ll,m) + dx1*fxyz(2,np,mp,ll,m)) + dzp*(amx*fxyz(2,nn,mm
+     2,lp,m) + amy*fxyz(2,np,mm,lp,m) + dyp*fxyz(2,nn,mp,lp,m) + dx1*fxy
+     3z(2,np,mp,lp,m))
+      dz = amz*(amx*fxyz(3,nn,mm,ll,m) + amy*fxyz(3,np,mm,ll,m) + dyp*fx
+     1yz(3,nn,mp,ll,m) + dx1*fxyz(3,np,mp,ll,m)) + dzp*(amx*fxyz(3,nn,mm
+     2,lp,m) + amy*fxyz(3,np,mm,lp,m) + dyp*fxyz(3,nn,mp,lp,m) + dx1*fxy
+     3z(3,np,mp,lp,m))
+c find magnetic field
+      ox = amz*(amx*bxyz(1,nn,mm,ll,m) + amy*bxyz(1,np,mm,ll,m) + dyp*bx
+     1yz(1,nn,mp,ll,m) + dx1*bxyz(1,np,mp,ll,m)) + dzp*(amx*bxyz(1,nn,mm
+     2,lp,m) + amy*bxyz(1,np,mm,lp,m) + dyp*bxyz(1,nn,mp,lp,m) + dx1*bxy
+     3z(1,np,mp,lp,m))
+      oy = amz*(amx*bxyz(2,nn,mm,ll,m) + amy*bxyz(2,np,mm,ll,m) + dyp*bx
+     1yz(2,nn,mp,ll,m) + dx1*bxyz(2,np,mp,ll,m)) + dzp*(amx*bxyz(2,nn,mm
+     2,lp,m) + amy*bxyz(2,np,mm,lp,m) + dyp*bxyz(2,nn,mp,lp,m) + dx1*bxy
+     3z(2,np,mp,lp,m))
+     
+      dx = dx - oy
+      dy = dy + ox
+
+      delx = qtmh*dx
+      dely = qtmh*dy
+      delz = qtmh*dz
+
+      part(8,j,m) = delx
+      part(9,j,m) = dely
+      part(10,j,m) = delz
+
+      dx = part(4,j,m) + delx
+      dy = part(5,j,m) + dely
+      dz = part(6,j,m) + delz
+      part(4,j,m) = dx
+      part(5,j,m) = dy
+      part(6,j,m) = dz
+   10 continue
+   20 continue
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine PGBPUSH2HF_QP(part,fxyz,bxyz,npp,noff,qbm,dt,dtc,ek,nx,
+     1ny,nz,idimp,npmax,mnblok,nxv,nypmx,nzpmx,idds,ipbc,deltax,deltaz ,
+     2cofd)
+
+      double precision sum1
+      dimension part(idimp,npmax,mnblok)
+      dimension fxyz(3,nxv,nypmx,nzpmx,mnblok)
+      dimension bxyz(3,nxv,nypmx,nzpmx,mnblok)
+      dimension npp(mnblok), noff(idds,mnblok)
+
+      real qtmg,dtgx,dtgy,cofd
+      real delx, dely, delz, ngamma
+      real p2t,p2l, cofd1 
+      real dtc_over_deltax, dtc_over_deltaz
+      real one_minus_vz0, one_minus_vz
+
+      qtmh = qbm*dt
+      sum1 = 0.0d0
+      dtc_over_deltax = dtc/deltax
+      dtc_over_deltaz = dtc/deltaz
+
+      one_minus_vz0 = 0. 
+      cofd1 = cofd/dt
+c set boundary values
+      if (ipbc.eq.1) then
+         edgelx = 1.
+         edgely = 1.
+         edgelz = 1.
+         edgerx = float(nx-1)
+         edgery = float(ny-1)
+         edgerz = float(nz-1)
+      endif
+
+      do 20 m = 1, mnblok
+      mnoff = noff(1,m) - 1
+      lnoff = noff(2,m) - 1
+c find interpolation weights
+      inpp = npp(m)
+      do 10 j = 1, npp(m)
+      if (j.gt.inpp) exit
+   11 delx = part(8,j,m)
+      dely = part(9,j,m)
+      delz = part(10,j,m)
+C c half acceleration
+C c momentums are normalized to c temporarily
+      dx = part(4,j,m) + delx
+      dy = part(5,j,m) + dely
+      dz = part(6,j,m) + delz
+      part(4,j,m) = dx
+      part(5,j,m) = dy
+c update gamma and inverse gamma
+      p2t = dx*dx + dy*dy
+      p2l = dz*dz
+      p2 = p2t + p2l 
+      ngamma = sqrt(1.0 + p2)
+      dtgx = dtc_over_deltax/ngamma
+      dtgy = dtc_over_deltax/ngamma
+      one_minus_vz = (1.0+p2t)/(dz*(dz+ngamma))
+
+c include radiation damping in the z direction      
+c note: this is not time-centered
+c      print *,"cofd1,ngamma,dz,delx,dely=",cofd1,ngamma, dz, delx, dely,&
+c     &cofd1*ngamma*((delx*delx+dely*dely)*dz-delz*(delx*dx+dely*dy))  
+      dz = dz - cofd1*ngamma*((delx*delx+dely*dely)*dz-delz*(delx*dx+del&
+     &y*dy))  
+c comment this line to shut off longitudinal push     
+      part(6,j,m) = dz
+c new position in grid unit
+      dx = part(1,j,m) + dx*dtgx
+      dy = part(2,j,m) + dy*dtgy
+c      dz = part(3,j,m) + (one_minus_vz - one_minus_vz0)*dtc_over_deltaz 
+      dz = part(3,j,m) + one_minus_vz*dtc_over_deltaz 
+c dropping boundary conditions in x and y
+      if (ipbc.eq.1) then
+         if ((dx.lt.edgelx).or.(dx.ge.edgerx)) then
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
+            inpp = inpp -1
+            goto 11
+         endif
+         if ((dy.lt.edgely).or.(dy.ge.edgery)) then
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
+            inpp = inpp -1
+            goto 11
+         endif
+         if ((dz.lt.edgelz).or.(dz.ge.edgerz)) then
+            if (j.eq.inpp) then
+               inpp = inpp - 1
+               exit
+            end if
+            part(:,j,m) = part(:,inpp,m)
+            inpp = inpp -1
+            goto 11
+         endif
+      endif
+c set new position
+      part(1,j,m) = dx
+      part(2,j,m) = dy
+c comment this line to shut off longitudinal push     
+      part(3,j,m) = dz
+   10 continue
+      npp(m) = inpp
+   20 continue
+      return
+      end
+c-----------------------------------------------------------------------
       subroutine PMOVE32(part,edges,npp,sbufr,sbufl,rbufr,rbufl,ihole,pb
      1uff,jsr,jsl,jss,ny,nz,kstrt,nvpy,nvpz,idimp,npmax,mblok,nblok,idps
      2,nbmax,idds,ntmax,tag1,tag2,id,info)
