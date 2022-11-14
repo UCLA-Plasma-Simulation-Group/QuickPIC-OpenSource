@@ -208,9 +208,15 @@
          end if         
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
-         call input%get(trim(s1)//'.sigma_v(1)',this%sigma_vx)
-         call input%get(trim(s1)//'.sigma_v(2)',this%sigma_vy)
-         call input%get(trim(s1)//'.sigma_v(3)',this%sigma_vz)
+         if (input%found(trim(s1)//'.sigma_v')) then
+            call input%get(trim(s1)//'.sigma_v(1)',this%sigma_vx)
+            call input%get(trim(s1)//'.sigma_v(2)',this%sigma_vy)
+            call input%get(trim(s1)//'.sigma_v(3)',this%sigma_vz)
+         else
+            this%sigma_vx = 0.0
+            this%sigma_vy = 0.0
+            this%sigma_vz = 0.0
+         end if         
          call input%get(trim(s1)//'.q',qm)
          call input%get(trim(s1)//'.density',den)
          npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4

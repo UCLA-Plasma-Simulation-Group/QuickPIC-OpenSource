@@ -1,6 +1,6 @@
 # name of the compiler 
-JSON_LIB = /usr/local/jsonfortran-gnu-6.3.0/lib/
-JSON_INC = /usr/local/jsonfortran-gnu-6.3.0/lib/
+JSON_LIB = /usr/local/jsonfortran-gnu-8.3.0/lib/
+JSON_INC = /usr/local/jsonfortran-gnu-8.3.0/lib/
 
 FC_GF_OPENMPI = mpif90 -c -I$(JSON_INC) -fopenmp
 CC_GF_OPENMPI = mpicc -c -O3 -std=c99
@@ -10,12 +10,12 @@ OPTS_DBL_GF_OPENMPI = -O3 -fdefault-real-8 -fdefault-double-8
 OPTS_SGL_GF_OPENMPI = -O3
 
 FORMAT_FREE_GF_OPENMPI = -ffree-form 
-FORMAT_FIXED_GF_OPENMPI = -ffixed-form
+FORMAT_FIXED_GF_OPENMPI = -ffixed-form -fallow-argument-mismatch
 
 # hdf5 libraries 
 
-HDF5_LIB =/usr/local/hdf5/lib
-HDF5_INC =/usr/local/hdf5/include
+HDF5_LIB =/Users/anweiming/work/codes/hdf5-1.10.5/hdf5/lib
+HDF5_INC =/Users/anweiming/work/codes/hdf5-1.10.5/hdf5/include
 
 HDF_LIBPATH_GF_OPENMPI= -L$(HDF5_LIB) -lhdf5_fortran -lhdf5_hl -lhdf5 -lz 
 HDF_INCLUDE_PATH_GF_OPENMPI= -I$(HDF5_INC) -I${HDF5_LIB} -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
