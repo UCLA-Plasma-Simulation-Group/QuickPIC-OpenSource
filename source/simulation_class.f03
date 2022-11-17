@@ -14,6 +14,7 @@
       use beam3d_class
       use species2d_class
       use fdist3d_class
+      use radiation_class
       use hdf5io_class
       use input_class
       use mpi
@@ -63,6 +64,7 @@
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
          type(beam3d), dimension(:), allocatable :: beam
+         type(radiation), dimension(:), allocatable :: rad
          type(fdist3d_wrap), dimension(:), allocatable :: pf
 
          contains
@@ -104,7 +106,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(hdf5file) :: file
          class(*), pointer :: obj => null()
-         integer, allocatable :: slice, slice_pos, psample, dim
+         integer, allocatable :: slice, slice_pos, psample, dim, rad
          integer :: df
 
       end type sim_diag
@@ -398,13 +400,14 @@
 ! local data
          character(len=18), save :: class = 'sim_beams:'
          character(len=18), save :: sname = 'init_sim_beams:'
-         integer :: i,n
+         integer :: i,n,nrad=0
          integer :: npf,npx,npy,npz,npp
+         integer :: ix
          real, dimension(3,100) :: arg
          logical :: quiet
          real :: gamma
          real :: qm, qbm, dt
-         logical :: read_rst
+         logical :: read_rst, lrad
          integer :: rst_timestep, ierr
          type(hdf5file) :: file_rst
          character(len=20) :: sn, sid, stime,s1
@@ -421,9 +424,27 @@
          allocate(this%beam(n),this%pf(n))
 
          do i = 1, n
+            write (sn,'(I3.3)') i
+            s1 = 'beam('//trim(sn)//')'
+            if(input%found(trim(s1)//'.radiation')) nrad=nrad+1
+         end do
+
+         if (nrad>0) allocate(this%rad(nrad))
+
+         nrad = 1
+
+         do i = 1, n
             arg(:,:) = 0.0
             write (sn,'(I3.3)') i
             s1 = 'beam('//trim(sn)//')'
+            if(input%found(trim(s1)//'.radiation')) then
+               lrad = .true.
+               call this%rad(nrad)%new(this%p,this%err,input,i)
+               nrad = nrad + 1
+            else
+               lrad = .false.
+            end if
+
             call input%get(trim(s1)//'.profile',npf)
             select case (npf)
             case (0)
@@ -454,14 +475,17 @@
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
 
-            call input%get('simulation.dt',dt)
+            ix = 7
 
-            call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
-            &dt=dt,ci=1.0,xdim=7)
+            if (lrad) ix = ix+3
+            if (this%pf(i)%p%gettagged()) ix = ix+3
+
+            call input%get('simulation.dt',dt)
 
             call input%get('simulation.read_restart',read_rst)
 
             if (read_rst) then
+
                call input%get('simulation.restart_timestep',rst_timestep)
                write (sn,'(I4.4)') i
                write (sid,'(I10.10)') this%p%getidproc()
@@ -470,7 +494,23 @@
                &filename = './RST/Beam-'//trim(sn)//'/',&
                &dataname = 'RST-beam'//trim(sn)//'-'//trim(sid),&
                &n = rst_timestep)
+
+               if (lrad) then 
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=ix,s=rst_timestep*dt,rad=this%rad(nrad-1))
+               else
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=ix,s=rst_timestep*dt)
+               end if
                call this%beam(i)%rrst(file_rst)
+            else
+               if (lrad) then 
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=ix,s=0.0,rad=this%rad(nrad-1))
+               else
+                  call this%beam(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,qbm=qbm,&
+                  &dt=dt,ci=1.0,xdim=ix,s=0.0)
+               end if                  
             end if
          end do
          call MPI_BARRIER(this%p%getlworld(),ierr)
@@ -784,6 +824,7 @@
          character(len=:), allocatable :: ss,sl
          real :: min, max, n0, dt
          real :: alx1, aly1, alz1, alx2, aly2, alz2
+         real :: radx0,radx1,rady0,rady1
          logical :: rst
          integer :: ierr, indx, indy, indz, dim
          class (*), pointer :: obj => null()
@@ -809,7 +850,6 @@
          alz1 = min
          alz2 = max
          call this%in%get('simulation.dt',dt)
-
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
             call this%in%info('beam('//trim(s1)//').diag',n_children=m)
@@ -826,6 +866,10 @@
                   end if
                end if
             end do
+            if(this%in%found('beam('//trim(s1)//')'//'.radiation')) then
+               call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
+               n_diag = n_diag+m
+            end if
          end do
 
          do i = 1, this%nspecies
@@ -863,11 +907,50 @@
 
          call this%in%get('simulation.dump_restart',rst)
          if (rst) n_diag = n_diag + this%nbeams
-
          allocate(this%diag(n_diag))
          n_diag = 0
          do i = 1, this%nbeams
             write (s1, '(I4.4)') i
+            if(this%in%found('beam('//trim(s1)//')'//'.radiation')) then
+               call this%in%get('beam('//trim(s1)//').radiation.ndump',ndump)
+               call this%in%info('beam('//trim(s1)//').radiation.diag',n_children=m)
+               do j = 1, m
+                  write (s2, '(I4.4)') j
+                     if (allocated(ss)) deallocate(ss)
+                  call this%in%get('beam('//trim(s1)//').radiation.diag'//'('//trim(s2)//')',ss)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.x(1)',radx0)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.x(2)',radx1)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.y(1)',rady0)
+                  call this%in%get('beam('//trim(s1)//').radiation.detector.y(2)',rady1)
+                  select case (trim(ss))
+                  case ('intensity')
+                     n_diag = n_diag+1
+                     this%diag(n_diag)%df = ndump
+                     this%diag(n_diag)%obj => this%beams%beam(i) 
+                     allocate(this%diag(n_diag)%rad)
+                     this%diag(n_diag)%rad = 1
+                     call this%diag(n_diag)%file%new(&
+                     &axismin = (/radx0,rady0,alz1/),&
+                     &axismax = (/radx1,rady1,alz2/),&
+                     &axisname  = (/'x','y','z'/),&
+                     &axislabel = (/'x','y','z'/))
+                     if (this%p%getidproc() == 0) then
+                        call system('mkdir -p ./Beam'//trim(s1)//'/Radiation/')
+                     end if
+                     call this%diag(n_diag)%file%new(&
+                     &timeunits = '1 / \omega_p',&
+                     &dt = dt,&
+                     &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                     &rank = 2,&
+                     &filename = './Beam'//trim(s1)//'/Radiation/',&
+                     &dataname = 'intensity',&
+                     &units = ' ',&
+                     &label = 'Radiation Intenisty')
+                  end select
+               end do
+            end if
+
+
             call this%in%info('beam('//trim(s1)//').diag',n_children=m)
             do j = 1, m
                write (s2, '(I4.4)') j
@@ -1332,6 +1415,11 @@
                      this%tag(1) = ntag()
                      call MPI_WAIT(this%id(idn+i),istat,ierr)
                      call obj%wrq(this%diag(i)%file,this%tag(1),this%tag(1),this%id(idn+i))
+                  else if (allocated(this%diag(i)%rad)) then
+                     if (this%tstep /= 0) then
+                        this%tag(1) = ntag()
+                        call obj%wrr(this%diag(i)%file,'intensity',this%tag(1),this%id(idn+i))
+                     end if
                   else
                      call obj%wrst(this%diag(i)%file)
                   end if

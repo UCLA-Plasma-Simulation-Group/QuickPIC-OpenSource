@@ -114,6 +114,42 @@
       end interface
 !      
       interface
+         subroutine PGBPUSH1HF_QP(part,fxyz,bxyz,npp,noff,qbm,dt,dtc,ek,&
+         &nx,ny,nz,idimp,npmax,mnblok,nxv,nypmx,nzpmx,idds,ipbc,deltax,d&
+         &eltaz,cofd)
+         implicit none
+         real, intent(inout) :: part
+         integer, intent(inout) :: npp
+         real, intent(inout) :: fxyz,bxyz
+         real, intent(in) :: qbm,dt,dtc,ek,deltax,deltaz,cofd
+         integer, intent(in) :: noff,nx,ny,nz,idimp,npmax,mnblok,nxv,nyp&
+         &mx,nzpmx,idds,ipbc
+         dimension part(idimp,npmax,mnblok)
+         dimension fxyz(3,nxv,nypmx,nzpmx,mnblok)
+         dimension bxyz(3,nxv,nypmx,nzpmx,mnblok)
+         dimension noff(idds,mnblok)
+         end subroutine
+      end interface
+!      
+      interface
+         subroutine PGBPUSH2HF_QP(part,fxyz,bxyz,npp,noff,qbm,dt,dtc,ek,&
+         &nx,ny,nz,idimp,npmax,mnblok,nxv,nypmx,nzpmx,idds,ipbc,deltax,d&
+         &eltaz,cofd)
+         implicit none
+         real, intent(inout) :: part
+         integer, intent(inout) :: npp
+         real, intent(inout) :: fxyz,bxyz
+         real, intent(in) :: qbm,dt,dtc,ek,deltax,deltaz,cofd
+         integer, intent(in) :: noff,nx,ny,nz,idimp,npmax,mnblok,nxv,nyp&
+         &mx,nzpmx,idds,ipbc
+         dimension part(idimp,npmax,mnblok)
+         dimension fxyz(3,nxv,nypmx,nzpmx,mnblok)
+         dimension bxyz(3,nxv,nypmx,nzpmx,mnblok)
+         dimension noff(idds,mnblok)
+         end subroutine
+      end interface
+!      
+      interface
          subroutine PMOVE32(part,edges,npp,sbufr,sbufl,rbufr,rbufl,ihole&
          &,pbuff,jsr,jsl,jss,ny,nz,kstrt,nvpy,nvpz,idimp,npmax,mblok,nbl&
          &ok,idps,nbmax,idds,ntmax,tag1,tag2,id,info)
