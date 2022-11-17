@@ -520,6 +520,8 @@
 !
       subroutine pwrad_2d_pipe(pp,perr,file,fd,gs,tag,id,ierr)
 
+!      subroutine pwrad_2d_pipe(pp,perr,file,name,fd,gs,tag,id,ierr)
+
          implicit none
         
          class(perrors), intent(in), pointer :: perr
@@ -539,10 +541,14 @@
          integer, dimension(10) :: istat         
          character(len=:), allocatable :: filename
          character(len=8) :: st
+!         character(*),intent(in) :: name
+
 
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+!         allocate(character(len(trim(file%filename))+len(trim(name))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+!         filename = trim(file%filename)//trim(name)//'_'//st//'.h5'
          ierr = 0
          gsize = gs
          nvyp = pp%getlnvp()
@@ -605,7 +611,7 @@
       end subroutine pwrad_2d_pipe
 !
       subroutine pwrad_2d(pp,perr,file,fd,gs,ierr)
-
+!      subroutine pwrad_2d(pp,perr,file,name,fd,gs,ierr)
          implicit none
         
          class(perrors), intent(in), pointer :: perr
@@ -622,10 +628,13 @@
          ! integer :: info
          character(len=:), allocatable :: filename
          character(len=8) :: st
+!         character(*),intent(in) :: name
 
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
+!         allocate(character(len(trim(file%filename))+len(trim(name))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+!         filename = trim(file%filename)//trim(name)//'_'//st//'.h5'
          ierr = 0
          gsize = gs
 

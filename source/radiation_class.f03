@@ -21,14 +21,14 @@
 !         class(spect3d), pointer, public :: sp => null()
          class(parallel_pipe), pointer, public :: p => null()
 
-         real :: x0,x1,y0,y1,z,dx,dy,dt,dw,n0
+         real :: x0,x1,y0,y1,z,dx,dy,dt,dw,n0,dx1,dy1
          real :: t0,t1
          real :: w0,w1
          real, dimension(3) :: delta
-         integer :: Nx,Ny,Nt,Nw
+         integer :: Nx,Ny,Nt,Nw,in_n,Nx1,Ny1,type
          
          real,allocatable :: intensity(:,:,:) 
-         real,allocatable :: spectrum(:,:,:,:) 
+         real,allocatable :: spectrum(:,:,:) 
          real,allocatable :: field_E(:,:,:,:),field_B(:,:,:,:)
          real,allocatable :: Ew_re(:,:,:,:),Ew_im(:,:,:,:) 
          
@@ -41,14 +41,16 @@
          procedure, private :: calculate_radiation
          procedure, private :: calculate_intensity
          procedure, private :: write_radiation
-    !     procedure :: calculate_spectrum
+         procedure, private :: calculate_spectrum
          procedure, private :: calculate_field
+         procedure, private :: calculate_field2
          procedure, private :: calculate_field_w
-         procedure, private :: calculate_radiation2
-         procedure, private :: calculate_intensity2
+         procedure, private :: calculate_field_w2
+        !  procedure, private :: calculate_radiation2
+        !  procedure, private :: calculate_intensity2
 !         procedure :: calculate_spectrum2
 !         procedure :: calculate_field2
-!         procedure :: calculate_field_w2
+!         
         end type radiation
         character(len=10) :: class = "radiation"
         character(len=128) :: erstr 
@@ -77,13 +79,13 @@
             class(parallel_pipe), intent(in), pointer :: pp
             integer, intent(in) :: i
 !
-            real :: x0,x1,y0,y1,z
+            real :: x0,x1,y0,y1,z,beam_z
             real :: min, max
             real :: t0,t1
             real :: w0,w1
             real(8) :: n0
-            integer::Nx,Ny,Nt,Nw,ii,n_children,n
-            integer :: indx, indy, indz         
+            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n        
+            integer :: indx, indy, indz,type
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
             character(len=25), save :: sname = 'init_radiation:'
@@ -126,12 +128,13 @@
             this%y1 = this%y1 - min
 
             call input%get(s1//'.detector.z',z)
+            call input%get(s1//'.detector.type',type)
             call input%get('simulation.box.z(1)',min)
             call input%get('simulation.box.z(2)',max)
+            call input%get('beam('//trim(sn)//').center(3)',beam_z)
             this%delta(3) = (max-min)/real(2**indz)
-            this%z = z
-
-
+            this%type = type
+            this%z = z + min
             call input%get(s1//'.time(1)',min )
             call input%get(s1//'.time(2)',max )
             call input%get(s1//'.nt',Nt )
@@ -139,35 +142,81 @@
             this%t1 = max
             this%Nt = Nt
 
-            call input%get(s1//'.spectrum.frequence(1)',min )
-            call input%get(s1//'.spectrum.frequence(2)',max)
-            call input%get(s1//'.spectrum.nw',Nw )
-            this%w0 = min
-            this%w1 = max
-            this%Nw = Nw
-
-            this%dx = (this%x1 - this%x0)/this%Nx
-            this%dy = (this%y1 - this%y0)/this%Ny
+            this%dx = (this%x1 - this%x0)/(this%Nx-1)
+            this%dy = (this%y1 - this%y0)/(this%Ny-1)
             this%dt = (this%t1 - this%t0)/this%Nt
-            this%dw = (this%w1 - this%w0)/this%Nw
+
+
 
             call input%info(s1//'.diag',n_children=n)
-
+            
             DO ii = 1,n
                 write (sn,'(I3.3)') ii
                 call input%get(s1//'.diag('//trim(sn)//')',diag)
                 select case(trim(diag))
-                case('intensity')
-                    allocate(this%intensity(this%Nx,this%Ny,this%Nt+1))
-                    this%intensity = 0
+                case('intensity' ) 
+                    if ( .not. allocated(this%intensity)) then
+                        allocate(this%intensity(this%Nx,this%Ny,this%Nt+1))
+                        this%intensity = 0
+                    end if
+                case('intens_t' ) 
+                    if ( .not. allocated(this%intensity)) then
+                        allocate(this%intensity(this%Nx,this%Ny,this%Nt+1))
+                        this%intensity = 0
+                    end if
                 case('spectrum')
-                    allocate(this%spectrum(3,this%Nx,this%Ny,this%Nw))
+                    if ( .not. allocated(this%Ew_re)) then
+                    call input%get(s1//'.spectrum.frequence(1)',min )
+                    call input%get(s1//'.spectrum.frequence(2)',max)
+                    call input%get(s1//'.spectrum.nw',Nw )
+                    call input%get(s1//'.spectrum.Nx',Nx1 )
+                    call input%get(s1//'.spectrum.Ny',Ny1 )
+                    call input%get(s1//'.spectrum.in_n',in_n )
+                    this%in_n = in_n
+                    this%w0 = min
+                    this%w1 = max
+                    this%Nw = Nw
+                    this%Nx1 = Nx1
+                    this%Ny1 = Ny1
+                    this%dx1 = (this%x1 - this%x0)/this%Nx1
+                    this%dy1 = (this%y1 - this%y0)/this%Ny1
+                    this%dw = (this%w1 - this%w0)/this%Nw
+                    allocate(this%Ew_re(3,this%Nx1,this%Ny1,this%Nw+1))
+                    this%Ew_re = 0
+                    allocate(this%Ew_im(3,this%Nx1,this%Ny1,this%Nw+1))
+                    this%Ew_im = 0
+                    allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
                     this%spectrum = 0
+                    end if
+                case('spectrum_intens')
+                    if ( .not. allocated(this%Ew_re)) then
+                    call input%get(s1//'.spectrum.frequence(1)',min )
+                    call input%get(s1//'.spectrum.frequence(2)',max)
+                    call input%get(s1//'.spectrum.nw',Nw )
+                    call input%get(s1//'.spectrum.Nx',Nx1 )
+                    call input%get(s1//'.spectrum.Ny',Ny1 )
+                    call input%get(s1//'.spectrum.in_n',in_n )
+                    this%in_n = in_n
+                    this%w0 = min
+                    this%w1 = max
+                    this%Nw = Nw
+                    this%Nx1 = Nx1
+                    this%Ny1 = Ny1
+                    this%dx1 = (this%x1 - this%x0)/this%Nx1
+                    this%dy1 = (this%y1 - this%y0)/this%Ny1
+                    this%dw = (this%w1 - this%w0)/this%Nw
+                    allocate(this%Ew_re(3,this%Nx1,this%Ny1,this%Nw+1))
+                    this%Ew_re = 0
+                    allocate(this%Ew_im(3,this%Nx1,this%Ny1,this%Nw+1))
+                    this%Ew_im = 0
+                    allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
+                    this%spectrum = 0
+                    end if
                 case('field')
                     allocate(this%field_E(3,this%Nx,this%Ny,this%Nt+1))
                     this%field_E = 0
-                    allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
-                    this%field_B = 0
+                    !allocate(this%field_B(3,this%Nx,this%Ny,this%Nt+1))
+                    !this%field_B = 0
                 case('field_w')
                     allocate(this%Ew_re(3,this%Nx,this%Ny,this%Nw+1))
                     this%Ew_re = 0
@@ -204,10 +253,15 @@
                 call calculate_intensity(this,part,Np,s_beam,ds)
             end if
             if (allocated(this%spectrum)) then
-               call calculate_field_w(this,part,Np,s_beam,ds)
+                if (this%in_n == 0 )then
+                    call calculate_field_w(this,part,Np,s_beam,ds)
+                else 
+                    call calculate_field_w2(this,part,Np,s_beam,ds)
+                end if 
+                call calculate_spectrum(this)
             end if 
-            if (allocated(this%Ew_re)) then 
-                call calculate_field(this,part,Np,s_beam,ds)
+            if (allocated(this%field_E)) then 
+                call calculate_field3(this,part,Np,s_beam,ds)
             end if
             call this%err%werrfl2(class//sname//' ended')
         end subroutine calculate_radiation
@@ -221,8 +275,8 @@
             real,dimension(:,:), pointer, intent(inout) :: part
 
             integer :: n,i,j,k,tt3
-            integer :: t_n
-            real :: x,y,z,tempz
+            integer :: t_n,n1,n2
+            real :: x,y,z,tempz,xx,yy,zz
             real :: t,t_obs,m0,m1
             real :: delta_t
             real :: deltax, deltay, deltaz
@@ -235,23 +289,27 @@
             real :: temp3,temp4
             real :: c
             character(len=25), save :: sname = 'calculate_intensity:'
-            call this%err%werrfl2(class//sname//' started')
-            
+            call this%err%werrfl2(class//sname//' started') 
             deltax = this%delta(1)
             deltay = this%delta(2)
             deltaz = this%delta(3)
-            A = 3.4548e-33*this%n0**0.5
-            print *, this%n0
-            !print *, A
+            A = 3.4548e-33*sqrt(this%n0)
             z = s_beam
             tt3 = size(part,1)
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
             DO n = 1,Np
                if (part(tt3,n) > 0.5) then
                     x = part(1,n)*deltax
                     y = part(2,n)*deltay
                     tempz = part(3,n)*deltaz
                     t = s_beam + tempz
-                    posi = (/x,y,z/)
+                    posi = (/x,y,n1*z+n2*tempz/)
                     p = part(4:6,n)
                     vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
                     force = part(8:10,n)
@@ -262,12 +320,16 @@
                     delta_t = ds/vel(3)
                     acc = (vnew-vold)/delta_t
                     DO j = 1,this%Ny,1
-                        DO i = 1,this%Nx,1
-                            posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
+                        DO i = 1,this%Nx,1 
+                            xx = this%x0+(i-1)*this%dx
+                            yy = this%y1-(j-1)*this%dy
+                            zz = (this%z**2-n2*(xx**2+yy**2))**0.5
+                            posi_x = (/xx,yy,zz/)
                             vec_r = posi_x - posi
                             r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                             vec_n = vec_r/r
-                            t_obs = (t + r - this%t0)/this%dt
+!                            t_obs = (t + r - this%t0)/this%dt
+                            t_obs = (n1*t +n2*tempz + r - this%t0)/this%dt
                             if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                                 t_n = t_obs
                                 m0 = t_obs - t_n
@@ -284,6 +346,8 @@
                                 intensity = A*(temp3/temp4**5)*delta_t
                                 this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
                                 this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
+                            else 
+                                print*,(n1*t + r - this%t0)
                             end if
                         end DO
                     end DO
@@ -304,8 +368,7 @@
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
 
-
-            integer :: n,i,j,k
+            integer :: n,i,j,k,tt3,n1,n2
             integer :: t_n
             real :: x,y,z,tempz
             real :: t,t_obs,m0,m1
@@ -313,7 +376,8 @@
             real :: dx,dy,dt
             real :: r 
             real :: deltax, deltay, deltaz
-            real,dimension(3) :: field_E,field_B
+            real,dimension(3) :: field_E,field_B,S
+            real(8) :: A,n0
             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
             real :: temp3,temp4
             character(len=25), save :: sname = 'calculate_field:'
@@ -322,49 +386,250 @@
             deltax = this%delta(1)
             deltay = this%delta(2)
             deltaz = this%delta(3)
-
+            tt3 = size(part,1)
+            A = 1.528671463266763e-08
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
             DO n = 1,Np
+            if (part(tt3,n) > 0.5) then
                 x = part(1,n)*deltax
                 y = part(2,n)*deltay
                 tempz = part(3,n)*deltaz
                 t = s_beam + tempz
                 posi = (/x,y,z/)
+!                posi = (/x,y,-tempz/)
                 p = part(4:6,n)
                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
                 force = part(8:10,n)
-                pold = p - acc
-                pnew = p + acc
+                pold = p - force
+                pnew = p + force
                 vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
                 DO i=1,this%Nx,1
                     DO j = 1,this%Ny,1
-                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
-                        vec_r = posi_x - posi
-                        r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
+                        vec_r = posi_x - n1*posi
+                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                         vec_n = vec_r/r
-                        t_obs = (t + r-this%t0)/dt
+                        !t_obs = (t + r-this%t0)/this%dt
+                        t_obs = (n1*t + r - this%t0)/this%dt
                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
                             t_n = t_obs
                             m0 = t_obs - t_n
-                            m1 = 1 - m0
+                            m1 = 1.0 - m0
                             t_n = t_n + 1
                             temp1 = cross(vec_n-vel,acc)
                             temp2 = cross(vec_n,temp1)
                             temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
-                            field_E =(temp2/temp4**3/r)*delta_t
+                            field_E = (temp2/(temp4**3)/(n1*r+n2*this%z))
                             field_B = cross(vec_n,field_E)
                             this%field_E(:,i,j,t_n) = this%field_E(:,i,j,t_n) + field_E*m1
                             this%field_E(:,i,j,t_n + 1) = this%field_E(:,i,j,t_n+1) + field_E*m0
-                            this%field_B(:,i,j,t_n) = this%field_B(:,i,j,t_n) + field_B*m1
-                            this%field_B(:,i,j,t_n + 1) = this%field_B(:,i,j,t_n+1) + field_B*m0
+                            !this%field_B(:,i,j,t_n) = this%field_B(:,i,j,t_n) + field_B*m1
+                            !this%field_B(:,i,j,t_n + 1) = this%field_B(:,i,j,t_n+1) + field_B*m0
+                        else 
+                            print*,r
                         end if
                     end DO
                 end DO
+            end if
             end DO    
             call this%err%werrfl2(class//sname//' ended')      
         end subroutine calculate_field
+!
+        subroutine calculate_field2(this,part,Np,s_beam,ds)
+            implicit none
+
+            class(radiation), intent(inout) :: this
+            real,dimension(:,:),intent(inout) :: part
+            integer,intent(in) :: Np
+            real,intent(in) :: s_beam,ds
+
+            integer :: n,i,j,k,tt3,n1,n2
+            integer :: t_n,cn
+            real :: xp,yp,zp,tempzp,x,y,z
+            real :: t,t_obs,m0,m1
+            real :: delta_t
+            real :: dx,dy,dt
+            real :: r 
+            real :: deltax, deltay, deltaz
+            real,dimension(3) :: field_E,field_B,S
+            real(8) :: A,n0
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
+            real :: temp3,temp4
+            character(len=25), save :: sname = 'calculate_field2:'
+            call this%err%werrfl2(class//sname//' started')
+            zp = s_beam
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
+            tt3 = size(part,1)
+            A = 1.528671463266763e-08
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
+            DO i=1,this%Nx,1
+            DO j = 1,this%Ny,1
+                x = this%x0+(i-1)*this%dx
+                y = this%y1-(j-1)*this%dy
+                z = (this%z**2-x**2-y**2)**0.5
+                !posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
+                !vec_r = posi_x 
+                !r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+                r = this%z-n1*s_beam
+                vec_n = (/x,y,z/)/this%z
+                !t_obs = (t + r-this%t0)/this%dt
+            DO n = 1,Np
+                if (part(tt3,n) > 0.5) then
+                    x = part(1,n)*deltax
+                    y = part(2,n)*deltay
+                    tempzp = part(3,n)*deltaz
+                    t = s_beam + tempzp
+                    posi = (/x,y,z/)
+    !                posi = (/x,y,-tempz/)
+                    p = part(4:6,n)
+                    vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
+                    force = part(8:10,n)
+                    pold = p - force
+                    pnew = p + force
+                    vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+                    vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
+                    delta_t = ds/vel(3)
+                    acc = (vnew-vold)/delta_t
+                    t_obs = (n1*t + r - this%t0)/this%dt
+                        if (t_obs > 0 .AND. t_obs < this%Nt) then                       
+                            t_n = t_obs
+                            m0 = t_obs - t_n
+                            m1 = 1.0 - m0
+                            temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+                            if ( m0*this%dt < 0.5*ds*temp4 ) then
+                                cn = cn+1 
+                                t_n = t_n + 1
+                                temp1 = cross(vec_n-vel,acc)
+                                temp2 = cross(vec_n,temp1)
+                                field_E = (temp2/(temp4**3))
+                                this%field_E(:,i,j,t_n) = this%field_E(:,i,j,t_n) + field_E
+                            end if 
+                            if (m1*this%dt < 0.5*ds*temp4) then 
+                                cn = cn+1 
+                                t_n = t_n + 1
+                                temp1 = cross(vec_n-vel,acc)
+                                temp2 = cross(vec_n,temp1)
+                                field_E = (temp2/(temp4**3))
+                                this%field_E(:,i,j,t_n+1) = this%field_E(:,i,j,t_n+1) + field_E
+                            end if 
+                        else 
+                            print*,(n1*t + r)
+                        end if
+                    end if
+                end DO
+                end DO
+            end DO    
+            call this%err%werrfl2(class//sname//' ended')      
+        end subroutine calculate_field2
+!
+        subroutine calculate_field3(this,part,Np,s_beam,ds)
+            implicit none
+
+            class(radiation), intent(inout) :: this
+            real,dimension(:,:),intent(inout) :: part
+            integer,intent(in) :: Np
+            real,intent(in) :: s_beam,ds
+
+            integer :: n,i,j,k,tt3,n1,n2
+            integer :: t_n,cn
+            real :: xp,yp,zp,tempzp,x,y,z
+            real :: t,t_obs,m0,m1
+            real :: delta_t
+            real :: dx,dy,dt
+            real :: r 
+            real :: deltax, deltay, deltaz
+            real,dimension(3) :: field_E,field_B,S
+            real(8) :: A,n0
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
+            real :: temp3,temp4
+            character(len=25), save :: sname = 'calculate_field2:'
+            call this%err%werrfl2(class//sname//' started')
+            zp = s_beam
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
+            tt3 = size(part,1)
+            A = 1.528671463266763e-08
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
+            DO n = 1,Np
+                if (part(tt3,n) > 0.5) then
+                    x = part(1,n)*deltax
+                    y = part(2,n)*deltay
+                    tempzp = part(3,n)*deltaz
+                    t = s_beam + tempzp
+                    posi = (/x,y,z/)
+    !                posi = (/x,y,-tempz/)
+                    p = part(4:6,n)
+                    vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
+                    force = part(8:10,n)
+                    pold = p - force
+                    pnew = p + force
+                    vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+                    vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
+                    delta_t = ds/vel(3)
+                    acc = (vnew-vold)/delta_t
+                        DO i=1,this%Nx,1
+                        DO j = 1,this%Ny,1
+                            x = this%x0+(i-1)*this%dx
+                            y = this%y1-(j-1)*this%dy
+                            z = (this%z**2-x**2-y**2)**0.5
+                            !posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,this%z/)
+                            !vec_r = posi_x 
+                            !r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+                            r = this%z-n1*s_beam
+                            vec_n = (/x,y,z/)/this%z
+                            !t_obs = (t + r-this%t0)/this%dt
+                            t_obs = (n1*t + r - this%t0)/this%dt
+                            if (t_obs > 0 .AND. t_obs < this%Nt) then                       
+                                t_n = t_obs
+                                m0 = t_obs - t_n
+                                m1 = 1.0 - m0
+                                temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+                                if ( m0*this%dt < ds*temp4 ) then
+                                    t_n = t_n + 1
+                                    temp1 = cross(vec_n-vel,acc)
+                                    temp2 = cross(vec_n,temp1)
+                                    field_E = (temp2/(temp4**3))
+                                    this%field_E(:,i,j,t_n) = this%field_E(:,i,j,t_n) + field_E
+                                end if 
+                                if (m1*this%dt < ds*temp4) then 
+                                    t_n = t_n + 1
+                                    temp1 = cross(vec_n-vel,acc)
+                                    temp2 = cross(vec_n,temp1)
+                                    field_E = (temp2/(temp4**3))
+                                    this%field_E(:,i,j,t_n+1) = this%field_E(:,i,j,t_n+1) + field_E
+                                end if 
+                            else 
+                                print*,(n1*t + r)
+                            end if
+                        end DO
+                        end DO
+                end if
+            end DO    
+            call this%err%werrfl2(class//sname//' ended')      
+        end subroutine calculate_field3
 !
         subroutine calculate_field_w(this,part,Np,s_beam,ds)
             implicit none
@@ -375,7 +640,7 @@
             real,intent(in) :: s_beam,ds
 
             real :: deltax, deltay, deltaz
-            integer :: n,i,j,k
+            integer :: n,i,j,k,tt3,n1,n2
             integer :: t_n
             real :: x,y,z,tempz
             real :: t,t_obs
@@ -391,35 +656,47 @@
             character(len=25), save :: sname = 'calculate_field_w:'
             call this%err%werrfl2(class//sname//' started')
             z = s_beam
-            DO n = 1,Np
-                x = part(1,n)
-                y = part(2,n)
-                tempz = part(3,n)
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
+            tt3 = size(part,1)   
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
+            DO n = 1,Np,1
+             if (part(tt3,n) > 1.5) then
+                x = part(1,n)*deltax
+                y = part(2,n)*deltay
+                tempz = part(3,n)*deltaz
                 t = s_beam + tempz
                 posi = (/x,y,z/)
                 p = part(4:6,n)
                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
                 force = part(8:10,n)
-                pold = p - acc
-                pnew = p + acc
+                pold = p - force
+                pnew = p + force
                 vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
                 acc = (vnew-vold)/delta_t
-                DO i=1,this%Nx,1
-                    DO j = 1,this%Ny,1
-                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
-                        vec_r = posi_x - posi
-                        r = vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2
+                DO i=1,this%Nx1,1
+                    DO j = 1,this%Ny1,1
+                        posi_x = (/this%x0+(i-0.5)*this%dx1,this%y1-(j-0.5)*this%dy1,this%z/)
+                        vec_r = posi_x - n1*posi
+                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
                         vec_n = vec_r/r
-                        t_obs = t + r/c
+                        t_obs = t + r
                         temp1 = cross(vec_n-vel,acc)
                         temp2 = cross(vec_n,temp1)
                         temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
                         Do k = 1,this%Nw,1
                             w = this%w0 + (k-1)*this%dw
-                            temp5_Re = cos(w*t_obs)
-                            temp5_im = sin(w*t_obs)
+                            temp5_Re = cos(w*(t_obs*n1+n2*(t-(vec_n(1)*posi(1)+vec_n(2)*posi(2)+vec_n(3)*posi(3)))))
+                            temp5_im = sin(w*(t_obs*n1+n2*(t-(vec_n(1)*posi(1)+vec_n(2)*posi(2)+vec_n(3)*posi(3)))))
                             Ew_re = (temp2*temp5_re/temp4**2)*delta_t                        
                             Ew_im =(temp2*temp5_im/temp4**2)*delta_t
                             this%Ew_re(:,i,j,k) = this%Ew_re(:,i,j,k) + Ew_re
@@ -427,140 +704,233 @@
                         end DO
                     end DO
                 end DO
-            end DO       
+             end if
+            end DO    
             call this%err%werrfl2(class//sname//' ended')      
         end subroutine calculate_field_w
-!
-        subroutine calculate_radiation2(this,input,part,Np,s_beam,ds)
-
-            implicit none
-
-            class(radiation), intent(inout) :: this
-            type(input_json), intent(inout), pointer :: input
-            real,intent(in) :: s_beam,ds
-            real,dimension(:,:),intent(inout) :: part
-            integer,intent(in) :: Np
-
-
-            real,dimension(3,Np,this%Nx,this%Ny) :: temp_up
-            real,dimension(Np,this%Nx,this%Ny) :: temp_down,temp_r,temp_t
-            character(len=25), save :: sname = 'calculate_radiation2:'
-            call this%err%werrfl2(class//sname//' started')
-            call calculate_temp(this,temp_up,&
-            temp_down,temp_r,temp_t,part,Np,s_beam,ds) 
-
-            if (allocated(this%intensity)) then
-                call calculate_intensity2(this,temp_up,&
-                temp_down,temp_r,temp_t,Np,s_beam,ds)
-            end if
-!           if (allocated(this%spectrum)) then
-!               call calculate_field_w2(this,temp_up,&
-!               temp_down,temp_r,temp_t,Np,s_beam,ds)
-!           end if
-!           if (allocated(this%Ew_re)) then 
-!               call calculate_field2(this,temp_up,&
-!               temp_down,temp_r,temp_t,Np,s_beam,ds)
-!           end if
-!           call this%err%werrfl2(class//sname//' ended')
-        end subroutine calculate_radiation2
-!
-        subroutine calculate_temp(this,temp_up,temp_down,temp_r,temp_t,part,Np,s_beam,ds)
+!        
+        subroutine calculate_field_w2(this,part,Np,s_beam,ds)
             implicit none
 
             class(radiation), intent(inout) :: this
             real,dimension(:,:),intent(inout) :: part
             integer,intent(in) :: Np
             real,intent(in) :: s_beam,ds
-            real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
-            real,dimension(Np,this%Nx,this%Ny),intent(inout) :: temp_down,temp_r,temp_t
+
             real :: deltax, deltay, deltaz
-            integer :: n,i,j,k
+            integer :: n,i,j,k,in_n,m,tt3,n1,n2
             integer :: t_n
             real :: x,y,z,tempz
-            real :: t,t_obs,m0,m1
-            real :: delta_t
+            real :: t,t_obs,t_old
+            real :: delta_t,in_t
             real :: dx,dy,dt
-            real :: r
-            real :: intensity
-
-            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
-            real :: temp3,temp4
+            real :: r 
+            real :: w
+            real,dimension(3) :: Ew_im,Ew_re
+            real,dimension(3) :: posi,posi0,vel,acc,posi_x,vec_r,vec_n,p,pnew,pold,vnew,vold,force,posi_new,vel_new
+            real,dimension(3) ::temp0,temp1,temp2
+            real :: temp3,temp4,temp5_im,temp5_Re
             real :: c
-            character(len=25), save :: sname = 'calculate_temp:'
+            character(len=25), save :: sname = 'calculate_field_w2:'
             call this%err%werrfl2(class//sname//' started')
             z = s_beam
-            DO n = 1,Np
-                x = part(1,n)
-                y = part(2,n)
-                tempz = part(3,n)
-                t = s_beam + tempz
+            deltax = this%delta(1)
+            deltay = this%delta(2)
+            deltaz = this%delta(3)
+            tt3 = size(part,1)   
+            if (this%type == 1) then
+                n1 = 1 
+                n2 = 0
+            else if (this%type == 2) then
+                n1 = 0
+                n2 = 1
+            end if 
+            DO n = 1,Np,1
+            if (part(tt3,n) > 1.5) then
+                x = part(1,n)*deltax
+                y = part(2,n)*deltay
+                tempz = part(3,n)*deltaz
                 posi = (/x,y,z/)
                 p = part(4:6,n)
                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
                 force = part(8:10,n)
-                pold = p - acc
-                pnew = p + acc
+                pold = p - force
+                pnew = p + force
                 vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
                 delta_t = ds/vel(3)
+                t_old = s_beam + tempz -0.5*delta_t
                 acc = (vnew-vold)/delta_t
-                DO i=1,this%Nx,1
-                    DO j = 1,this%Ny,1
-                        posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
-                        vec_r = posi_x - posi
-                        r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
-                        vec_n = vec_r/r
-                        t_obs = (t + r/c)
-                        temp1 = cross(vec_n-vel,acc)
-                        temp2 = cross(vec_n,temp1)
-                        temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
-                        temp_up(:,n,i,j) = temp2
-                        temp_down(n,i,j) = temp4
-                        temp_r(n,i,j) = r
-                        temp_t(n,i,j) = t_obs
+                posi0 = posi - vold*0.5*delta_t-0.5*acc*(0.5*delta_t)**2
+                in_t =  delta_t/this%in_n
+                Do m = 0,this%in_n-1,1 
+                    posi_new = posi0 + vold*m*in_t+0.5*acc*(m*in_t)**2
+                    vel_new = vold + acc*m*in_t
+                    t = t_old + m*in_t
+                    DO i=1,this%Nx1,1
+                        DO j = 1,this%Ny1,1
+                            posi_x = (/this%x0+(i-0.5)*this%dx1,this%y1-(j-0.5)*this%dy1,this%z/)
+                            vec_r = posi_x - n1*posi_new
+                            r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+                            vec_n = vec_r/r
+                            t_obs = t + r
+                            temp0 = vec_n-vel_new
+                            temp1 = cross(temp0,acc)
+                            temp2 = cross(vec_n,temp1)
+                            temp4 = (1 - vec_n(1)*vel_new(1)-vec_n(2)*vel_new(2)-vec_n(3)*vel_new(3))
+                            
+                            Do k = 1,this%Nw+1,1
+                                w= this%w0 + (k-1)*this%dw
+                            !    w = 10**(this%w0 + (k-1)*this%dw)
+                                temp5_Re = cos(w*(t_obs*n1+n2*(t-(vec_n(1)*posi_new(1)+vec_n(2)*posi_new(2)+vec_n(3)*posi_new(3)))))
+                                temp5_im = sin(w*(t_obs*n1+n2*(t-(vec_n(1)*posi_new(1)+vec_n(2)*posi_new(2)+vec_n(3)*posi_new(3)))))
+                                Ew_re = (temp2*temp5_re/temp4**2)*in_t
+                                Ew_im =(temp2*temp5_im/temp4**2)*in_t
+                                this%Ew_re(:,i,j,k) = this%Ew_re(:,i,j,k) + Ew_re
+                                this%Ew_im(:,i,j,k) = this%Ew_im(:,i,j,k) + Ew_im
+                            end DO
+                        end DO
                     end DO
                 end DO
-            end DO      
+            end if 
+            end DO 
             call this%err%werrfl2(class//sname//' ended')      
-        end subroutine calculate_temp
+        end subroutine calculate_field_w2
 !
-        subroutine calculate_intensity2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)
-            implicit none
 
-            class(radiation), intent(inout) :: this
-            integer,intent(in) :: Np
-            real,intent(in) :: s_beam,ds
-            real,dimension(3,Np,this%Nx,this%Ny),intent(in) :: temp_up
-            real,dimension(Np,this%Nx,this%Ny),intent(in) :: temp_down,temp_r,temp_t
 
-            integer :: n,i,j
-            integer :: t_n
-            real :: temp
-            real :: t_obs,m0,m1
-            real :: dx,dy,dt
-            real :: r
-            real :: intensity
-            character(len=25), save :: sname = 'calculate_intensity2:'
-            call this%err%werrfl2(class//sname//' started')
-            DO n = 1,Np,1
-                DO i=1,this%Nx,1
-                    DO j = 1,this%Ny,1
-                        t_obs = (temp_t(n,i,j) - this%t0)/this%dt
-                        if (t_obs > 0 .AND. t_obs < this%Nt) then                            
-                            t_n = t_obs
-                            m0 = t_obs - t_n
-                            m1 = 1 - m0
-                            t_n = t_n + 1
-                            temp = (temp_up(1,n,i,j)**2+temp_up(2,n,i,j)**2+temp_up(3,n,i,j)**2)
-                            intensity =(temp/temp_down(n,i,j)**5)
-                            this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
-                            this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
-                        end if
-                    end DO
-                end DO
-            end DO
-            call this%err%werrfl2(class//sname//' ended')
-        end subroutine calculate_intensity2
+
+!         subroutine calculate_radiation2(this,input,part,Np,s_beam,ds)
+
+!             implicit none
+
+!             class(radiation), intent(inout) :: this
+!             type(input_json), intent(inout), pointer :: input
+!             real,intent(in) :: s_beam,ds
+!             real,dimension(:,:),intent(inout) :: part
+!             integer,intent(in) :: Np
+
+
+!             real,dimension(3,Np,this%Nx,this%Ny) :: temp_up
+!             real,dimension(Np,this%Nx,this%Ny) :: temp_down,temp_r,temp_t
+!             character(len=25), save :: sname = 'calculate_radiation2:'
+!             call this%err%werrfl2(class//sname//' started')
+!             call calculate_temp(this,temp_up,&
+!             temp_down,temp_r,temp_t,part,Np,s_beam,ds) 
+
+!             if (allocated(this%intensity)) then
+!                 call calculate_intensity2(this,temp_up,&
+!                 temp_down,temp_r,temp_t,Np,s_beam,ds)
+!             end if
+! !           if (allocated(this%spectrum)) then
+! !               call calculate_field_w2(this,temp_up,&
+! !               temp_down,temp_r,temp_t,Np,s_beam,ds)
+! !           end if
+! !           if (allocated(this%Ew_re)) then 
+! !               call calculate_field2(this,temp_up,&
+! !               temp_down,temp_r,temp_t,Np,s_beam,ds)
+! !           end if
+! !           call this%err%werrfl2(class//sname//' ended')
+!         end subroutine calculate_radiation2
+! !
+!         subroutine calculate_temp(this,temp_up,temp_down,temp_r,temp_t,part,Np,s_beam,ds)
+!             implicit none
+
+!             class(radiation), intent(inout) :: this
+!             real,dimension(:,:),intent(inout) :: part
+!             integer,intent(in) :: Np
+!             real,intent(in) :: s_beam,ds
+!             real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
+!             real,dimension(Np,this%Nx,this%Ny),intent(inout) :: temp_down,temp_r,temp_t
+!             real :: deltax, deltay, deltaz
+!             integer :: n,i,j,k
+!             integer :: t_n
+!             real :: x,y,z,tempz
+!             real :: t,t_obs,m0,m1
+!             real :: delta_t
+!             real :: dx,dy,dt
+!             real :: r
+!             real :: intensity
+
+!             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp0,temp1,temp2,pnew,pold,vnew,vold,force
+!             real :: temp3,temp4
+!             real :: c
+!             character(len=25), save :: sname = 'calculate_temp:'
+!             call this%err%werrfl2(class//sname//' started')
+!             z = s_beam
+!             DO n = 1,Np
+!                 x = part(1,n)
+!                 y = part(2,n)
+!                 tempz = part(3,n)
+!                 t = s_beam + tempz
+!                 posi = (/x,y,z/)
+!                 p = part(4:6,n)
+!                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
+!                 force = part(8:10,n)
+!                 pold = p - acc
+!                 pnew = p + acc
+!                 vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
+!                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
+!                 delta_t = ds/vel(3)
+!                 acc = (vnew-vold)/delta_t
+!                 DO i=1,this%Nx,1
+!                     DO j = 1,this%Ny,1
+!                         posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
+!                         vec_r = posi_x - posi
+!                         r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
+!                         vec_n = vec_r/r
+!                         t_obs = (t + r)
+!                         temp0 = vec_n-vel
+!                         temp1 = cross(temp0,acc)
+!                         temp2 = cross(vec_n,temp1)
+!                         temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
+!                         temp_up(:,n,i,j) = temp2
+!                         temp_down(n,i,j) = temp4
+!                         temp_r(n,i,j) = r
+!                         temp_t(n,i,j) = t_obs
+!                     end DO
+!                 end DO
+!             end DO      
+!             call this%err%werrfl2(class//sname//' ended')      
+!         end subroutine calculate_temp
+! !
+!         subroutine calculate_intensity2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)
+!             implicit none
+
+!             class(radiation), intent(inout) :: this
+!             integer,intent(in) :: Np
+!             real,intent(in) :: s_beam,ds
+!             real,dimension(3,Np,this%Nx,this%Ny),intent(in) :: temp_up
+!             real,dimension(Np,this%Nx,this%Ny),intent(in) :: temp_down,temp_r,temp_t
+
+!             integer :: n,i,j
+!             integer :: t_n
+!             real :: temp
+!             real :: t_obs,m0,m1
+!             real :: dx,dy,dt
+!             real :: r
+!             real :: intensity
+!             character(len=25), save :: sname = 'calculate_intensity2:'
+!             call this%err%werrfl2(class//sname//' started')
+!             DO n = 1,Np,1
+!                 DO i=1,this%Nx,1
+!                     DO j = 1,this%Ny,1
+!                         t_obs = (temp_t(n,i,j) - this%t0)/this%dt
+!                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
+!                             t_n = t_obs
+!                             m0 = t_obs - t_n
+!                             m1 = 1 - m0
+!                             t_n = t_n + 1
+!                             temp = (temp_up(1,n,i,j)**2+temp_up(2,n,i,j)**2+temp_up(3,n,i,j)**2)
+!                             intensity =(temp/temp_down(n,i,j)**5)
+!                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
+!                             this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
+!                         end if
+!                     end DO
+!                 end DO
+!             end DO
+!             call this%err%werrfl2(class//sname//' ended')
+!         end subroutine calculate_intensity2
 !
 !      subroutine calculate_field2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)     
 !          implicit none
@@ -608,7 +978,21 @@
 !
 !      end subroutine calculate_field_w2
 !
-        subroutine write_radiation(this,file,tag,id)
+        subroutine calculate_spectrum(this)
+            implicit none
+            class(radiation), intent(inout) :: this
+            real(8) :: A,delta_O
+            real,dimension(this%Nw+1) :: spectrum2
+            
+            A = 2.961528977012875e-17
+            delta_O = this%dx1*this%dy1/(this%z**2)
+            this%spectrum =  A*(sum(this%Ew_im**2,1)+sum(this%Ew_re**2,1))
+            spectrum2 = sum(sum(this%spectrum,1),1)*delta_O
+
+        end subroutine calculate_spectrum
+
+
+        subroutine write_radiation(this,file,tag,id,rad)
 
             implicit none
 
@@ -616,19 +1000,63 @@
             class(hdf5file), intent(in) :: file
             integer, intent(in) :: tag
             integer, intent(inout) :: id
-
-            real, dimension(:,:), allocatable :: trad
-            integer, dimension(2) :: gs
+            integer, intent(in) :: rad
+            real, dimension(:,:), allocatable :: trad,rad_t
+            real, dimension(:,:,:), allocatable :: S
+            real, dimension(:,:), allocatable :: trad2
+            real, dimension(:,:), allocatable :: spectrum
+            integer, dimension(2) :: gs,gs3
+            integer, dimension(2) :: gs1
             integer :: ierr = 0
-
-            allocate(trad(this%Nx,this%Ny))
-            trad = sum(this%intensity,3)
-            gs(1) = this%Nx
-            gs(2) = this%Ny
-
-            call pwrad(this%p,this%err,file,trad,gs,tag,id,ierr)
-            deallocate(trad)
-        
+            integer :: i,j,k
+            real(8) :: delta_O,dt
+            if (rad == 1) then 
+                allocate(trad(this%Nx,this%Ny))
+                trad = sum(this%intensity,3)
+                gs(1) = this%Nx
+                gs(2) = this%Ny
+                call pwrad(this%p,this%err,file,trad,gs,tag,id,ierr)  
+                deallocate(trad)  
+            else if (rad == 3) then 
+                allocate(rad_t(1,this%Nt+1))
+                delta_O = this%dx*this%dy/(this%z**2)
+                rad_t = reshape(sum(sum(this%intensity,1),1),(/1,this%Nt+1/))*delta_O
+                gs3(1) = 1
+                gs3(2) = this%Nt+1
+                call pwrad(this%p,this%err,file,rad_t,gs3,tag,id,ierr)  
+                deallocate(rad_t) 
+            else if (rad == 2) then
+                allocate(spectrum(1,this%Nw+1))
+                !ALLOCATE(spectrum(this%Nx1,this%Ny1))
+                delta_O = this%dx1*this%dy1/(this%z**2)
+                spectrum = reshape(sum(sum(this%spectrum,1),1),(/1,this%Nw+1/))*delta_O
+                !spectrum=sum(this%spectrum,3)
+                gs1(1) = 1
+                gs1(2) = this%Nw+1
+                !gs1(1)=this%Nx1
+                !gs1(2)=this%Ny1
+                call pwrad(this%p,this%err,file,spectrum,gs1,tag,id,ierr)
+                deallocate(spectrum)
+            else if (rad == 4) then
+                allocate(S(this%Nx,this%Ny,this%Nt+1))
+                allocate(trad2(this%Nx,this%Ny))
+                DO j = 1,this%Ny,1
+                    DO i = 1,this%Nx,1
+                        Do k = 1,this%Nt+1,1
+                            S(i,j,k) = this%field_E(1,i,j,k)**2+this%field_E(2,i,j,k)**2+this%field_E(3,i,j,k)**2
+                            !S(i,j,k) = this%field_E(1,i,j,k)*this%field_B(2,i,j,k) - this%field_E(2,i,j,k)*this%field_B(1,i,j,k)
+                        end DO
+                    end DO
+                end DO
+                dt = (this%t1-this%t0)/this%nt
+                !trad2 = 3.4548e-33*sqrt(this%n0)*reshape(sum(sum(S,1),1),(/1,this%Nt+1/))*(this%z)**2*dt
+                trad2 = 3.4548e-33*sqrt(this%n0)*sum(S,3)*dt
+                gs(1) = this%Nx
+                gs(2) = this%Ny
+                call pwrad(this%p,this%err,file,trad2,gs,tag,id,ierr)
+                deallocate(trad2)
+                deallocate(S)
+            end if
         end subroutine write_radiation
 !
         end module radiation_class

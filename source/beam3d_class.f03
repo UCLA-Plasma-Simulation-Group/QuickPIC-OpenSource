@@ -282,20 +282,20 @@
       
       end subroutine writeqslice_beam3d
 !            
-      subroutine writerad_beam3d(this,file,rname,tag,id)
+      subroutine writerad_beam3d(this,file,tag,id,rad)
 
          implicit none
          
          class(beam3d), intent(inout) :: this
          class(hdf5file), intent(in) :: file
-         character(len=*), intent(in) :: rname   
+         !character(len=*), intent(in) :: rname   
+         integer, intent(in) :: rad
          integer, intent(in) :: tag 
          integer, intent(inout) :: id     
 ! local data
          character(len=18), save :: sname = 'writerad_beam3d:'
-
          call this%err%werrfl2(class//sname//' started')                  
-         call this%rad%wrr(file,tag,id)
+         call this%rad%wrr(file,tag,id,rad)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writerad_beam3d
