@@ -24,28 +24,27 @@ module laser_class
         class(perrors), pointer, public :: err => null()
         class(parallel_pipe), pointer, public :: p => null()
         class(field3d), pointer :: lp => null()
-        
-        class(ldist3d), pointer :: lf => null()!激光场
-        class(field3d), pointer :: a_n => null(),a_half => null() !整数阶与半整数阶的包络，整数阶与等离子体相沟通，半整数阶负责循环
-        class(field2d), pointer :: a_fft => null() !需要初始化
-        real :: k0, ds, dz, dx, beta1, beta2!
+        class(ldist3d), pointer :: lf => null() !laser
+        class(field3d), pointer :: a_n => null(), a_half => null() !The envelope of integer order and half-integer order, the integer order communicates with the plasma, and the half-integer order is responsible for the circulation
+        class(field2d), pointer :: a_fft => null() !for FFT
+        real :: k0, ds, dz, dx, beta1, beta2 !extra parameters of envelope equation
     
         contains
                
         generic :: new => init_laser 
         generic :: del => end_laser
         generic :: push => push_laser
-        ! generic :: wrlp => writelp_laser, writelpslice_laser
+        generic :: wrlp => writelp_laser, writelpslice_laser
         ! generic :: wrst => writerst_laser       
         ! generic :: rrst => readrst_laser       
         ! procedure :: getlp 
         procedure, private :: init_laser
-        ! procedure, private :: end_laser
-        procedure, private :: push_laser, dual_sweep
+        procedure, private :: end_laser
+        procedure, private :: push_laser
         ! procedure, private :: writerst_laser, readrst_laser
-        ! procedure, private :: writelp_laser, writelpslice_laser 
+        procedure, private :: writelp_laser, writelpslice_laser 
     
-    end type 
+    end type laser
       
     save      
       
@@ -66,15 +65,12 @@ module laser_class
         type(ufield3d), pointer :: f3d => null()
         type(ufield2d), pointer :: f2d => null()
         real, pointer, dimension(:,:,:,:) :: a0, a1, pchi => null()
-        !real, pointer, dimension(:,:,:,:) :: vp => null()!vp是什么
         real, pointer, dimension(:,:,:) :: a_fftreal => null() 
         integer :: i, j, k, nx, ny, nz
-
-        real :: k0, ds, dz, dx,beta1,beta2
-        real :: mid1,mid2,mid3,mid4,c4r,c4i,c6r,c6i!中间变量，没必要合并实虚部
-
-        real, dimension(:,:,:), allocatable :: aa!系数矩阵 2*nz-2*3，双层长条阵
-        real, dimension(:,:), allocatable :: c5,bb,a_single!精简版
+        real :: k0, ds, dz, dx, beta1, beta2
+        real :: mid1, mid2, mid3, mid4, c4r, c4i, c6r, c6i!Intermediate variables
+        real, dimension(:,:,:), allocatable :: aa !matrix for dual sweep 2*nz-2*3
+        real, dimension(:,:), allocatable :: c5, bb, a_single
         
         call this%err%werrfl2(class//sname//' started')
          
@@ -85,22 +81,19 @@ module laser_class
         beta1 = this%beta1
         beta2 = this%beta2
     
-        f3d => this%a_half%getrs() !注意修改
+        f3d => this%a_half%getrs() 
         nx = f3d%getnd1p()
         ny = f3d%getnd2p()
         nz = f3d%getnd3p()
         a0 => f3d%getrf()
 
         f3d => chi%getrs()
-        pchi => f3d%getrf()!这个是要用到的chi，它是什么维度？-> 4维
+        pchi => f3d%getrf()
 
-        ! f3d => this%vp%getrs()
-        ! vp => f3d%getrf() !这个有什么用
-        
         allocate(aa(2,nz-2,3),bb(2,nz-2),c5(2,nz-2),a_single(2,nz-2))
 
         mid1 = 1/(dz*ds)
-        mid2 = beta2/(4*dz*dz) !需要在laser中加入β12!!!!!!!!!!!!!!!!
+        mid2 = beta2/(4*dz*dz) !need beta1 and beta2 in type laser
         mid3 = (k0*beta1)/(8*dz)
         mid4 = 0.5*k0*k0
         
@@ -117,7 +110,7 @@ module laser_class
         do i = 1,nx
             do j = 1,ny
                 do k = 1,nz-2 
-                    aa(1,k,2)=-2*mid2-mid4*pchi(1,i,j,k)!!!!chiT 怎么拿出来，而且这个chi，应该是预测的
+                    aa(1,k,2)=-2*mid2-mid4*pchi(1,i,j,k)!predicted chiT 
                     aa(2,k,2)=-2*k0/ds
                     c5(1,k)=2*mid2+mid4*pchi(1,i,j,k)
                     c5(2,k)=aa(2,k,2)
@@ -126,19 +119,19 @@ module laser_class
                     bb(2,k)=(c4r*a0(2,i,j,k)+c4i*a0(1,i,j,k))+(c5(1,k)+a0(2,i,j,k+1)&
                     +c5(2,k)*a0(1,i,j,k+1))+(c6r*a0(2,i,j,k+2)+c6i*a0(1,i,j,k+2))
                 enddo                      
-                call dual_sweep(aa(1,:,:),aa(2,:,:),bb(1,:),bb(2,:),a_single(1,2:nz-1),a_single(2,2:nz-1),nz-2) !可以进一步优化dual—sweep
+                call dual_sweep(aa(1,:,:),aa(2,:,:),bb(1,:),bb(2,:),a_single(1,2:nz-1),a_single(2,2:nz-1),nz-2) !dual sweep can be further optimized
                 
                 a_single(1,1)=0
                 a_single(1,nz)=0
                 a_single(2,1)=0
                 a_single(2,nz)=0
 
-                a0(1,i,j,:)=a_single(1,:)!覆盖3d阵，节约内存
+                a0(1,i,j,:)=a_single(1,:)
                 a0(2,i,j,:)=a_single(2,:)
             enddo
         enddo
 
-        f2d => this%a_fft%getrs()!放在这里还是放在循环里
+        f2d => this%a_fft%getrs()
         a_fftreal => f2d%getrf()
         
         do i = 1,nz 
@@ -169,7 +162,7 @@ module laser_class
 
                 call dual_sweep(aa(1,:,:),aa(2,:,:),bb(1,:),bb(2,:),a_single(1,2:nz-1),a_single(2,2:nz-1),nz-2)  
                 a0(1,i,j,:)=a_single(1,:)
-                a0(2,i,j,:)=a_single(2,:) !直接废物利用
+                a0(2,i,j,:)=a_single(2,:) 
             enddo
         enddo
 
@@ -179,7 +172,7 @@ module laser_class
             f2d => this%a_fft%getrs()
             a_fftreal => f2d%getrf()
             a0(1,:,:,i)=a_fftreal(1,:,:)   
-            !以上实部
+
             a_fftreal(1,:,:) = a0(2,:,:,i)
             call this%a_fft%fftkr(1)
             f2d => this%a_fft%getrs()
@@ -187,7 +180,7 @@ module laser_class
             a0(2,:,:,i)=a_fftreal(1,:,:)
         enddo
         
-        f3d => this%a_n%getrs() !导出整数阶
+        f3d => this%a_n%getrs() 
         a1 => f3d%getrf()
         
         aa(1,:,1)=aa(1,:,1)-mid1 
@@ -198,7 +191,7 @@ module laser_class
         do i = 1,nx
             do j = 1,ny
                 do k = 1,nz-2 
-                    aa(1,k,2)=-2*mid2+mid4*pchi(1,i,j,k)!!!!chiT
+                    aa(1,k,2)=-2*mid2+mid4*pchi(1,i,j,k)
                     aa(2,k,2)=-4*k0/ds
                     c5(1,k)=2*mid2+mid4*pchi(1,i,j,k)
                     c5(2,k)=aa(2,k,2)
@@ -212,8 +205,8 @@ module laser_class
                 a1(2,i,j,:)=a_single(2,:) 
             enddo
         enddo   
-        !返回a以后，应该能重新得到一个真正的chi，还要作比较，迭代确定收敛       
-        !deallocate()  ?
+        !After return a, should be able to get a real chi, and need to make a comparison, confirm the convergence through iteration      
+        !deallocate() ?
         call this%err%werrfl2(class//sname//' ended')     
     end subroutine push_laser
     
@@ -223,13 +216,13 @@ module laser_class
         real, intent(in), dimension (n,3) :: aa,ai
         real, intent(in), dimension (n) :: bb,bi
         real, intent(out), dimension(n) :: xx,xi
-        real, dimension(:),allocatable :: cc,ci,dd,di
+        real, dimension(:), allocatable :: cc,ci,dd,di
         
         integer :: i
         real :: m,mi,w,wi,p,pi,q,qi    
         allocate(cc(n),ci(n),dd(n),di(n))
     
-        cc(1)=(aa(1,3)*aa(1,2)+ai(1,3)*ai(1,2))/(aa(1,2)*aa(1,2)+ai(1,2)*ai(1,2))!致命失误->已修正
+        cc(1)=(aa(1,3)*aa(1,2)+ai(1,3)*ai(1,2))/(aa(1,2)*aa(1,2)+ai(1,2)*ai(1,2))
         ci(1)=(ai(1,3)*aa(1,2)-aa(1,3)*ai(1,2))/(aa(1,2)*aa(1,2)+ai(1,2)*ai(1,2))
         dd(1)=(bb(1)*aa(1,2)+bi(1)*ai(1,2))/(aa(1,2)*aa(1,2)+ai(1,2)*ai(1,2))
         di(1)=(bi(1)*aa(1,2)-bb(1)*ai(1,2))/(aa(1,2)*aa(1,2)+ai(1,2)*ai(1,2))
@@ -280,7 +273,7 @@ module laser_class
         class(perrors), intent(in), pointer :: perr
         class(parallel_pipe), intent(in), pointer :: pp
         class(ldist3d), intent(inout), target :: lf
-        real, intent(in) :: k0, ds, dz, dx, beta1, beta2! ? 
+        real, intent(in) :: k0, ds, dz, dx, beta1, beta2
       
         character(len=18), save :: sname = 'init_laser:'
         
@@ -309,6 +302,7 @@ module laser_class
         call this%a_fft%new(this%p,this%err,this%sp,dim=2,fftflag=.true.)
         call this%lf%dist(this%a_n%getrs())
         call this%lf%dist(this%a_half%getrs())
+
         call this%err%werrfl2(class//sname//' ended')
       
     end subroutine init_laser
@@ -318,7 +312,7 @@ module laser_class
         implicit none
                
         class(laser), intent(inout) :: this
-        character(len=18), save :: sname = 'end_leaser:'
+        character(len=18), save :: sname = 'end_laser:'
       
         call this%err%werrfl2(class//sname//' started')
         
@@ -452,39 +446,39 @@ module laser_class
          
         ! end subroutine writerst_beam3d
         
-        ! subroutine writeq_beam3d(this,file,rtag,stag,id)
+        subroutine writelp_laser(this,file,rtag,stag,id)
         
-        !     implicit none
+            implicit none
             
-        !     class(beam3d), intent(inout) :: this
-        !     class(hdf5file), intent(in) :: file
-        !     integer, intent(in) :: rtag, stag
-        !     integer, intent(inout) :: id
+            class(laser), intent(inout) :: this
+            class(hdf5file), intent(in) :: file
+            integer, intent(in) :: rtag, stag
+            integer, intent(inout) :: id
         
-        !     character(len=18), save :: sname = 'writeq_beam3d:'
+            character(len=18), save :: sname = 'writelp_laser:'
         
-        !     call this%err%werrfl2(class//sname//' started')                  
-        !     call this%q%wr(file,1,rtag,stag,id)
-        !     call this%err%werrfl2(class//sname//' ended')
+            call this%err%werrfl2(class//sname//' started')                  
+            call this%lp%wr(file,1,rtag,stag,id)
+            call this%err%werrfl2(class//sname//' ended')
          
-        ! end subroutine writeq_beam3d
+        end subroutine writelp_laser
                    
-        ! subroutine writeqslice_beam3d(this,file,slice,spos,rtag,stag,id)
+        subroutine writelpslice_laser(this,file,slice,spos,rtag,stag,id)
         
-        !     implicit none
+            implicit none
             
-        !     class(beam3d), intent(inout) :: this
-        !     class(hdf5file), intent(in) :: file
-        !     integer, intent(in) :: rtag, stag, slice, spos
-        !     integer, intent(inout) :: id         
+            class(laser), intent(inout) :: this
+            class(hdf5file), intent(in) :: file
+            integer, intent(in) :: rtag, stag, slice, spos
+            integer, intent(inout) :: id         
         
-        !     character(len=18), save :: sname = 'writeqslice_beam3d:'
+            character(len=18), save :: sname = 'writeqslice_beam3d:'
         
-        !     call this%err%werrfl2(class//sname//' started')                  
-        !     call this%q%wr(file,1,slice,spos,rtag,stag,id)
-        !     call this%err%werrfl2(class//sname//' ended')
+            call this%err%werrfl2(class//sname//' started')                  
+            call this%lp%wr(file,1,slice,spos,rtag,stag,id)
+            call this%err%werrfl2(class//sname//' ended')
          
-        ! end subroutine writeqslice_beam3d
+        end subroutine writelpslice_laser
                   
         ! subroutine readrst_beam3d(this,file)
         

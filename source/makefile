@@ -35,7 +35,7 @@ part2d_lib.o part2d_lib77.o part2d_class.o fdist2d_class.o \
 ufield3d_class.o ufield3d_lib77.o ufield3d_lib.o \
 part3d_lib.o part3d_lib77.o part3d_class.o fdist3d_class.o \
 field2d_class.o field3d_class.o species2d_class.o beam3d_class.o \
-laser_class2.o radiation_class.o ldist3d_class.o input_class.o simulation_class.o
+laser_class2.o radiation_class.o ldist3d_class.o laser_class2.o ldist3d_class.o input_class.o simulation_class.o
 
 
 OBJS_MAIN = main.o  
@@ -76,6 +76,9 @@ input_class.o : input_class.f03 spect3d_class.o\
 laser_class2.o : laser_class2.f03 ldist3d_class.o \ 
 	${FC} ${OPTS} ${FORMAT_FREE} laser_class2.f03 -o laser_class2.o
 
+laser_class2.o : laser_class2.f03 ldist3d_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} laser_class2.f03 -o laser_class2.o
+
 beam3d_class.o : beam3d_class.f03 fdist3d_class.o field3d_class.o spect3d_class.o \
                   perrors_class.o parallel_pipe_class.o part3d_class.o hdf5io_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} beam3d_class.f03 -o beam3d_class.o
@@ -111,6 +114,9 @@ part3d_lib.o : part3d_lib.f03
 fdist3d_class.o : fdist3d_class.f03 spect3d_class.o perrors_class.o \
                    parallel_pipe_class.o part3d_lib.o ufield3d_class.o input_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} fdist3d_class.f03 -o fdist3d_class.o
+
+ldist3d_class.o : ldist3d_class.f03
+	${FC} ${OPTS} ${FORMAT_FREE} ldist3d_class.f03 -o ldist3d_class.o 
 
 ldist3d_class.o : ldist3d_class.f03
 	${FC} ${OPTS} ${FORMAT_FREE} ldist3d_class.f03 -o ldist3d_class.o 
