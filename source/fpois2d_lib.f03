@@ -96,6 +96,19 @@
       end interface
 !
       interface
+         subroutine MPPOISDK2(q,fxy,isign,kk,ax,ay,affp,we,nx,ny,kstrt,&
+     &nyv,kxp2,nyd)
+         implicit none
+         integer, intent(in) :: isign, nx, ny, kstrt, nyv, kxp2, nyd
+         real, intent(in) :: ax, ay, affp
+         real, intent(inout) :: we
+         real, dimension(nyv,kxp2+1), intent(in)  :: q
+         real, dimension(2,nyv,kxp2+1), intent(inout) :: fxy
+         real, dimension(nyd,kxp2), intent(inout) :: kk
+         end subroutine
+      end interface
+!
+      interface
          subroutine MPPOISD23(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,&
      &nyv,kxp2,nyd)
          implicit none

@@ -31,7 +31,7 @@
          real :: anorm
          complex, dimension(:,:), pointer :: ffc => null()
          real, dimension(:,:,:), pointer :: ffg => null()
-         
+         real, dimension(:,:), pointer :: kk => null()
          contains
          
          generic :: new => init_fpois2d
@@ -42,6 +42,7 @@
          generic :: elfield => ippoisd23
          generic :: bfield => ibfieldd2
          generic :: bfield_qp => jpbpoisd23n_qp
+         procedure :: getkk
          procedure, private :: init_fpois2d
          procedure, private :: end_fpois2d
          procedure, private :: ipotd2, ismoothfd2, ippoisd23, ibfieldd2
@@ -94,11 +95,13 @@
             this%nd = (/nx,ny/); this%a = (/ax,ay/)
             this%anorm = affp
             allocate(this%ffc(ny,(nx-1)/this%p%getlnvp()+1))
+            allocate(this%kk(ny,(nx-1)/this%p%getlnvp()+1))
             call ippoisd2init(this,ax,ay,affp,nx,ny,this%p%getlkstrt())
          case default
             this%nd = (/nx,ny/); this%a = (/ax,ay/)
             this%anorm = affp
             allocate(this%ffc(ny,(nx-1)/this%p%getlnvp()+1))
+            allocate(this%kk(ny,(nx-1)/this%p%getlnvp()+1))
             call ippoisd2init(this,ax,ay,affp,nx,ny,this%p%getlkstrt())
          end select
 
@@ -134,15 +137,19 @@
          integer :: isign = 0, nyv, kxp2, nyd
          real :: we
          complex, dimension(:,:), pointer:: ffd
+         real, dimension(:,:), pointer:: kk
          real, dimension(1,1)  :: q
          real, dimension(2,1,1) :: fxy
          character(len=14), save :: sname = 'ippoisd2init:'
 
          call this%err%werrfl2(class//sname//' started')
          ffd => this%ffc
+         kk => this%kk
          nyv = size(q,1)
          nyd = size(ffd,1); kxp2 = size(ffd,2);
          call MPPOISD22(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,nyv,kxp2,&
+         &nyd)
+         call MPPOISDK2(q,fxy,isign,kk,ax,ay,affp,we,nx,ny,kstrt,nyv,kxp2,&
          &nyd)
          call this%err%werrfl2(class//sname//' ended')
          end subroutine ippoisd2init
@@ -554,5 +561,16 @@
          call perr%werrfl2(class//sname//' ended')
 
       end function get_pois2table
-!         
+!
+      function getkk(this)
+
+         implicit none
+
+         class(fpois2d), intent(in) :: this
+         real, dimension(:,:), pointer :: getkk
+
+         getkk => this%kk
+
+      end function getkk
+!               
       end module fpois2d_class
