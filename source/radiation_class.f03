@@ -6,6 +6,7 @@
         use perrors_class
         use parallel_pipe_class
         use hdf5io_class
+        use integral
 
         implicit none
 
@@ -84,11 +85,12 @@
             real :: t0,t1
             real :: w0,w1
             real(8) :: n0
-            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n        
+            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n,integral_type        
             integer :: indx, indy, indz,type
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
             character(len=25), save :: sname = 'init_radiation:'
+            procedure(event), pointer :: calculate_inte !=> null ()
 
             this%err => perr
             this%p => pp
@@ -172,6 +174,7 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
+                    call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
@@ -187,6 +190,13 @@
                     this%Ew_im = 0
                     allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
                     this%spectrum = 0
+                    if (integral_type==0) then 
+                    calculate_inte => calculate_inte0
+                    else if (integral_type==1) then 
+                    calculate_inte => calculate_inte1
+                    else if (integral_type==2) then 
+                    calculate_inte => calculate_inte2
+                    end if
                     end if
                 case('spectrum_intens')
                     if ( .not. allocated(this%Ew_re)) then
@@ -196,6 +206,7 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
+                    call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
@@ -211,6 +222,13 @@
                     this%Ew_im = 0
                     allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
                     this%spectrum = 0
+                    if (integral_type==0) then 
+                    calculate_inte => calculate_inte0
+                    else if (integral_type==1) then 
+                    calculate_inte => calculate_inte1
+                    else if (integral_type==2) then 
+                    calculate_inte => calculate_inte2
+                    end if
                     end if
                 case('field')
                     allocate(this%field_E(3,this%Nx,this%Ny,this%Nt+1))
@@ -705,7 +723,7 @@
                             temp6 =  - vec_n(1)*acc(1)-vec_n(2)*acc(2)-vec_n(3)*acc(3)
                             k1 = w*temp4
                             k2 = w*temp6
-                            call calculate_inte2(k1,k2,delta_t,inte_re,inte_im)   
+                            call calculate_inte(k1,k2,delta_t,inte_re,inte_im)   
                             temp7=  temp2/temp4**2
                             Ew_re = temp7*(temp5_re*inte_re-temp5_im*inte_im)                  
                             Ew_im =temp7*(temp5_re*inte_im+temp5_im*inte_re)
@@ -801,7 +819,7 @@
                                 temp6 =  - vec_n(1)*acc(1)-vec_n(2)*acc(2)-vec_n(3)*acc(3)
                                 k1 = w*temp4
                                 k2 = w*temp6
-                                call calculate_inte2(k1,k2,in_t,inte_re,inte_im)    
+                                call calculate_inte(k1,k2,in_t,inte_re,inte_im)    
                                 temp7=  temp2/temp4**2
                                 Ew_re = temp7*(temp5_re*inte_re-temp5_im*inte_im)                  
                                 Ew_im =temp7*(temp5_re*inte_im+temp5_im*inte_re)
