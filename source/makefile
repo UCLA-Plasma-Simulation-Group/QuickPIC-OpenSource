@@ -4,6 +4,7 @@ SYS_SFX=GF_OPENMPI
 # SGL = single precision, float(4)
 # DBL = double precision, float(8)
 PRECISION = DBL
+IF_OPENPMD = 1
 
 INC_FILE_NAME = make.${SYS_SFX}
 include ./${INC_FILE_NAME} 
@@ -22,12 +23,22 @@ SPECIAL_OPTS= ${SPECIAL_OPTS_${SYS_SFX}}
 FORMAT_FREE = ${FORMAT_FREE_${SYS_SFX}}
 FORMAT_FIXED = ${FORMAT_FIXED_${SYS_SFX}}
 
+# HDF5 dump can be either standard or OpenPMD
+#
+HDF5_OBJ = hdf5io_class.o
+ifdef IF_OPENPMD 
+    HDF5_OBJ = hdf5io_pmd_class.o 
+else
+    HDF5_OBJ = hdf5io_class.o
+endif
+
+
 # Objects list
 
 OBJS_BASE = \
 parallel_class.o parallel_pipe_class.o perrors_class.o dtimer.o spect2d_class.o \
 spect3d_class.o \
-hdf5io_class.o \
+$(HDF5_OBJ) \
 ufield2d_class.o ufield2d_lib77.o ufield2d_lib.o \
 fft2d_lib.o fft2d_lib77.o fft2d_class.o \
 fpois2d_lib.o fpois2d_lib77.o fpois2d_class.o \
@@ -36,6 +47,7 @@ ufield3d_class.o ufield3d_lib77.o ufield3d_lib.o \
 part3d_lib.o part3d_lib77.o part3d_class.o fdist3d_class.o \
 field2d_class.o field3d_class.o species2d_class.o beam3d_class.o \
 input_class.o simulation_class.o
+
 
 
 OBJS_MAIN = main.o  
@@ -164,6 +176,9 @@ ufield2d_class.o : ufield2d_class.f03 spect2d_class.o perrors_class.o \
 
 hdf5io_class.o : hdf5io_class.f03 spect3d_class.o perrors_class.o parallel_pipe_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} hdf5io_class.f03 -o hdf5io_class.o
+
+hdf5io_pmd_class.o : hdf5io_pmd_class.f03 spect3d_class.o perrors_class.o parallel_pipe_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} hdf5io_pmd_class.f03 -o hdf5io_pmd_class.o
 
 spect3d_class.o : spect3d_class.f03 perrors_class.o parallel_pipe_class.o spect2d_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} spect3d_class.f03 -o spect3d_class.o
