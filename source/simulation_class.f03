@@ -462,6 +462,9 @@
             case (4)
                allocate(fdist3d_004::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            ! case (5)
+            !    allocate(fdist3d_005::this%pf(i)%p)
+            !    call this%pf(i)%p%new(input,i)
             case (100)
                allocate(fdist3d_100::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
@@ -595,6 +598,9 @@
             case (12)
                allocate(fdist2d_012::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            ! case (20)
+            !    allocate(fdist2d_020::this%pf(i)%p)
+            !    call this%pf(i)%p%new(input,i)
 ! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
@@ -683,100 +689,100 @@
             call this%fields%psit%cb(this%fields%bexyz,1,(/1/),(/3/))
             call this%fields%bxyz%cb(this%fields%bbxyz,1,(/1,2,3/),(/1,2,3/))
 
-            do j = 1, this%nstep2d
-               write (erstr,*) '2D step:', j
-               call this%err%werrfl0(erstr)
-               if (j == this%nstep2d) then
-                  do m = 1, this%nbeams
-                     call MPI_WAIT(this%id_bq(m,2),istat,ierr)
-                  end do
-               endif
-               call this%fields%qb%as(0.0)
-               do m = 1, this%nbeams
-                  call this%beams%beam(m)%qdp(this%fields%qb,j+1)
-               end do
-               call this%fields%qb%fftrk(1)
-               call this%fields%qb%elf(this%fields%epwb)
-               call this%fields%qe%as(0.0)
-               do l = 1, this%nspecies
-                  call this%species%spe(l)%qdp(this%fields%qe)
-               end do
-               call this%fields%qe%fftrk(1)
-               call this%fields%qe%pot(this%fields%psi)
-               call this%fields%psi%grad(this%fields%fxy)
-               call this%fields%fxy%fftkr(1)
-               call this%fields%psi%fftkr(1)
-               do l = 1, this%nspecies
-                  call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
-               end do
-               call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
-               if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
-               call this%fields%cu%div(this%fields%div_vpot)
-               call this%fields%div_vpot%pot(this%fields%psit)
-               call this%fields%psit%mult(this%fields%psit,-this%dex)
-               call this%fields%psit%fftkr(1)
-               call this%fields%cu%bf(this%fields%bxyz)
-               do l = 1, this%iter
-                  call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
-                  call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
-                  call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
-                  call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
-                  call this%fields%bxyz%fftkr(2)
-                  call this%fields%cu%as(0.0)
-                  call this%fields%dcu%as(0.0)
-                  call this%fields%amu%as(0.0)
-                  do m = 1, this%nspecies
-                     call this%species%spe(m)%amjdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-                     &this%fields%cu,this%fields%amu,this%fields%dcu,this%dex)
-                  end do
-                  call this%fields%cu%mult(this%fields%cu,this%dex)
-                  call this%fields%amu%mult(this%fields%amu,this%dex)
-                  call this%fields%dcu%mult(this%fields%dcu,this%dex)
-                  if (l == this%iter) then
-                     do m = 1, this%nspecies
-                        call this%species%spe(m)%cbq(j+1)
-                     end do
-                     if (allocated(this%fields%cu3d)) then
-                        call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
-                     end if
-                  endif
-                  call this%fields%cu%fftrk(1)
-                  call this%fields%dcu%fftrk(1)
-                  call this%fields%amu%fftrk(3)
-                  call this%fields%cu%bfqp(this%fields%dcu,this%fields%amu,this%fields%epw,this%dex2,&
-                  &this%dex)
-                  call this%fields%cu%div(this%fields%div_vpot)
-                  call this%fields%div_vpot%pot(this%fields%psit)
-                  call this%fields%psit%mult(this%fields%psit,-this%dex)
-                  call this%fields%psit%fftkr(1)
-                  call this%fields%cu%bf(this%fields%bxyz)
-               enddo
-               if (allocated(this%fields%vpot)) then
-                  call this%fields%cu%vpot(this%fields%vpot)
-                  call this%fields%vpot%fftkr(1)
-                  call this%fields%vpot%mult(this%fields%vpot,-this%dex)
-                  call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
-               end if               
-               call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
-               call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
-               call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
-               call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
-               call this%fields%bxyz%fftkr(2)
-               call this%fields%fxy%mult(this%fields%fxy,-1.0)
-               call this%fields%fxy%add(this%fields%fxy,this%fields%bxyz,(/1/),(/1/),(/2/))
-               call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/))
-               call this%fields%dcu%mult(this%fields%dcu,this%dxi)
-               call this%fields%cu%sub(this%fields%cu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
-               do m = 1, this%nspecies
-                  call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-                  &this%dex)
-               end do
-               call this%fields%fxy%mult(this%fields%fxy,this%dex)
-               call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))
-               call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))
-               call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
-               call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
-            enddo
+            ! do j = 1, this%nstep2d
+            !    write (erstr,*) '2D step:', j
+            !    call this%err%werrfl0(erstr)
+            !    if (j == this%nstep2d) then
+            !       do m = 1, this%nbeams
+            !          call MPI_WAIT(this%id_bq(m,2),istat,ierr)
+            !       end do
+            !    endif
+            !    call this%fields%qb%as(0.0)
+            !    do m = 1, this%nbeams
+            !       call this%beams%beam(m)%qdp(this%fields%qb,j+1)
+            !    end do
+            !    call this%fields%qb%fftrk(1)
+            !    call this%fields%qb%elf(this%fields%epwb)
+            !    call this%fields%qe%as(0.0)
+            !    do l = 1, this%nspecies
+            !       call this%species%spe(l)%qdp(this%fields%qe)
+            !    end do
+            !    call this%fields%qe%fftrk(1)
+            !    call this%fields%qe%pot(this%fields%psi)
+            !    call this%fields%psi%grad(this%fields%fxy)
+            !    call this%fields%fxy%fftkr(1)
+            !    call this%fields%psi%fftkr(1)
+            !    do l = 1, this%nspecies
+            !       call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
+            !    end do
+            !    call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
+            !    if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
+            !    call this%fields%cu%div(this%fields%div_vpot)
+            !    call this%fields%div_vpot%pot(this%fields%psit)
+            !    call this%fields%psit%mult(this%fields%psit,-this%dex)
+            !    call this%fields%psit%fftkr(1)
+            !    call this%fields%cu%bf(this%fields%bxyz)
+            !    do l = 1, this%iter
+            !       call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+            !       call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+            !       call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+            !       call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+            !       call this%fields%bxyz%fftkr(2)
+            !       call this%fields%cu%as(0.0)
+            !       call this%fields%dcu%as(0.0)
+            !       call this%fields%amu%as(0.0)
+            !       do m = 1, this%nspecies
+            !          call this%species%spe(m)%amjdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+            !          &this%fields%cu,this%fields%amu,this%fields%dcu,this%dex)
+            !       end do
+            !       call this%fields%cu%mult(this%fields%cu,this%dex)
+            !       call this%fields%amu%mult(this%fields%amu,this%dex)
+            !       call this%fields%dcu%mult(this%fields%dcu,this%dex)
+            !       if (l == this%iter) then
+            !          do m = 1, this%nspecies
+            !             call this%species%spe(m)%cbq(j+1)
+            !          end do
+            !          if (allocated(this%fields%cu3d)) then
+            !             call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
+            !          end if
+            !       endif
+            !       call this%fields%cu%fftrk(1)
+            !       call this%fields%dcu%fftrk(1)
+            !       call this%fields%amu%fftrk(3)
+            !       call this%fields%cu%bfqp(this%fields%dcu,this%fields%amu,this%fields%epw,this%dex2,&
+            !       &this%dex)
+            !       call this%fields%cu%div(this%fields%div_vpot)
+            !       call this%fields%div_vpot%pot(this%fields%psit)
+            !       call this%fields%psit%mult(this%fields%psit,-this%dex)
+            !       call this%fields%psit%fftkr(1)
+            !       call this%fields%cu%bf(this%fields%bxyz)
+            !    enddo
+            !    if (allocated(this%fields%vpot)) then
+            !       call this%fields%cu%vpot(this%fields%vpot)
+            !       call this%fields%vpot%fftkr(1)
+            !       call this%fields%vpot%mult(this%fields%vpot,-this%dex)
+            !       call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
+            !    end if               
+            !    call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+            !    call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+            !    call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+            !    call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+            !    call this%fields%bxyz%fftkr(2)
+            !    call this%fields%fxy%mult(this%fields%fxy,-1.0)
+            !    call this%fields%fxy%add(this%fields%fxy,this%fields%bxyz,(/1/),(/1/),(/2/))
+            !    call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/))
+            !    call this%fields%dcu%mult(this%fields%dcu,this%dxi)
+            !    call this%fields%cu%sub(this%fields%cu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
+            !    do m = 1, this%nspecies
+            !       call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+            !       &this%dex)
+            !    end do
+            !    call this%fields%fxy%mult(this%fields%fxy,this%dex)
+            !    call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))
+            !    call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))
+            !    call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+            !    call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
+            ! enddo
 
             do m = 1, this%nspecies
                call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))

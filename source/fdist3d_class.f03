@@ -16,7 +16,7 @@
       private
 
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
-      public :: fdist3d_003, fdist3d_004
+      public :: fdist3d_003, fdist3d_004,fdist3d_005
 
       interface
          real function ranorm()
@@ -89,6 +89,22 @@
          procedure, private :: dist3d => dist3d_000
 
       end type fdist3d_000
+!      
+      type, extends(fdist3d) :: fdist3d_005
+! Tri Gaussian profile with px(the same particle charge)
+         private
+
+         integer :: npx, npy, npz
+         real :: qm, sigx, sigy, sigz
+         real :: bcx, bcy, bcz, sigvx, sigvy, sigvz
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np,p0x,p0y
+         logical :: quiet
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_005
+         procedure, private :: dist3d => dist3d_005
+
+      end type fdist3d_005
 !
       type, extends(fdist3d) :: fdist3d_001
 ! Bi Gaussian and piecewise in z (the same particle charge)
@@ -507,6 +523,236 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_000
+      subroutine init_fdist3d_005(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_005), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: npf,npx,npy,npz,npmax
+         real :: qm,sigx,sigy,sigz,bcx,bcy,bcz,sigvx,sigvy,sigvz
+         real :: cx1,cx2,cx3,cy1,cy2,cy3,gamma,np,p0x,p0y
+         logical :: quiet, evol, static
+         real :: min, max, cwp, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz         
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist3d_005:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         !cwp=5.32150254*1e9/sqrt(n0)
+         cwp =5.314093263*1e9/sqrt(n0)
+         !use e=4.803204712570263e-09 c=29979245800 m=9.1093837015e-28 pi=3.141592653589793 and cwp=c/(4pi*e**2/m)**0.5/sqrt(n0)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         this%origin(1) = min
+         call input%get(trim(s1)//'.center(1)',bcx)
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         this%origin(2) = min
+         call input%get(trim(s1)//'.center(2)',bcy)
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         this%origin(3) = min
+         call input%get(trim(s1)//'.center(3)',bcz)
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.np(1)',npx)
+         call input%get(trim(s1)//'.np(2)',npy)
+         call input%get(trim(s1)//'.np(3)',npz)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.sigma(1)',sigx)
+         call input%get(trim(s1)//'.sigma(2)',sigy)
+         call input%get(trim(s1)//'.sigma(3)',sigz)
+         call input%get(trim(s1)//'.p0(1)',p0x)
+         call input%get(trim(s1)//'.p0(2)',p0y)
+         call input%get(trim(s1)//'.sigma_v(1)',sigvx)
+         call input%get(trim(s1)//'.sigma_v(2)',sigvy)
+         call input%get(trim(s1)//'.sigma_v(3)',sigvz)
+         call input%get(trim(s1)//'.centroid_x(1)',cx1)
+         call input%get(trim(s1)//'.centroid_x(2)',cx2)
+         call input%get(trim(s1)//'.centroid_x(3)',cx3)
+         call input%get(trim(s1)//'.centroid_y(1)',cy1)
+         call input%get(trim(s1)//'.centroid_y(2)',cy2)
+         call input%get(trim(s1)//'.centroid_y(3)',cy3)
+         call input%get(trim(s1)//'.quiet_start',quiet)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.peak_density',np)
+         call input%get(trim(s1)//'.npmax',npmax)
+         call input%get(trim(s1)//'.evolution',evol)
+         if (input%found(trim(s1)//'.static')) then
+            call input%get(trim(s1)//'.static',static)
+            if (static) evol = .false.
+         else
+            static = .false.
+         end if
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
+         end if
+         this%npf = npf
+         this%npx = npx
+         this%npy = npy
+         this%npz = npz
+         this%npmax = npmax
+         qm = qm/abs(qm)*abs(np)*(2*3.1415926535897932)**1.5*sigx*sigy*sigz
+         qm = qm/dx/dy/dz
+         qm = qm/npx
+         qm = qm/npy
+         qm = qm/npz
+         this%qm = qm
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%sigx = sigx/dx
+         this%sigy = sigy/dy
+         this%sigz = sigz/dz
+         this%p0x = p0x
+         this%p0y = p0y
+         this%sigvx = sigvx
+         this%sigvy = sigvy
+         this%sigvz = sigvz
+         this%cx1 = cx1*dz*dz/dx
+         this%cx2 = cx2*dz/dx
+         this%cx3 = cx3/dx
+         this%cy1 = cy1*dz*dz/dy
+         this%cy2 = cy2*dz/dy
+         this%cy3 = cy3/dy
+         this%gamma = gamma
+         this%np = np
+         this%quiet = quiet
+         this%evol = evol
+         this%static = static
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_005
+!
+      subroutine dist3d_005(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_005), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+
+! edges(1) = lower boundary in y of particle partition
+! edges(2) = upper boundary in y of particle partition
+! edges(3) = lower boundary in z of particle partition
+! edges(4) = upper boundary in z of particle partition
+         real, dimension(:,:), pointer :: pt => null()
+         real, dimension(:,:,:,:), pointer :: qrf => null()        
+         integer :: npx, npy, npz, nx, ny, nz, ipbc
+         real :: vtx, vty, vtz, vdx, vdy, vdz
+         real :: sigx, sigy, sigz, x0, y0, z0
+         real, dimension(3) :: cx, cy
+         real, dimension(4) :: edges
+         real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
+         integer, dimension(2) :: noff
+         integer :: nps=1
+         integer :: i, j, k
+         logical :: lquiet = .false.
+         integer :: tt1, tt2, tt3, gid, sf,sf1
+         integer :: idimp, npmax, ierr = 0
+         character(len=18), save :: sname = 'dist3d_005:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         npx = this%npx; npy = this%npy; npz = this%npz
+         nx = fd%getnd1(); ny = fd%getnd2(); nz = fd%getnd3()
+         ipbc = this%sp%getpsolver()
+         pt => part3d
+         vtx = this%sigvx; vty = this%sigvy; vtz = this%sigvz
+         vdx = this%p0x; vdy = this%p0y; vdz = this%gamma
+         sigx = this%sigx; sigy = this%sigy; sigz = this%sigz
+         x0 = this%bcx; y0 = this%bcy; z0 = this%bcz
+         cx = (/this%cx1,this%cx2,this%cx3/); cy = (/this%cy1,this%cy2,this%cy3/)
+         lquiet = this%quiet
+         idimp = size(part3d,1); npmax = size(part3d,2)
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
+         noff = fd%getnoff()
+         edges(1) = noff(1); edges(3) = noff(2)
+         edges(2) = edges(1) + fd%getnd2p()
+         edges(4) = edges(3) + fd%getnd3p()         
+         
+         if (this%static) then
+            npp = 0
+            np = this%np*this%qm/abs(this%qm)
+            nx = fd%getnd1p(); ny = fd%getnd2p(); nz = fd%getnd3p()
+            qrf => fd%getrf()
+            do k = 1, nz
+               zval = float(k+noff(2)-1)-z0
+               cx0 = -cx(1)*zval**2-cx(2)*zval-cx(3)
+               cy0 = -cy(1)*zval**2-cy(2)*zval-cy(3)
+               t1 = np*exp(-zval**2/2.0/sigz**2)
+               do i = 1, nx
+                  xval = float(i-1)
+                  t2 = t1*exp(-(xval-x0+cx0)**2/2.0/sigx**2)
+                  do j = 1, ny
+                     yval = float(j+noff(1)-1)
+                     qrf(1,i,j,k) = t2*exp(-(yval-y0+cy0)**2/2.0/sigy**2)                    
+                  end do
+               end do
+            end do
+         else
+            call PRVDIST32_RANDOM(pt,this%qm,edges,npp,nps,vtx,vty,vtz,vdx,vdy,&
+            &vdz,npx,npy,npz,nx,ny,nz,ipbc,idimp,npmax,1,1,4,sigx,sigy,sigz,&
+            &x0,y0,z0,cx,cy,lquiet,ierr)
+            if (ierr /= 0) then
+               write (erstr,*) 'PRVDIST32_RANDOM error'
+               call this%err%equit(class//sname//erstr)
+            endif
+            if (this%tagged) then
+               do i = 1, npp
+                  if (mod(i,sf) == 0) then
+                     pt(tt3,i) = 1.0
+                     if (mod(i,sf1*sf)==0) then 
+                     pt(tt3,i) = 2.0
+                     end if 
+                  else
+                     pt(tt3,i) = 0.0
+                     
+                  endif
+                  pt(tt1,i) = transfer(gid,1.0)
+                  pt(tt2,i) = transfer(i,1.0)
+               end do
+            end if
+         end if
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_005
 !
       subroutine init_fdist3d_001(this,input,i)
       
@@ -613,7 +859,15 @@
          else
             static = .false.
          end if
-
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
+         if (input%found(trim(s1)//'radiation.spectrum.fsample')) then
+            call input%get(trim(s1)//'radiation.spectrum.fsample',this%sf1)
+         end if
          sumz = 0.0
          do ii = 2, size(this%z)
             if (this%z(ii)<=this%z(ii-1)) then
@@ -694,6 +948,7 @@
          integer :: idimp, npmax, ierr = 0
          integer :: nzf, i, j, k
          real :: xval, yval, zval, np, t1,t2,t3,cx0,cy0
+         integer :: tt1, tt2, tt3, gid, sf,sf1
          real, dimension(:), allocatable :: zf
          character(len=18), save :: sname = 'dist3d_001:'
 
@@ -765,8 +1020,23 @@
             if (ierr /= 0) then
                write (erstr,*) 'PRVDIST32_RAN_PFL error'
                call this%err%equit(class//sname//erstr)
-            endif
-         end if         
+            endif    
+            if (this%tagged) then
+               do i = 1, npp
+                  if (mod(i,sf) == 0) then
+                     pt(tt3,i) = 1.0
+                     if (mod(i,sf1*sf)==0) then 
+                     pt(tt3,i) = 2.0
+                     end if 
+                  else
+                     pt(tt3,i) = 0.0
+                     
+                  endif
+                  pt(tt1,i) = transfer(gid,1.0)
+                  pt(tt2,i) = transfer(i,1.0)
+               end do
+            end if
+         end if
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_001
