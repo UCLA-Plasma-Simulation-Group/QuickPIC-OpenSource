@@ -85,7 +85,7 @@
             real :: t0,t1
             real :: w0,w1
             real(8) :: n0
-            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n,integral_type        
+            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n        
             integer :: indx, indy, indz,type
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
@@ -174,7 +174,6 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
-                    call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
@@ -206,7 +205,6 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
-                    call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
