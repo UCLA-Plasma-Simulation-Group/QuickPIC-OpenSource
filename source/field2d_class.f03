@@ -70,7 +70,7 @@
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
          procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
-         procedure :: getstate, getgcells, getrs, getks, getkk
+         procedure :: getstate, getgcells, getrs, getks
                   
       end type 
 
@@ -866,16 +866,5 @@
          getks => this%ks
 
       end function getks
-!
-      function getkk(this)
-
-         implicit none
-
-         class(field2d), intent(in) :: this
-         real, dimension(:,:), pointer :: getkk
-
-         getkk => this%pt%getkk()
-
-      end function getkk
-!                     
+!      
       end module field2d_class

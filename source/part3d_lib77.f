@@ -987,10 +987,10 @@ c borderlx(yz), lower bound; borderx(yz), upper bound.
         if (tempy>=(bordery) .or. tempy<=borderly) goto 30
            
 c  generate velocity 
-        tvtx = vtx*ranorm() + vdx
-        tvty = vty*ranorm() + vdy
+        tvtx = vtx*ranorm() 
+        tvty = vty*ranorm() 
         tvtz = vtz*ranorm() + vdz
-        tvtz = sqrt(tvtz*tvtz-1-tvtx*tvtx-tvty*tvty)
+
         do 110 mz = 1, nblok
         moff = mblok*(mz - 1)
         do 100 my = 1, mblok
@@ -1009,9 +1009,11 @@ c calculate offset in y
             tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
      & - z0)-cy(2)        
             part(2,npt,m) = tempy + tempyy 
-            part(4,npt,m) = tvtx
-            part(5,npt,m) = tvty
-            part(6,npt,m) = tvtz 
+            part(4,npt,m) = tvtx + vdx
+            part(5,npt,m) = tvty + vdy
+            tvtz = sqrt(tvtz*tvtz-1-part(4,npt,m)*part(4,npt,m) -       &
+     &      part(5,npt,m)*part(5,npt,m))
+            part(6,npt,m) = tvtz
             part(7,npt,m) = qm
             npp(m) = npt
           else
@@ -1024,9 +1026,11 @@ c quiet start
                 part(3,npt,m) = tempz
                 part(1,npt,m) = x2 - tempx + tempxx
                 part(2,npt,m) = y2 - tempy + tempyy
-                part(4,npt,m) = -tvtx
-                part(5,npt,m) = -tvty
-                part(6,npt,m) = tvtz 
+                part(4,npt,m) = -tvtx + vdx
+                part(5,npt,m) = -tvty + vdy
+                tvtz = sqrt(tvtz*tvtz-1-part(4,npt,m)*part(4,npt,m) -   &
+     &      part(5,npt,m)*part(5,npt,m))
+                part(6,npt,m) = tvtz
                 part(7,npt,m) = qm
                 npp(m) = npt
              else
