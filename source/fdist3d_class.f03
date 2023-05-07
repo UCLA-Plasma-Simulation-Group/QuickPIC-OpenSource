@@ -973,6 +973,8 @@
          ! sigmanoise = (/this%sigxnoise,this%sigynoise/)
          lquiet = this%quiet
          idimp = size(part3d,1); npmax = size(part3d,2)
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1
          noff = fd%getnoff()
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
@@ -1030,13 +1032,13 @@
                      end if 
                   else
                      pt(tt3,i) = 0.0
-                     
                   endif
                   pt(tt1,i) = transfer(gid,1.0)
                   pt(tt2,i) = transfer(i,1.0)
                end do
             end if
          end if
+
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_001
