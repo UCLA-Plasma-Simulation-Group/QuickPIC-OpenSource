@@ -12,6 +12,25 @@
 
       public :: perrors
 
+      type timing
+
+           double precision :: tfft = 0
+           double precision :: tpush = 0
+           double precision :: tqdeposit = 0
+           double precision :: tamjdeposit = 0
+           double precision :: textractpsi = 0
+           double precision :: t2dpmove = 0
+           double precision :: t2d = 0
+           double precision :: tsolve_fft = 0
+           double precision :: tsolve_fd = 0
+           double precision :: tcp = 0
+           double precision :: tcpgc = 0
+           double precision :: tarith = 0
+           double precision :: tsolve_mg = 0
+           integer :: nfft = 0
+
+      end type timing
+
       type perrors
       
          private
@@ -19,6 +38,8 @@
          class(parallel), pointer, public :: p => null()
          integer :: eunit = 2
          integer :: monitor = 0
+         type(timing) :: time
+         integer :: enable_timing = 0
          
          contains
          
@@ -27,10 +48,14 @@
          procedure, private :: init_perrors
          procedure, private :: end_perrors
          procedure :: equit
+         procedure :: werrfl
          procedure :: werrfl0
          procedure :: werrfl1
          procedure :: werrfl2
          procedure :: setmonitor
+         procedure :: settiming
+         procedure :: add_profile
+         procedure :: wprof
 
       end type perrors
 
@@ -48,9 +73,16 @@
          integer, intent(in) :: eunit, monitor
 ! local data
          character(len=20) :: str
+         character(len=8) :: cn
+         integer :: k, l
          integer :: ierror
 
-         write(str,'(I8.8)') prl%getidproc()
+         write(str,*) prl%getidproc()
+         cn = '00000000'
+         str = trim(adjustl(str))
+         l = len_trim(str)
+         k = 8
+         cn(k+1-l:k) = str(1:l)
                                    
          this%p => prl
          this%eunit = eunit
@@ -64,7 +96,7 @@
          
          call MPI_BARRIER(this%p%getlworld(),ierror)
          
-         call set_ename(eunit,'./ELOG/elog-'//trim(str))
+         call set_ename(eunit,'./ELOG/elog-'//cn)
          call dtimer(dtime,itime,-1)
                
       end subroutine init_perrors      
@@ -125,7 +157,9 @@
          character(len=*), intent(in) :: estr
 ! local data
          character(len=20) :: tstr
-                  
+         
+         if (this%monitor < 0) return
+
          call dtimer(dtime,itime,1)
          write (tstr,'(f12.3)') dtime
          write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
@@ -147,7 +181,7 @@
             return
             
          else
-
+					   
             call dtimer(dtime,itime,1)
             write (tstr,'(f12.3)') dtime
             write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
@@ -171,7 +205,8 @@
             return
             
          else
-            call dtimer(dtime,itime,1)
+					   
+   	        call dtimer(dtime,itime,1)
             write (tstr,'(f12.3)') dtime
             write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
             flush(this%eunit)
@@ -179,6 +214,22 @@
          endif
          
       end subroutine werrfl2
+
+      subroutine werrfl(this,estr)
+! this subroutine handles error message
+         implicit none
+
+         class(perrors), intent(in) :: this
+         character(len=*), intent(in) :: estr
+! local data
+         character(len=20) :: tstr
+         
+         call dtimer(dtime,itime,1)
+         write (tstr,'(f12.3)') dtime
+         write (this%eunit,*) trim(tstr)//" : "//trim(adjustl(estr))
+         flush(this%eunit)
+         
+      end subroutine werrfl
 !      
       subroutine setmonitor(this,moniter)
  
@@ -190,5 +241,157 @@
          this%monitor = moniter
       
       end subroutine
+
+      subroutine settiming(this,flag)
+ 
+         implicit none
+
+         class(perrors), intent(inout) :: this
+         integer, intent(in) :: flag
+         
+         this%enable_timing = flag
+      
+      end subroutine
+
+      subroutine add_profile(this,event)
+
+         implicit none
+
+         class(perrors), intent(inout) :: this
+         character(len=*), intent(in) :: event
+
+         if ( this%enable_timing == 0 ) return
+                  
+         call dtimer(dtime,itime,1)
+         select case (event)
+         case ('fft_start')
+            this%time%tfft = this%time%tfft - dtime
+            this%time%nfft = this%time%nfft + 1
+            return
+         case ('fft_end')
+            this%time%tfft = this%time%tfft + dtime
+            return
+         case ('push_start')
+            this%time%tpush = this%time%tpush - dtime
+            return
+         case ('push_end')
+            this%time%tpush = this%time%tpush + dtime
+            return
+         case ('qdeposit_start')
+            this%time%tqdeposit = this%time%tqdeposit - dtime
+            return
+         case ('qdeposit_end')
+            this%time%tqdeposit = this%time%tqdeposit + dtime
+            return
+         case ('amjdeposit_start')
+            this%time%tamjdeposit = this%time%tamjdeposit - dtime
+            return
+         case ('amjdeposit_end')
+            this%time%tamjdeposit = this%time%tamjdeposit + dtime
+            return
+         case ('extractpsi_start')
+            this%time%textractpsi = this%time%textractpsi - dtime
+            return
+         case ('extractpsi_end')
+            this%time%textractpsi = this%time%textractpsi + dtime
+            return
+         case ('2dpmove_start')
+            this%time%t2dpmove = this%time%t2dpmove - dtime
+            return
+         case ('2dpmove_end')
+            this%time%t2dpmove = this%time%t2dpmove + dtime
+            return
+         case ('solve_fft_start')
+            this%time%tsolve_fft = this%time%tsolve_fft - dtime
+            return
+         case ('solve_fft_end')
+            this%time%tsolve_fft = this%time%tsolve_fft + dtime
+            return
+         case ('solve_fd_start')
+            this%time%tsolve_fd = this%time%tsolve_fd - dtime
+            return
+         case ('solve_fd_end')
+            this%time%tsolve_fd = this%time%tsolve_fd + dtime
+            return
+         case ('solve_mg_start')
+            this%time%tsolve_mg = this%time%tsolve_mg - dtime
+            return
+         case ('solve_mg_end')
+            this%time%tsolve_mg = this%time%tsolve_mg + dtime
+            return
+         case ('cp_start')
+            this%time%tcp = this%time%tcp - dtime
+            return
+         case ('cp_end')
+            this%time%tcp = this%time%tcp + dtime
+            return
+         case ('cpgc_start')
+            this%time%tcpgc = this%time%tcpgc - dtime
+            return
+         case ('cpgc_end')
+            this%time%tcpgc = this%time%tcpgc + dtime
+            return
+         case ('arith_start')
+            this%time%tarith = this%time%tarith - dtime
+            return
+         case ('arith_end')
+            this%time%tarith = this%time%tarith + dtime
+            return
+         case ('2d_start')
+            this%time%t2d = this%time%t2d - dtime
+            return
+         case ('2d_end')
+            this%time%t2d = this%time%t2d + dtime
+            return
+         end select
+      end subroutine add_profile
+!      
+      subroutine wprof(this)
+
+         implicit none
+
+         class(perrors), intent(inout) :: this
+! local data
+         character(len=20) :: tstr
+
+         if ( this%enable_timing == 0 ) return
+                  
+         write (tstr,'(f16.4)') this%time%tfft
+         call werrfl(this,'fft time: '//trim(tstr))
+         write (tstr,'(i16)') this%time%nfft
+         call werrfl(this,'total number of fft: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tfft/this%time%nfft
+         call werrfl(this,'each fft time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tpush
+         call werrfl(this,'push time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tqdeposit
+         call werrfl(this,'qdeposit time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tamjdeposit
+         call werrfl(this,'amjdeposit time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%textractpsi
+         call werrfl(this,'extractpsi time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%t2dpmove
+         call werrfl(this,'2dpmove time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tsolve_fft
+         call werrfl(this,'fft solve time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tsolve_fd
+         call werrfl(this,'fd solve time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tsolve_mg
+         call werrfl(this,'multigrid solve time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tcp
+         call werrfl(this,'cp time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tcpgc
+         call werrfl(this,'cpgc time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tarith
+         call werrfl(this,'arith time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tpush+this%time%tqdeposit+&
+         &this%time%tamjdeposit+this%time%textractpsi+this%time%t2dpmove
+         call werrfl(this,'2d part total time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tsolve_fft+this%time%tsolve_fd+this%time%tarith
+         call werrfl(this,'2d solve total time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%t2d
+         call werrfl(this,'2d time: '//trim(tstr))
+                  
+      end subroutine wprof
 !
       end module perrors_class

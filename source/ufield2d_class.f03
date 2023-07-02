@@ -26,13 +26,15 @@
 ! nd1p, nd2p = size of local array data in each dimension (without guardcell)
 ! rf = pointer of the local 2d field array
 ! noff = smallest global gridpoint in y
-!
+! gc = guard cells in y
          class(spect2d), pointer, public :: sp => null()
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
          integer :: layout, dim, noff
          integer :: nd1, nvpx, nd1p
          integer :: nd2, nvpy, nd2p
+         integer, dimension(2) :: gc
+         integer :: gc_dir
          real, dimension(:,:,:), pointer :: rf => null(), buff => null()
 
          contains
@@ -59,7 +61,8 @@
          procedure :: getlayout, getdim
          procedure :: getnd1, getnvpx, getnd1p
          procedure :: getnd2, getnvpy, getnd2p
-         procedure :: getrf, getnoff
+         procedure :: getrf, getrf_gc, getnoff
+         procedure :: getgc
          procedure, private :: copyguard, acopyguard, writehdf5
          procedure, private :: pipesend_ufield2d, piperecv_ufield2d
          procedure, private :: asc, asa, sum1, multiply1, multiply2, minus1
@@ -71,12 +74,12 @@
       character(len=10), save :: class = 'ufield2d:'
       character(len=128), save :: erstr
 ! scr = guard cell buffer received from nearby processors
-      real, dimension(:), allocatable, save  :: scr
+      real, dimension(:), allocatable, save :: scr
       integer, save :: szscr = 0
       
       contains
 !
-      subroutine init_ufield2d(this,pp,perr,psp,dim,layout,nvpx,nvpy)
+      subroutine init_ufield2d(this,pp,perr,psp,dim,layout,nvpx,nvpy,gc,gc_dir)
       
          implicit none
          
@@ -86,9 +89,12 @@
          class(spect2d), intent(in), pointer :: psp
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in), dimension(2) :: gc
+         integer, intent(in) :: gc_dir
 ! local data
          character(len=18), save :: sname = 'init_ufield2d:'
          integer :: nd1,nd2
+         integer :: gc1,gc2
          
          call perr%werrfl2(class//sname//' started')
          this%sp => psp
@@ -96,8 +102,13 @@
          this%p => pp
          this%layout = layout
          this%dim = dim
+         this%gc = gc
+         this%gc_dir = gc_dir
+         gc1 = gc(1); gc2 = gc(2)
+
          nd1 = 2**psp%getindx()
          nd2 = 2**psp%getindy()
+
          select case (layout)
          case (0)
             this%nd1 = nd1
@@ -126,7 +137,9 @@
             this%nd1p = nd1
             this%nd2p = nd2/nvpy
             this%noff = (pp%getlkstrt()-1)*nd2/nvpy
-            allocate(this%rf(dim,this%nd1p+2,this%nd2p*2+psp%getinorder()))
+            ! gc2 = max( gc2, psp%getinorder() )
+            allocate( this%rf( dim, 1:this%nd1p+2, 1-gc1:this%nd2p+gc2 ) )
+            ! allocate( this%rf( dim, this%nd1p+2, this%nd2p+psp%getinorder() ) )
             this%rf(:,:,:) = 0.0         
          case (1)
             this%nd1p = nd2/nvpy
@@ -340,9 +353,37 @@
          class(ufield2d), intent(in) :: this
          real, dimension(:,:,:), pointer :: getrf
          
-         getrf => this%rf
+         ! getrf => this%rf
+         getrf => this%rf(1:,1:,1:this%nd2p+this%sp%getinorder())
+         ! print *, 'lbound of rf = ', lbound(this%rf)
+         ! getrf => this%rf(1:,1:,1:)
 
       end function getrf
+!      
+      function getrf_gc(this)
+
+         implicit none
+
+         class(ufield2d), intent(in) :: this
+         real, dimension(:,:,:), pointer :: getrf_gc
+         
+         ! this function returns rf with extra one guard cells for linear deposition
+         getrf_gc => this%rf
+         ! getrf_no_gc => this%rf(1:,1:,1:)
+
+      end function getrf_gc
+!     
+      function getgc( this )
+
+         implicit none
+
+         class(ufield2d), intent(in) :: this
+
+         integer, dimension(2) :: getgc
+
+         getgc = this%gc
+
+      end function getgc
 !
       subroutine copyguard(this)
       
@@ -352,10 +393,18 @@
          character(len=18), save :: sname = 'copyguard'
 ! local data         
          integer :: nxv, nypmx, nyp
+         real, dimension(:,:,:), pointer :: rf => null()
+         
+         integer, save :: counter = 0
+         character(len=32) :: name
+
+         rf => this%getrf_gc()
          
          call this%err%werrfl2(class//sname//' started')
-         nxv = size(this%rf,1)*size(this%rf,2)
-         nypmx = size(this%rf,3)
+         call this%err%add_profile( 'cpgc_start' )
+
+         nxv = size(rf,1)*size(rf,2)
+         nypmx = size(rf,3)
          nyp = this%nd2p
 
          if (this%layout /= 0) then
@@ -368,19 +417,47 @@
             select case (this%sp%getinorder())
             case (1)
 ! copy data to guard cells in distributed direction
-               call PPNCGUARD2L(this%rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
-               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal())            
+               call PPNCGUARD2L(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
             case default
-               call PPNCGUARD2L(this%rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
-               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal())            
+               call PPNCGUARD2L(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
             end select
          case default
-            call PPNCGUARD2L(this%rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
-            &nxv,nypmx,this%p%getlgrp(),this%p%getmreal())            
+            call PPNCGUARD2L(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+            &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
          end select
+
+         call this%err%add_profile( 'cpgc_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyguard
+
+     !  subroutine writef2( f, name, device )
+
+     !   implicit none
+
+     !   real(p_k_fld), intent(in), dimension(:,:), pointer :: f
+     !   character(len=*), intent(in) :: name
+     !   integer, intent(in) :: device
+
+     !   integer :: i1, n1, n2
+     !   character(len=18) :: fmtstr
+
+     !   n1 = size( f, 1 )
+     !   n2 = size( f, 2 )
+
+     !   open( device, file=trim(name) )
+
+     !   ! write( device, * ) "f(1,:,:) = "
+     !   do i1 = 1, n1
+     !     ! write( device, trim(fmtstr) ) f(1,i1,:)
+     !     write( device, * ) f(i1,:)
+     !   enddo 
+
+     !   close( device )
+
+     ! end subroutine writef2
 !      
       subroutine acopyguard(this)
       
@@ -390,11 +467,16 @@
          character(len=18), save :: sname = 'acopyguard'
 ! local data         
          integer :: ndim, nxv, nypmx, nyp, nx
+         real, dimension(:,:,:), pointer :: rf => null()
+
+         rf => this%getrf()
          
          call this%err%werrfl2(class//sname//' started')
-         ndim = size(this%rf,1)
-         nxv = size(this%rf,2)
-         nypmx = size(this%rf,3)
+         call this%err%add_profile( 'cpgc_start' )
+
+         ndim = size(rf,1)
+         nxv = size(rf,2)
+         nypmx = size(rf,3)
          nyp = this%nd2p
          nx = this%nd1
 
@@ -415,16 +497,18 @@
             select case (this%sp%getinorder())
             case (1)
 ! copy data to guard cells in distributed direction
-               call PPNACGUARD2L(this%rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
+               call PPNACGUARD2L(rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
                &this%p%getlnvp(),nxv,nypmx,this%p%getlgrp(),this%p%getmreal())
             case default
-               call PPNACGUARD2L(this%rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
+               call PPNACGUARD2L(rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
                &this%p%getlnvp(),nxv,nypmx,this%p%getlgrp(),this%p%getmreal())
             end select
          case default
-            call PPNACGUARD2L(this%rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
+            call PPNACGUARD2L(rf,scr,nyp,nx,ndim,this%p%getlkstrt(),&
             &this%p%getlnvp(),nxv,nypmx,this%p%getlgrp(),this%p%getmreal())
          end select
+
+         call this%err%add_profile( 'cpgc_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine acopyguard
@@ -442,13 +526,15 @@
          
          integer :: ierr
          real, dimension(:,:), pointer :: fdata
+         real, dimension(:,:,:), pointer :: rf => null() 
          character(len=10), save :: sname = 'writehdf5:'
          
          call this%err%werrfl2(class//sname//' started')
+            rf => this%getrf()
             noff = this%noff
             gsize =(/this%nd1,this%nd2/)
             lsize =(/this%nd1p,this%nd2p/)
-            call pwfield(this%p,this%err,file,this%rf(dim,:,:),gsize,lsize,&
+            call pwfield(this%p,this%err,file,rf(dim,:,:),gsize,lsize,&
             &noff,ierr)
          call this%err%werrfl2(class//sname//' ended')
 
@@ -464,6 +550,8 @@
 ! local data
          character(len=18), save :: sname = 'pipesend_ufield2d:'
          integer :: bsize,i,j,k,des,ierr
+         integer :: i1, i2, j1, j2, k1, k2
+         integer, dimension(2) :: gc
                   
          call this%err%werrfl2(class//sname//' started')
 
@@ -478,17 +566,26 @@
          if (.not.associated(this%buff)) then
             select case (this%layout)
             case (0)
-               allocate(this%buff(this%dim,this%nd1p+2,this%nd2p+this%sp%getinorder())) 
+               ! allocate(this%buff(this%dim,this%nd1p+2,this%nd2p+this%sp%getinorder()))
+               gc = this%getgc()
+               ! gc(2) = max( gc(2), this%sp%getinorder() )
+               allocate( this%buff( this%dim, 1:this%nd1p+2, 1-gc(1):this%nd2p+gc(2) ) )
             case (1)        
                allocate(this%buff(this%dim,this%nd1p+1,this%nd2p+1)) 
             end select
          endif
          bsize = size(this%buff)
 
+         i1 = lbound( this%buff, 1 ); i2 = ubound( this%buff, 1 )
+         j1 = lbound( this%buff, 2 ); j2 = ubound( this%buff, 2 )
+         k1 = lbound( this%buff, 3 ); k2 = ubound( this%buff, 3 )
 !$OMP PARALLEL DO PRIVATE(i,j,k)
-         do i = 1, size(this%buff,1)
-            do j = 1, size(this%buff,2)
-               do k = 1, size(this%buff,3)       
+         ! do i = 1, size(this%buff,1)
+         !    do j = 1, size(this%buff,2)
+         !       do k = 1, size(this%buff,3)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   this%buff(i,j,k) = this%rf(i,j,k)
                enddo
             enddo
@@ -564,20 +661,30 @@
 ! local data
          character(len=18), save :: sname = 'sum1:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf1 => this%rf         
-         rf2 => a1%rf
-         rf3 => a2%rf
+         ! rf1 => this%rf
+         ! rf2 => a1%rf
+         ! rf3 => a2%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+         rf3 => a2%getrf()
          
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) + rf3(i,j,k)
                enddo
             enddo
@@ -598,20 +705,30 @@
 ! local data
          character(len=18), save :: sname = 'sum2:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf1 => this%rf         
-         rf2 => a1%rf
-         rf3 => a2%rf
+         ! rf1 => this%rf         
+         ! rf2 => a1%rf
+         ! rf3 => a2%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+         rf3 => a2%getrf()
          
+         i1 = 1; i2 = size(dim1)
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(dim1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(dim1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) + rf3(dim2(i),j,k)
                enddo
             enddo
@@ -631,20 +748,30 @@
 ! local data
          character(len=18), save :: sname = 'minus1:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf1 => this%rf         
-         rf2 => a1%rf
-         rf3 => a2%rf
+         ! rf1 => this%rf         
+         ! rf2 => a1%rf
+         ! rf3 => a2%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+         rf3 => a2%getrf()
          
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) - rf3(i,j,k)
                enddo
             enddo
@@ -665,20 +792,30 @@
 ! local data
          character(len=18), save :: sname = 'minus1:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf1 => this%rf         
-         rf2 => a1%rf
-         rf3 => a2%rf
+         ! rf1 => this%rf
+         ! rf2 => a1%rf
+         ! rf3 => a2%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+         rf3 => a2%getrf()
          
+         i1 = 1; i2 = size(dim1)
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(dim1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(dim1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) - rf3(dim2(i),j,k)
                enddo
             enddo
@@ -699,17 +836,27 @@
 ! local data
          character(len=18), save :: sname = 'multiply1:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
-         rf1 => this%rf         
-         rf2 => a1%rf
+         ! rf1 => this%rf
+         ! rf2 => a1%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) * value
                enddo
             enddo
@@ -730,17 +877,27 @@
 ! local data
          character(len=18), save :: sname = 'multiply2:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
-         rf1 => this%rf         
-         rf2 => a1%rf
+         ! rf1 => this%rf         
+         ! rf2 => a1%rf
+         rf1 => this%getrf()
+         rf2 => a1%getrf()
+
+         i1 = 1; i2 = size(dim1)
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(dim,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(dim,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) * value(i)
                enddo
             enddo
@@ -759,16 +916,25 @@
 ! local data
          character(len=18), save :: sname = 'asc:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf => this%rf
+         ! rf => this%rf
+         rf => this%getrf()
+
+         i1 = lbound( rf, 1 ); i2 = ubound( rf, 1 )
+         j1 = lbound( rf, 2 ); j2 = ubound( rf, 2 )
+         k1 = lbound( rf, 3 ); k2 = ubound( rf, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf,3)
-            do j = 1, size(rf,2)
-               do i = 1, size(rf,1)
+         ! do k = 1, size(rf,3)
+         !    do j = 1, size(rf,2)
+         !       do i = 1, size(rf,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf(i,j,k) = value
                enddo
             enddo
@@ -788,17 +954,27 @@
 ! local data
          character(len=18), save :: sname = 'asa:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
          
-         rf1 => this%rf
-         rf2 => that%rf
+         ! rf1 => this%rf
+         ! rf2 => that%rf
+         rf1 => this%getrf()
+         rf2 => that%getrf()
+
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k)
                enddo
             enddo
@@ -819,6 +995,7 @@
 ! local data
          character(len=18), save :: sname = 'add:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2, s1, s2, s3
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
@@ -826,17 +1003,31 @@
          
          allocate(add,source=this)
          
-         rf2 => this%rf
-         rf3 => that%rf
-         
-         allocate(add%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
+         ! rf2 => this%rf
+         ! rf3 => that%rf
+         rf2 => this%getrf()
+         rf3 => that%getrf()
 
-         rf1 => add%rf
+         s1 = size( this%rf, 1 )
+         s2 = size( this%rf, 2 )
+         s3 = size( this%rf, 3 )
+
+         ! allocate(add%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
+         allocate( add%rf( s1, s2, s3 ) )
+
+         rf1 => add%getrf()
+
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) + rf3(i,j,k)
                enddo
             enddo
@@ -860,21 +1051,37 @@
 ! local data
          character(len=18), save :: sname = 'mult1:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2, s1, s2, s3
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
          allocate(mult1,source=this)
          
-         rf2 => this%rf
+         ! rf2 => this%rf
+         rf2 => this%getrf()
 
-         allocate(mult1%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
-         rf1 => mult1%rf
+         s1 = size( this%rf, 1 )
+         s2 = size( this%rf, 2 )
+         s3 = size( this%rf, 3 )
+
+         ! allocate(mult1%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
+         allocate( mult1%rf( s1, s2, s3 ) )
+         
+         ! rf1 => mult1%rf
+         rf1 => mult1%getrf()
+
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) * value
                enddo
             enddo
@@ -894,21 +1101,37 @@
 ! local data
          character(len=18), save :: sname = 'mult2:'
          integer :: i,j,k
+         integer :: i1, i2, j1, j2, k1, k2, s1, s2, s3
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
          allocate(mult2,source=this)
          
-         rf2 => this%rf
+         ! rf2 => this%rf
+         rf2 => this%getrf()
 
-         allocate(mult2%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
-         rf1 => mult2%rf
+         s1 = size( this%rf, 1 )
+         s2 = size( this%rf, 2 )
+         s3 = size( this%rf, 3 )
+
+         ! allocate(mult2%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
+         ! rf1 => mult2%rf
+
+         allocate( mult2%rf( s1, s2, s3 ) )
+         rf1 => mult2%getrf()
+
+         i1 = lbound( rf1, 1 ); i2 = ubound( rf1, 1 )
+         j1 = lbound( rf1, 2 ); j2 = ubound( rf1, 2 )
+         k1 = lbound( rf1, 3 ); k2 = ubound( rf1, 3 )
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+         ! do k = 1, size(rf1,3)
+         !    do j = 1, size(rf1,2)
+         !       do i = 1, size(rf1,1)
+         do k = k1, k2
+            do j = j1, j2
+               do i = i1, i2
                   rf1(i,j,k) = rf2(i,j,k) * value
                enddo
             enddo

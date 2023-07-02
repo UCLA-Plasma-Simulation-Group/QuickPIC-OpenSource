@@ -31,16 +31,17 @@
       
       contains
 !
-      subroutine init_spect3d(this,pp,perr,indx,indy,indz,psolver,inorder)
+      subroutine init_spect3d(this,pp,perr,indx,indy,indz,dex,psolver,inorder,mg_prec,mg_type)
       
          implicit none
          
          class(spect3d), intent(inout) :: this
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
-         integer, intent(in) :: indx, indy, indz,psolver, inorder
+         integer, intent(in) :: indx, indy, indz,psolver, inorder, mg_type
+         real, intent(in) :: dex, mg_prec
          
-         call this%spect2d%new(pp,perr,indx,indy,psolver,inorder)
+         call this%spect2d%new(pp,perr,indx,indy,dex,psolver,inorder,mg_prec,mg_type)
          this%indz = indz
 
       end subroutine init_spect3d
