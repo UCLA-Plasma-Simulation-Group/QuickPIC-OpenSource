@@ -33,11 +33,14 @@
          integer :: layout, dim, noff
          integer :: nd1, nvpx, nd1p
          integer :: nd2, nvpy, nd2p
+         integer, dimension(2) :: gc
+         integer :: gc_dir
          real, dimension(:,:,:), pointer :: rf => null(), buff => null()
 
          contains
          
          generic :: new => init_ufield2d, init_ufield2d_k
+         generic :: new_fd => init_ufield2d_fd
          generic :: del => end_ufield2d
          generic :: cg => copyguard
          generic :: ag => acopyguard
@@ -54,6 +57,7 @@
          final :: final_ufield2d
          
          procedure, private :: init_ufield2d
+         procedure, private :: init_ufield2d_fd
          procedure, private :: init_ufield2d_k
          procedure, private :: end_ufield2d
          procedure :: getlayout, getdim
@@ -143,6 +147,83 @@
          call perr%werrfl2(class//sname//' ended')
                   
       end subroutine init_ufield2d
+!
+      subroutine init_ufield2d_fd(this,pp,perr,psp,dim,layout,nvpx,nvpy,gc,gc_dir)
+      
+         implicit none
+         
+         class(ufield2d), intent(inout) :: this
+         integer, intent(in) :: layout,dim
+         integer, intent(in) :: nvpx,nvpy
+         class(spect2d), intent(in), pointer :: psp
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in), dimension(2) :: gc
+         integer, intent(in) :: gc_dir
+! local data
+         character(len=18), save :: sname = 'init_ufield2d_fd:'
+         integer :: nd1,nd2
+         integer :: gc1,gc2
+         
+         call perr%werrfl2(class//sname//' started')
+         this%sp => psp
+         this%err => perr
+         this%p => pp
+         this%layout = layout
+         this%dim = dim
+         this%gc = gc
+         this%gc_dir = gc_dir
+         gc1 = gc(1); gc2 = gc(2)
+
+         nd1 = 2**psp%getindx()
+         nd2 = 2**psp%getindy()
+
+         select case (layout)
+         case (0)
+            this%nd1 = nd1
+            this%nd2 = nd2
+         case (1)
+            this%nd1 = nd2
+            this%nd2 = nd1
+         case default
+            write (erstr,*) 'invalid layout = ', layout
+            call this%err%equit(class//sname//erstr)
+            return
+         end select        
+! make sure data is a multiple of the number of processors
+         if ((((this%nd2/nvpy)*nvpy)/=this%nd2) .and. (((nvpy/this%nd2)*&
+     &this%nd2)/=nvpy)) then
+            write (erstr,*) 'data, proc number not multiples:', this%nd2&
+     &, nvpy
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
+! save number of processors in each dimension
+         this%nvpx = 0
+         this%nvpy = nvpy
+         select case (layout)
+         case (0)
+            this%nd1p = nd1
+            this%nd2p = nd2/nvpy
+            this%noff = (pp%getlkstrt()-1)*nd2/nvpy
+            ! gc2 = max( gc2, psp%getinorder() )
+            allocate( this%rf( dim, 1:this%nd1p+2, 1-gc1:this%nd2p+gc2 ) )
+            ! allocate( this%rf( dim, this%nd1p+2, this%nd2p+psp%getinorder() ) )
+            this%rf(:,:,:) = 0.0         
+         case (1)
+            this%nd1p = nd2/nvpy
+            this%nd2p = nd1
+            this%noff = (pp%getlkstrt()-1)*nd2/nvpy
+            allocate(this%rf(dim,this%nd2p,this%nd1p+psp%getinorder()))         
+            this%rf(:,:,:) = 0.0         
+         case default
+            write (erstr,*) 'invalid layout = ', layout
+            call this%err%equit(class//sname//erstr)
+            return
+         end select        
+         call perr%werrfl2(class//sname//' ended')
+                  
+      end subroutine init_ufield2d_fd
 !
       subroutine init_ufield2d_k(this,pp,perr,psp,dim,layout,nd1,nd2,nvpx,nvpy)
       

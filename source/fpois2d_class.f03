@@ -13,7 +13,7 @@
 
       private
 
-      public :: fpois2d, get_pois2table
+      public :: fpois2d, get_pois2table, get_pois2table_fd
 
       type fpois2d
 
@@ -31,10 +31,12 @@
          real :: anorm
          complex, dimension(:,:), pointer :: ffc => null()
          real, dimension(:,:,:), pointer :: ffg => null()
-         
+          integer :: algorithm
+
          contains
          
          generic :: new => init_fpois2d
+         generic :: new_fd => init_fpois2d_fd
          generic :: del => end_fpois2d
          generic :: potential => ipotd2
          generic :: vpotential => ivpotd2
@@ -42,7 +44,7 @@
          generic :: elfield => ippoisd23
          generic :: bfield => ibfieldd2
          generic :: bfield_qp => jpbpoisd23n_qp
-         procedure, private :: init_fpois2d
+         procedure, private :: init_fpois2d, init_fpois2d_fd
          procedure, private :: end_fpois2d
          procedure, private :: ipotd2, ismoothfd2, ippoisd23, ibfieldd2
          procedure, private :: ivpotd2
@@ -105,6 +107,52 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_fpois2d
+!
+      subroutine init_fpois2d_fd(this,pp,perr,psp,nx,ny,ax,ay,affp,algorithm)
+      
+         implicit none
+         
+         class(fpois2d), intent(inout) :: this
+         class(spect2d), intent(in), pointer :: psp
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in) :: nx, ny, algorithm
+         real, intent(in) :: ax, ay, affp
+         
+! local data
+         character(len=18), save :: sname = 'init_fpois2d_fd:'
+         
+         this%sp => psp
+         this%err => perr
+         this%p => pp
+
+
+         if ((ax < 0.) .or. (ay < 0.)) then
+            write (erstr,*) 'invalid ax or ay=', ax, ay
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
+
+         call this%err%werrfl2(class//sname//' started')
+         select case (this%sp%getpsolver())
+         case (1)
+            this%nd = (/nx,ny/); this%a = (/ax,ay/)
+            this%anorm = affp
+            this%algorithm = algorithm
+            allocate(this%ffc(ny,(nx-1)/this%p%getlnvp()+1))
+            call ippoisd2init(this,ax,ay,affp,nx,ny,this%p%getlkstrt())
+         case default
+            this%nd = (/nx,ny/); this%a = (/ax,ay/)
+            this%anorm = affp
+            ! print *, 'algorithm = ', algorithm
+            this%algorithm = algorithm
+            allocate(this%ffc(ny,(nx-1)/this%p%getlnvp()+1))
+            call ippoisd2init(this,ax,ay,affp,nx,ny,this%p%getlkstrt())
+         end select
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fpois2d_fd
 !
       subroutine end_fpois2d(this)
           
@@ -554,5 +602,67 @@
          call perr%werrfl2(class//sname//' ended')
 
       end function get_pois2table
+!         
+      function get_pois2table_fd(pp,perr,psp,ax,ay,affp,algorithm) result(table)
+
+         implicit none
+         
+         class(spect2d), intent(in), pointer :: psp
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp         
+         real, intent(in) :: ax, ay, affp
+         integer, intent(in) :: algorithm
+         type (fpois2d), pointer :: table
+! local data
+         type (fpois2d_link), pointer :: link => null()
+         type (fpois2d), pointer :: ltable => null()
+         integer :: nx, ny, ierr = 0
+         character(len=18), save :: sname = 'get_pois2table_fd:'
+
+         call perr%werrfl2(class//sname//' started')
+         nullify(table)
+
+         if (numtables==0) then
+            nullify(table_list%next,table_list%table)
+            table_list%refcount = 0
+         endif
+
+         nx = 2**psp%getindx()
+         ny = 2**psp%getindy()
+
+         link => table_list
+         table => link%table
+! search link list of table to see if required table already exists
+         do while (associated(table))
+! found it
+            if ((nx==table%nd(1)).and.(ny==table%nd(2)).and.(ax==table%a(1))&
+            &.and.(ay==table%a(2)).and.(affp==table%anorm).and.(psp%getpsolver()&
+            &==table%sp%getpsolver())) then
+               link%refcount = link%refcount + 1
+               call perr%werrfl2(class//sname//' ended')
+               return
+! check next table, create new empty table if end is reached
+            else
+               if (associated(link%next)) then
+                  link => link%next
+               else
+                  allocate(link%next)
+                  link => link%next
+                  nullify(link%next,link%table)
+                  link%refcount = 0
+               endif
+               table => link%table
+            endif
+         end do
+! allocate table entries
+         allocate(ltable)
+         link%table => ltable
+         table => link%table
+         call table%new_fd(pp,perr,psp,nx,ny,ax,ay,affp,algorithm)
+         link%refcount = 1
+         numtables = numtables + 1
+         call perr%werrfl2(class//sname//' ended')
+
+      end function get_pois2table_fd
 !         
       end module fpois2d_class

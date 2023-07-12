@@ -286,9 +286,9 @@
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
 
-         call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
-         call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
-         call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.,algorithm=1)
+         call this%qe%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
+         call this%psi%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
+         call this%fxy%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,algorithm=1)
 
          call input%get('simulation.nspecies',n)
 

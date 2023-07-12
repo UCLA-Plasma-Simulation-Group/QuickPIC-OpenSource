@@ -13,7 +13,8 @@
       use fpois2d_class
       use fpois2d_mg_class
       use hdf5io_class
-         
+      use fd2d_class
+
       implicit none
 
       private
@@ -33,16 +34,19 @@
          class(fft2d), pointer :: ft => null()
          class(fpois2d), pointer :: pt => null()
          class(fpois2d_mg), pointer :: pt_mg
+         class(fd2d), pointer :: fd
          integer :: state, gcells
                   
          contains
          
          generic :: new => init_field2d
+         generic :: new_fd => init_field2d_fd
          generic :: del => end_field2d
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
          generic :: div => divf_field2d
-         generic :: grad => gradf_field2d
+         ! generic :: grad => gradf_field2d
+         generic :: grad => gradf_field2d, gradf_field2d_fd
          generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
          generic :: vpot => vpotential_field2d
@@ -64,9 +68,11 @@
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
 
-         procedure, private :: init_field2d, end_field2d
+         ! procedure, private :: init_field2d, end_field2d
+         procedure, private :: init_field2d, end_field2d, init_field2d_fd
          procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
-         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
+         ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
+         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_fd
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
          procedure, private :: bfield_qp_field2d, copyguard_field2d
          procedure, private :: acopyguard_field2d, pipesend_field2d
@@ -140,6 +146,104 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_field2d
+!
+subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
+
+! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         class(spect2d), intent(in), pointer :: psp
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in) :: dim
+         logical, intent(in) :: fftflag
+         integer, intent(in), optional :: state, gcells, algorithm
+! local data
+         character(len=18), save :: sname = 'init_field2d_fd:'
+         integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
+         integer, dimension(2) :: gc
+         integer :: gc_dir
+         
+         inorder = psp%getinorder()
+
+         this%err => perr
+         call this%err%werrfl2(class//sname//' started')
+
+         this%sp => psp
+         this%p => pp
+         if (present(state)) then
+            this%state = state
+         else
+            this%state = 0
+         endif
+         if (present(gcells)) then
+            this%gcells = gcells
+         else
+            this%gcells = 0
+         endif
+
+         ! determine the guard cells according to solver type and interpolation order
+         if (present(algorithm)) then
+            select case (algorithm)
+            ! spectral solver
+            case (0)
+               gc(1) = inorder - 1
+               gc(2) = inorder
+               gc_dir = 0
+            ! second order finite difference
+            case (1)
+               gc(1) = max( inorder-1, 1 )
+               gc(2) = max( inorder, 1 )
+               gc_dir = 2
+            ! fourth order finite difference
+            case (2)
+               gc(1) = max( inorder-1, 2 )
+               gc(2) = max( inorder, 2 )
+               gc_dir = 2
+            case default
+               call this%err%equit(class//sname//' invalid algorithm')
+            end select
+            alg = algorithm
+         else
+            gc(1) = inorder - 1
+            gc(2) = inorder
+            alg = 0
+            gc_dir = 0
+         endif
+            
+         nvpy = pp%getlnvp()
+         indx = psp%getindx()
+         indy = psp%getindy()         
+         nd1 = 2**indx
+         nd2 = 2**indy
+         
+         allocate(this%rs)
+         call this%rs%new_fd(pp,perr,psp,dim,0,0,nvpy,gc,gc_dir)
+
+         ! create finite difference
+         allocate( this%fd )
+         call this%fd%new( pp, perr, kind=0 )
+
+         ! 2nd order multigrid solver
+         this%pt_mg => get_poismg2table( pp, perr, psp, 1 )
+         
+         if (fftflag) then
+            allocate(this%ks)
+            call this%ks%new(pp,perr,psp,dim,1,nd1,nd2,0,nvpy)
+            select case (psp%getpsolver())
+            case (1)
+               this%ft => get_fft2table(pp,perr,psp,indx,indy)
+               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+            case default
+               this%ft => get_fft2table(pp,perr,psp,indx,indy)
+               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+            end select
+         endif
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_field2d_fd
 !
       subroutine end_field2d(this)
           
@@ -274,6 +378,32 @@
          
       end subroutine gradf_field2d      
 !            
+      subroutine gradf_field2d_fd( this, that, dx, order )
+
+         implicit none
+
+         class(field2d), intent(inout) :: this, that
+         real, intent(in) :: dx
+         integer, intent(in) :: order
+         character(len=18), save :: sname = 'gradf_field2d_fd:'
+
+         call this%err%werrfl2( class//sname//' started' )
+         call this%err%add_profile( 'solve_fd_start' )
+
+         if (this%state /= 0) then 
+            call this%err%equit(class//sname//'data is in ks')
+            return
+         endif
+
+         call this%fd%gradf( this%rs, that%rs, dx, order )
+
+         that%state = 0
+
+         call this%err%add_profile( 'solve_fd_end' )
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine gradf_field2d_fd
+!  
       subroutine curlf_field2d(this,that)
       
          implicit none
