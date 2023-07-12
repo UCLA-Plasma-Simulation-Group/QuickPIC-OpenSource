@@ -18,6 +18,7 @@
 
 ! psolver = solver type = (1) = (conductive)
 ! inorder = (1) = (linear)         
+      !    integer :: indx, indy, psolver, inorder
          integer :: indx, indy, psolver, inorder, mg_type
          real :: dex, mg_prec
          class(perrors), pointer, public :: err => null()
@@ -26,8 +27,10 @@
          contains
          
          procedure, private :: init_spect2d
+         procedure, private :: init_spect2d_fd
          procedure, private :: end_spect2d
-         generic :: new => init_spect2d
+      !    generic :: new => init_spect2
+         generic :: new => init_spect2d, init_spect2d_fd
          generic :: del => end_spect2d
          procedure :: getindx
          procedure :: getindy
@@ -36,12 +39,29 @@
          procedure :: getdex
          procedure :: getmg_prec
          procedure :: getmg_type
-                  
+
       end type spect2d
       
       contains
 !
-      subroutine init_spect2d(this,pp,perr,indx,indy,dex,psolver,inorder,mg_prec,mg_type)
+      subroutine init_spect2d(this,pp,perr,indx,indy,psolver,inorder)
+      
+         implicit none
+         
+         class(spect2d), intent(inout) :: this
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in) :: indx, indy, psolver, inorder
+         
+         this%indx = indx
+         this%indy = indy
+         this%psolver = psolver
+         this%inorder = inorder
+         this%err => perr
+         this%p => pp         
+      end subroutine init_spect2d
+!
+      subroutine init_spect2d_fd(this,pp,perr,indx,indy,dex,psolver,inorder,mg_prec,mg_type)
       
          implicit none
          
@@ -60,7 +80,7 @@
          this%p => pp         
          this%mg_prec = mg_prec
          this%mg_type = mg_type
-      end subroutine init_spect2d
+      end subroutine init_spect2d_fd
 !
       subroutine end_spect2d(this)
           
@@ -81,7 +101,7 @@
          
          getindx = this%indx
 
-      end function getindx
+      end function getindx         
 !      
       function getindy(this)
 
@@ -92,7 +112,7 @@
          
          getindy = this%indy
 
-      end function getindy
+      end function getindy         
 !      
       function getpsolver(this)
 
@@ -103,7 +123,7 @@
          
          getpsolver = this%psolver
 
-      end function getpsolver
+      end function getpsolver         
 !      
       function getinorder(this)
 
@@ -114,8 +134,8 @@
          
          getinorder = this%inorder
 
-      end function getinorder
-
+      end function getinorder         
+!     
       function getdex(this)
          
          implicit none
@@ -126,7 +146,7 @@
          getdex = this%dex
 
       end function getdex
-
+!
       function getmg_prec(this)
          
          implicit none
@@ -137,7 +157,7 @@
          getmg_prec = this%mg_prec
 
       end function getmg_prec
-
+!
       function getmg_type(this)
          
          implicit none
@@ -148,5 +168,5 @@
          getmg_type = this%mg_type
 
       end function getmg_type
-!      
+!
       end module spect2d_class

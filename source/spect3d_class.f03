@@ -22,8 +22,9 @@
          contains
          
          procedure, private :: init_spect3d
+         procedure, private :: init_spect3d_fd
          procedure, private :: end_spect2d => end_spect3d
-         generic :: new => init_spect3d
+         generic :: new => init_spect3d, init_spect3d_fd
 !         generic :: del => end_spect3d
          procedure :: getindz
                   
@@ -31,7 +32,21 @@
       
       contains
 !
-      subroutine init_spect3d(this,pp,perr,indx,indy,indz,dex,psolver,inorder,mg_prec,mg_type)
+      subroutine init_spect3d(this,pp,perr,indx,indy,indz,psolver,inorder)
+      
+         implicit none
+         
+         class(spect3d), intent(inout) :: this
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in) :: indx, indy, indz,psolver, inorder
+         
+         call this%spect2d%new(pp,perr,indx,indy,psolver,inorder)
+         this%indz = indz
+
+      end subroutine init_spect3d
+!
+      subroutine init_spect3d_fd(this,pp,perr,indx,indy,indz,dex,psolver,inorder,mg_prec,mg_type)
       
          implicit none
          
@@ -44,7 +59,7 @@
          call this%spect2d%new(pp,perr,indx,indy,dex,psolver,inorder,mg_prec,mg_type)
          this%indz = indz
 
-      end subroutine init_spect3d
+      end subroutine init_spect3d_fd
 !
       subroutine end_spect3d(this)
           

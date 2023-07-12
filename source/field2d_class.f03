@@ -12,7 +12,6 @@
       use fft2d_class
       use fpois2d_class
       use fpois2d_mg_class
-      use fd2d_class
       use hdf5io_class
          
       implicit none
@@ -30,12 +29,11 @@
          class(spect2d), pointer, public :: sp => null()
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
-         class(ufield2d), pointer, public :: rs => null(), ks => null()
-         class(fft2d), pointer :: ft
-         class(fpois2d), pointer :: pt
-         class(fd2d), pointer :: fd
+         class(ufield2d), pointer :: rs => null(), ks => null()
+         class(fft2d), pointer :: ft => null()
+         class(fpois2d), pointer :: pt => null()
          class(fpois2d_mg), pointer :: pt_mg
-         integer, public :: state, gcells
+         integer :: state, gcells
                   
          contains
          
@@ -43,22 +41,21 @@
          generic :: del => end_field2d
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
-         generic :: div => divf_field2d, divf_field2d_fd
-         generic :: grad => gradf_field2d, gradf_field2d_fd
-         generic :: curl => curlf_field2d, curlf_field2d_fd
-         generic :: curlz => curlfz_field2d_fd
+         generic :: div => divf_field2d
+         generic :: grad => gradf_field2d
+         generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
-         generic :: smooth => smoothf_field2d, smoothf_field2d_fd
+         generic :: vpot => vpotential_field2d
+         generic :: smooth => smoothf_field2d
          generic :: elf => elfield_field2d
          generic :: bf => bfield_field2d
          generic :: bfqp => bfield_qp_field2d
-         generic :: bfqp2 => bfield_qp_field2d2
-         generic :: bfqp_src => bfield_qp_source_fd
          generic :: cg => copyguard_field2d
          generic :: ag => acopyguard_field2d
          generic :: psend => pipesend_field2d
          generic :: precv => piperecv_field2d
          generic :: cp => copyfrom
+         generic :: ca => copyadd
          generic :: cb => copyto
          generic :: as => asc, asa
          generic :: add => sum1, sum2
@@ -68,18 +65,17 @@
          generic :: solve_mg => solve_field2d_mg
 
          procedure, private :: init_field2d, end_field2d
-         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d, divf_field2d_fd
+         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
          procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
-         procedure, private :: gradf_field2d_fd, curlf_field2d_fd, curlfz_field2d_fd
-         procedure, private :: smoothf_field2d, smoothf_field2d_fd, elfield_field2d, bfield_field2d 
-         procedure, private :: bfield_qp_field2d, bfield_qp_field2d2, bfield_qp_source_fd, copyguard_field2d
+         procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
+         procedure, private :: bfield_qp_field2d, copyguard_field2d
          procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
-         procedure, private :: copyfrom, copyto
-         procedure, private :: solve_field2d_mg
+         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
          procedure :: getstate, getgcells, getrs, getks
-                  
+         procedure, private :: solve_field2d_mg
+
       end type 
 
       character(len=10), save :: class = 'field2d:'
@@ -87,7 +83,7 @@
       
       contains
 !
-      subroutine init_field2d(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
+      subroutine init_field2d(this,pp,perr,psp,dim,fftflag,state,gcells)
 
 ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
          implicit none
@@ -98,15 +94,11 @@
          class(parallel_pipe), intent(in), pointer :: pp
          integer, intent(in) :: dim
          logical, intent(in) :: fftflag
-         integer, intent(in), optional :: state, gcells, algorithm
+         integer, intent(in), optional :: state,gcells
 ! local data
          character(len=18), save :: sname = 'init_field2d:'
-         integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
-         integer, dimension(2) :: gc
-         integer :: gc_dir
+         integer :: nvpy,indx,indy,nd1,nd2
          
-         inorder = psp%getinorder()
-
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -122,36 +114,6 @@
          else
             this%gcells = 0
          endif
-
-         ! determine the guard cells according to solver type and interpolation order
-         if (present(algorithm)) then
-            select case (algorithm)
-            ! spectral solver
-            case (0)
-               gc(1) = inorder - 1
-               gc(2) = inorder
-               gc_dir = 0
-            ! second order finite difference
-            case (1)
-               gc(1) = max( inorder-1, 1 )
-               gc(2) = max( inorder, 1 )
-               gc_dir = 2
-            ! fourth order finite difference
-            case (2)
-               gc(1) = max( inorder-1, 2 )
-               gc(2) = max( inorder, 2 )
-               gc_dir = 2
-            case default
-               call this%err%equit(class//sname//' invalid algorithm')
-            end select
-            alg = algorithm
-         else
-            gc(1) = inorder - 1
-            gc(2) = inorder
-            alg = 0
-            gc_dir = 0
-         endif
-            
          nvpy = pp%getlnvp()
          indx = psp%getindx()
          indy = psp%getindy()         
@@ -159,14 +121,8 @@
          nd2 = 2**indy
          
          allocate(this%rs)
-         call this%rs%new(pp,perr,psp,dim,0,0,nvpy,gc,gc_dir)
-
-         ! create finite difference
-         allocate( this%fd )
-         call this%fd%new( pp, perr, kind=0 )
-
-         ! 2nd order multigrid solver
-         this%pt_mg => get_poismg2table( pp, perr, psp, 1 )
+         
+         call this%rs%new(pp,perr,psp,dim,0,0,nvpy)
          
          if (fftflag) then
             allocate(this%ks)
@@ -174,10 +130,10 @@
             select case (psp%getpsolver())
             case (1)
                this%ft => get_fft2table(pp,perr,psp,indx,indy)
-               this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+               this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0)
             case default
                this%ft => get_fft2table(pp,perr,psp,indx,indy)
-               this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+               this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0)
             end select
          endif
 
@@ -195,7 +151,7 @@
          call this%err%werrfl2(class//sname//' started')
          
          call this%rs%del()
-         call this%ks%del()
+         if (associated(this%ks)) call this%ks%del()
          deallocate(this%rs,this%ks)
 
          call this%err%werrfl2(class//sname//' ended')
@@ -211,7 +167,6 @@
          character(len=18), save :: sname = 'fftrk_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'fft_start' )
          
          if (this%state /= 0) then 
             call this%err%equit(class//sname//'data is in ks')
@@ -235,7 +190,6 @@
          
          this%state = 1
          
-         call this%err%add_profile( 'fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine fftrk_field2d
@@ -249,7 +203,6 @@
          character(len=18), save :: sname = 'fftkr_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -273,7 +226,6 @@
          
          call this%rs%cg()
                   
-         call this%err%add_profile( 'fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine fftkr_field2d
@@ -286,7 +238,6 @@
          character(len=18), save :: sname = 'divf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -297,36 +248,9 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine divf_field2d
-
-      subroutine divf_field2d_fd(this,that,dx,order)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'divf_field2d_fd:'
-
-         call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fd_start' )
-         
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-         
-         call this%fd%divf(this%rs,that%rs,dx,order)
-
-         that%state = 0
-         
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine divf_field2d_fd
+      end subroutine divf_field2d      
 !            
       subroutine gradf_field2d(this,that)
       
@@ -336,7 +260,6 @@
          character(len=18), save :: sname = 'gradf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -347,36 +270,9 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine gradf_field2d
-
-      subroutine gradf_field2d_fd( this, that, dx, order )
-
-         implicit none
-
-         class(field2d), intent(inout) :: this, that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'gradf_field2d_fd:'
-
-         call this%err%werrfl2( class//sname//' started' )
-         call this%err%add_profile( 'solve_fd_start' )
-
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-
-         call this%fd%gradf( this%rs, that%rs, dx, order )
-
-         that%state = 0
-
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine gradf_field2d_fd
+      end subroutine gradf_field2d      
 !            
       subroutine curlf_field2d(this,that)
       
@@ -386,7 +282,6 @@
          character(len=18), save :: sname = 'curlf_field2d:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -397,89 +292,56 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine curlf_field2d
-
-      subroutine curlf_field2d_fd(this,that,dx,order)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'curlf_field2d_fd:'
-
-         call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fd_start' )
-         
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-         
-         call this%fd%curlf(this%rs,that%rs,dx,order)
-
-         that%state = 0
-         
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine curlf_field2d_fd
-
-      subroutine curlfz_field2d_fd(this,that,dx,order)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'curlfz_field2d_fd:'
-
-         call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fd_start' )
-         
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-         
-         call this%fd%curlfz(this%rs,that%rs,dx,order)
-
-         that%state = 0
-         
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine curlfz_field2d_fd
+      end subroutine curlf_field2d      
 !            
-      subroutine potential_field2d(this,that,bnd)
+      subroutine potential_field2d(this,that)
       
          implicit none
          
          class(field2d), intent(inout) :: this,that
-         integer, intent(in) :: bnd
          character(len=18), save :: sname = 'potential_field2d:'
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
             return
          endif
          
-         call this%pt%potential(this%ks,that%ks,we,bnd)
+         call this%pt%potential(this%ks,that%ks,we)
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine potential_field2d
+!            
+      subroutine vpotential_field2d(this,that)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this,that
+         character(len=18), save :: sname = 'vpotential_field2d:'
+         real :: we
 
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state /= 1) then 
+            call this%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         
+         call this%pt%vpotential(this%ks,that%ks,we)
+
+         that%state = 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine vpotential_field2d
+!
       subroutine solve_field2d_mg( this, that, bnd, stencil_kind )
 
          implicit none
@@ -503,7 +365,7 @@
          call this%err%werrfl2( class//sname//' ended' )
 
       end subroutine solve_field2d_mg
-!            
+!
       subroutine smoothf_field2d(this,that)
       
          implicit none
@@ -513,7 +375,6 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -524,36 +385,9 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine smoothf_field2d
-
-      subroutine smoothf_field2d_fd(this,that,order)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: this,that
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'smoothf_field2d_fd:'
-         real :: we
-
-         call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fd_start' )
-         
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-         
-         call this%fd%smoothf(this%rs,that%rs,order)
-
-         that%state = 0
-         
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine smoothf_field2d_fd
+      end subroutine smoothf_field2d      
 !            
       subroutine elfield_field2d(this,that)
       
@@ -564,7 +398,6 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -575,10 +408,9 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine elfield_field2d
+      end subroutine elfield_field2d      
 !            
       subroutine bfield_field2d(this,that)
       
@@ -589,7 +421,6 @@
          real :: we
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fft_start' )
          
          if (this%state /= 1) then 
             call this%err%equit(class//sname//'data is in rs')
@@ -600,10 +431,9 @@
 
          that%state = 1
          
-         call this%err%add_profile( 'solve_fft_end' )
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine bfield_field2d
+      end subroutine bfield_field2d      
 !            
       subroutine bfield_qp_field2d(cu,dcu,amu,bxy,c,dex)
       
@@ -611,11 +441,10 @@
          
          class(field2d), intent(inout) :: cu,dcu,amu,bxy
          real, intent(in) :: c, dex
-         character(len=24), save :: sname = 'bfield_qp_field2d:'
+         character(len=18), save :: sname = 'bfield_qp_field2d:'
          real :: we
 
          call cu%err%werrfl2(class//sname//' started')
-         call cu%err%add_profile( 'solve_fft_start' )
          
          if ((cu%state /= 1).or.(dcu%state /= 1).or.(amu%state /= 1))  then 
             call cu%err%equit(class//sname//'data is in rs')
@@ -626,64 +455,9 @@
 
          bxy%state = 1
          
-         call cu%err%add_profile( 'solve_fft_end' )
          call cu%err%werrfl2(class//sname//' ended')
          
-      end subroutine bfield_qp_field2d
-
-      subroutine bfield_qp_field2d2(src,bxy,c,dex)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: src,bxy
-         real, intent(in) :: c, dex
-         character(len=24), save :: sname = 'bfield_qp_field2d2:'
-         real :: we
-
-         call src%err%werrfl2(class//sname//' started')
-         call src%err%add_profile( 'solve_fft_start' )
-         
-         if (src%state /= 1)  then 
-            call src%err%equit(class//sname//'data is in rs')
-            return
-         endif
-         
-         call src%pt%bfield_qp2(src%ks,bxy%ks,1.0,c,dex)
-
-         bxy%state = 1
-         
-         call src%err%add_profile( 'solve_fft_end' )
-         call src%err%werrfl2(class//sname//' ended')
-         
-      end subroutine bfield_qp_field2d2
-
-      subroutine bfield_qp_source_fd( cu, dcu, amu, bxy, src, dx, order )
-
-         implicit none
-
-         class(field2d), intent(in) :: dcu, amu, bxy
-         class(field2d), intent(inout) :: cu, src
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=24), save :: sname = 'bfield_qp_source_fd:'
-
-         call cu%err%werrfl2(class//sname//' started')
-         call cu%err%add_profile( 'solve_fd_start' )
-
-         if ( (cu%state /= 0) .or. (dcu%state /= 0) .or. (amu%state /= 0) &
-            .or. (bxy%state /= 0) ) then
-            call cu%err%equit(class//sname//'data is in ks')
-            return
-         endif
-
-         call cu%fd%bfqp_src( cu%rs, dcu%rs, amu%rs, bxy%rs, src%rs, dx, order )
-
-         src%state = 0
-
-         call cu%err%add_profile( 'solve_fd_end' )
-         call cu%err%werrfl2(class//sname//' ended')
-
-      end subroutine bfield_qp_source_fd
+      end subroutine bfield_qp_field2d      
 !
       subroutine copyguard_field2d(this) 
 
@@ -700,7 +474,7 @@
          
          call this%rs%cg()
          
-         ! this%gcells = 1
+         this%gcells = 1
          this%state = 0
          
          call this%err%werrfl2(class//sname//' ended')
@@ -779,14 +553,12 @@
          character(len=18), save :: sname = 'asc:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          call this%rs%as(value)         
          
          this%state = 0
          this%gcells = 1
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine asc
@@ -804,13 +576,11 @@
          class(ufield3d), pointer :: rs3d
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'cp_start' )
          
          rs3d => that%getrs()
          
          call rs3d%cp(this%rs,lpos,sdim,ddim)
-         
-         call this%err%add_profile( 'cp_end' )
+                  
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyto
@@ -829,7 +599,6 @@
 
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'cp_start' )
          
          rs3d => that%getrs()
          
@@ -837,11 +606,36 @@
          
          this%gcells = 1
          this%state = 0
-         
-         call this%err%add_profile( 'cp_end' )
+                  
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyfrom
+!      
+      subroutine copyadd(this,that,lpos,sdim,ddim)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         class(field3d), intent(in) :: that
+         integer, intent(in) :: lpos
+         integer, intent(in), dimension(:) :: sdim, ddim
+! local data         
+         character(len=20), save :: sname = 'copyadd:'
+         class(ufield3d), pointer :: rs3d
+
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         rs3d => that%getrs()
+         
+         call rs3d%ca(this%rs,lpos,sdim,ddim)
+         
+         this%gcells = 1
+         this%state = 0
+                  
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine copyadd
 !      
       subroutine asa(this,that) 
 
@@ -851,7 +645,6 @@
          character(len=18), save :: sname = 'asc:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (that%state == 0) then
             call this%rs%as(that%rs)         
@@ -862,7 +655,6 @@
          this%state = that%state
          this%gcells = that%gcells
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine asa
@@ -876,7 +668,6 @@
          character(len=18), save :: sname = 'sum:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -895,7 +686,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine sum1
@@ -910,7 +700,6 @@
          character(len=18), save :: sname = 'sum:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -929,7 +718,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine sum2
@@ -943,7 +731,6 @@
          character(len=18), save :: sname = 'minus:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -962,7 +749,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine minus1
@@ -977,7 +763,6 @@
          character(len=18), save :: sname = 'minus:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
@@ -996,7 +781,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine minus2
@@ -1011,7 +795,6 @@
          character(len=18), save :: sname = 'multiply1:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state == 0) then
             call this%rs%mult(a1%rs,value)
@@ -1022,7 +805,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine multiply1
@@ -1038,7 +820,6 @@
          character(len=18), save :: sname = 'multiply2:'
 
          call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'arith_start' )
          
          if (a1%state == 0) then
             call this%rs%mult(a1%rs,dim,dim1,value)
@@ -1049,7 +830,6 @@
             this%state = 1         
          endif
          
-         call this%err%add_profile( 'arith_end' )
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine multiply2

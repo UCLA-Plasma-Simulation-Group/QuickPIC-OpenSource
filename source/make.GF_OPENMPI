@@ -1,6 +1,6 @@
 # name of the compiler 
-JSON_LIB = /Users/hainan/code/jsonfortran-gnu-8.3.0/lib/
-JSON_INC = /Users/hainan/code/jsonfortran-gnu-8.3.0/lib/
+JSON_LIB = /Users/hainan/code/json-fortran-8.3.0/build/lib
+JSON_INC = /Users/hainan/code/json-fortran-8.3.0/build/include
 
 FC_GF_OPENMPI = mpif90 -c -I$(JSON_INC) -fopenmp
 CC_GF_OPENMPI = mpicc -c -O3 -std=c99

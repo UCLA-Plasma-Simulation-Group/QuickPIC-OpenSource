@@ -69,7 +69,10 @@
          logical :: found, stat
          character(len=:), allocatable :: ff, boundary, error_msg
          integer :: length, num_stages, verbose, indx, indy, indz, psolve, ierr
-         
+         real :: mg_prec = 1.0d-6
+         integer :: mg_type = 3
+         real :: dx
+
          call p%new()
          
          this%p => p
@@ -130,8 +133,9 @@
             psolve = 1
          end select
          
-         call sp%new(this%pp,this%err,indx,indy,indz,psolve,1)
-
+         ! call sp%new(this%pp,this%err,indx,indy,indz,psolve,1)
+         call sp%new(this%pp,this%err,indx,indy,indz,dx,psolve,1,mg_prec,mg_type)
+         
          this%sp => sp
 
          call this%err%werrfl0(ff)

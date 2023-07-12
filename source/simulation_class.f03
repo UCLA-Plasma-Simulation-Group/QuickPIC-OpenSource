@@ -657,28 +657,22 @@
                end do
                call this%fields%qb%fftrk(1)
                call this%fields%qb%elf(this%fields%epwb)
-               ! call this%fields%qe%as(0.0)
-               ! do l = 1, this%nspecies
-               !    call this%species%spe(l)%qdp(this%fields%qe)
-               ! end do
-               ! call this%fields%qe%fftrk(1)
-               ! call this%fields%qe%pot(this%fields%psi)
-               ! call this%fields%psi%grad(this%fields%fxy)
-               ! call this%fields%fxy%fftkr(1)
-               ! call this%fields%psi%fftkr(1)
-
-               ! add 2D ion charge and each specie's charge to 2D rho-J_z.
-               call this%fields%qe%mult(qi,-1.0)
+               call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
-                  call this%fields%qe0(l)%as(0.0)
-                  call this%nspecies%spe(l)%qdp(qe0(l))
-                  call this%fields%qe%add(qe,qe0(l))
-               enddo
+                  call this%species%spe(l)%qdp(this%fields%qe)
+               end do
+               call this%fields%qe%fftrk(1)
+               ! call this%fields%qe%pot(this%fields%psi)
+               call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
+               call this%fields%psi%grad(this%fields%fxy)
+               call this%fields%fxy%fftkr(1)
+               call this%fields%psi%fftkr(1)
+
                ! solve psi using Poisson solver
-               call this%fields%qe%solve_mg(psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
+               ! call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
                ! solve transverse force
-               call this%fields%psi%cg()
-               call this%fields%psi%grad(fxy, dex, 1)
+               ! call this%fields%psi%cg()
+               ! call this%fields%psi%grad(fxy, dex, 1)
                !以上为添加内容
                do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
