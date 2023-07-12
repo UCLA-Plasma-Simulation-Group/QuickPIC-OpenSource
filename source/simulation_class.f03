@@ -273,18 +273,22 @@
          call this%bbxyz%new(this%p,this%err,this%sp3,dim=3)
 
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
-         call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         ! call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%div_vpot%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
-         call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         ! call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%reg%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
-         call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         ! call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.,state=1)
          call this%dcu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%epw%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.,state=1)
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+
+         call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
+         call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
+         call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.,algorithm=1)
 
          call input%get('simulation.nspecies',n)
 
@@ -433,6 +437,11 @@
                allocate(fdist3d_001::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
             case (2)
+
+
+
+
+
                allocate(fdist3d_002::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
             case (3)
@@ -661,19 +670,16 @@
                do l = 1, this%nspecies
                   call this%species%spe(l)%qdp(this%fields%qe)
                end do
-               call this%fields%qe%fftrk(1)
+               ! call this%fields%qe%fftrk(1)
                ! call this%fields%qe%pot(this%fields%psi)
+               ! call this%fields%psi%grad(this%fields%fxy)
+               ! call this%fields%fxy%fftkr(1)
+               ! call this%fields%psi%fftkr(1)
+               
                call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
-               call this%fields%psi%grad(this%fields%fxy)
-               call this%fields%fxy%fftkr(1)
-               call this%fields%psi%fftkr(1)
+               call this%fields%psi%cg()
+               call this%fields%psi%grad(this%fields%fxy, this%dex, 1)
 
-               ! solve psi using Poisson solver
-               ! call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
-               ! solve transverse force
-               ! call this%fields%psi%cg()
-               ! call this%fields%psi%grad(fxy, dex, 1)
-               !以上为添加内容
                do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
                end do
