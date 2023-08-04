@@ -14,8 +14,6 @@
       
       public :: hdf5file, pwfield, pwfield_pipe, wfield_pipe, pwpart_pipe, pwpart,&
       &wpart,rpart
-
-      integer, parameter :: dp = kind(1.d0)
       
       type hdf5file
          
@@ -23,18 +21,31 @@
          
          character(len=100) :: filename = 'file.h5', timeunits = 'a.u.',&
          &dataname = 'Data', units = 'a.u.', label = 'Data'
-         character(len=100) :: ty = 'grid'
+         character(len=100) :: ty = 'grid',openpmd = '1.0.0', &
+         & basepath='/data/%T/',filenamebase = 'data', records='Ex',&
+         & dataorder = 'F', software='QuickPIC',base = 'data',&
+         & meshespath = 'fields/', particlespath = 'particles/', &
+         & iterationencoding = 'fileBased', iterationformat = 'data%T.h5',&
+         & filepath ='./'
+
          integer :: n = 1, rank = 2
          real :: t = 1.0, dt = 1.0
          character(len=100), dimension(3) :: axisname  = (/'x1','x2','x3'/),&
          &axislabel = (/'x1','x2','x3'/), axisunits = (/'a.u.','a.u.','a.u.'/)
+
          real, dimension(3) :: axismax = (/1.0,1.0,1.0/), axismin = (/0.0,0.0,0.0/)
+
+         ! ------------------------------------------------------------------
+         ! ------------------------------------------------------------------
+         ! ------------------   OpenPMD attributes   ------------------------
+         ! ------------------------------------------------------------------
+         ! -----------------------------------------------------------------
+         integer :: openpmdextension = 0
+         integer :: iter = 0
+         character(len=8) :: chiter = '00000000'
+         real :: unitsi = 1.0, timeunitsi = 1.0, gridunitsi=1.0
+         real :: timeoffset = 0.0
          
-         ! OpenPMD constants
-         !
-         real*8, dimension(3) :: OPMD_GlobalOffset = (/0.0, 0.0, 0.0/)
-         real, dimension(3) :: OMPD_gridSpacing  = (/1.0, 1.0, 1.0/)
-         !
          contains
          
          generic :: new => init_hdf5file
@@ -49,12 +60,8 @@
          module procedure add_h5_atribute_v1_single
          module procedure add_h5_atribute_int
          module procedure add_h5_atribute_v1_int
-         ! OPENPMD
-         ! module procedure add_h5_atribute_double
-         ! module procedure add_h5_atribute_v1_double
-         ! OPENPMD
       end interface
-      
+
       interface pwfield
         module procedure pwfield_3d
         module procedure pwfield_2d
@@ -78,20 +85,54 @@
       end interface
       
       contains
-      
+
       subroutine init_hdf5file(this,filename,timeunits,ty,n,t,dt,axisname,&
-      &axislabel,axisunits,axismax,axismin,dataname,units,label,rank)
+      & axislabel,axisunits,axismax,axismin,dataname,units,label,rank, &
+      & openpmd,openpmdextension,iter,base,records,basepath,meshespath, &
+      & particlespath,filenamebase,timeunitsi,iterationencoding, &
+      & iterationformat,software)
 
          implicit none
          
          class(hdf5file), intent(inout) :: this
          character(len=*), intent(in), optional :: filename, timeunits
          character(len=*), intent(in), optional :: ty, dataname, units, label
-         integer, intent(in), optional :: n, rank
+         integer, intent(in), optional :: n
+         integer, optional :: rank
          real, intent(in), optional :: t, dt
          character(len=*), dimension(3), intent(in), optional :: axisname, &
          &axislabel, axisunits
          real, dimension(3), intent(in), optional :: axismax, axismin
+
+         character(len=*), intent(in), optional :: openpmd
+         character(len=*), intent(in), optional :: openpmdextension
+         integer, intent(in), optional :: iter
+         character(len=*), intent(in), optional :: base
+         character(len=*), intent(in), optional :: records
+         character(len=*), intent(in), optional :: basepath
+         character(len=*), intent(in), optional :: meshespath
+         character(len=*), intent(in), optional :: particlespath
+         character(len=*), intent(in), optional :: filenamebase
+         real, intent(in), optional :: timeunitsi
+         character(len=*), intent(in), optional :: iterationencoding
+         character(len=*), intent(in), optional :: iterationformat
+         character(len=*), intent(in), optional :: software
+
+
+
+
+         character(len=8) :: chiter
+         integer i
+
+          
+         ! DEBUG
+         ! write(*,*) 'in init_hdf5file ',trim(this%filename),'  ',trim(this%timeunits)
+         ! write(*,*) 'this%records = ', trim(this%records)
+         ! write(*,*) 'this%filenamebase = ', trim(this%filenamebase)
+         ! write(*,*) 'this%base = ', trim(this%base)
+         ! DEBUG
+
+         if(.not. present(rank)) this%rank=3
          
          if (present(filename)) then
             this%filename = filename
@@ -134,7 +175,7 @@
          end if
 
          if (present(axisname)) then
-            this%axisname = axisname
+             this%axisname = axisname
          end if
 
          if (present(axislabel)) then
@@ -153,8 +194,49 @@
             this%axismin = axismin
          end if
 
+         if (present(openpmd)) then    
+             this%openpmd = trim(openpmd)
+         end if
+
+         if (present(base)) then
+             this%base = trim(base)
+         end if
+         if (present(iter)) then    
+             this%iter = iter
+         end if
+
+         write(chiter,'(I8.8)') this%iter
+         chiter = trim(chiter)
+         this%chiter = chiter
+         
+         if (present(timeunitsi)) then
+            this%timeunitsi = timeunitsi
+         else
+            this%timeunitsi = 1.0
+         end if
+
+
+         if (present(records)) then
+            this%records = trim(records)
+         end if
+
+         if (present(software)) then
+             this%software = trim(software)
+         end if
+         
+
+         ! DEBUG
+         ! write(*,*) 'out iniit_hdf5file'
+         ! write(*,*) 'filename = ', trim(this%filename)
+         ! write(*,*) 'ty = ', trim(this%ty)
+         ! write(*,*) 'openpmd = ', trim(this%openpmd)
+         ! write(*,*) 'meshespath = ', trim(this%meshespath)
+         ! write(*,*) 'software = ', trim(this%software)
+         ! DEBUG
+
       end subroutine init_hdf5file
 !
+      
       subroutine add_h5_atribute_str( objID, name, attribute )
         
          implicit none
@@ -170,7 +252,8 @@
          integer :: ierr
           
          dims(1) = 1
-         call h5screate_simple_f(1, dims, dataspaceID, ierr ) 
+         call h5screate_simple_f(0, dims, dataspaceID, ierr ) 
+         ! call h5tcopy_f(H5T_FORTRAN_S1, typeID, ierr)
          call h5tcopy_f(H5T_NATIVE_CHARACTER, typeID, ierr)
           
          size = len(attribute)
@@ -206,6 +289,7 @@
          enddo
           
          call h5tcopy_f(H5T_NATIVE_CHARACTER, typeID, ierr)
+         ! call h5tcopy_f(H5T_FORTRAN_S1, typeID, ierr)
          call h5tset_size_f(typeID, maxlen, ierr)
          
          call h5acreate_f( objID, name, typeID, dataspaceID, attrID, ierr )
@@ -231,7 +315,7 @@
           
          d_float = detect_precision()
          dims(1) = 1
-         call h5screate_simple_f(1, dims, dataspaceID, ierr ) 
+         call h5screate_simple_f(0, dims, dataspaceID, ierr ) 
          call h5acreate_f( objID, name, d_float, dataspaceID, attrID, ierr )
          call h5awrite_f( attrID, d_float, attribute, dims, ierr)
          call h5aclose_f( attrID, ierr )
@@ -275,7 +359,7 @@
          integer :: ierr
           
          dims(1) = 1
-         call h5screate_simple_f(1, dims, dataspaceID, ierr ) 
+         call h5screate_simple_f(0, dims, dataspaceID, ierr ) 
          call h5acreate_f( objID, name, H5T_NATIVE_INTEGER, dataspaceID,&
          &attrID, ierr )
          call h5awrite_f( attrID, H5T_NATIVE_INTEGER, attribute, dims, ierr)
@@ -305,7 +389,10 @@
          call h5sclose_f( dataspaceID, ierr )
         
       end subroutine add_h5_atribute_v1_int
-!         
+!
+! In case real is defaulted to 4 bytes and real and double become 2 
+! distinct types these routines are needed
+!
 !       subroutine add_h5_atribute_double(objID, name, attribute)
 
 !          implicit none
@@ -366,21 +453,24 @@
           
           call h5gopen_f(file_id, '/', rootID, ierr)
 
-          call add_h5_atribute(rootID, 'NAME', this%dataname) 
+          call add_h5_atribute(rootID, 'NAME', trim(this%dataname) )
           call add_h5_atribute(rootID, 'TYPE', this%ty) 
           call add_h5_atribute(rootID, 'TIME', this%t)
           call add_h5_atribute(rootID, 'ITER', this%n) 
           call add_h5_atribute(rootID, 'DT', this%dt)
-          call add_h5_atribute(rootID, 'TIME UNITS', this%timeunits) 
+          call add_h5_atribute(rootID, 'TIME UNITS', trim(this%timeunits) )
 ! OpenPMD attributes
-          call add_h5_atribute(rootID,'openPMD',"1.1.0")
-          call add_h5_atribute(rootID,'openPMDextension',0)
-          call add_h5_atribute(rootID,'iterationEncoding','fileBased')
-          call add_h5_atribute(rootID,'basePath','/data/%T/')  
-          call add_h5_atribute(rootID,'meshesPath','mesh/')
-          call add_h5_atribute(rootID,'particlesPath','particles/')
-          call add_h5_atribute(rootID,'software','QuickPIC')
-          call add_h5_atribute(rootID,'iterationFormat','/data/%T/')
+          call add_h5_atribute(rootID, 'openPMD', trim(this%openpmd) )
+          call add_h5_atribute(rootID, 'openPMDextension',this%openpmdextension)
+          call add_h5_atribute(rootID, 'iterationEncoding',trim(this%iterationencoding) )
+          call add_h5_atribute(rootID, 'basePath', trim(this%basepath))  
+          call add_h5_atribute(rootID, 'meshesPath', trim(this%meshespath))
+          ! write(*,*) 'DATANAME: ',this%dataname
+          ! write(*,*) 'meshesPATH: ',this%meshespath
+          ! write(*,*) 'openPMD: ', this%openpmd
+          ! call add_h5_atribute(rootID, 'particlesPath',trim(this%particlespath))
+          call add_h5_atribute(rootID, 'software',trim(this%software))
+          call add_h5_atribute(rootID,'iterationFormat','data%T.h5')
 ! OpenPMD attributes     
           if (this%ty == 'grid') then
              call h5gcreate_f(rootID, 'AXIS', aid, ierr) 
@@ -408,6 +498,7 @@
              call h5gclose_f(rootID, ierr)
 
       end subroutine wrattr_file
+!
 !
       subroutine wrattr_dataset(this,dset_id,unit,name)
       
@@ -438,12 +529,12 @@
          call add_h5_atribute(dset_id,'gridUnitSI',1.0)
          call add_h5_atribute(dset_id,'unitSI',1.0)
          call add_h5_atribute(dset_id,'time',this%t)
-         call add_h5_atribute(dset_id,'axisLabel',this%axisname(1:this%rank))
+         call add_h5_atribute(dset_id,'axisLabels',this%axisname(1:this%rank))
          call add_h5_atribute(dset_id,'unitDimension',[ 0., 1., -2., -1., 0., 0., 0.])
 ! OPENPMD
-
   
       end subroutine wrattr_dataset
+!
 !
       subroutine pwfield_3d(pp,perr,file,fd,gs,ls,noff,ierr)
 
@@ -467,9 +558,11 @@
          character(len=:), allocatable :: filename
          character(len=8) :: st
 ! OPENPMD hierachy
-         integer(hid_t) :: iterID, meshID
+         integer(hid_t) :: iterID, meshID, dataID
 ! OPENPMD local  variables
          real, dimension(3) :: local_gridspacing
+         real, dimension(3) :: local_GlobalOffset
+         real, dimension(3) :: local_position
          integer i
          character(len=20) :: iter_str
 
@@ -477,6 +570,7 @@
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+         write(*,*) 'in pwfield_3D',filename
 
          ierr = 0
          gsize = gs
@@ -494,13 +588,14 @@
       
          call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
          &access_prp=flplID) 
+
          call wrattr_file(file,file_id,xferID)
 
          call h5screate_simple_f(3, gsize, dspace_id, ierr)
          call h5screate_simple_f(3, lsize, memspaceID, ierr )
          ! In OSIRIS convention, the group ID is simply "/"
          ! OSIRIS
-         ! call h5gopen_f(file_id, '/', rootID, ierr)
+         call h5gopen_f(file_id, '/', rootID, ierr)
          ! OSIRIS
          ! In OpenPMD, the group ID is more complicated because
          ! the file is designed to hold the entire simulation, so
@@ -520,15 +615,20 @@
          ! (we have always used the keyword "particle")
          !
          ! OPENPMD
-         call h5gopen_f(file_id,'data',rootID,ierr)
-         write(iter_str,'(I0.0)') file%n
-         call h5gopen_f(rootID,adjustl(trim(iter_str)),iterID,ierr)
+         call h5gcreate_f(rootID, 'data' ,dataID , ierr)
+         if(ierr .ne. 0) then
+             write(*,*) 'error open data'
+         end if
+         write(iter_str,'(I0.8)') file%n
+         call h5gcreate_f(dataID,adjustl(trim(iter_str)),iterID,ierr)
+         if(ierr .ne. 0) then
+             write(*,*) 'error open iter'
+         end if
          ! here we need to write dt, time, and also
          ! time to SI connversion 
          call add_h5_atribute(iterID,'dt',file%dt)
-         call add_h5_atribute(iterID,'time',file%t)
          call add_h5_atribute(iterID,'timeUnitSI',1.0)
-         call h5gopen_f(iterID,'mesh',meshID,ierr)
+         call h5gcreate_f(iterID,trim(file%meshespath),meshID,ierr)
          ! Finally we create the mesh data
          !
          call h5dcreate_f(meshID, file%dataname, treal, dspace_id, dset_id,&
@@ -545,17 +645,25 @@
          &lsize, ierr, memspaceID, dspace_id, xfer_prp=xferID)
 
          call wrattr_dataset(file,dset_id)
+
          do i=1,3 
              local_gridspacing(i) = (file%axismax(i)-file%axismin(i))/gsize(i)
+             local_GlobalOffset(i) = 0.0
+             local_position(i) = 0.0
          end do
          
          call add_h5_atribute(dset_id,'gridSpacing',local_gridspacing)
+         call add_h5_atribute(dset_id,'gridGlobalOffset',local_GlobalOffset)
+         call add_h5_atribute(dset_id,'position',local_position)
 
          call h5sclose_f(memspaceID, ierr)
          call h5sclose_f(dspace_id, ierr)
          call h5pclose_f(xferID, ierr)
          call h5pclose_f(dcplID, ierr)
          call h5pclose_f(flplID, ierr)
+         call h5gclose_f(meshID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5gclose_f(dataID, ierr)
          call h5gclose_f(rootID, ierr)
          call h5dclose_f(dset_id, ierr)
          call h5fclose_f(file_id, ierr)
@@ -584,15 +692,19 @@
          character(len=:), allocatable :: filename
          character(len=8) :: st
 ! OPENPMD hierachy
-         integer(hid_t) :: iterID, meshID
+         integer(hid_t) :: iterID, meshID, dataID
 ! other OPENPMD variables
          real, dimension(2) :: local_gridspacing
+         real, dimension(2) :: local_GlobalOffset
+         real, dimension(2) :: local_position
          integer i
          character(len=20) :: iter_str
+
                   
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+         write(*,*) ' in pwrite_2d',filename
                   
          ierr = 0
          gsize = gs
@@ -613,16 +725,19 @@
 
          call h5screate_simple_f(2, gsize, dspace_id, ierr)
          call h5screate_simple_f(2, lsize, memspaceID, ierr )
-         ! call h5gopen_f(file_id, '/', rootID, ierr)
-         call h5gopen_f(file_id,'data',rootID,ierr)
-         write(iter_str,'(I0.0)') file%n
-         call h5gopen_f(rootID,adjustl(trim(iter_str)),iterID,ierr)
+         call h5gopen_f(file_id, '/', rootID, ierr)
+         ! write(*,*) '(pwfield_2d) open data'
+         call h5gcreate_f(rootID,'data',dataID,ierr)
+         write(iter_str,'(I0.8)') file%n
+         ! write(*,*) '(pwfield_2d) open iter  --- ',iter_str
+         call h5gcreate_f(dataID,adjustl(trim(iter_str)),iterID,ierr)
          ! here we need to write dt, time, and also
          ! time to SI connversion 
          call add_h5_atribute(iterID,'dt',file%dt)
          call add_h5_atribute(iterID,'time',file%t)
          call add_h5_atribute(iterID,'timeUnitSI',1.0)
-         call h5gopen_f(iterID,'mesh',meshID,ierr)
+         write(*,*) 'open mesh'
+         call h5gcreate_f(iterID,trim(file%meshesPath),meshID,ierr)
          ! Finally we create the mesh data
          !
          call h5dcreate_f(meshID, file%dataname, treal, dspace_id, dset_id,&
@@ -639,19 +754,27 @@
          &memspaceID, dspace_id, xfer_prp=xferID)
 
          call wrattr_dataset(file,dset_id)
+
          do i=1,2 
              local_gridspacing(i) = (file%axismax(i)-file%axismin(i))/gsize(i)
+             local_GlobalOffset(i) = 0.0
+             local_gridspacing(i) = 0.0
          end do
          
          call add_h5_atribute(dset_id,'gridSpacing',local_gridspacing)
+         call add_h5_atribute(dset_id,'gridGlobalOffset',local_GlobalOffset)
+         call add_h5_atribute(dset_id,'position',local_position)
 
          call h5sclose_f(memspaceID, ierr)
          call h5sclose_f(dspace_id, ierr)
          call h5pclose_f(xferID, ierr)
          call h5pclose_f(dcplID, ierr)
          call h5pclose_f(flplID, ierr)
-         call h5gclose_f(rootID, ierr)
          call h5dclose_f(dset_id, ierr)
+         call h5gclose_f(meshID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5gclose_f(dataID, ierr)
+         call h5gclose_f(rootID, ierr)
          call h5fclose_f(file_id, ierr)
          call h5close_f(ierr)
                
@@ -686,12 +809,15 @@
          character(len=:), allocatable :: filename
          character(len=8) :: st
 ! OPENPMD hierachy
-         integer(hid_t) :: iterID, meshID
+         integer(hid_t) :: dataID, iterID, meshID
 ! other OPENPMD variables
          real, dimension(3) :: local_gridspacing
+         real, dimension(3) :: local_GlobalOffset
+         real, dimension(3) :: local_position
          integer i
          character(len=20) :: iter_str
                   
+         write(*,*) 'in pwfield_3D_pipe'
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
@@ -710,6 +836,10 @@
             &mid,ierr)
             call MPI_WAIT(mid,istat,ierr)
          endif
+         if (ori < 0 ) then
+             write(*,*) 'in pwfield_3D_pipe',filename
+         endif
+             
          
          call h5open_f(ierr)
          treal = detect_precision()
@@ -723,32 +853,42 @@
          if (ori >= 0) then
             call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr,&
             &access_prp=flplID)
-            call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
-            lstr = len(string)
-            call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
-            call h5tset_size_f(tstring, lstr, ierr)
-            call h5aread_f(aid, tstring, string, dims, ierr)  
-            call h5dopen_f(file_id, string, dset_id, ierr, H5P_DEFAULT_F)
-            call h5aclose_f(aid, ierr)
-            call h5tclose_f(tstring, ierr)
+            call h5gopen_f(file_id,'/',rootID,ierr)
+            write(iter_str,'(I0.8)') file%n
+            call h5gopen_f(rootID,'data',dataID,ierr)
+            call h5gopen_f(dataID,iter_str,iterID,ierr)
+            call h5gopen_f(iterID,trim(file%meshespath),meshID,ierr)
+            call h5dopen_f(meshID, trim(file%dataname), dset_id, ierr, H5P_DEFAULT_F)
+            if (ierr .ne. 0) then
+                write(*,*)'pwfield_3d_pipe: error opening dataset'
+            endif 
+            ! call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
+            ! lstr = len(string)
+            ! call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
+            ! call h5tset_size_f(tstring, lstr, ierr)
+            ! call h5aread_f(aid, tstring, string, dims, ierr)  
+            ! call h5dopen_f(file_id, string, dset_id, ierr, H5P_DEFAULT_F)
+            ! call h5aclose_f(aid, ierr)
+            ! call h5tclose_f(tstring, ierr)
          else
             call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
             &access_prp=flplID) 
             call wrattr_file(file,file_id,xferID)
+            call h5gopen_f(file_id, '/', rootID, ierr)
+            call h5gcreate_f(rootID,'data',dataID,ierr)
+            write(iter_str,'(I0.8)') file%n
+            call h5gcreate_f(dataID,adjustl(trim(iter_str)),iterID,ierr)
+            ! here we need to write dt, time, and also
+            ! time to SI connversion 
+            call add_h5_atribute(iterID,'dt',(file%dt))
+            call add_h5_atribute(iterID,'time',(file%t))
+            call add_h5_atribute(iterID,'timeUnitSI',1.0)
+            call h5gcreate_f(iterID,file%meshesPath,meshID,ierr)
          endif
          
          call h5screate_simple_f(3, gsize, dspace_id, ierr)
          call h5screate_simple_f(3, lsize, memspaceID, ierr )
-         ! call h5gopen_f(file_id, '/', rootID, ierr)
-         call h5gopen_f(file_id,'data',rootID,ierr)
-         write(iter_str,'(I0.0)') file%n
-         call h5gopen_f(rootID,adjustl(trim(iter_str)),iterID,ierr)
-         ! here we need to write dt, time, and also
-         ! time to SI connversion 
-         call add_h5_atribute(iterID,'dt',file%dt)
-         call add_h5_atribute(iterID,'time',file%t)
-         call add_h5_atribute(iterID,'timeUnitSI',1.0)
-         call h5gopen_f(iterID,'mesh',meshID,ierr)
+         
          if (ori < 0) then
             ! call h5dcreate_f(rootID, file%dataname, treal, dspace_id, dset_id,&
             ! &ierr, dcplID)
@@ -760,9 +900,13 @@
             call wrattr_dataset(file,dset_id)
             do i=1,3 
                 local_gridspacing(i) = (file%axismax(i)-file%axismin(i))/gsize(i)
+                local_GlobalOffset(i) = 0.0
+                local_position(i) = 0.0
             end do
          
             call add_h5_atribute(dset_id,'gridSpacing',local_gridspacing)
+            call add_h5_atribute(dset_id,'gridGlobalOffset',local_GlobalOffset)
+            call add_h5_atribute(dset_id,'position',local_position)
          endif
          
          start(1) = 0
@@ -781,10 +925,14 @@
          call h5pclose_f(xferID, ierr)
          call h5pclose_f(dcplID, ierr)
          call h5pclose_f(flplID, ierr)
-         call h5gclose_f(rootID, ierr)
          call h5dclose_f(dset_id, ierr)
+         call h5gclose_f(meshID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5gclose_f(dataID, ierr)
+         call h5gclose_f(rootID, ierr)
          call h5fclose_f(file_id, ierr)
          call h5close_f(ierr)
+         if (ierr .ne. 0) write(*,*)'pwfield_3d_pipe: error in fclose()'
 
          if (des < pp%getnvp()) then
             call MPI_ISEND(message,1,pp%getmint(),des,stag,pp%getlworld(),&
@@ -824,11 +972,14 @@
          character(len=:), allocatable :: filename
          character(len=8) :: st
 ! OPENPMD hierachy
-         integer(hid_t) :: iterID, meshID
+         integer(hid_t) :: dataID, iterID, meshID
 ! other OPENPMD variables
          real, dimension(2) :: local_gridspacing
+         real, dimension(2) :: local_GlobalOffset
+         real, dimension(2) :: local_position
          integer i
          character(len=20) :: iter_str
+         logical gexist
                   
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
@@ -848,6 +999,9 @@
             &mid,ierr)
             call MPI_WAIT(mid,istat,ierr)
          endif
+         if (ori < 0 ) then
+             write(*,*) ' in pwrite_2d_pipe',filename
+         end if
          
          call h5open_f(ierr)
          treal = detect_precision()
@@ -858,44 +1012,69 @@
          call h5pset_fapl_mpio_f(flplID, pp%getlgrp(), info, ierr)
          call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
          
-         if (ori >= 0) then
+         if (ori >= 0) then ! slave nodes, here we open the file
             call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr,&
             &access_prp=flplID)
-            call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
-            lstr = len(string)
-            call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
-            call h5tset_size_f(tstring, lstr, ierr)
-            call h5aread_f(aid, tstring, string, dims, ierr)  
-            call h5dopen_f(file_id, string, dset_id, ierr, H5P_DEFAULT_F)
-            call h5aclose_f(aid, ierr)
-            call h5tclose_f(tstring, ierr)
-         else
+            call h5gopen_f(file_id,'/',rootID,ierr)
+            write(iter_str,'(I0.8)') file%n
+            call h5gopen_f(rootID,'data',dataID,ierr)
+            call h5gopen_f(dataID,iter_str,iterID,ierr)
+            call h5gopen_f(iterID,trim(file%meshespath),meshID,ierr)
+            ! call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
+            ! lstr = len(string)
+            ! call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
+            ! call h5tset_size_f(tstring, lstr, ierr)
+            ! call h5aread_f(aid, tstring, string, dims, ierr)  
+            call h5dopen_f(meshID, trim(file%dataname), dset_id, ierr, H5P_DEFAULT_F)
+            if (ierr .ne. 0) then
+                write(*,*)'pwfield_2d_pipe: error opening dataset'
+            endif 
+            ! call h5aclose_f(aid, ierr)
+            ! call h5tclose_f(tstring, ierr)
+         else ! orig < 0 --> master node.  Here we write the attributes
             call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr,&
             &access_prp=flplID) 
             call wrattr_file(file,file_id,xferID)
-         endif
+         endif 
          
          call h5screate_simple_f(2, gsize, dspace_id, ierr)
          call h5screate_simple_f(2, lsize, memspaceID, ierr )
-         ! call h5gopen_f(file_id, '/', rootID, ierr)
-         call h5gopen_f(file_id,'data',rootID,ierr)
-         write(iter_str,'(I0.0)') file%n
-         call h5gopen_f(rootID,adjustl(trim(iter_str)),iterID,ierr)
-         ! here we need to write dt, time, and also
-         ! time to SI connversion 
-         call add_h5_atribute(iterID,'dt',file%dt)
-         call add_h5_atribute(iterID,'time',file%t)
-         call add_h5_atribute(iterID,'timeUnitSI',1.0)
-         call h5gopen_f(iterID,'mesh',meshID,ierr)
+         if(ori < 0) then
+             call h5gopen_f(file_id, '/', rootID, ierr)
+             call h5gcreate_f(rootID,'data', dataID, ierr)
+             write(iter_str,'(I0.8)') file%n
+             call h5gcreate_f(dataID,trim(iter_str),iterID,ierr)
+             if (ierr .ne. 0) then
+                 write(*,*) 'pwfield_2d_pipe: error in iterID ', ori
+             end if
+             ! here we need to write dt, time, and also
+             ! time to SI connversion 
+             call add_h5_atribute(iterID,'dt',file%dt)
+             call add_h5_atribute(iterID,'time',file%t)
+             call add_h5_atribute(iterID,'timeUnitSI',1.0)
+         endif
+         call h5lexists_f(iterID, trim(file%meshespath),gexist, ierr)
+         if (gexist) then
+             call h5gopen_f(iterID,trim(file%meshespath),meshID,ierr)
+         else
+             call h5gcreate_f(iterID,trim(file%meshespath),meshID,ierr)
+         end if
+         if (ierr .ne. 0) then
+             write(*,*) 'pwfield_2d_pipe: error in meshID ', ori
+         end if
          if (ori < 0) then
-            call h5dcreate_f(meshID, file%dataname, treal, dspace_id, dset_id,&
+            call h5dcreate_f(meshID, trim(file%dataname), treal, dspace_id, dset_id,&
             &ierr, dcplID)
             call wrattr_dataset(file,dset_id)
             do i=1,2 
                 local_gridspacing(i) = (file%axismax(i)-file%axismin(i))/gsize(i)
+                local_GlobalOffset(i) = 0.0
+                local_position(i) = 0.0
             end do
          
             call add_h5_atribute(dset_id,'gridSpacing',local_gridspacing)
+            call add_h5_atribute(dset_id,'gridGlobalOffset',local_GlobalOffset)
+            call add_h5_atribute(dset_id,'position',local_position)
          endif
          
          start = lnoff
@@ -906,17 +1085,19 @@
          call h5dwrite_f(dset_id, treal, fd(1:lsize(1),1:lsize(2)),&
          &lsize, ierr, memspaceID, dspace_id, xfer_prp=xferID)
 
-
          call h5sclose_f(memspaceID, ierr)
          call h5sclose_f(dspace_id, ierr)
          call h5pclose_f(xferID, ierr)
          call h5pclose_f(dcplID, ierr)
          call h5pclose_f(flplID, ierr)
-         call h5gclose_f(rootID, ierr)
          call h5dclose_f(dset_id, ierr)
+         call h5gclose_f(meshID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5gclose_f(dataID, ierr)
+         call h5gclose_f(rootID, ierr)
          call h5fclose_f(file_id, ierr)
          call h5close_f(ierr)
-
+         if (ierr .ne. 0) write(*,*)'pwfield_2d_pipe: error in fclose()'
          if (des < pp%getnvp()) then
             call MPI_ISEND(message,1,pp%getmint(),des,stag,pp%getlworld(),&
             &id,ierr)
@@ -955,7 +1136,7 @@
          character(len=:), allocatable :: filename
          character(len=8) :: st
 ! OPENPMD hierachy
-         integer(hid_t) :: iterID, meshID
+         integer(hid_t) :: dataID, iterID, meshID
 ! other OPENPMD variables
          real, dimension(2) :: local_gridspacing
          integer i
@@ -965,6 +1146,7 @@
          allocate(character(len(trim(file%filename))+len(trim(file%dataname))+11) :: filename)
          write (st,'(I8.8)') file%n
          filename = trim(file%filename)//trim(file%dataname)//'_'//st//'.h5'
+         write(*,*) ' in write_2d_pipe',filename
          
          ierr = 0
          gsize = gs
@@ -987,14 +1169,29 @@
          
          if (ori >= 0) then
             call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr)
-            call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
-            lstr = len(string)
-            call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
-            call h5tset_size_f(tstring, lstr, ierr)
-            call h5aread_f(aid, tstring, string, dims, ierr)  
-            call h5dopen_f(file_id, string, dset_id, ierr, H5P_DEFAULT_F)
-            call h5aclose_f(aid, ierr)
-            call h5tclose_f(tstring, ierr)
+            call h5gopen_f(file_id,'/',rootID,ierr)
+            write(iter_str,'(I0.8)') file%n
+            call h5gopen_f(rootID,'data',dataID,ierr)
+            call h5gopen_f(dataID,iter_str,iterID,ierr)
+            call h5gopen_f(iterID,trim(file%meshespath),meshID,ierr)
+            ! call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
+            ! lstr = len(string)
+            ! call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
+            ! call h5tset_size_f(tstring, lstr, ierr)
+            ! call h5aread_f(aid, tstring, string, dims, ierr)  
+            call h5dopen_f(meshID, trim(file%dataname), dset_id, ierr, H5P_DEFAULT_F)
+            if (ierr .ne. 0) then
+                write(*,*)'wfield_2d_pipe: error opening dataset'
+            endif
+            ! call h5fopen_f(filename,H5F_ACC_RDWR_F, file_id, ierr)
+            ! call h5aopen_by_name_f(file_id, "/", "NAME", aid, ierr)
+            ! lstr = len(string)
+            ! call h5tcopy_f(H5T_NATIVE_CHARACTER, tstring, ierr)
+            ! call h5tset_size_f(tstring, lstr, ierr)
+            ! call h5aread_f(aid, tstring, string, dims, ierr)  
+            ! call h5dopen_f(file_id, string, dset_id, ierr, H5P_DEFAULT_F)
+            ! call h5aclose_f(aid, ierr)
+            ! call h5tclose_f(tstring, ierr)
          else
             call h5fcreate_f(filename,H5F_ACC_TRUNC_F,file_id,ierr)
             call wrattr_file(file,file_id,H5P_DEFAULT_F)
@@ -1002,16 +1199,19 @@
          
          call h5screate_simple_f(2, gsize, dspace_id, ierr)
          call h5screate_simple_f(2, lsize, memspaceID, ierr)
-         ! call h5gopen_f(file_id, '/', rootID, ierr)
-         call h5gopen_f(file_id,'data',rootID,ierr)
-         write(iter_str,'(I0.0)') file%n
-         call h5gopen_f(rootID,adjustl(trim(iter_str)),iterID,ierr)
+         if ( ori < 0 ) then
+             call h5gopen_f(file_id, '/', rootID, ierr)
+             call h5gcreate_f(rootID,'data',dataID,ierr)
+             write(iter_str,'(I0.8)') file%n
+             call h5gcreate_f(dataID,adjustl(trim(iter_str)),iterID,ierr)
          ! here we need to write dt, time, and also
          ! time to SI connversion 
-         call add_h5_atribute(iterID,'dt',file%dt)
-         call add_h5_atribute(iterID,'time',file%t)
-         call add_h5_atribute(iterID,'timeUnitSI',1.0)
-         call h5gopen_f(iterID,'mesh',meshID,ierr)
+             call add_h5_atribute(iterID,'dt',file%dt)
+             call add_h5_atribute(iterID,'time',file%t)
+             call add_h5_atribute(iterID,'timeUnitSI',1.0)
+         call h5gcreate_f(iterID,file%meshesPath,meshID,ierr)
+         endif
+         
          if (ori < 0) then
             call h5dcreate_f(meshID, file%dataname, treal, dspace_id, dset_id,&
             &ierr)
@@ -1019,7 +1219,6 @@
             do i=1,2 
                 local_gridspacing(i) = (file%axismax(i)-file%axismin(i))/gsize(i)
             end do
-         
             call add_h5_atribute(dset_id,'gridSpacing',local_gridspacing)
          endif
          
@@ -1035,10 +1234,14 @@
 
          call h5sclose_f(memspaceID, ierr)
          call h5sclose_f(dspace_id, ierr)
+         call h5gclose_f(meshID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5gclose_f(dataID, ierr)
          call h5gclose_f(rootID, ierr)
          call h5dclose_f(dset_id, ierr)
          call h5fclose_f(file_id, ierr)
          call h5close_f(ierr)
+         if (ierr .ne. 0) write(*,*)'wfield_2d_pipe: error in fclose()'
 
          if (des < pp%getnvp()) then
             call MPI_ISEND(message,1,pp%getmint(),des,stag,pp%getlworld(),&
@@ -1503,6 +1706,7 @@
          call h5close_f(ierr)
          
       end subroutine pwpart_3d_pipe
+!
 !
       subroutine wpart(pp,perr,file,part,npp,dspl,ierr)
      
