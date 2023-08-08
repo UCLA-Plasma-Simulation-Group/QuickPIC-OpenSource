@@ -26,7 +26,8 @@ integer, parameter :: p_precond_smg = 1, &
                       p_precond_ds = 3, &
                       p_precond_none = 99
 integer, parameter :: p_stencil_poisson = 1, &
-                      p_stencil_pseudo = 2
+                      p_stencil_pseudo = 2, &
+                      p_stencil_explicit = 3
 
 character(len=16), save :: class = 'fpois2d_mg:'
 character(len=128), save :: erstr
@@ -59,18 +60,21 @@ type :: fpois2d_mg
   ! (4,*) - Neumann-Neumann
   ! (*,1) - Poisson stencil
   ! (*,2) - pseudo-Poisson stencil
-  integer(HYPRE_TYPE), dimension(4,2) :: A, solver, precond
+  ! integer(HYPRE_TYPE), dimension(4,2) :: A, solver, precond
+  integer(HYPRE_TYPE), dimension(4,3) :: A, solver, precond
   integer(HYPRE_TYPE) :: b, x, grid, stencil
   integer, dimension(p_xdim) :: iupper, ilower
   
   contains
 
-  generic :: new => init_fpois2d_mg
+  ! generic :: new => init_fpois2d_mg
+  generic :: new => init_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
   generic :: set_src => set_hypre_src
   generic :: solve => solve_hypre_poisson
   generic :: del => end_fpois2d_mg
-  procedure, private :: init_fpois2d_mg
+  ! procedure, private :: init_fpois2d_mg
+  procedure, private :: init_fpois2d_mg_explicit
   procedure, private :: end_fpois2d_mg
   ! procedure :: print_matrix
   procedure, private :: get_hypre_sol
@@ -91,7 +95,87 @@ type( fpois2d_mg_link ), target, save :: table_list
 
 contains
 
-subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_type, &
+! subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_type, &
+!   precond_type, tol )
+
+!   implicit none
+
+!   class( fpois2d_mg ), intent(inout) :: this
+!   class( parallel_pipe ), intent(in), pointer :: pp
+!   class( perrors ), intent(in), pointer :: perr
+!   integer, intent(in), dimension(2) :: nd, ndp, noff
+!   integer, intent(in) :: order, solver_type
+!   integer, intent(in), optional :: precond_type
+!   ! integer, intent(in), dimension(4) :: gc
+!   real, intent(in) :: dex, tol
+
+!   ! local variables
+!   integer :: i, j, ierr
+!   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
+!   integer, dimension(2), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo/)
+!   integer :: n_pre = 1, n_post = 1, maxiter = 1000
+!   character(len=18), save :: sname = 'init_fpois2d_mg:'
+
+!   call perr%werrfl2( class//sname//' started' )
+!   this%p => pp
+!   this%err => perr
+
+!   this%phys_bnd_flag = is_phys_bnd( noff, nd, ndp )
+!   this%order = order
+!   this%solver_type = solver_type
+!   this%tol = tol
+!   if ( present(precond_type) ) then
+!     this%precond_type = precond_type
+!   else
+!     this%precond_type = p_precond_none
+!   endif
+
+!   ! setup HYPRE grid
+!   call HYPRE_StructGridCreate( this%p%getlgrp(), p_xdim, this%grid, ierr )
+
+!   this%ilower = (/ noff(1) + 1, noff(2) + 1 /)
+!   this%iupper = (/ noff(1) + ndp(1), noff(2) + ndp(2) /)
+
+!   call HYPRE_StructGridSetExtents( this%grid, this%ilower, this%iupper, ierr )
+!   call HYPRE_StructGridAssemble( this%grid, ierr )
+
+!   ! set up HYPRE stencil
+!   call setup_hypre_stencil( this%stencil, this%stencil_num, this%offsets, this%stencil_idx, order )
+
+!   if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
+
+!   ! set up HYPRE matrix
+!   do j = 1, 2
+!     do i = 1, 4
+!       call HYPRE_StructMatrixCreate( this%p%getlgrp(), this%grid, this%stencil, this%A(i,j), ierr )
+!       call HYPRE_StructMatrixInitialize( this%A(i,j), ierr )
+!       ! call HYPRE_StructMatrixSetNumGhost( this%A(i), gc, ierr )
+!       call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
+!       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
+!       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
+!     enddo
+!   enddo
+
+!   ! set up HYPRE vector
+!   call HYPRE_StructVectorCreate( this%p%getlgrp(), this%grid, this%b, ierr )
+!   call HYPRE_StructVectorInitialize( this%b, ierr )
+
+!   call HYPRE_StructVectorCreate( this%p%getlgrp(), this%grid, this%x, ierr )
+!   call HYPRE_StructVectorInitialize( this%x, ierr )
+
+!   ! set up solver
+!   do j = 1, 2
+!     do i = 1, 4
+!       call setup_hypre_solver( this%p%getlgrp(), this%solver(i,j), this%A(i,j), this%b, this%x, &
+!       solver_type, maxiter, n_pre, n_post, tol, this%precond(i,j), this%precond_type )
+!     enddo
+!   enddo
+
+!   call perr%werrfl2( class//sname//' ended' )
+
+! end subroutine init_fpois2d_mg
+
+subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, solver_type, &
   precond_type, tol )
 
   implicit none
@@ -108,7 +192,7 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
   ! local variables
   integer :: i, j, ierr
   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
-  integer, dimension(2), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo/)
+  integer, dimension(3), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo, p_stencil_explicit/)
   integer :: n_pre = 1, n_post = 1, maxiter = 1000
   character(len=18), save :: sname = 'init_fpois2d_mg:'
 
@@ -141,12 +225,13 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
   if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
 
   ! set up HYPRE matrix
-  do j = 1, 2
+  do j = 1, 3
     do i = 1, 4
       call HYPRE_StructMatrixCreate( this%p%getlgrp(), this%grid, this%stencil, this%A(i,j), ierr )
       call HYPRE_StructMatrixInitialize( this%A(i,j), ierr )
       ! call HYPRE_StructMatrixSetNumGhost( this%A(i), gc, ierr )
-      call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
+      ! call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
+      call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
@@ -160,7 +245,7 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
   call HYPRE_StructVectorInitialize( this%x, ierr )
 
   ! set up solver
-  do j = 1, 2
+  do j = 1, 3
     do i = 1, 4
       call setup_hypre_solver( this%p%getlgrp(), this%solver(i,j), this%A(i,j), this%b, this%x, &
       solver_type, maxiter, n_pre, n_post, tol, this%precond(i,j), this%precond_type )
@@ -169,7 +254,7 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
 
   call perr%werrfl2( class//sname//' ended' )
 
-end subroutine init_fpois2d_mg
+end subroutine init_fpois2d_mg_explicit
 
 subroutine end_fpois2d_mg( this )
 
@@ -274,8 +359,74 @@ subroutine setup_hypre_stencil( stencil, stencil_num, offsets, stencil_idx, orde
 
 end subroutine setup_hypre_stencil
 
-! ----------------------------------------------------------------------------------------
-subroutine setvalue_hypre_matrix_inter( matrix, order, ilower, iupper, dex, kind )
+! ! ----------------------------------------------------------------------------------------
+! subroutine setvalue_hypre_matrix_inter( matrix, order, ilower, iupper, dex, kind )
+
+!   implicit none
+
+!   integer(HYPRE_TYPE), intent(inout) :: matrix
+!   integer, intent(in) :: order, kind
+!   integer, intent(in), dimension(2) :: ilower, iupper
+!   real, intent(in) :: dex
+
+!   ! local variables
+!   integer :: i, nd1p, nd2p, stencil_num, local_vol, ierr
+!   integer, dimension(:), pointer :: stencil_idx
+!   real :: idex2
+
+!   idex2 = 1.0 / (dex*dex)
+!   nd1p = iupper(1) - ilower(1) + 1
+!   nd2p = iupper(2) - ilower(2) + 1
+  
+!   select case ( order )
+!   case ( p_fd_2order )
+
+!     stencil_num = 5
+!     local_vol = nd1p * nd2p
+!     allocate( stencil_idx( stencil_num ) )
+!     stencil_idx = (/0,1,2,3,4/)
+
+!     select case ( kind )
+
+!     case ( p_stencil_poisson )
+
+!       do i = 1, local_vol*stencil_num, stencil_num
+!         values(i)   =  4.0 * idex2
+!         values(i+1) = -1.0 * idex2
+!         values(i+2) = -1.0 * idex2
+!         values(i+3) = -1.0 * idex2
+!         values(i+4) = -1.0 * idex2
+!       enddo
+
+!     case ( p_stencil_pseudo )
+
+!       do i = 1, local_vol*stencil_num, stencil_num
+!         values(i)   =  4.0 * idex2 + 1.0
+!         values(i+1) = -1.0 * idex2
+!         values(i+2) = -1.0 * idex2
+!         values(i+3) = -1.0 * idex2
+!         values(i+4) = -1.0 * idex2
+!       enddo
+
+!     end select
+
+!     call HYPRE_StructMatrixSetBoxValues( matrix, ilower, iupper, stencil_num, stencil_idx, values, ierr )
+  
+!   case ( p_fd_4order )
+
+!     print *, "HYPRE solver not implemented for 4order algorithm"
+!     stop
+
+!   case default
+
+!     print *, "HYPRE solver not implemented for specified algorithm"
+!     stop
+
+!   end select
+
+! end subroutine setvalue_hypre_matrix_inter
+
+subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, dex, kind )
 
   implicit none
 
@@ -285,14 +436,18 @@ subroutine setvalue_hypre_matrix_inter( matrix, order, ilower, iupper, dex, kind
   real, intent(in) :: dex
 
   ! local variables
-  integer :: i, nd1p, nd2p, stencil_num, local_vol, ierr
+  ! integer :: i, nd1p, nd2p, stencil_num, local_vol, ierr
+  integer :: i, x, y, nd1p, nd2p, stencil_num, local_vol, ierr
   integer, dimension(:), pointer :: stencil_idx
   real :: idex2
+  real :: F
 
   idex2 = 1.0 / (dex*dex)
   nd1p = iupper(1) - ilower(1) + 1
   nd2p = iupper(2) - ilower(2) + 1
-  
+  x = 0
+  y = 0
+
   select case ( order )
   case ( p_fd_2order )
 
@@ -323,6 +478,19 @@ subroutine setvalue_hypre_matrix_inter( matrix, order, ilower, iupper, dex, kind
         values(i+4) = -1.0 * idex2
       enddo
 
+    case ( p_stencil_explicit )
+
+      do i = 1, local_vol*stencil_num, stencil_num
+        x = x + 1
+        y = y + 1
+        F = x*x + y*y
+        values(i)   =  4.0 * idex2 + F 
+        values(i+1) = -1.0 * idex2
+        values(i+2) = -1.0 * idex2
+        values(i+3) = -1.0 * idex2
+        values(i+4) = -1.0 * idex2
+      enddo
+
     end select
 
     call HYPRE_StructMatrixSetBoxValues( matrix, ilower, iupper, stencil_num, stencil_idx, values, ierr )
@@ -337,9 +505,9 @@ subroutine setvalue_hypre_matrix_inter( matrix, order, ilower, iupper, dex, kind
     print *, "HYPRE solver not implemented for specified algorithm"
     stop
 
-  end select
+  end select 
 
-end subroutine setvalue_hypre_matrix_inter
+end subroutine setvalue_hypre_matrix_inter_explicit
 
 subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   bnd_flag, dex )
