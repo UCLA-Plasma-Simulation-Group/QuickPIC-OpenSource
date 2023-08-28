@@ -1,10 +1,13 @@
 # name of the compiler 
-JSON_LIB = /usr/local/jsonfortran-gnu-6.3.0/lib/
-JSON_INC = /usr/local/jsonfortran-gnu-6.3.0/lib/
+JSON_LIB = /home/tdali92/json-fortran-8.3.0/build/lib
+JSON_INC = /home/tdali92/json-fortran-8.3.0/build/include
+
 
 FC_GF_OPENMPI = mpif90 -c -I$(JSON_INC) -fopenmp
-CC_GF_OPENMPI = mpicc -c -O3 -std=c99
+CC_GF_OPENMPI = gcc-12 -c -O3 -std=c99 -fopenmp
 LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
+
+LDF = -L$(JSON_LIB) -ljsonfortran -lhdf5_fortran -lhdf5 -ldl -lz
 
 OPTS_DBL_GF_OPENMPI = -O3 -fdefault-real-8 -fdefault-double-8
 OPTS_SGL_GF_OPENMPI = -O3
@@ -13,9 +16,8 @@ FORMAT_FREE_GF_OPENMPI = -ffree-form
 FORMAT_FIXED_GF_OPENMPI = -ffixed-form
 
 # hdf5 libraries 
-
-HDF5_LIB =/usr/local/hdf5/lib
-HDF5_INC =/usr/local/hdf5/include
+HDF5_LIB = /home/linuxbrew/.linuxbrew/Cellar/hdf5-mpi/1.12.2_1/lib
+HDF5_INC = /home/linuxbrew/.linuxbrew/Cellar/hdf5-mpi/1.12.2_1/include
 
 HDF_LIBPATH_GF_OPENMPI= -L$(HDF5_LIB) -lhdf5_fortran -lhdf5_hl -lhdf5 -lz 
 HDF_INCLUDE_PATH_GF_OPENMPI= -I$(HDF5_INC) -I${HDF5_LIB} -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
@@ -28,6 +30,9 @@ MEM_OPTIONS_GF_OPENMPI =
 
 # options for linking
 # use static libs
-STATIC_LINK_GF_OPENMPI = 
+STATIC_LINK_GF_OPENMPI = -L$(JSON_LIB) -ljsonfortran  
 # use shared libs
-SHARED_LINK_GF_OPENMPI = 
+SHARED_LINK_GF_OPENMPI =  
+
+
+

@@ -768,6 +768,371 @@
 !$OMP END PARALLEL DO
       return
       end
+
+!-----------------------------------------------------------------------
+      subroutine PPGRDCJPPOST2L_QP_ROBUST(ppart,fxy,bxy,psit,cu,dcu,amu,&
+     &kpic,noff,nyp,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,d&
+     &ex)
+! for 2-1/2d code, this subroutine calculates particle momentum flux,
+! acceleration density and current density using first-order spline
+! interpolation for relativistic particles.
+      implicit none
+      integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
+      integer mx1, mxyp1
+      real qbm, dt, ci,dex
+      real ppart, fxy, bxy, cu, dcu, amu, psit
+      integer kpic
+      dimension ppart(idimp,nppmx,mxyp1)
+      dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx), psit(nxv,nypmx)
+      dimension cu(3,nxv,nypmx), dcu(2,nxv,nypmx), amu(3,nxv,nypmx)
+      dimension kpic(mxyp1)
+! local data
+!      integer MXV, MYV
+!      parameter(MXV=33,MYV=33)
+      integer noffp, moffp, nppp
+      integer mnoff, i, j, k, nn, mm
+      real qtmh, dti, ci2, gami, qtmg, gh, dxp, dyp, amx, amy
+      real dx, dy, dz, ox, oy, oz, qm
+      real acx, acy, acz, omxt, omyt, omzt, omt, anorm
+      real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
+      real x, y, vx, vy, vz, p2, v1, v2, v3, v4
+      real sfxy, sbxy, scu, sdcu, samu, spsit
+      real tmpx,tmpy,tmpz
+      real dotprod
+      dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1)
+      dimension spsit(mx+1,my+1)
+      dimension scu(3,mx+1,my+1), sdcu(2,mx+1,my+1), samu(3,mx+1,my+1)
+!      dimension sfxy(2,MXV,MYV), sbxy(3,MXV,MYV)
+!      dimension spsit(MXV,MYV)
+!      dimension scu(3,MXV,MYV), sdcu(2,MXV,MYV), samu(3,MXV,MYV)
+      real qm1, qtmh1,qtmh2,idex,inv_part_7,ddx,ddy,ddz,p6,p7
+!     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
+!     dimension scu(3,mx+1,my+1,), sdcu(3,mx+1,my+1), samu(4,mx+1,my+1)
+      qtmh = 0.5*qbm*dt
+      dti = 1.0/dt
+      ci2 = ci*ci
+      idex = 1.0/dex
+! error if local array is too small
+!     if ((mx.ge.MXV).or.(my.ge.MYV)) return
+! loop over tiles
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,vz,
+!$OMP& v1,v2,v3,dxp,dyp,amx,amy,dx,dy,dz,ox,oy,oz,acx,acy,acz, 
+!$OMP& omxt,omyt,omzt,omt,anorm,rot1,rot2,rot3,rot4,rot5, 
+!$OMP& tmpx,tmpy,tmpz,
+!$OMP& rot6,rot7,rot8,rot9,spsit,sfxy,sbxy,scu,sdcu,samu,qm1,
+!$OMP& qtmh1,qtmh2,inv_part_7,ddx,ddy,ddz,p6,p7,qm, dotprod)
+      do 120 k = 1, mxyp1
+      noffp = (k - 1)/mx1
+      moffp = my*noffp
+      noffp = mx*(k - mx1*noffp - 1)
+      nppp = kpic(k)
+      mnoff = moffp + noff - 1
+! load local fields from global arrays
+      nn = min(mx,nx-noffp) + 1
+      mm = min(my,nyp-moffp) + 1
+      do 20 j = 1, mm
+      do 10 i = 1, nn
+      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
+      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
+   10 continue
+   20 continue
+      do 40 j = 1, mm
+      do 30 i = 1, nn
+      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
+      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
+      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
+      ! print *, i+noffp, j+moffp, sbxy(1:3,i,j)
+   30 continue
+   40 continue
+      do 46 j = 1, mm
+      do 42 i = 1, nn
+      spsit(i,j) = psit(i+noffp,j+moffp)
+   42 continue
+   46 continue
+! zero out local accumulators
+      do 60 j = 1, my+1
+      do 50 i = 1, mx+1
+      samu(1,i,j) = 0.0
+      samu(2,i,j) = 0.0
+      samu(3,i,j) = 0.0
+      sdcu(1,i,j) = 0.0
+      sdcu(2,i,j) = 0.0
+      scu(1,i,j) = 0.0
+      scu(2,i,j) = 0.0
+      scu(3,i,j) = 0.0
+   50 continue
+   60 continue
+! loop over particles in tile
+      do 70 j = 1, nppp
+! find interpolation weights
+      x = ppart(1,j,k)
+      y = ppart(2,j,k)
+      p6 = ppart(6,j,k)
+      p7 = ppart(7,j,k)
+      qm = ppart(8,j,k)
+      nn = x
+      mm = y
+      dxp = x - real(nn)
+      dyp = y - real(mm)
+      nn = nn - noffp + 1
+      mm = mm - mnoff
+      amx = 1.0 - dxp
+      amy = 1.0 - dyp
+      
+      inv_part_7 = 1.0 / p7
+      qtmh1 = qtmh * inv_part_7
+      qtmh2 = qtmh1 * p6
+      
+! find electric field
+      dx = amx*sfxy(1,nn,mm)
+      dy = amx*sfxy(2,nn,mm)
+      dz = amx*spsit(nn,mm)
+
+      dx = amy*(dxp*sfxy(1,nn+1,mm) + dx)
+      dy = amy*(dxp*sfxy(2,nn+1,mm) + dy)
+      dz = amy*(dxp*spsit(nn+1,mm) + dz)
+
+      acx = amx*sfxy(1,nn,mm+1)
+      acy = amx*sfxy(2,nn,mm+1)
+      acz = amx*spsit(nn,mm+1)
+
+      dx = dx + dyp*(dxp*sfxy(1,nn+1,mm+1) + acx) 
+      dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
+      dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
+
+! find magnetic field
+      ox = amx*sbxy(1,nn,mm)
+      oy = amx*sbxy(2,nn,mm)
+      oz = amx*sbxy(3,nn,mm)
+
+      ox = amy*(dxp*sbxy(1,nn+1,mm) + ox)
+      oy = amy*(dxp*sbxy(2,nn+1,mm) + oy)
+      oz = amy*(dxp*sbxy(3,nn+1,mm) + oz)
+
+      acx = amx*sbxy(1,nn,mm+1)
+      acy = amx*sbxy(2,nn,mm+1)
+      acz = amx*sbxy(3,nn,mm+1)
+
+      ox = ox + dyp*(dxp*sbxy(1,nn+1,mm+1) + acx) 
+      oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
+      oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
+
+!calculate half impulse
+      ddx = qtmh2*(oy - dx)
+      ddy = qtmh2*(- ox - dy)
+      ddz = qtmh2* dz * idex
+
+      ox = ox * dex
+      oy = oy * dex
+
+      vx = ppart(3,j,k)
+      vy = ppart(4,j,k)
+      vz = ppart(5,j,k)
+      
+! half acceleration
+      acx = vx + ddx
+      acy = vy + ddy
+      acz = vz + ddz
+
+! calculate cyclotron frequency
+      omxt = qtmh1*ox
+      omyt = qtmh1*oy
+      omzt = qtmh1*oz
+! calculate rotation matrix
+      dotprod = (acx * omxt + acy * omyt + acz * omzt)
+      omt = omxt**2 + omyt**2 + omzt**2
+      anorm = 2.0/(1.0 + omt)
+      omt = 0.5*(1.0 - omt)
+! new momentum
+      v1 = (omt * acx+ dotprod * omxt + acy*omzt-acz*omyt)*anorm + ddx
+      v2 = (omt * acy+ dotprod * omyt + acz*omxt-acx*omzt)*anorm + ddy
+      v3 = (omt * acz+ dotprod * omzt + acx*omyt-acy*omxt)*anorm + ddz
+
+! deposit momentum flux, acceleration density, and current density
+
+      ox = 0.5*(v1 + vx)
+      oy = 0.5*(v2 + vy)
+      oz = 0.5*(v3 + vz)
+      ppart(6,j,k) = sqrt(1.0 + (ox* ox + oy* oy + oz* oz) * dex * dex)
+      ppart(7,j,k) = ppart(6,j,k) - oz * dex
+      inv_part_7 = 1.0/ppart(7,j,k)
+
+      qm1 = qm*inv_part_7
+
+      amx = qm1*amx
+      dxp = qm1*dxp
+
+
+      vx = (v1 - vx)*dti
+      vy = (v2 - vy)*dti
+
+      dz = qbm*(dz + (dx*ox+dy*oy)*dex*dex*inv_part_7)
+
+
+      dx = amx*amy
+      dy = dxp*amy
+
+      v1 = ox*ox*inv_part_7
+      v2 = oy*oy*inv_part_7
+      v3 = ox*oy*inv_part_7
+
+      vx = vx+ox*dz*inv_part_7
+      vy = vy+oy*dz*inv_part_7
+
+      samu(1,nn,mm) = samu(1,nn,mm) + v1*dx
+      samu(2,nn,mm) = samu(2,nn,mm) + v2*dx
+      samu(3,nn,mm) = samu(3,nn,mm) + v3*dx
+
+      sdcu(1,nn,mm) = sdcu(1,nn,mm) + vx*dx
+      sdcu(2,nn,mm) = sdcu(2,nn,mm) + vy*dx
+
+      scu(1,nn,mm) = scu(1,nn,mm) + ox*dx
+      scu(2,nn,mm) = scu(2,nn,mm) + oy*dx
+      scu(3,nn,mm) = scu(3,nn,mm) + oz*dx
+
+      dx = amx*dyp
+      samu(1,nn+1,mm) = samu(1,nn+1,mm) + v1*dy
+      samu(2,nn+1,mm) = samu(2,nn+1,mm) + v2*dy
+      samu(3,nn+1,mm) = samu(3,nn+1,mm) + v3*dy
+
+      sdcu(1,nn+1,mm) = sdcu(1,nn+1,mm) + vx*dy
+      sdcu(2,nn+1,mm) = sdcu(2,nn+1,mm) + vy*dy
+
+      scu(1,nn+1,mm) = scu(1,nn+1,mm) + ox*dy
+      scu(2,nn+1,mm) = scu(2,nn+1,mm) + oy*dy
+      scu(3,nn+1,mm) = scu(3,nn+1,mm) + oz*dy
+
+      dy = dxp*dyp
+      samu(1,nn,mm+1) = samu(1,nn,mm+1) + v1*dx
+      samu(2,nn,mm+1) = samu(2,nn,mm+1) + v2*dx
+      samu(3,nn,mm+1) = samu(3,nn,mm+1) + v3*dx
+
+      sdcu(1,nn,mm+1) = sdcu(1,nn,mm+1) + vx*dx
+      sdcu(2,nn,mm+1) = sdcu(2,nn,mm+1) + vy*dx
+
+      scu(1,nn,mm+1) = scu(1,nn,mm+1) + ox*dx
+      scu(2,nn,mm+1) = scu(2,nn,mm+1) + oy*dx
+      scu(3,nn,mm+1) = scu(3,nn,mm+1) + oz*dx
+
+      samu(1,nn+1,mm+1) = samu(1,nn+1,mm+1) + v1*dy
+      samu(2,nn+1,mm+1) = samu(2,nn+1,mm+1) + v2*dy
+      samu(3,nn+1,mm+1) = samu(3,nn+1,mm+1) + v3*dy
+
+      sdcu(1,nn+1,mm+1) = sdcu(1,nn+1,mm+1) + vx*dy
+      sdcu(2,nn+1,mm+1) = sdcu(2,nn+1,mm+1) + vy*dy
+
+      scu(1,nn+1,mm+1) = scu(1,nn+1,mm+1) + ox*dy
+      scu(2,nn+1,mm+1) = scu(2,nn+1,mm+1) + oy*dy
+      scu(3,nn+1,mm+1) = scu(3,nn+1,mm+1) + oz*dy
+   70 continue
+! deposit currents to interior points in global array
+      nn = min(mx,nxv-noffp)
+      mm = min(my,nypmx-moffp)
+      do 90 j = 2, mm
+      do 80 i = 2, nn
+      amu(1,i+noffp,j+moffp) = amu(1,i+noffp,j+moffp) + samu(1,i,j)
+      amu(2,i+noffp,j+moffp) = amu(2,i+noffp,j+moffp) + samu(2,i,j)
+      amu(3,i+noffp,j+moffp) = amu(3,i+noffp,j+moffp) + samu(3,i,j)
+
+      dcu(1,i+noffp,j+moffp) = dcu(1,i+noffp,j+moffp) + sdcu(1,i,j)
+      dcu(2,i+noffp,j+moffp) = dcu(2,i+noffp,j+moffp) + sdcu(2,i,j)
+
+      cu(1,i+noffp,j+moffp) = cu(1,i+noffp,j+moffp) + scu(1,i,j)
+      cu(2,i+noffp,j+moffp) = cu(2,i+noffp,j+moffp) + scu(2,i,j)
+      cu(3,i+noffp,j+moffp) = cu(3,i+noffp,j+moffp) + scu(3,i,j)
+   80 continue
+   90 continue
+! deposit currents to edge points in global array
+      mm = min(my+1,nypmx-moffp)
+      do 100 i = 2, nn
+!$OMP ATOMIC
+      amu(1,i+noffp,1+moffp) = amu(1,i+noffp,1+moffp) + samu(1,i,1)
+!$OMP ATOMIC
+      amu(2,i+noffp,1+moffp) = amu(2,i+noffp,1+moffp) + samu(2,i,1)
+!$OMP ATOMIC
+      amu(3,i+noffp,1+moffp) = amu(3,i+noffp,1+moffp) + samu(3,i,1)
+!$OMP ATOMIC
+      dcu(1,i+noffp,1+moffp) = dcu(1,i+noffp,1+moffp) + sdcu(1,i,1)
+!$OMP ATOMIC
+      dcu(2,i+noffp,1+moffp) = dcu(2,i+noffp,1+moffp) + sdcu(2,i,1)
+!$OMP ATOMIC
+      cu(1,i+noffp,1+moffp) = cu(1,i+noffp,1+moffp) + scu(1,i,1)
+!$OMP ATOMIC
+      cu(2,i+noffp,1+moffp) = cu(2,i+noffp,1+moffp) + scu(2,i,1)
+!$OMP ATOMIC
+      cu(3,i+noffp,1+moffp) = cu(3,i+noffp,1+moffp) + scu(3,i,1)
+      if (mm > my) then
+!$OMP ATOMIC
+         amu(1,i+noffp,mm+moffp) = amu(1,i+noffp,mm+moffp)              &
+     & + samu(1,i,mm)
+!$OMP ATOMIC
+         amu(2,i+noffp,mm+moffp) = amu(2,i+noffp,mm+moffp)              &
+     & + samu(2,i,mm)
+!$OMP ATOMIC
+         amu(3,i+noffp,mm+moffp) = amu(3,i+noffp,mm+moffp)              &
+     & + samu(3,i,mm)
+!$OMP ATOMIC
+         dcu(1,i+noffp,mm+moffp) = dcu(1,i+noffp,mm+moffp)              &
+     & + sdcu(1,i,mm)
+!$OMP ATOMIC
+         dcu(2,i+noffp,mm+moffp) = dcu(2,i+noffp,mm+moffp)              &
+     & + sdcu(2,i,mm)
+!$OMP ATOMIC
+         cu(1,i+noffp,mm+moffp) = cu(1,i+noffp,mm+moffp) + scu(1,i,mm)
+!$OMP ATOMIC
+         cu(2,i+noffp,mm+moffp) = cu(2,i+noffp,mm+moffp) + scu(2,i,mm)
+!$OMP ATOMIC
+         cu(3,i+noffp,mm+moffp) = cu(3,i+noffp,mm+moffp) + scu(3,i,mm)
+      endif
+  100 continue
+      nn = min(mx+1,nxv-noffp)
+      do 110 j = 1, mm
+!$OMP ATOMIC
+      amu(1,1+noffp,j+moffp) = amu(1,1+noffp,j+moffp) + samu(1,1,j)
+!$OMP ATOMIC
+      amu(2,1+noffp,j+moffp) = amu(2,1+noffp,j+moffp) + samu(2,1,j)
+!$OMP ATOMIC
+      amu(3,1+noffp,j+moffp) = amu(3,1+noffp,j+moffp) + samu(3,1,j)
+!$OMP ATOMIC
+      dcu(1,1+noffp,j+moffp) = dcu(1,1+noffp,j+moffp) + sdcu(1,1,j)
+!$OMP ATOMIC
+      dcu(2,1+noffp,j+moffp) = dcu(2,1+noffp,j+moffp) + sdcu(2,1,j)
+!$OMP ATOMIC
+      cu(1,1+noffp,j+moffp) = cu(1,1+noffp,j+moffp) + scu(1,1,j)
+!$OMP ATOMIC
+      cu(2,1+noffp,j+moffp) = cu(2,1+noffp,j+moffp) + scu(2,1,j)
+!$OMP ATOMIC
+      cu(3,1+noffp,j+moffp) = cu(3,1+noffp,j+moffp) + scu(3,1,j)
+      if (nn > mx) then
+!$OMP ATOMIC
+         amu(1,nn+noffp,j+moffp) = amu(1,nn+noffp,j+moffp)              &
+     & + samu(1,nn,j)
+!$OMP ATOMIC
+         amu(2,nn+noffp,j+moffp) = amu(2,nn+noffp,j+moffp)              &
+     & + samu(2,nn,j)
+!$OMP ATOMIC
+         amu(3,nn+noffp,j+moffp) = amu(3,nn+noffp,j+moffp)              &
+     & + samu(3,nn,j)
+!$OMP ATOMIC
+         dcu(1,nn+noffp,j+moffp) = dcu(1,nn+noffp,j+moffp)              &
+     & + sdcu(1,nn,j)
+!$OMP ATOMIC
+         dcu(2,nn+noffp,j+moffp) = dcu(2,nn+noffp,j+moffp)              &
+     & + sdcu(2,nn,j)
+!$OMP ATOMIC
+         cu(1,nn+noffp,j+moffp) = cu(1,nn+noffp,j+moffp) + scu(1,nn,j)
+!$OMP ATOMIC
+         cu(2,nn+noffp,j+moffp) = cu(2,nn+noffp,j+moffp) + scu(2,nn,j)
+!$OMP ATOMIC
+         cu(3,nn+noffp,j+moffp) = cu(3,nn+noffp,j+moffp) + scu(3,nn,j)
+      endif
+  110 continue
+  120 continue
+!$OMP END PARALLEL DO
+      return
+      end
+!-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
       subroutine PPGRBPPUSH23L_QP(ppart,fxy,bxy,psit,kpic,noff,nyp,qbm, &
      &dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
@@ -2204,6 +2569,89 @@
 !$OMP END PARALLEL DO
       return
       end
+
+!-----------------------------------------------------------------------
+!-deposit psi on particles
+      subroutine WPGPSIPOST2L_QP_ROBUST(ppart,psi,kpic,qbm,noff,nyp
+     1,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+
+      implicit none
+      integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
+      integer mx1, mxyp1
+      real dex,qbm
+      real ppart, psi
+      integer kpic
+      dimension ppart(idimp,nppmx,mxyp1)
+      dimension psi(nxv,nypmx)
+      dimension kpic(mxyp1)
+! local data
+!      integer MXV, MYV
+!      parameter(MXV=33,MYV=33)
+      integer noffp, moffp, nppp
+      integer mnoff, i, j, k, nn, mm
+      real dxp, dyp, amx, amy, acx
+      real dx, dy, dz
+      real x, y, vx, vy, vz
+      real spsi
+      dimension spsi(mx+1,my+1)
+      real dx2
+!     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
+!     dimension scu(3,mx+1,my+1,), sdcu(3,mx+1,my+1), samu(4,mx+1,my+1)
+      dx2 = dex * dex
+! error if local array is too small
+!     if ((mx.ge.MXV).or.(my.ge.MYV)) return
+! loop over tiles
+!$OMP PARALLEL DO
+!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,vz,
+!$OMP& dxp,dyp,amx,amy,dx,acx,spsi)
+      do 120 k = 1, mxyp1
+      noffp = (k - 1)/mx1
+      moffp = my*noffp
+      noffp = mx*(k - mx1*noffp - 1)
+      nppp = kpic(k)
+      mnoff = moffp + noff - 1
+! load local fields from global arrays
+      nn = min(mx,nx-noffp) + 1
+      mm = min(my,nyp-moffp) + 1
+      do 20 j = 1, mm
+      do 10 i = 1, nn
+      spsi(i,j) = psi(i+noffp,j+moffp)
+   10 continue
+   20 continue
+! loop over particles in tile
+      do 70 j = 1, nppp
+! find interpolation weights
+      x = ppart(1,j,k)
+      y = ppart(2,j,k)
+      vx = ppart(3,j,k)
+      vy = ppart(4,j,k)
+      vz = ppart(5,j,k)
+      nn = x
+      mm = y
+      dxp = x - real(nn)
+      dyp = y - real(mm)
+      nn = nn - noffp + 1
+      mm = mm - mnoff
+      amx = 1.0 - dxp
+      amy = 1.0 - dyp
+      
+      
+! find electric field
+      dx = amx*spsi(nn,mm)
+      dx = amy*(dxp*spsi(nn+1,mm) + dx)
+      acx = amx*spsi(nn,mm+1)
+      dx = dx + dyp*(dxp*spsi(nn+1,mm+1) + acx) 
+
+      dx = - dx*dx2*qbm
+      ppart(6,j,k) = sqrt(1.0 + dx2 * (vx* vx + vy* vy + vz* vz))
+      ppart(7,j,k) = ppart(6,j,k) - dex * vz
+      
+   70 continue
+  120 continue
+!$OMP END PARALLEL DO
+      return
+      end      
+!-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !-deposit psi on particles
       subroutine WPGPSIPOST2L_QP(ppart,psi,kpic,qbm,noff,nyp,idimp,nppmx

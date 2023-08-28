@@ -25,7 +25,7 @@ FORMAT_FIXED = ${FORMAT_FIXED_${SYS_SFX}}
 # Objects list
 
 OBJS_BASE = \
-parallel_class.o parallel_pipe_class.o perrors_class.o dtimer.o spect2d_class.o \
+parallel_class.o parallel_pipe_class.o perrors_class.o dtimer.o param.o spect2d_class.o \
 spect3d_class.o \
 hdf5io_class.o \
 ufield2d_class.o ufield2d_lib77.o ufield2d_lib.o \
@@ -80,7 +80,7 @@ beam3d_class.o : beam3d_class.f03 fdist3d_class.o field3d_class.o spect3d_class.
 
 species2d_class.o : species2d_class.f03 spect2d_class.o perrors_class.o \
                   parallel_pipe_class.o field2d_class.o hdf5io_class.o \
-                  fdist2d_class.o part2d_class.o
+                  fdist2d_class.o part2d_class.o param.o
 	${FC} ${OPTS} ${FORMAT_FREE} species2d_class.f03 -o species2d_class.o
 
 
@@ -173,6 +173,9 @@ spect2d_class.o : spect2d_class.f03 perrors_class.o parallel_pipe_class.o
 
 dtimer.o : dtimer.c
 	${CC} dtimer.c
+
+param.o : param.f03
+	${FC} ${OPTS} ${FORMAT_FREE} param.f03 -o param.o
 
 perrors_class.o : perrors_class.f03 parallel_class.o dtimer.o
 	${FC} ${OPTS} ${FORMAT_FREE} perrors_class.f03 -o perrors_class.o
