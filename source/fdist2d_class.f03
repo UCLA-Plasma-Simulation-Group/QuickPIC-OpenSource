@@ -8,12 +8,12 @@
       use spect2d_class
       use ufield2d_class
       use input_class
-
+      use m_fparser
       implicit none
 
       private
 
-      public :: fdist2d, fdist2d_000, fdist2d_010, fdist2d_011, fdist2d_012
+      public :: fdist2d, fdist2d_000, fdist2d_010, fdist2d_011, fdist2d_012, fdist2d_013
 
       type, abstract :: fdist2d
 
@@ -126,6 +126,22 @@
          procedure, private :: dist2d => dist2d_012
                   
       end type fdist2d_012
+
+      type, extends(fdist2d) :: fdist2d_013
+! Transeversely uniform profile with uniform or piecewise longitudinal profile
+         private
+! xppc, yppc = particle per cell in x and y directions
+         integer :: xppc, yppc
+         real :: qm, den
+         real :: cx, cy, dx, dy
+         ! analytic density math function
+         type(t_fparser), pointer :: math_func => null()
+                          
+         contains
+         procedure, private :: init_fdist2d => init_fdist2d_013
+         procedure, private :: dist2d => dist2d_013
+                  
+      end type fdist2d_013
 !
       character(len=10), save :: class = 'fdist2d:'
       character(len=128), save :: erstr
@@ -949,4 +965,176 @@
 
       end subroutine dist2d_012
 !
+
+      subroutine init_fdist2d_013(this,input,i)
+      
+         implicit none
+         
+         class(fdist2d_013), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i
+! local data
+         integer :: npf,xppc,yppc,npmax,indx,indy
+         real :: qm, den
+         real :: cx, cy
+         real :: min, max
+         real :: alx, aly, dx, dy
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist2d_013:'
+         character(len=:), allocatable :: read_str
+         integer :: ierr
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+         write (sn,'(I3.3)') i
+         s1 = 'species('//trim(sn)//')'
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         cx = - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         cy = - min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.ppc(1)',xppc)
+         call input%get(trim(s1)//'.ppc(2)',yppc)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.density',den)
+         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4
+
+         this%dx = dx
+         this%dy = dy
+         this%npf = npf
+         this%xppc = xppc
+         this%yppc = yppc
+         this%qm = qm
+         this%den = den
+         this%npmax = npmax
+         this%cx = cx/dx
+         this%cy = cy/dy
+
+         if ( .not. associated( this%math_func ) ) then
+          allocate( t_fparser :: this%math_func )
+        endif
+        call input%get( trim(s1) // '.math_func', read_str )
+        call setup(this%math_func, trim(read_str), (/'x','y','z'/), ierr)
+
+        call this%err%werrfl2(class//sname//' ended')
+         
+
+      end subroutine init_fdist2d_013
+!
+      subroutine dist2d_013(this,part2d,npp,fd,s)
+         implicit none
+         class(fdist2d_013), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part2d
+         integer, intent(inout) :: npp
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: s 
+! local data
+         character(len=18), save :: sname = 'dist2d_013:'
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: nps, nx, ny, noff, xppc, yppc, i, j
+         integer :: ix, iy
+         real :: qm, x, y
+         real :: cx, cy
+         real :: den_temp, rr
+         integer :: prof_l, ii
+         real(p_k_fparse), dimension(3) :: fparser_arr 
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
+         xppc = this%xppc; yppc = this%yppc
+         den_temp = 1.0
+         qm = den_temp*this%den*this%qm/abs(this%qm)/real(xppc)/real(yppc)
+         cx = this%cx; cy = this%cy
+         nps = 1
+         pt => part2d
+         fparser_arr(3) = s
+! initialize the particle positions
+         if (noff < ny) then
+         do i=2, nx-1
+            do j=2, ny
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     x = (ix + 0.5)/xppc + i - 1
+                     y = (iy + 0.5)/yppc + j - 1 + noff
+                     fparser_arr(1) = (x-cx) * this%dx
+                     fparser_arr(2) = (y-cy) * this%dy
+                     den_temp = eval(this%math_func, fparser_arr)
+                     pt(1,nps) = x
+                     pt(2,nps) = y
+                     pt(3,nps) = 0.0
+                     pt(4,nps) = 0.0
+                     pt(5,nps) = 0.0
+                     pt(6,nps) = 1.0
+                     pt(7,nps) = 1.0
+                     pt(8,nps) = qm*den_temp
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         else if (noff > (nx-ny-1)) then       
+         do i=2, nx-1
+            do j=1, ny-1
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     x = (ix + 0.5)/xppc + i - 1
+                     y = (iy + 0.5)/yppc + j - 1 + noff
+                     fparser_arr(1) = (x-cx) * this%dx
+                     fparser_arr(2) = (y-cy) * this%dy
+                     den_temp = eval(this%math_func, fparser_arr)
+                     pt(1,nps) = x
+                     pt(2,nps) = y
+                     pt(3,nps) = 0.0
+                     pt(4,nps) = 0.0
+                     pt(5,nps) = 0.0
+                     pt(6,nps) = 1.0
+                     pt(7,nps) = 1.0
+                     pt(8,nps) = qm*den_temp
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         else
+         do i=2, nx-1
+            do j=1, ny
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     x = (ix + 0.5)/xppc + i - 1
+                     y = (iy + 0.5)/yppc + j - 1 + noff
+                     fparser_arr(1) = (x-cx) * this%dx
+                     fparser_arr(2) = (y-cy) * this%dy
+                     den_temp = eval(this%math_func, fparser_arr)
+                     pt(1,nps) = x
+                     pt(2,nps) = y
+                     pt(3,nps) = 0.0
+                     pt(4,nps) = 0.0
+                     pt(5,nps) = 0.0
+                     pt(6,nps) = 1.0
+                     pt(7,nps) = 1.0
+                     pt(8,nps) = qm*den_temp
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         endif
+         
+         npp = nps - 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine dist2d_013
+
       end module fdist2d_class

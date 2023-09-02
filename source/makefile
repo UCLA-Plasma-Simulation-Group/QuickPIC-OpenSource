@@ -28,6 +28,7 @@ OBJS_BASE = \
 parallel_class.o parallel_pipe_class.o perrors_class.o dtimer.o param.o spect2d_class.o \
 spect3d_class.o \
 hdf5io_class.o \
+fparser.o \
 ufield2d_class.o ufield2d_lib77.o ufield2d_lib.o \
 fft2d_lib.o fft2d_lib77.o fft2d_class.o \
 fpois2d_lib.o fpois2d_lib77.o fpois2d_class.o \
@@ -164,6 +165,9 @@ ufield2d_class.o : ufield2d_class.f03 spect2d_class.o perrors_class.o \
 
 hdf5io_class.o : hdf5io_class.f03 spect3d_class.o perrors_class.o parallel_pipe_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} hdf5io_class.f03 -o hdf5io_class.o
+
+fparser.o : fparser.f03
+	${FC} ${OPTS} ${FORMAT_FREE} fparser.f03 -o fparser.o
 
 spect3d_class.o : spect3d_class.f03 perrors_class.o parallel_pipe_class.o spect2d_class.o
 	${FC} ${OPTS} ${FORMAT_FREE} spect3d_class.f03 -o spect3d_class.o

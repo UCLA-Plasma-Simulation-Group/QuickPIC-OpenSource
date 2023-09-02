@@ -543,17 +543,20 @@
             call input%get(trim(s1)//'.profile',npf)
 
             push_type = p_push2_std
-            call input%get( trim(s1)//'.push_type', str )
-            
-            select case (trim(str))
-            case ( 'standard' )
-               push_type = p_push2_std
-            case ( 'robust' )
-               push_type = p_push2_robust
-            case default
-               write (erstr,*) 'Invalid pusher type! Only "standard", "robust" &
-                 &are supported currently.'
-            end select
+
+            if (input%found(trim(s1)//'.push_type')) then
+               call input%get( trim(s1)//'.push_type', str )
+               select case (trim(str))
+               case ( 'standard' )
+                  push_type = p_push2_std
+               case ( 'robust' )
+                  push_type = p_push2_robust
+               case default
+                  write (erstr,*) 'Invalid pusher type! Only "standard", "robust" &
+                    &are supported currently.'
+               end select
+
+            endif
 
             select case (npf)
             case (0)
@@ -567,6 +570,9 @@
                call this%pf(i)%p%new(input,i)
             case (12)
                allocate(fdist2d_012::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
+            case (13)
+               allocate(fdist2d_013::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
 ! Add new distributions right above this line
             case default
