@@ -41,6 +41,7 @@
          
          generic :: new => init_field2d
          generic :: new_fd => init_field2d_fd
+         generic :: renew_fd => renew_field2d_fd
          generic :: del => end_field2d
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
@@ -69,7 +70,7 @@
          generic :: solve_mg => solve_field2d_mg
 
          ! procedure, private :: init_field2d, end_field2d
-         procedure, private :: init_field2d, end_field2d, init_field2d_fd
+         procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
          procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
          ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
          procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_fd
@@ -244,6 +245,22 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_field2d_fd
+!
+      subroutine renew_field2d_fd(this, qe, psi)
+
+      implicit none
+
+      class(field2d), intent(inout) :: this
+      class(field2d), intent(inout) :: qe, psi
+      character(len=18), save :: sname = 'renew_field2d_fd'
+
+      call this%err%werrfl2(class//sname//' started')
+ 
+      call this%pt_mg%renew(qe%getrs(), psi%getrs())
+
+      call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine renew_field2d_fd
 !
       subroutine end_field2d(this)
           

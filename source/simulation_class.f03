@@ -135,11 +135,11 @@
 
          generic :: new => init_simulation
          generic :: del => end_simulation
-         generic :: go => go_simulation
+         generic :: go => go_simulation_1
 
          procedure, private :: init_simulation, end_simulation
          procedure, private :: init_diag, diag_simulation
-         procedure, private :: go_simulation
+         procedure, private :: go_simulation_1
 
       end type simulation
 !
@@ -437,11 +437,6 @@
                allocate(fdist3d_001::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
             case (2)
-
-
-
-
-
                allocate(fdist3d_002::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
             case (3)
@@ -602,13 +597,13 @@
 
       end subroutine end_sim_species
 !
-      subroutine go_simulation(this)
+      subroutine go_simulation_1(this)
 
          implicit none
 
          class(simulation), intent(inout) :: this
 ! local data
-         character(len=18), save :: sname = 'go_simulation:'
+         character(len=18), save :: sname = 'go_simulation_1:'
          integer, dimension(10) :: istat
          integer :: i,j,l,m,n,ierr
 
@@ -670,16 +665,11 @@
                do l = 1, this%nspecies
                   call this%species%spe(l)%qdp(this%fields%qe)
                end do
-               ! call this%fields%qe%fftrk(1)
-               ! call this%fields%qe%pot(this%fields%psi)
-               ! call this%fields%psi%grad(this%fields%fxy)
-               ! call this%fields%fxy%fftkr(1)
-               ! call this%fields%psi%fftkr(1)
-               
-               call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
-               call this%fields%psi%cg()
-               call this%fields%psi%grad(this%fields%fxy, this%dex, 1)
-
+               call this%fields%qe%fftrk(1)
+               call this%fields%qe%pot(this%fields%psi)
+               call this%fields%psi%grad(this%fields%fxy)
+               call this%fields%fxy%fftkr(1)
+               call this%fields%psi%fftkr(1)
                do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
                end do
@@ -783,7 +773,192 @@
 
          call this%err%werrfl2(class//sname//' ended')
 
-      end subroutine go_simulation
+      end subroutine go_simulation_1
+!
+      subroutine go_simulation_2(this)
+
+         implicit none
+
+         class(simulation), intent(inout) :: this
+! local data
+         character(len=18), save :: sname = 'go_simulation_2:'
+         integer, dimension(10) :: istat
+         integer :: i,j,l,m,n,ierr
+
+         call this%err%werrfl2(class//sname//' started')
+
+         ! dump initialization data
+         if (this%start3d == 1) then
+            this%tstep = 0
+            call this%diag_simulation()
+         endif
+
+         do i = this%start3d, this%nstep3d
+
+            this%tstep = i
+            write (erstr,*) '3D step:', i
+            call this%err%werrfl0(erstr)
+
+            do m = 1, this%nbeams
+               this%tag_bq(m,1) = ntag()
+               this%tag_bq(m,2) = ntag()
+               call this%beams%beam(m)%qdp(this%id_bq(m,1),this%id_bq(m,2),&
+               &this%id_bq(m,3),this%tag_bq(m,1),this%tag_bq(m,2))
+            end do
+
+            do l =  1, this%nspecies
+               this%tag_spe(l) = ntag()
+               call this%species%spe(l)%precv(this%tag_spe(l))
+            end do
+            this%tag(3) = ntag()
+            call this%fields%cu%precv(this%tag(3))
+            this%tag(4) = ntag()
+            call this%fields%epw%precv(this%tag(4))
+            this%tag(5) = ntag()
+            call this%fields%fxy%precv(this%tag(5))
+            this%tag(6) = ntag()
+            call this%fields%psit%precv(this%tag(6))
+            this%tag(7) = ntag()
+            call this%fields%bxyz%precv(this%tag(7))
+
+            call this%fields%fxy%cb(this%fields%bexyz,1,(/1,2/),(/1,2/))
+            call this%fields%psit%cb(this%fields%bexyz,1,(/1/),(/3/))
+            call this%fields%bxyz%cb(this%fields%bbxyz,1,(/1,2,3/),(/1,2,3/))
+
+            do j = 1, this%nstep2d
+               write (erstr,*) '2D step:', j
+               call this%err%werrfl0(erstr)
+               if (j == this%nstep2d) then
+                  do m = 1, this%nbeams
+                     call MPI_WAIT(this%id_bq(m,2),istat,ierr)
+                  end do
+               endif
+               call this%fields%qb%as(0.0)
+               do m = 1, this%nbeams
+                  call this%beams%beam(m)%qdp(this%fields%qb,j+1)
+               end do
+               call this%fields%qb%fftrk(1)
+               call this%fields%qb%elf(this%fields%epwb)
+               call this%fields%qe%as(0.0)
+               do l = 1, this%nspecies
+                  call this%species%spe(l)%qdp(this%fields%qe)
+               end do
+               ! call this%fields%qe%fftrk(1)
+               ! call this%fields%qe%pot(this%fields%psi)
+               ! call this%fields%psi%grad(this%fields%fxy)
+               ! call this%fields%fxy%fftkr(1)
+               ! call this%fields%psi%fftkr(1)
+               
+               call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
+               call this%fields%psi%cg()
+               call this%fields%psi%grad(this%fields%fxy, this%dex, 1)
+
+               do l = 1, this%nspecies
+                  call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
+               end do
+               call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
+               if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
+               call this%fields%cu%div(this%fields%div_vpot)
+               call this%fields%div_vpot%pot(this%fields%psit)
+               call this%fields%psit%mult(this%fields%psit,-this%dex)
+               call this%fields%psit%fftkr(1)
+               call this%fields%cu%bf(this%fields%bxyz)
+               do l = 1, this%iter
+                  call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+                  call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+                  call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+                  call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+                  call this%fields%bxyz%fftkr(2)
+                  call this%fields%cu%as(0.0)
+                  call this%fields%dcu%as(0.0)
+                  call this%fields%amu%as(0.0)
+                  call this%fields%qe%renew_fd(this%fields%qe, this%fields%psi)
+                  call this%fields%psi%renew_fd(this%fields%qe, this%fields%psi)
+                  do m = 1, this%nspecies
+                     call this%species%spe(m)%amjdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+                     &this%fields%cu,this%fields%amu,this%fields%dcu,this%dex)
+                  end do
+                  call this%fields%cu%mult(this%fields%cu,this%dex)
+                  call this%fields%amu%mult(this%fields%amu,this%dex)
+                  call this%fields%dcu%mult(this%fields%dcu,this%dex)
+                  if (l == this%iter) then
+                     do m = 1, this%nspecies
+                        call this%species%spe(m)%cbq(j+1)
+                     end do
+                     if (allocated(this%fields%cu3d)) then
+                        call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
+                     end if
+                  endif
+                  call this%fields%cu%fftrk(1)
+                  call this%fields%dcu%fftrk(1)
+                  call this%fields%amu%fftrk(3)
+                  call this%fields%cu%bfqp(this%fields%dcu,this%fields%amu,this%fields%epw,this%dex2,&
+                  &this%dex)
+                  call this%fields%cu%div(this%fields%div_vpot)
+                  call this%fields%div_vpot%pot(this%fields%psit)
+                  call this%fields%psit%mult(this%fields%psit,-this%dex)
+                  call this%fields%psit%fftkr(1)
+                  call this%fields%cu%bf(this%fields%bxyz)
+               enddo
+               if (allocated(this%fields%vpot)) then
+                  call this%fields%cu%vpot(this%fields%vpot)
+                  call this%fields%vpot%fftkr(1)
+                  call this%fields%vpot%mult(this%fields%vpot,-this%dex)
+                  call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
+               end if               
+               call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+               call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+               call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+               call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+               call this%fields%bxyz%fftkr(2)
+               call this%fields%fxy%mult(this%fields%fxy,-1.0)
+               call this%fields%fxy%add(this%fields%fxy,this%fields%bxyz,(/1/),(/1/),(/2/))
+               call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/))
+               call this%fields%dcu%mult(this%fields%dcu,this%dxi)
+               call this%fields%cu%sub(this%fields%cu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+                  &this%dex)
+               end do
+               call this%fields%fxy%mult(this%fields%fxy,this%dex)
+               call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))
+               call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))
+               call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+               call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
+            enddo
+
+            do m = 1, this%nspecies
+               call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
+            end do
+            call MPI_WAIT(this%id(5),istat,ierr)
+            call this%fields%cu%psend(this%tag(3),this%id(5))
+            call MPI_WAIT(this%id(6),istat,ierr)
+            call this%fields%epw%psend(this%tag(4),this%id(6))
+            call MPI_WAIT(this%id(7),istat,ierr)
+            call this%fields%fxy%psend(this%tag(5),this%id(7))
+            call MPI_WAIT(this%id(8),istat,ierr)
+            call this%fields%psit%psend(this%tag(6),this%id(8))
+            call MPI_WAIT(this%id(9),istat,ierr)
+            call this%fields%bxyz%psend(this%tag(7),this%id(9))
+
+            do m = 1, this%nbeams
+               this%tag_beam(m) = ntag()
+               call MPI_WAIT(this%id_beam(m),istat,ierr)
+               call this%beams%beam(m)%push(this%fields%bexyz,this%fields%bbxyz,this%dex,this%dxi,&
+               &this%tag_beam(m),this%tag_beam(m),this%id_beam(m))
+            end do
+
+            call this%diag_simulation()
+
+            do m = 1, this%nspecies
+               call MPI_WAIT(this%id_spe(m),istat,ierr)
+               call this%species%spe(m)%renew(i*this%dt)
+            end do
+         end do
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine go_simulation_2
 !
       subroutine init_diag(this)
 
