@@ -512,8 +512,7 @@
                      pt(tt3,i) = 2.0
                      end if 
                   else
-                     pt(tt3,i) = 0.0
-                     
+                     pt(tt3,i) = 0.0                     
                   endif
                   pt(tt1,i) = transfer(gid,1.0)
                   pt(tt2,i) = transfer(i,1.0)
@@ -1308,6 +1307,12 @@
          call input%get(trim(s1)//'.npmax',npmax)
          call input%get(trim(s1)//'.evolution',evol)
          call input%get(trim(s1)//'.file_name',this%file)
+         if (input%found(trim(s1)//'.tagged')) then
+            call input%get(trim(s1)//'.tagged',this%tagged)
+         end if
+         if (input%found(trim(s1)//'.fsample')) then
+            call input%get(trim(s1)//'.fsample',this%sf)
+         end if
 
          this%npf = npf
          this%npt = npt
@@ -1343,6 +1348,7 @@
          real(8) :: x0, y0, z0, dx, dy, dz, cwp
          real, dimension(4) :: edges
          integer, dimension(2) :: noff
+         integer :: tt1, tt2, tt3, gid, sf,sf1         
          integer :: nps
          integer :: idimp, npmax, ierr
          real(8) :: tempx, tempy, tempz, tempvx, tempvy, tempvz, tempq
@@ -1360,6 +1366,8 @@
          dx = this%dx; dy = this%dy; dz = this%dz; cwp = this%cwp
          idimp = size(part3d,1); npmax = size(part3d,2)
          noff = fd%getnoff()
+         tt1 = idimp - 2; tt2 = idimp -1; tt3 = idimp
+         gid = this%p%getidproc(); sf = this%sf;sf1 = this%sf1         
          edges(1) = noff(1); edges(3) = noff(2)
          edges(2) = edges(1) + fd%getnd2p()
          edges(4) = edges(3) + fd%getnd3p()         
@@ -1390,7 +1398,19 @@
          enddo
          
          npp = nps - 1
+         
          close(85)
+         if (this%tagged) then
+            do i = 1, npp
+               if (mod(i,sf) == 0) then
+                  part(tt3,i) = 1.0
+               else
+                  part(tt3,i) = 0.0
+               endif
+               part(tt1,i) = transfer(gid,1.0)
+               part(tt2,i) = transfer(i,1.0)
+            end do
+         end if
 
          if (ierr /= 0) then
             write (erstr,*) 'Read beam file error'
