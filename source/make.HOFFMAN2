@@ -1,9 +1,10 @@
-JSON_INC=/u/home/a/anweimin/json-fortran-6.3.0/build/include
-JSON_LIB=/u/home/a/anweimin/json-fortran-6.3.0/build/lib
+JSON_INC=/home/luwei/code/QuickPIC/libs/json-fortran-8.3.0-intel19/jsonfortran-intel-8.3.0/lib
+JSON_LIB=/home/luwei/code/QuickPIC/libs/json-fortran-8.3.0-intel19/jsonfortran-intel-8.3.0/lib
+
 # name of the compiler 
-FC_HOFFMAN2 = mpiifort -c -I$(JSON_INC) -fopenmp
+FC_HOFFMAN2 = mpiifort -c -I$(JSON_INC) -fopenmp -heap-arrays 64
 CC_HOFFMAN2 = mpiicc -c
-LINKER_HOFFMAN2 = mpiifort -fopenmp -O3
+LINKER_HOFFMAN2 = mpiifort -fopenmp -O3 -heap-arrays 64
 
 OPTS_DBL_HOFFMAN2 = -O3 -r8
 OPTS_SGL_HOFFMAN2 = -O3
@@ -13,13 +14,11 @@ FORMAT_FIXED_HOFFMAN2 = -FI
 
 # hdf5 libraries 
 
-#HDF5_LIB =/u/home/a/anweimin/project/hdf5/lib
-#HDF5_INC =/u/home/a/anweimin/project/hdf5/include
+HDF5_LIB =/home/luwei/code/QuickPIC/libs/hdf5-1.14.1-intel19/lib
+HDF5_INC =/home/luwei/code/QuickPIC/libs/hdf5-1.14.1-intel19/include
 
-HDF_LIBPATH_HOFFMAN2= -L$(HDF5_LIB) -L/u/local/apps/szip/2.1/lib -L/u/local/apps/zlib/1.2.3/lib \
-                        -lhdf5_fortran -lhdf5_hl -lhdf5 -lz -lsz
-HDF_INCLUDE_PATH_HOFFMAN2= -I$(HDF5_INC) -I${HDF5_LIB} -I/u/local/apps/szip/2.1/include \
-              -I/u/local/apps/zlib/1.2.3/include -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
+HDF_LIBPATH_HOFFMAN2= -L$(HDF5_LIB) -lhdf5_fortran -lhdf5_hl -lhdf5 -lz 
+HDF_INCLUDE_PATH_HOFFMAN2= -I$(HDF5_INC) -I${HDF5_LIB} -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
 
 # other libs
 OTHER_LIBS_HOFFMAN2 = -L$(JSON_LIB) -ljsonfortran 

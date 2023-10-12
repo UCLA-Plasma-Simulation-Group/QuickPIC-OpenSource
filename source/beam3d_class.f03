@@ -29,7 +29,7 @@
          class(part3d), pointer :: pd
          class(field3d), pointer :: q => null()
          class(fdist3d), pointer :: pf => null()
-         logical :: evol, static
+         logical :: evol
          contains
          
          generic :: new => init_beam3d
@@ -84,7 +84,6 @@
 
          allocate(this%pd,this%q)
          this%evol = pf%getevol()
-         this%static = pf%getstatic()
          call this%q%new(this%p,this%err,this%sp,dim=1)
          call this%pd%new(pp,perr,psp,pf,this%q%getrs(),qbm,dt,ci,xdim)
          call this%pmv(this%q,1,1,id)
@@ -121,14 +120,13 @@
          integer :: ierr
                   
          call this%err%werrfl2(class//sname//' started')
-         if (.not. this%static) then 
-            call this%q%as(0.0)
-            call MPI_WAIT(id1,istat,ierr)
-            call MPI_WAIT(id3,istat,ierr)
-            call this%pd%qdp(this%q%getrs())
-            call this%q%ag(tag1,tag1,id1)
-            call this%q%pcg(tag2,tag2,id2,id3)
-         end if
+         call this%q%as(0.0)
+         call MPI_WAIT(id1,istat,ierr)
+         call MPI_WAIT(id3,istat,ierr)
+         call this%pd%qdp(this%q%getrs())
+         call this%q%ag(tag1,tag1,id1)
+         call this%q%pcg(tag2,tag2,id2,id3)    
+                 
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine qdeposit_beam3d
@@ -211,7 +209,7 @@
          character(len=18), save :: sname = 'writehdf5_beam3d:'
 
          call this%err%werrfl2(class//sname//' started')                  
-         call this%pd%wr(file,dspl,delta,this%pf%getorigin(),rtag,stag,id)
+         call this%pd%wr(file,dspl,delta,rtag,stag,id)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_beam3d

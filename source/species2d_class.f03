@@ -71,7 +71,7 @@
       
       contains
 !
-      subroutine init_species2d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s)
+      subroutine init_species2d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s,push_type)
 
          implicit none
          
@@ -81,7 +81,7 @@
          class(parallel_pipe), intent(in), pointer :: pp
          class(fdist2d), intent(inout), target :: pf
          real, intent(in) :: qbm, dt, ci, s
-         integer, intent(in) :: xdim
+         integer, intent(in) :: xdim, push_type
 
 ! local data
          character(len=18), save :: sname = 'init_species2d:'
@@ -100,7 +100,7 @@
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
-         call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
+         call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s,push_type)
          call this%qn%as(0.0)
          call this%cu%as(0.0)
          call this%pd%qdp(this%qn%getrs())

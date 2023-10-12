@@ -12,3 +12,6 @@ Please feel free to join in our email list [quickpic-users-developers](https://g
 * [Installation](https://github.com/UCLA-Plasma-Simulation-Group/QuickPIC-OpenSource/wiki/Install-QuickPIC)
 * [Input file](https://github.com/UCLA-Plasma-Simulation-Group/QuickPIC-OpenSource/wiki/Input-File-for-QuickPIC)
 * [Developer Guide](https://ucla-plasma-simulation-group.github.io/QuickPIC-OpenSource/) 
+
+# Bug
+The lower limit of the window in z direction must be 0

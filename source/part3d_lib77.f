@@ -250,12 +250,12 @@ c local variables
       integer j,k,l,m,my,mz,moff,mnblok,k1,npt
       real xf, xs, yf, ys, zf, zs, u, amax, dpi
       double precision sum0, sum1, sum2, dnpxyz
-      real at1,sum3,work3,borderlx,borderly, borderx, bordery
+      real at1,sum3,work3
       real tempx,tempy,tempxx,tempyy, x2, y2,tempz,tvtx,tvty,tvtz
       real tempx0,tempy0,tvtx0,tvty0
       dimension sum3(3), work3(3), isum2(2), iwork2(2)
 c borderlx(yz), lower bound of border, borderx(yz), upper bound.      
-      integer nz1 
+      integer borderlx,borderly, borderx, bordery, nz1 
       integer cnt
 
       ierr = 0
@@ -271,12 +271,14 @@ c borderlx(yz), lower bound of border, borderx(yz), upper bound.
      
       x2 = 2.0 * x0
       y2 = 2.0 * y0
-      borderlx = max((x0-5.0*sigx),1.0)
-      borderly = max((y0-5.0*sigy),1.0)
-      borderx = min((x0+5.0*sigx),float(nx-1)) 
-      bordery = min((y0+5.0*sigy),float(ny-1))
+      borderlx = max((x0-3.0*sigx),1.0)
+      borderly = max((y0-3.0*sigy),1.0)
+      borderx = min((x0+3.0*sigx),float(nx-1)) 
+      bordery = min((y0+3.0*sigy),float(ny-1))
 
       nz1 = nz -1
+
+      
       dp = abs(dp)
       amax = maxval(dp)*1.2
       dp = dp/amax
@@ -321,11 +323,11 @@ c  check if particle belongs to this partition
                 if (npt.le.npmax) then        
                      npt = npp(m) + 1
                      part(3,npt,m) = tempz
-                     tempxx = -cx(0)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
-     &,npt,m)-z0)-cx(2)                
+                     tempxx = -cx(2)*(part(3,npt,m)-z0)**2-cx(1)*(part(3&
+     &,npt,m)-z0)-cx(0)                
                      part(1,npt,m) = tempx + tempxx
-                     tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
-     &,npt,m)-z0)-cy(2)        
+                     tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3&
+     &,npt,m)-z0)-cy(0)        
                      part(2,npt,m) = tempy + tempyy 
                      part(4,npt,m) = tvtx
                      part(5,npt,m) = tvty
@@ -338,23 +340,47 @@ c  check if particle belongs to this partition
 c quiet start
                 if (lquiet) then
                    if (npt.le.npmax) then
-                      npt = npp(m) + 1
-                      part(3,npt,m) = tempz
-                      part(1,npt,m) = x2 - tempx+tempxx
-                      part(2,npt,m) = y2 - tempy+tempyy
-                      part(4,npt,m) = -tvtx
-                      part(5,npt,m) = -tvty
-                      part(6,npt,m) = tvtz  
-                      part(7,npt,m) = qm
-                      npp(m) = npt
+
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = x2-tempx+tempxx
+                part(2,npt,m) = y2-tempy+tempyy
+                part(4,npt,m) = -tvtx
+                part(5,npt,m) = -tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt                
+c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = tempx+tempxx
+                part(2,npt,m) = y2-tempy+tempyy
+                part(4,npt,m) = tvtx
+                part(5,npt,m) = -tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt      
+
+                npt = npp(m) + 1
+                part(3,npt,m) = tempz
+                part(1,npt,m) = x2-tempx+tempxx
+                part(2,npt,m) = tempy+tempyy
+                part(4,npt,m) = -tvtx
+                part(5,npt,m) = tvty
+                part(6,npt,m) = tvtz
+                part(7,npt,m) = qm 
+                npp(m) = npt      
+c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                    else
                       ierr = ierr + 1
                    endif
                 endif
+
               endif
              enddo 
+
         l = l + 1
-        if (lquiet) l = l + 1
+        if (lquiet) l = l + 3
         endif
       enddo 
       k = k + 1
@@ -510,7 +536,7 @@ c calculate offset in x
      & - z0)-cx(2)                
             part(1,npt,m) = tempx + tempxx
 c calculate offset in y            
-            tempyy = -cy(0)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
+            tempyy = -cy(2)*(part(3,npt,m)-z0)**2-cy(1)*(part(3,npt,m)  &
      & - z0)-cy(2)        
             part(2,npt,m) = tempy + tempyy 
             part(4,npt,m) = tvtx

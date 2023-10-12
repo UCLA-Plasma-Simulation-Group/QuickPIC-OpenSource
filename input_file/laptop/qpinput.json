@@ -165,6 +165,8 @@
     "ppc" : [2,2],
     "q" : -1.0,
     "m" : 1.0,
+    "push_type" : "standard",
+    !"push_type" : "robust",
     "density" : 1.0,
     "longitudinal_profile" : "uniform",
     "piecewise_density" : [1.0,1.5,2.5],

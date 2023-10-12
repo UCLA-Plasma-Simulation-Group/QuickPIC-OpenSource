@@ -17,6 +17,7 @@
       use hdf5io_class
       use input_class
       use mpi
+      use part2d_class, only : p_push_std, p_push_robust
 
       implicit none
 
@@ -508,9 +509,10 @@
          character(len=18), save :: class = 'sim_species:'
          character(len=18), save :: sname = 'init_sim_species:'
          integer :: i,n,ndump
-         integer :: npf
+         integer :: npf, push_type
          real, dimension(3,100) :: arg
          character(len=20) :: sn,s1
+         character(len=:), allocatable :: str
          integer :: indz, xppc, yppc
          real :: min, max, cwp, n0
          real :: qm, qbm, dz
@@ -561,8 +563,20 @@
             call input%get(trim(s1)//'.q',qm)
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
+
+            call input%get(trim(s1)//'.push_type',str)
+            select case (trim(str))
+            case ('standard')
+               push_type = p_push_std
+            case ('robust')
+               push_type = p_push_robust
+            case default
+               write (erstr,*) 'Invalid species push type!'
+               call this%err%equit(class//sname//erstr)
+            end select
+
             call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
+            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s,push_type=push_type)
 
          end do
          call this%err%werrfl2(class//sname//' ended')
