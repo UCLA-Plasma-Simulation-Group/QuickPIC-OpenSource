@@ -29,6 +29,7 @@
          class(part2d), pointer :: pd => null()
          class(field2d), pointer :: q => null(), qn => null(), cu => null()
          class(field2d), pointer :: amu => null(), dcu => null()
+         class(field2d), pointer :: bsou => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
 
@@ -39,6 +40,8 @@
          generic :: del => end_species2d
          generic :: qdp => qdp_species2d
          generic :: amjdp => amjdp_species2d
+         generic :: jdp => jdp_species2d
+         generic :: bdp => bdp_species2d
          generic :: push => push_species2d
          generic :: pmv => pmove_species2d
          generic :: extpsi => extpsi_species2d
@@ -53,6 +56,8 @@
          procedure, private :: end_species2d
          procedure, private :: qdp_species2d
          procedure, private :: amjdp_species2d
+         procedure, private :: jdp_species2d
+         procedure, private :: bdp_species2d
          procedure, private :: push_species2d
          procedure, private :: pmove_species2d
          procedure, private :: extpsi_species2d
@@ -61,7 +66,6 @@
          procedure, private :: psend_species2d
          procedure, private :: precv_species2d, writehdf5_species2d
          procedure, private :: cbq_species2d, writeq_species2d, writeqslice_species2d
-                           
       end type 
 
       save      
@@ -256,6 +260,63 @@
          
       end subroutine amjdp_species2d
 !      
+      subroutine jdp_species2d(this,cu,dex)
+! deposit the current      
+      
+         implicit none
+         
+         class(species2d), intent(inout) :: this
+         class(field2d), intent(inout) :: cu 
+         !class(field2d), intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+! local data
+         character(len=18), save :: sname = 'jdp_species2d'
+
+         call this%err%werrfl2(class//sname//' started')
+         call this%cu%as(0.0)
+         
+         call this%pd%jdp(this%cu%getrs(),dex)
+         
+         call this%cu%ag()
+         call cu%add(this%cu,cu)
+         call this%cu%mult(this%cu,dex)
+
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine jdp_species2d
+!           
+      subroutine bdp_species2d(this,ef,bf,psit,dcu,amu,dex)      
+      
+         implicit none
+         
+         class(species2d), intent(inout) :: this
+         class(field2d), intent(inout) :: amu, dcu
+         !class(field2d), intent(in) :: ef, bf, psit, cu
+         class(field2d), intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+! local data
+         character(len=18), save :: sname = 'bdp_species2d'
+
+         call this%err%werrfl2(class//sname//' started')
+         !call this%cu%as(0.0)
+         call this%dcu%as(0.0)
+         call this%amu%as(0.0)
+
+         call this%pd%bdp(ef%getrs(),bf%getrs(),psit%getrs(),this%dcu%getrs(),this%amu%getrs(),dex)
+         
+         !call this%cu%ag()
+         call this%dcu%ag()
+         call this%amu%ag()
+
+!         call cu%add(this%cu,cu)
+         call dcu%add(this%dcu,dcu)
+         call amu%add(this%amu,amu)
+!         call this%cu%mult(this%cu,dex)
+
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine bdp_species2d
+!
       subroutine push_species2d(this,ef,bf,psit,dex)
       
          implicit none
@@ -446,7 +507,7 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         call this%q%add(this%q,this%cu,(/1/),(/1/),(/3/))
+         call this%q%add(this%q,this%cu,(/1/),(/1/),(/3/)) 
          call this%q%fftrk(1)
          call this%q%smooth(this%q)
          call this%q%fftkr(1)

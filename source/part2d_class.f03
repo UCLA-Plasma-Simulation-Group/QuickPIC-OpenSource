@@ -73,6 +73,8 @@
          generic :: del => end_part2d
          generic :: qdp => qdeposit
          generic :: amjdp => amjdeposit
+         generic :: jdp => jdeposit
+         generic :: bdp => bdeposit
          generic :: push => partpush
          generic :: pmv => pmove
          generic :: extpsi => extractpsi
@@ -85,6 +87,8 @@
          procedure, private :: end_part2d
          procedure, private :: qdeposit
          procedure, private :: amjdeposit
+         procedure, private :: jdeposit
+         procedure, private :: bdeposit        
          procedure, private :: partpush
          procedure, private :: pmove
          procedure, private :: extractpsi
@@ -319,6 +323,78 @@
          
       end subroutine amjdeposit
 !      
+      subroutine jdeposit(this,cu,dex)
+! deposit the current     
+      
+         implicit none
+         
+         class(part2d), intent(inout) :: this
+         class(ufield2d), pointer, intent(in) :: cu
+         !class(ufield2d), pointer, intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'jdeposit'
+! local data
+         !real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
+         !real, dimension(:,:,:), pointer :: ppsit => null(), pcu => null()
+         real, dimension(:,:,:), pointer :: pcu => null()
+         integer :: noff, nyp, nx, nxv, nypmx
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         !pef => ef%getrf(); pbf => bf%getrf()
+         !ppsit => psit%getrf(); pcu => cu%getrf()
+         ! pamu => amu%getrf(); pdcu => dcu%getrf()
+         pcu => cu%getrf()
+         noff = cu%getnoff()
+         nxv = size(pcu,2); nypmx = size(pcu,3)
+         nx = cu%getnd1(); nyp = cu%getnd2p()
+         
+         ! call PPGRDCJPPOST2L_QP(this%ppart,pef,pbf,ppsit(1,:,:),pcu,pdcu,&
+         ! &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
+         ! &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         call PPGRDCJPPOST2L_QP_J(this%ppart,pcu,this%kpic,noff,nyp,this%qbm,&
+         &this%dt,this%ci,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine jdeposit
+!
+      subroutine bdeposit(this,ef,bf,psit,dcu,amu,dex)
+! deposit the current, acceleration and momentum flux      
+      
+         implicit none
+         
+         class(part2d), intent(inout) :: this
+         !class(ufield2d), pointer, intent(in) :: cu, amu, dcu
+         class(ufield2d), pointer, intent(in) :: amu, dcu
+         class(ufield2d), pointer, intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'bdeposit'
+! local data
+         real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
+         !real, dimension(:,:,:), pointer :: ppsit => null(), pcu => null()
+         real, dimension(:,:,:), pointer :: ppsit => null()
+         real, dimension(:,:,:), pointer :: pamu => null(), pdcu => null()
+         integer :: noff, nyp, nx, nxv, nypmx
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         pef => ef%getrf(); pbf => bf%getrf()
+         !ppsit => psit%getrf(); pcu => cu%getrf()
+         ppsit => psit%getrf()
+         pamu => amu%getrf(); pdcu => dcu%getrf()
+         noff = ef%getnoff()
+         nxv = size(pef,2); nypmx = size(pef,3)
+         nx = ef%getnd1(); nyp = ef%getnd2p()
+         
+         call PPGRDCJPPOST2L_QP_B(this%ppart,pef,pbf,ppsit(1,:,:),pdcu,&
+         &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
+         &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine bdeposit
+!
       subroutine partpush(this,ef,bf,psit,dex)
       
          implicit none
@@ -345,17 +421,17 @@
          nx = ef%getnd1(); nyp = ef%getnd2p()
 ! periodic push, calculates list of particles leaving tile
          if (this%list) then
-            call PPGRBPPUSHF23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
+            call PPGRBPPUSHF23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
             &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
             &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,&
             &mx1,mxyp1,this%ntmaxp,this%irc,dex)
             if (this%irc /= 0) then
-               write (erstr,*) 'PPGRBPPUSHF23L_QP ihole overflow, irc=',&
+               write (erstr,*) 'PPGRBPPUSHF23L_QP_NEW ihole overflow, irc=',&
                &this%irc
             endif
 ! push supports particle boundary conditions, does not calculate list
          else
-            call PPGRBPPUSH23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
+            call PPGRBPPUSH23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
             &this%kpic,noff,nyp,this%qbm,this%dt,this%ci,ek,this%xdim,&
             &this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
          endif

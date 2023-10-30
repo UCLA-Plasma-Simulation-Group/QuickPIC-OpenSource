@@ -55,6 +55,7 @@
          generic :: elf => elfield_field2d
          generic :: bf => bfield_field2d
          generic :: bfqp => bfield_qp_field2d
+         generic :: bfqpn => bfield_qp_new_field2d
          generic :: cg => copyguard_field2d
          generic :: ag => acopyguard_field2d
          generic :: psend => pipesend_field2d
@@ -75,7 +76,8 @@
          ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
          procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_fd
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
-         procedure, private :: bfield_qp_field2d, copyguard_field2d
+         !procedure, private :: bfield_qp_field2d, copyguard_field2d
+         procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
          procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
@@ -605,6 +607,40 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
          call cu%err%werrfl2(class//sname//' ended')
          
       end subroutine bfield_qp_field2d      
+!            
+      subroutine bfield_qp_new_field2d(this,that)
+      
+         implicit none
+         
+         !class(field2d), intent(inout) :: cu,dcu,amu,bxy
+         !class(field2d), intent(inout) :: damu,amu
+         class(field2d), intent(inout) :: this,that
+         !real, intent(in) :: c, dex
+         character(len=18), save :: sname = 'bfield_qp_new_field2d:'
+         !real :: we
+
+         !call amu%err%werrfl2(class//sname//' started')
+         call this%err%werrfl2(class//sname//' started')
+         
+         ! if (amu%state /= 1)  then 
+         !    call amu%err%equit(class//sname//'data is in rs')
+         !    return
+         ! endif
+         
+         if (this%state /= 1)  then 
+            call this%err%equit(class//sname//'data is in rs')
+            return
+         endif
+
+         !call amu%pt%bfield_qp_new(damu%ks,amu%ks)
+         call this%pt%bfield_qp_new(this%ks,that%ks)
+
+         !damu%state = 1
+         that%state = 1
+         !call amu%err%werrfl2(class//sname//' ended')
+         call that%err%werrfl2(class//sname//' ended')
+         
+      end subroutine bfield_qp_new_field2d      
 !
       subroutine copyguard_field2d(this) 
 
