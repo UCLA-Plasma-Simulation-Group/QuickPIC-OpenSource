@@ -579,7 +579,7 @@
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
             call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
+            &qbm=qbm,dt=dz,ci=1.0,xdim=13,s=s)
 
          end do
          call this%err%werrfl2(class//sname//' ended')

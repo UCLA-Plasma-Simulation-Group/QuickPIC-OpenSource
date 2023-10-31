@@ -2090,18 +2090,17 @@ c rot2 = omzt
 ! loop over particles in tile
       do 50 j = 1, nppp
 ! find interpolation weights
-      x = ppart(1,j,k)
+      x = ppart(1,j,k)!x1
       y = ppart(2,j,k)
       nn = x
       mm = y
-      x_temp = ppart(9,j,k)
-      y_temp = ppart(10,j,k)
-      ppart(1,j,k) = x_temp
-      ppart(2,j,k) = y_temp
+     
+      x_temp = ppart(1,j,k)
+      y_temp = ppart(2,j,k)
 
-      px_temp = ppart(11,j,k)
-      py_temp = ppart(12,j,k)
-      pz_temp = ppart(13,j,k)
+      px_temp = ppart(3,j,k) !p1
+      py_temp = ppart(4,j,k)
+      pz_temp = ppart(5,j,k)
 
       p6 = ppart(6,j,k)
       p7 = ppart(7,j,k)
@@ -2153,9 +2152,9 @@ c rot2 = omzt
       dy = qtmh2*dy
       dz = qtmh2*dz
 ! half acceleration
-      acx = ppart(3,j,k) + dx
-      acy = ppart(4,j,k) + dy
-      acz = ppart(5,j,k) + dz
+      acx = ppart(11,j,k) + dx
+      acy = ppart(12,j,k) + dy
+      acz = ppart(13,j,k) + dz
 ! find inverse gamma
 !      p2 = acx*acx + acy*acy + acz*acz
 !      gami = 1.0/sqrt(1.0 + p2*ci2)
@@ -2187,23 +2186,22 @@ c rot2 = omzt
       dx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
       dy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
       dz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
-      !ppart(3,j,k) = dx
-      !ppart(4,j,k) = dy
-      !ppart(5,j,k) = dz
-      ppart(11,j,k) = dx
-      ppart(12,j,k) = dy
-      ppart(13,j,k) = dz
-      ppart(3,j,k) = px_temp 
-      ppart(4,j,k) = py_temp
-      ppart(5,j,k) = pz_temp
+      ppart(3,j,k) = dx
+      ppart(4,j,k) = dy
+      ppart(5,j,k) = dz
+      ppart(6,j,k) = sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)
+      ppart(11,j,k) = px_temp 
+      ppart(12,j,k) = py_temp
+      ppart(13,j,k) = pz_temp
 ! update inverse gamma
       dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
 
 !      p2 = dx*dx + dy*dy + dz*dz
 !      dtg = dtc/sqrt(1.0 + p2*ci2)
 ! new position
-      dx = x + dx*dtc1
-      dy = y + dy*dtc1
+      dx = ppart(9,j,k) + dx*dtc1
+      dy = ppart(10,j,k) + dy*dtc1
+
 ! reflecting boundary conditions
       if (ipbc.eq.2) then
          if ((dx.lt.edgelx).or.(dx.ge.edgerx)) then
@@ -2222,10 +2220,10 @@ c rot2 = omzt
          endif
       endif
 ! set new position
-      !ppart(1,j,k) = dx
-      !ppart(2,j,k) = dy
-      ppart(9,j,k) = dx
-      ppart(10,j,k) = dy
+      ppart(1,j,k) = dx
+      ppart(2,j,k) = dy
+      ppart(9,j,k) = x_temp
+      ppart(10,j,k) = y_temp
    50 continue
       sum2 = sum2 + sum1
    60 continue
@@ -2759,18 +2757,17 @@ c rot2 = omzt
 ! loop over particles in tile
       do 60 j = 1, nppp
 ! find interpolation weights
-      x = ppart(1,j,k) !x0
+      x = ppart(1,j,k) !x1
       y = ppart(2,j,k)
       nn = x
       mm = y
-      x_temp = ppart(9,j,k)!x1
-      y_temp = ppart(10,j,k)
-      ppart(1,j,k) = x_temp
-      ppart(2,j,k) = y_temp
+      x_temp = ppart(1,j,k)
+      y_temp = ppart(2,j,k)
 
-      px_temp = ppart(11,j,k)
-      py_temp = ppart(12,j,k)
-      pz_temp = ppart(13,j,k)
+      px_temp = ppart(3,j,k) !p1
+      py_temp = ppart(4,j,k)
+      pz_temp = ppart(5,j,k)
+
 
       p6 = ppart(6,j,k)
       p7 = ppart(7,j,k)
@@ -2822,9 +2819,9 @@ c rot2 = omzt
       dy = qtmh2*dy
       dz = qtmh2*dz
 ! half acceleration
-      acx = ppart(3,j,k) + dx
-      acy = ppart(4,j,k) + dy
-      acz = ppart(5,j,k) + dz
+      acx = ppart(11,j,k) + dx!ppart(11,j,k) meaning in p0. p0→p2
+      acy = ppart(12,j,k) + dy
+      acz = ppart(13,j,k) + dz
 ! find inverse gamma
 !      p2 = acx*acx + acy*acy + acz*acz
 !      gami = 1.0/sqrt(1.0 + p2*ci2)
@@ -2856,28 +2853,26 @@ c rot2 = omzt
       dx = (rot1*acx + rot2*acy + rot3*acz)*anorm + dx
       dy = (rot4*acx + rot5*acy + rot6*acz)*anorm + dy
       dz = (rot7*acx + rot8*acy + rot9*acz)*anorm + dz
-      !ppart(3,j,k) = dx
-      !ppart(4,j,k) = dy
-      !ppart(5,j,k) = dz
-      ppart(11,j,k) = dx
-      ppart(12,j,k) = dy
-      ppart(13,j,k) = dz
-      ppart(3,j,k) = px_temp 
-      ppart(4,j,k) = py_temp
-      ppart(5,j,k) = pz_temp
+      ppart(3,j,k) = dx
+      ppart(4,j,k) = dy
+      ppart(5,j,k) = dz
+      ppart(6,j,k) = sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)
+      ppart(11,j,k) = px_temp 
+      ppart(12,j,k) = py_temp
+      ppart(13,j,k) = pz_temp
 ! update inverse gamma
       dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
 
 !      p2 = dx*dx + dy*dy + dz*dz
 !      dtg = dtc/sqrt(1.0 + p2*ci2)
 ! new position
-      dx = x + dx*dtc1
-      dy = y + dy*dtc1
+      dx = ppart(9,j,k) + dx*dtc1
+      dy = ppart(10,j,k) + dy*dtc1
 ! set new position
-      !ppart(1,j,k) = dx
-      !ppart(2,j,k) = dy
-      ppart(9,j,k) = dx
-      ppart(10,j,k) = dy
+      ppart(1,j,k) = dx
+      ppart(2,j,k) = dy
+      ppart(9,j,k) = x_temp
+      ppart(10,j,k) = y_temp
 ! find particles going out of bounds
       mm = 0
 ! count how many particles are going in each direction in ncl
