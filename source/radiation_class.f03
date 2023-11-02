@@ -6,6 +6,7 @@
         use perrors_class
         use parallel_pipe_class
         use hdf5io_class
+        ! use integral
 
         implicit none
 
@@ -84,11 +85,13 @@
             real :: t0,t1
             real :: w0,w1
             real(8) :: n0
-            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n        
+            integer::Nx,Ny,Nx1,Ny1,Nt,Nw,ii,n_children,n,in_n
+            ! integer::integral_type        
             integer :: indx, indy, indz,type
             character(len=20) :: sn,s1
             character(len=:), allocatable :: diag
             character(len=25), save :: sname = 'init_radiation:'
+            ! procedure(event), pointer :: calculate_inte !=> null ()
 
             this%err => perr
             this%p => pp
@@ -172,6 +175,7 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
+                    ! call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
@@ -187,6 +191,13 @@
                     this%Ew_im = 0
                     allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
                     this%spectrum = 0
+                    ! if (integral_type==0) then 
+                    ! calculate_inte => calculate_inte0
+                    ! else if (integral_type==1) then 
+                    ! calculate_inte => calculate_inte1
+                    ! else if (integral_type==2) then 
+                    ! calculate_inte => calculate_inte2
+                    ! end if
                     end if
                 case('spectrum_intens')
                     if ( .not. allocated(this%Ew_re)) then
@@ -196,6 +207,7 @@
                     call input%get(s1//'.spectrum.Nx',Nx1 )
                     call input%get(s1//'.spectrum.Ny',Ny1 )
                     call input%get(s1//'.spectrum.in_n',in_n )
+                    ! call input%get(s1//'.spectrum.integral_type',integral_type )
                     this%in_n = in_n
                     this%w0 = min
                     this%w1 = max
@@ -211,6 +223,13 @@
                     this%Ew_im = 0
                     allocate(this%spectrum(this%Nx1,this%Ny1,this%Nw+1))
                     this%spectrum = 0
+                    ! if (integral_type==0) then 
+                    ! calculate_inte => calculate_inte0
+                    ! else if (integral_type==1) then 
+                    ! calculate_inte => calculate_inte1
+                    ! else if (integral_type==2) then 
+                    ! calculate_inte => calculate_inte2
+                    ! end if
                     end if
                 case('field')
                     allocate(this%field_E(3,this%Nx,this%Ny,this%Nt+1))
@@ -650,8 +669,10 @@
             real :: w
             
             real,dimension(3) :: Ew_im,Ew_re
-            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
-            real :: temp3,temp4,temp5_im,temp5_Re
+            real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,pnew,pold,vnew,vold,force
+            real,dimension(3) ::temp1,temp2,temp7
+            real :: temp3,temp4,temp5_im,temp5_Re,temp6,temp_w
+            real :: k1,k2,inte_re,inte_im
             real :: c
             character(len=25), save :: sname = 'calculate_field_w:'
             call this%err%werrfl2(class//sname//' started')
@@ -695,10 +716,19 @@
                         temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
                         Do k = 1,this%Nw,1
                             w = this%w0 + (k-1)*this%dw
-                            temp5_Re = cos(w*(t_obs*n1+n2*(t-(vec_n(1)*posi(1)+vec_n(2)*posi(2)+vec_n(3)*posi(3)))))
-                            temp5_im = sin(w*(t_obs*n1+n2*(t-(vec_n(1)*posi(1)+vec_n(2)*posi(2)+vec_n(3)*posi(3)))))
-                            Ew_re = (temp2*temp5_re/temp4**2)*delta_t                        
-                            Ew_im =(temp2*temp5_im/temp4**2)*delta_t
+
+                            temp_w =w*(t_obs*n1+n2*(t-(vec_n(1)*posi(1)+vec_n(2)*posi(2)+vec_n(3)*posi(3))))
+                            temp6 =  - vec_n(1)*acc(1)-vec_n(2)*acc(2)-vec_n(3)*acc(3)
+                            temp5_Re = cos(temp_w)
+                            temp5_im = sin(temp_w)
+                            temp6 =  - vec_n(1)*acc(1)-vec_n(2)*acc(2)-vec_n(3)*acc(3)
+                            k1 = w*temp4
+                            k2 = w*temp6
+                            call calculate_inte2(k1,k2,delta_t,inte_re,inte_im)   
+                            temp7=  temp2/temp4**2
+                            Ew_re = temp7*(temp5_re*inte_re-temp5_im*inte_im)                  
+                            Ew_im =temp7*(temp5_re*inte_im+temp5_im*inte_re)
+
                             this%Ew_re(:,i,j,k) = this%Ew_re(:,i,j,k) + Ew_re
                             this%Ew_im(:,i,j,k) = this%Ew_im(:,i,j,k) + Ew_im
                         end DO
@@ -728,8 +758,9 @@
             real :: w
             real,dimension(3) :: Ew_im,Ew_re
             real,dimension(3) :: posi,posi0,vel,acc,posi_x,vec_r,vec_n,p,pnew,pold,vnew,vold,force,posi_new,vel_new
-            real,dimension(3) ::temp0,temp1,temp2
-            real :: temp3,temp4,temp5_im,temp5_Re
+            real,dimension(3) ::temp0,temp1,temp2,temp7
+            real :: temp3,temp4,temp5_im,temp5_Re,temp_w,temp6
+            real :: k1,k2,inte_re,inte_im
             real :: c
             character(len=25), save :: sname = 'calculate_field_w2:'
             call this%err%werrfl2(class//sname//' started')
@@ -782,10 +813,18 @@
                             Do k = 1,this%Nw+1,1
                                 w= this%w0 + (k-1)*this%dw
                             !    w = 10**(this%w0 + (k-1)*this%dw)
-                                temp5_Re = cos(w*(t_obs*n1+n2*(t-(vec_n(1)*posi_new(1)+vec_n(2)*posi_new(2)+vec_n(3)*posi_new(3)))))
-                                temp5_im = sin(w*(t_obs*n1+n2*(t-(vec_n(1)*posi_new(1)+vec_n(2)*posi_new(2)+vec_n(3)*posi_new(3)))))
-                                Ew_re = (temp2*temp5_re/temp4**2)*in_t
-                                Ew_im =(temp2*temp5_im/temp4**2)*in_t
+                                temp_w =w*(t_obs*n1+n2*(t-(vec_n(1)*posi_new(1)+vec_n(2)*posi_new(2)+vec_n(3)*posi_new(3))))
+                                temp5_Re = cos(temp_w)
+                                temp5_im = sin(temp_w)
+                                
+                                temp6 =  - vec_n(1)*acc(1)-vec_n(2)*acc(2)-vec_n(3)*acc(3)
+                                k1 = w*temp4
+                                k2 = w*temp6
+                                call calculate_inte2(k1,k2,in_t,inte_re,inte_im)    
+                                temp7=  temp2/temp4**2
+                                Ew_re = temp7*(temp5_re*inte_re-temp5_im*inte_im)                  
+                                Ew_im =temp7*(temp5_re*inte_im+temp5_im*inte_re)
+
                                 this%Ew_re(:,i,j,k) = this%Ew_re(:,i,j,k) + Ew_re
                                 this%Ew_im(:,i,j,k) = this%Ew_im(:,i,j,k) + Ew_im
                             end DO
@@ -796,187 +835,6 @@
             end DO 
             call this%err%werrfl2(class//sname//' ended')      
         end subroutine calculate_field_w2
-!
-
-
-
-!         subroutine calculate_radiation2(this,input,part,Np,s_beam,ds)
-
-!             implicit none
-
-!             class(radiation), intent(inout) :: this
-!             type(input_json), intent(inout), pointer :: input
-!             real,intent(in) :: s_beam,ds
-!             real,dimension(:,:),intent(inout) :: part
-!             integer,intent(in) :: Np
-
-
-!             real,dimension(3,Np,this%Nx,this%Ny) :: temp_up
-!             real,dimension(Np,this%Nx,this%Ny) :: temp_down,temp_r,temp_t
-!             character(len=25), save :: sname = 'calculate_radiation2:'
-!             call this%err%werrfl2(class//sname//' started')
-!             call calculate_temp(this,temp_up,&
-!             temp_down,temp_r,temp_t,part,Np,s_beam,ds) 
-
-!             if (allocated(this%intensity)) then
-!                 call calculate_intensity2(this,temp_up,&
-!                 temp_down,temp_r,temp_t,Np,s_beam,ds)
-!             end if
-! !           if (allocated(this%spectrum)) then
-! !               call calculate_field_w2(this,temp_up,&
-! !               temp_down,temp_r,temp_t,Np,s_beam,ds)
-! !           end if
-! !           if (allocated(this%Ew_re)) then 
-! !               call calculate_field2(this,temp_up,&
-! !               temp_down,temp_r,temp_t,Np,s_beam,ds)
-! !           end if
-! !           call this%err%werrfl2(class//sname//' ended')
-!         end subroutine calculate_radiation2
-! !
-!         subroutine calculate_temp(this,temp_up,temp_down,temp_r,temp_t,part,Np,s_beam,ds)
-!             implicit none
-
-!             class(radiation), intent(inout) :: this
-!             real,dimension(:,:),intent(inout) :: part
-!             integer,intent(in) :: Np
-!             real,intent(in) :: s_beam,ds
-!             real,dimension(3,Np,this%Nx,this%Ny),intent(inout) :: temp_up
-!             real,dimension(Np,this%Nx,this%Ny),intent(inout) :: temp_down,temp_r,temp_t
-!             real :: deltax, deltay, deltaz
-!             integer :: n,i,j,k
-!             integer :: t_n
-!             real :: x,y,z,tempz
-!             real :: t,t_obs,m0,m1
-!             real :: delta_t
-!             real :: dx,dy,dt
-!             real :: r
-!             real :: intensity
-
-!             real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp0,temp1,temp2,pnew,pold,vnew,vold,force
-!             real :: temp3,temp4
-!             real :: c
-!             character(len=25), save :: sname = 'calculate_temp:'
-!             call this%err%werrfl2(class//sname//' started')
-!             z = s_beam
-!             DO n = 1,Np
-!                 x = part(1,n)
-!                 y = part(2,n)
-!                 tempz = part(3,n)
-!                 t = s_beam + tempz
-!                 posi = (/x,y,z/)
-!                 p = part(4:6,n)
-!                 vel = p/(p(1)**2+p(2)**2+p(3)**2 + 1)**0.5
-!                 force = part(8:10,n)
-!                 pold = p - acc
-!                 pnew = p + acc
-!                 vold = pold/(pold(1)**2+pold(2)**2+pold(3)**2 + 1)**0.5
-!                 vnew = pnew/(pnew(1)**2+pnew(2)**2+pnew(3)**2 + 1)**0.5
-!                 delta_t = ds/vel(3)
-!                 acc = (vnew-vold)/delta_t
-!                 DO i=1,this%Nx,1
-!                     DO j = 1,this%Ny,1
-!                         posi_x = (/this%x0+(i-1)*this%dx,this%y1-(j-1)*this%dy,z/)
-!                         vec_r = posi_x - posi
-!                         r = (vec_r(1)**2 +vec_r(2)**2 +vec_r(3)**2)**0.5
-!                         vec_n = vec_r/r
-!                         t_obs = (t + r)
-!                         temp0 = vec_n-vel
-!                         temp1 = cross(temp0,acc)
-!                         temp2 = cross(vec_n,temp1)
-!                         temp4 = (1 - vec_n(1)*vel(1)-vec_n(2)*vel(2)-vec_n(3)*vel(3))
-!                         temp_up(:,n,i,j) = temp2
-!                         temp_down(n,i,j) = temp4
-!                         temp_r(n,i,j) = r
-!                         temp_t(n,i,j) = t_obs
-!                     end DO
-!                 end DO
-!             end DO      
-!             call this%err%werrfl2(class//sname//' ended')      
-!         end subroutine calculate_temp
-! !
-!         subroutine calculate_intensity2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)
-!             implicit none
-
-!             class(radiation), intent(inout) :: this
-!             integer,intent(in) :: Np
-!             real,intent(in) :: s_beam,ds
-!             real,dimension(3,Np,this%Nx,this%Ny),intent(in) :: temp_up
-!             real,dimension(Np,this%Nx,this%Ny),intent(in) :: temp_down,temp_r,temp_t
-
-!             integer :: n,i,j
-!             integer :: t_n
-!             real :: temp
-!             real :: t_obs,m0,m1
-!             real :: dx,dy,dt
-!             real :: r
-!             real :: intensity
-!             character(len=25), save :: sname = 'calculate_intensity2:'
-!             call this%err%werrfl2(class//sname//' started')
-!             DO n = 1,Np,1
-!                 DO i=1,this%Nx,1
-!                     DO j = 1,this%Ny,1
-!                         t_obs = (temp_t(n,i,j) - this%t0)/this%dt
-!                         if (t_obs > 0 .AND. t_obs < this%Nt) then                            
-!                             t_n = t_obs
-!                             m0 = t_obs - t_n
-!                             m1 = 1 - m0
-!                             t_n = t_n + 1
-!                             temp = (temp_up(1,n,i,j)**2+temp_up(2,n,i,j)**2+temp_up(3,n,i,j)**2)
-!                             intensity =(temp/temp_down(n,i,j)**5)
-!                             this%intensity(i,j,t_n) = this%intensity(i,j,t_n) + intensity*m1
-!                             this%intensity(i,j,t_n+1) = this%intensity(i,j,t_n+1) + intensity*m0
-!                         end if
-!                     end DO
-!                 end DO
-!             end DO
-!             call this%err%werrfl2(class//sname//' ended')
-!         end subroutine calculate_intensity2
-!
-!      subroutine calculate_field2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)     
-!          implicit none
-!
-!          class(radiation), intent(inout) :: this
-!          integer,intent(in) :: Np
-!          real,intent(in) :: s_beam,ds
-!
-!
-!          integer :: n,i,j,k
-!          integer :: t_n
-!          real :: x,y,z,tempz
-!          real :: t,t_obs,m0,m1
-!          real :: delta_t
-!          real :: dx,dy,dt
-!          real :: r 
-!          
-!          real,dimension(3) :: field_E,field_B
-!          real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
-!          real :: temp3,temp4
-!          real :: c
-!
-!      end subroutine calculate_field2
-!
-!      subroutine calculate_field_w2(this,temp_up,temp_down,temp_r,temp_t,Np,s_beam,ds)     
-!          implicit none
-!
-!          class(radiation), intent(inout) :: this
-!          integer,intent(in) :: Np
-!          real,intent(in) :: s_beam,ds
-!
-!
-!          integer :: n,i,j,k
-!          integer :: t_n
-!          real :: x,y,z,tempz
-!          real :: t,t_obs,m0,m1
-!          real :: delta_t
-!          real :: dx,dy,dt
-!          real :: r 
-!          
-!          real,dimension(3) :: field_E,field_B
-!          real,dimension(3) :: posi,vel,acc,posi_x,vec_r,vec_n,p,temp1,temp2,pnew,pold,vnew,vold,force
-!          real :: temp3,temp4
-!          real :: c
-!
-!      end subroutine calculate_field_w2
 !
         subroutine calculate_spectrum(this)
             implicit none
@@ -1059,4 +917,297 @@
             end if
         end subroutine write_radiation
 !
+        ! subroutine calculate_inte1(k1,k2,dt,re,im)
+        !     implicit none
+        !     real(8), INTENT(IN) :: k1, k2
+        !     real(8) ,INTENT(IN) :: dt
+        !     real(8), INTENT(INOUT)  :: re,im
+
+        !     real(8) :: dtt,pi,xi1,xi2,u1,u2,v1,v2,d1,d2,temp_c1,temp_c2
+        !     real(8) :: co,si,temp1_re,temp1_im,temp2_re,temp2_im,xi11,xi22
+        !     Logical :: flag
+        !     pi=3.141592653589793d0
+        !     dtt =0.5*dt
+
+        !     if (k2<0) then 
+        !         d1 = k1
+        !         d2 = -k2
+
+        !         temp_c1 = (2*pi/d2)**0.5/2
+        !         temp_c2 = d1**2/4/d2
+        !         co = cos(temp_c2)
+        !         si = sin(temp_c2)
+        !         temp1_re = temp_c1*(co-si)
+        !         temp1_im = temp_c1*(co+si)
+        !         ! print*,"temp1:",temp1_re,temp1_im
+
+        !         xi1 =d1/d2**0.5
+        !         xi2 = 2*d2**0.5*dtt
+        !         xi11 = (xi1-xi2)/2.8284271247461903d0
+        !         xi22 = (xi1+xi2)/2.8284271247461903d0
+        !         call erfc_c(xi11, xi11, u1, v1, flag)
+        !         call erfc_c(xi22, xi22, u2, v2, flag)
+
+        !     else 
+        !         d1 = k1
+        !         d2 = k2
+
+        !         temp_c1 = (2*pi/d2)**0.5/2
+        !         temp_c2 = -d1**2/(4*d2)
+        !         co = cos(temp_c2)
+        !         si = sin(temp_c2)
+        !         temp1_re = temp_c1*(co+si)
+        !         temp1_im = temp_c1*(si-co)
+
+                
+                
+        !         xi1 =d1/d2**0.5
+        !         xi2 = 2*d2**0.5*dtt
+        !         xi11 = (xi1+xi2)/2.8284271247461903d0
+        !         xi22 = (xi1-xi2)/2.8284271247461903d0            
+        !         call erfc_c(xi11, -xi11, u1, v1, flag)
+        !         call erfc_c(xi22, -xi22, u2, v2, flag)
+        !     end if
+        !         temp2_re = (v1-v2)/2
+        !         temp2_im = (u2-u1)/2
+        !         ! print*,"temp2:",temp2_re,temp2_im
+        !         ! print*,u1,v1
+        !         ! print*,temp2_re,temp2_im
+        !         re = temp1_re*temp2_re - temp1_im*temp2_im
+        !         im = temp1_re*temp2_im + temp1_im*temp2_re 
+            
+        !     end subroutine 
+        subroutine calculate_inte2(k1,k2,dt,re,im)
+            implicit none
+            REAL(8),  INTENT(inout) :: re,im
+            real(8),  INTENT(IN) :: k1, k2
+            real(8),  INTENT(IN):: dt
+            real(8) :: dtt
+            dtt =0.5*dt
+            re = 2*sin(k1*dtt)/k1
+            im = k2*(2*dtt**2*sin(k1*dtt)/k1 + 4*dtt*cos(k1*dtt)/k1**2 - 4*sin(k1*dtt)/k1**3)
+        end SUBROUTINE 
+
+        ! subroutine erfc_c(xi,yi,u,v,flag)
+        ! real(8),INTENT(in) ::xi,yi
+        ! real(8),INTENT(inout) :: u,v
+        ! real(8) :: wx,wy,temp1,temp2_co,temp2_si
+        ! Logical,INTENT(inout):: flag
+        ! call wofz(-yi,xi,wx,wy,flag)
+        ! temp1 = exp(yi**2-xi**2)
+        ! temp2_co = cos(2*xi*yi)
+        ! temp2_si = sin(2*xi*yi)
+        ! u = (wx*temp2_co+wy*temp2_si)*temp1
+        ! v = (wy*temp2_co-wx*temp2_si)*temp1
+        ! end subroutine
+
+
+        ! Subroutine wofz(xi, yi, u, v, flag)
+
+        ! !  GIVEN A COMPLEX NUMBER Z = (XI,YI), THIS SUBROUTINE COMPUTES
+        ! !  THE VALUE OF THE FADDEEVA-FUNCTION W(Z) = EXP(-Z**2)*ERFC(-I*Z),
+        ! !  WHERE ERFC IS THE COMPLEX COMPLEMENTARY ERROR-FUNCTION AND I
+        ! !  MEANS SQRT(-1).
+        ! !  THE ACCURACY OF THE ALGORITHM FOR Z IN THE 1ST AND 2ND QUADRANT
+        ! !  IS 14 SIGNIFICANT DIGITS; IN THE 3RD AND 4TH IT IS 13 SIGNIFICANT
+        ! !  DIGITS OUTSIDE A CIRCULAR REGION WITH RADIUS 0.126 AROUND A ZERO
+        ! !  OF THE FUNCTION.
+        ! !  ALL REAL VARIABLES IN THE PROGRAM ARE DOUBLE PRECISION.
+        ! !
+        ! !
+        ! !  THE CODE CONTAINS A FEW COMPILER-DEPENDENT PARAMETERS :
+        ! !     RMAXREAL = THE MAXIMUM VALUE OF RMAXREAL EQUALS THE ROOT OF
+        ! !                RMAX = THE LARGEST NUMBER WHICH CAN STILL BE
+        ! !                IMPLEMENTED ON THE COMPUTER IN DOUBLE PRECISION
+        ! !                FLOATING-POINT ARITHMETIC
+        ! !     RMAXEXP  = LN(RMAX) - LN(2)
+        ! !     RMAXGONI = THE LARGEST POSSIBLE ARGUMENT OF A DOUBLE PRECISION
+        ! !                GONIOMETRIC FUNCTION (DCOS, DSIN, ...)
+        ! !  THE REASON WHY THESE PARAMETERS ARE NEEDED AS THEY ARE DEFINED WILL
+        ! !  BE EXPLAINED IN THE CODE BY MEANS OF COMMENTS
+        ! !
+        ! !
+        ! !  PARAMETER LIST
+        ! !     XI     = REAL      PART OF Z
+        ! !     YI     = IMAGINARY PART OF Z
+        ! !     U      = REAL      PART OF W(Z)
+        ! !     V      = IMAGINARY PART OF W(Z)
+        ! !     FLAG   = AN ERROR FLAG INDICATING WHETHER OVERFLOW WILL
+        ! !              OCCUR OR NOT; TYPE LOGICAL;
+        ! !              THE VALUES OF THIS VARIABLE HAVE THE FOLLOWING
+        ! !              MEANING :
+        ! !              FLAG=.FALSE. : NO ERROR CONDITION
+        ! !              FLAG=.TRUE.  : OVERFLOW WILL OCCUR, THE ROUTINE
+        ! !                             BECOMES INACTIVE
+        ! !  XI, YI      ARE THE INPUT-PARAMETERS
+        ! !  U, V, FLAG  ARE THE OUTPUT-PARAMETERS
+        ! !
+        ! !  FURTHERMORE THE PARAMETER FACTOR EQUALS 2/SQRT(PI)
+        ! !
+        ! !  THE ROUTINE IS NOT UNDERFLOW-PROTECTED BUT ANY VARIABLE CAN BE
+        ! !  PUT TO 0 UPON UNDERFLOW;
+        ! !
+        ! !  REFERENCE - GPM POPPE, CMJ WIJERS; MORE EFFICIENT COMPUTATION OF
+        ! !  THE COMPLEX ERROR-FUNCTION, ACM TRANS. MATH. SOFTWARE.
+        ! !
+        ! !
+        ! !
+        ! !
+        ! !
+        ! Implicit Double Precision (A-H, O-Z)
+        ! !
+        ! integer :: i,j,kapn,n,np1,nu
+        ! Logical a, b, flag
+        ! Parameter (factor=1.12837916709551257388D0, rmaxreal=0.5D+154, rmaxexp=708.503061461606D0, rmaxgoni=3.53711887601422D+15)
+        ! !
+        ! flag = .False.
+        ! !
+        ! xabs = dabs(xi)
+        ! yabs = dabs(yi)
+        ! x = xabs/6.3
+        ! y = yabs/4.4
+        ! !
+        ! !
+        ! !     THE FOLLOWING IF-STATEMENT PROTECTS
+        ! !     QRHO = (X**2 + Y**2) AGAINST OVERFLOW
+        ! !
+        ! If ((xabs>rmaxreal) .Or. (yabs>rmaxreal)) Goto 100
+        ! !
+        ! qrho = x**2 + y**2
+        ! !
+        ! xabsq = xabs**2
+        ! xquad = xabsq - yabs**2
+        ! yquad = 2*xabs*yabs
+        ! !
+        ! a = qrho < 0.085264D0
+        ! !
+        ! If (a) Then
+        ! !
+        ! !  IF (QRHO.LT.0.085264D0) THEN THE FADDEEVA-FUNCTION IS EVALUATED
+        ! !  USING A POWER-SERIES (ABRAMOWITZ/STEGUN, EQUATION (7.1.5), P.297)
+        ! !  N IS THE MINIMUM NUMBER OF TERMS NEEDED TO OBTAIN THE REQUIRED
+        ! !  ACCURACY
+        ! !
+        !     qrho = (1-0.85*y)*dsqrt(qrho)
+        !     n = idnint(6+72*qrho)
+        !     j = 2*n + 1
+        !     xsum = 1.0/j
+        !     ysum = 0.0D0
+        !     Do i = n, 1, -1
+        !     j = j - 2
+        !     xaux = (xsum*xquad-ysum*yquad)/i
+        !     ysum = (xsum*yquad+ysum*xquad)/i
+        !     xsum = xaux + 1.0/j
+        !     End Do
+        !     u1 = -factor*(xsum*yabs+ysum*xabs) + 1.0
+        !     v1 = factor*(xsum*xabs-ysum*yabs)
+        !     daux = dexp(-xquad)
+        !     u2 = daux*dcos(yquad)
+        !     v2 = -daux*dsin(yquad)
+        ! !
+        !     u = u1*u2 - v1*v2
+        !     v = u1*v2 + v1*u2
+        ! !
+        ! Else
+        ! !
+        ! !  IF (QRHO.GT.1.O) THEN W(Z) IS EVALUATED USING THE LAPLACE
+        ! !  CONTINUED FRACTION
+        ! !  NU IS THE MINIMUM NUMBER OF TERMS NEEDED TO OBTAIN THE REQUIRED
+        ! !  ACCURACY
+        ! !
+        ! !  IF ((QRHO.GT.0.085264D0).AND.(QRHO.LT.1.0)) THEN W(Z) IS EVALUATED
+        ! !  BY A TRUNCATED TAYLOR EXPANSION, WHERE THE LAPLACE CONTINUED FRACTION
+        ! !  IS USED TO CALCULATE THE DERIVATIVES OF W(Z)
+        ! !  KAPN IS THE MINIMUM NUMBER OF TERMS IN THE TAYLOR EXPANSION NEEDED
+        ! !  TO OBTAIN THE REQUIRED ACCURACY
+        ! !  NU IS THE MINIMUM NUMBER OF TERMS OF THE CONTINUED FRACTION NEEDED
+        ! !  TO CALCULATE THE DERIVATIVES WITH THE REQUIRED ACCURACY
+        ! !
+        ! !
+        !     If (qrho>1.0) Then
+        !     h = 0.0D0
+        !     kapn = 0
+        !     qrho = dsqrt(qrho)
+        !     nu = idint(3+(1442/(26*qrho+77)))
+        !     Else
+        !     qrho = (1-y)*dsqrt(1-qrho)
+        !     h = 1.88*qrho
+        !     h2 = 2*h
+        !     kapn = idnint(7+34*qrho)
+        !     nu = idnint(16+26*qrho)
+        !     End If
+        ! !
+        !     b = (h>0.0)
+        ! !
+        !     If (b) qlambda = h2**kapn
+        ! !
+        !     rx = 0.0
+        !     ry = 0.0
+        !     sx = 0.0
+        !     sy = 0.0
+        ! !
+        !     Do n = nu, 0, -1
+        !     np1 = n + 1
+        !     tx = yabs + h + np1*rx
+        !     ty = xabs - np1*ry
+        !     c = 0.5/(tx**2+ty**2)
+        !     rx = c*tx
+        !     ry = c*ty
+        !     If ((b) .And. (n<=kapn)) Then
+        !         tx = qlambda + sx
+        !         sx = rx*tx - ry*sy
+        !         sy = ry*tx + rx*sy
+        !         qlambda = qlambda/h2
+        !     End If
+        !     End Do
+        ! !
+        !     If (h==0.0) Then
+        !     u = factor*rx
+        !     v = factor*ry
+        !     Else
+        !     u = factor*sx
+        !     v = factor*sy
+        !     End If
+        ! !
+        !     If (yabs==0.0) u = dexp(-xabs**2)
+        ! !
+        ! End If
+        ! !
+        ! !
+        ! !
+        ! !  EVALUATION OF W(Z) IN THE OTHER QUADRANTS
+        ! !
+        ! !
+        ! If (yi<0.0) Then
+        ! !
+        !     If (a) Then
+        !     u2 = 2*u2
+        !     v2 = 2*v2
+        !     Else
+        !     xquad = -xquad
+        ! !
+        ! !
+        ! !         THE FOLLOWING IF-STATEMENT PROTECTS 2*EXP(-Z**2)
+        ! !         AGAINST OVERFLOW
+        ! !
+        !     If ((yquad>rmaxgoni) .Or. (xquad>rmaxexp)) Goto 100
+        ! !
+        !     w1 = 2*dexp(xquad)
+        !     u2 = w1*dcos(yquad)
+        !     v2 = -w1*dsin(yquad)
+        !     End If
+        ! !
+        !     u = u2 - u
+        !     v = v2 - v
+        !     If (xi>0.0) v = -v
+        ! Else
+        !     If (xi<0.0) v = -v
+        ! End If
+        ! !
+        ! Return
+        ! !
+        ! 100 flag = .True.
+        ! Return
+        ! !
+        ! End Subroutine wofz
         end module radiation_class

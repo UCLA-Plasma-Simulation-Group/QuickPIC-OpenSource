@@ -87,7 +87,7 @@
             if(found) then
 ! read the file
                call this%load_file(filename = './qpinput.json')
-               call this%input%check_for_errors(stat,error_msg)
+               call this%input%check_for_errors(stat)
                if (.not. stat) then
                   call this%err%equit(class//sname//trim(error_msg))
                   return
@@ -280,7 +280,7 @@
 
          call this%input%get(path, p)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -305,7 +305,7 @@
 
          call this%input%get(path, val)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -331,7 +331,7 @@
 
          call this%input%get(path, val1)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if
@@ -357,7 +357,7 @@
 
          call this%input%get(path, val)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -382,7 +382,7 @@
 
          call this%input%get(path, val)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -407,7 +407,7 @@
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -434,7 +434,7 @@
 
          call this%input%get(path, vec1)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -460,7 +460,7 @@
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -485,7 +485,7 @@
 
          call this%input%get(path, vec)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -511,7 +511,7 @@
 
          call this%input%get(path, vec, ilen)
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
@@ -553,10 +553,10 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         call this%input%info(path, var_type=var_type, n_children=n_children, name=name)
+         call this%input%info(path, n_children=n_children)
 
          if (this%input%failed()) then
-            call this%input%check_for_errors(st, error)
+            call this%input%check_for_errors(st)
             call this%input%clear_exceptions()
             call this%err%equit(class//sname//error)
          end if         
