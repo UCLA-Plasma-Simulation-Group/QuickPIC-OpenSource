@@ -68,7 +68,7 @@ type :: fpois2d_mg
   contains
 
   generic :: new => init_fpois2d_mg_explicit
-  ! generic :: new_fd => init_fpois2d_mg_explicit
+  !generic :: new_fd => init_fpois2d_mg_explicit
   generic :: renew => renew_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
   generic :: set_src => set_hypre_src
@@ -178,7 +178,7 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
 end subroutine init_fpois2d_mg
 
 subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, solver_type, &
-  precond_type, tol )
+  precond_type, tol, pqe, ppsi )
 
   implicit none
 
@@ -188,7 +188,8 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   integer, intent(in), dimension(2) :: nd, ndp, noff
   integer, intent(in) :: order, solver_type
   integer, intent(in), optional :: precond_type
-  ! integer, intent(in), dimension(4) :: gc
+  real, dimension(:,:,:), intent(in), pointer :: pqe
+  real, dimension(:,:,:), intent(in), pointer :: ppsi 
   real, intent(in) :: dex, tol
 
   ! local variables
@@ -196,8 +197,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
   integer, dimension(3), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo, p_stencil_explicit/)
   integer :: n_pre = 1, n_post = 1, maxiter = 1000
-  real, dimension(:,:,:), pointer :: pqe => null() 
-  real, dimension(:,:,:), pointer :: ppsi => null() 
+  
   character(len=18), save :: sname = 'init_fpois2d_mg_explicit:'
 
   call perr%werrfl2( class//sname//' started' )
@@ -519,6 +519,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
     case ( p_stencil_explicit )
 
       i = 1
+      !write (*,*) "pqe", size(pqe,1), size(pqe,2)
       do z = 1, nd1p
         do y = 1, nd2p
           values(i)   =  4.0 * idex2 + (1 - pqe(1, y, z)) / (1 + ppsi(1, y, z))
@@ -526,7 +527,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
           values(i+4) = -1.0 * idex2
-          i = i + 1
+          i = i + 5
         enddo
       enddo
     end select
@@ -1063,20 +1064,25 @@ end function reshape_array
 
 ! end subroutine print_x
 
-function get_poismg2table( pp, perr, psp, order ) result(table)
+function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
 ! this function gets an fft table entry, either creates one or points
 ! to one if the required table already exists for real to complex ffts
   implicit none
   class(perrors), intent(in), pointer :: perr
   class(parallel_pipe), intent(in), pointer :: pp
   class(spect2d), intent(in), pointer :: psp
+  class(ufield2d), intent(in), pointer :: uqe, upsi
   integer, intent(in) :: order
   type(fpois2d_mg), pointer :: table
 
   ! local data
   type(fpois2d_mg_link), pointer :: link => null()
   type(fpois2d_mg), pointer :: ltable => null()
+  real, dimension(:,:,:), pointer :: pqe  => null()
+  real, dimension(:,:,:), pointer :: ppsi => null()
+
   integer :: solver_type, precond_type
+  
   integer, dimension(2) :: nd, ndp, noff, nvp
   real :: dex, mg_prec
   character(len=18), save :: sname = 'get_poismg2table:'
@@ -1095,7 +1101,8 @@ function get_poismg2table( pp, perr, psp, order ) result(table)
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
   precond_type = 1 ! SMG preconditioner
-
+  pqe => uqe%getrf()
+  ppsi => upsi%getrf()
   nullify(table)         
 
   if ( numtables == 0 ) then
@@ -1133,7 +1140,7 @@ function get_poismg2table( pp, perr, psp, order ) result(table)
   link%table => ltable
   table => link%table
   call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &
-    precond_type, mg_prec)
+    precond_type, mg_prec, pqe, ppsi)
   link%refcount = 1
   numtables = numtables + 1
 

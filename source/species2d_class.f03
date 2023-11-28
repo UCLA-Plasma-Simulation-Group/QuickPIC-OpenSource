@@ -312,6 +312,8 @@
          call dcu%add(this%dcu,dcu)
          call amu%add(this%amu,amu)
 !         call this%cu%mult(this%cu,dex)
+         call this%dcu%mult(this%dcu,dex)
+         call this%amu%mult(this%amu,dex)
 
          call this%err%werrfl2(class//sname//' ended')
          

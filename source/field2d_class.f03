@@ -150,13 +150,14 @@
 
       end subroutine init_field2d
 !
-subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
+subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algorithm)
 
 ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
          implicit none
          
          class(field2d), intent(inout) :: this
          class(spect2d), intent(in), pointer :: psp
+         class(field2d), intent(in) :: qe, psi
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          integer, intent(in) :: dim
@@ -167,7 +168,10 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
          integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
          integer, dimension(2) :: gc
          integer :: gc_dir
-         
+         ! real, dimension(:,:,:), pointer :: pqe => null() 
+         ! real, dimension(:,:,:), pointer :: ppsi => null()  
+         class(ufield2d), pointer :: uqe, upsi
+
          inorder = psp%getinorder()
 
          this%err => perr
@@ -229,7 +233,9 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
          call this%fd%new( pp, perr, kind=0 )
 
          ! 2nd order multigrid solver
-         this%pt_mg => get_poismg2table( pp, perr, psp, 1 )
+         uqe => qe%getrs()
+         upsi => psi%getrs()
+         this%pt_mg => get_poismg2table( pp, perr, psp, 1, uqe, upsi)
          
          if (fftflag) then
             allocate(this%ks)

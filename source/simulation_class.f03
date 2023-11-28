@@ -137,10 +137,11 @@
          generic :: new => init_simulation
          generic :: del => end_simulation
          generic :: go => go_simulation_2
+         !generic :: go_1=> go_simulation_1
 
          procedure, private :: init_simulation, end_simulation
          procedure, private :: init_diag, diag_simulation
-         procedure, private :: go_simulation_2
+         procedure, private :: go_simulation_1, go_simulation_2
 
       end type simulation
 !
@@ -268,7 +269,7 @@
          allocate(this%qb, this%qe, this%psit, this%psi)
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
-         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu, this%dccu)
+         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%dccu)
          allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
          allocate(this%bexyz, this%bbxyz)
 
@@ -291,7 +292,7 @@
          call this%dccu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         call this%bxyzfd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,algorithm=1)
+         call this%bxyzfd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe=this%qe,psi=this%psi,algorithm=1)
 
          !call this%qe%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1) !algorithm=1 meaning 2d fd.
          !call this%psi%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
@@ -848,23 +849,23 @@
                   call this%beams%beam(m)%qdp(this%fields%qb,j+1) !2d charge density of beam
                end do
                call this%fields%qb%fftrk(1)
+               write(*,*) "aaa"
                call this%fields%qb%elf(this%fields%epwb) !E⊥ of beam
                call this%fields%epwb%mult(this%fields%epwb,this%dex) !epwb需要进行单位换算吗？需要，经过泊松方程求出来的值就需要单位换算？什么时候*dex*dex？
                call this%fields%epwb%fftkr(1)
+               write(*,*) "bbb"
                call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
                   call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
                end do
                call this%fields%qe%fftrk(1)
+               write(*,*) "ccc"
                call this%fields%qe%pot(this%fields%psi)
                call this%fields%psi%grad(this%fields%fxy)
                call this%fields%fxy%fftkr(1)
+               write(*,*) "ddd" 
                call this%fields%psi%fftkr(1)
-               
-               ! call this%fields%qe%solve_mg(this%fields%psi,(/1/),1) ! Dirichlet-Dirichlet, Poisson
-               ! call this%fields%psi%cg()
-               ! call this%fields%psi%grad(this%fields%fxy, this%dex, 1)
-
+               write(*,*) "eee"
                do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
                end do
@@ -874,13 +875,15 @@
                do m = 1, this%nspecies
                   call this%species%spe(m)%jdp(this%fields%cu,this%dex) !deposit J
                end do
+               write(*,*) "ggg"
                call this%fields%cu%mult(this%fields%cu,this%dex)
                if (allocated(this%fields%cu3d)) call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                call this%fields%cu%fftrk(1)
-
+               write(*,*) "hhh"
                if (allocated(this%fields%vpot)) then
                   call this%fields%cu%vpot(this%fields%vpot)
                   call this%fields%vpot%fftkr(1)
+                  write(*,*) "iii"
                   call this%fields%vpot%mult(this%fields%vpot,-this%dex)
                   call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
                end if 
@@ -889,38 +892,60 @@
                call this%fields%div_vpot%pot(this%fields%psit) !Ez of plasma
                call this%fields%psit%mult(this%fields%psit,-this%dex)
                call this%fields%psit%fftkr(1)
+               write(*,*) "jjj"
                call this%fields%cu%bf(this%fields%bxyz)!Bz of plasma, bxyz in kspace.
                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
                call this%fields%bxyz%fftkr(2)
-
-               do m = 1, this%nspecies
-                  call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-                  &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
-               end do
-               call this%fields%amu%fftrk(3)     
+               write(*,*) "kkk"
+               write(*,*) "dcu%gcell=",this%fields%dcu%getgcells() !0
+               write(*,*) "amu%gcell=",this%fields%amu%getgcells() !0
+               ! do m = 1, this%nspecies
+               !    call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+               !    &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
+               ! end do
+               write(*,*) "111"
+               call this%fields%amu%fftrk(3)
+               write(*,*) "lll"     
                call this%fields%amu%bfqpn(this%fields%damu) !divergence of amu, damu in kspace.
+               write(*,*) "damu%state1=",this%fields%damu%getstate()!1,in kspace
                call this%fields%cu%bfqpn(this%fields%dccu) !divergence of Jz, dccu in kspace.               
                call this%fields%damu%add(this%fields%damu,this%fields%dccu,(/1,2/),(/1,2/),(/1,2/))
+               write(*,*) "damu%state2=",this%fields%damu%getstate()!1
                call this%fields%damu%fftkr(1)
-               call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))              
+               write(*,*) "damu%state3=",this%fields%damu%getstate()!0
+               write(*,*) "mmm"
+               call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
+               write(*,*) "damu%state4=",this%fields%damu%getstate()!0
+               write(*,*) "dcu%state=",this%fields%dcu%getstate()!0
+               write(*,*) "bxyzfd%state1=",this%fields%bxyzfd%getstate()!0,in rspace             
                call this%fields%bxyzfd%renew_fd(this%fields%qe, this%fields%psi) !update stencil when qe and psi change.
-               call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
-               call this%fields%bxyzfd%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+               write(*,*) "222"
+               write(*,*) "damu%state5=",this%fields%damu%getstate()!0,in rspace
+               write(*,*) "bxyzfd%state2=",this%fields%bxyzfd%getstate()!0,in rspace
+               !call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+               write(*,*) "333"
+               !call this%fields%bxyzfd%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+               write(*,*) "444"
                call this%fields%bxyzfd%sub(this%fields%bxyzfd,this%fields%epwb,(/1/),(/1/),(/2/))
-               call this%fields%bxyzfd%add(this%fields%bxyzfd,this%fields%epwb,(/2/),(/2/),(/1/))
-               call this%fields%bxyz%mult(this%fields%bxyzfd,1.0)
-               call this%fields%fxy%mult(this%fields%fxy,-1.0)
-               call this%fields%fxy%add(this%fields%fxy,this%fields%bxyzfd,(/1/),(/1/),(/2/)) !Ex
-               call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyzfd,(/2/),(/2/),(/1/)) !Ey
-
+               write(*,*) "555"
+               !call this%fields%bxyzfd%add(this%fields%bxyzfd,this%fields%epwb,(/2/),(/2/),(/1/))
+               write(*,*) "666"
+               !call this%fields%bxyz%mult(this%fields%bxyzfd,1.0)
+               ! call this%fields%fxy%mult(this%fields%fxy,-1.0)
+               ! write(*,*) "777"
+               ! call this%fields%fxy%add(this%fields%fxy,this%fields%bxyzfd,(/1/),(/1/),(/2/)) !Ex
+               ! write(*,*) "888"
+               ! call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyzfd,(/2/),(/2/),(/1/)) !Ey
+               ! write(*,*) "nnn"
                do m = 1, this%nspecies
                   call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%dex) !push particle
                end do
-               !call this%fields%fxy%mult(this%fields%fxy,this%dex)
+               call this%fields%fxy%mult(this%fields%fxy,this%dex)
+               write(*,*) "ooo"
                call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))
                call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))
-               !call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+               call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
             enddo
 

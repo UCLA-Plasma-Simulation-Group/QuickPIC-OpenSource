@@ -760,6 +760,7 @@
 ! local data
          character(len=18), save :: sname = 'minus1:'
          integer :: i,j,k
+         integer :: m,n
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null(),&
          &rf3 => null()
          
@@ -768,11 +769,15 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         
+         m = min(size(rf1,3),size(rf2,3),size(rf3,3)) 
+         n = min(size(rf1,2),size(rf2,2),size(rf3,2))
+         write(*,*) "m=", m,size(rf1,3),size(rf2,3),size(rf3,3)
+         write(*,*) "n=", n,size(rf1,2),size(rf2,2),size(rf3,2)
+
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
+         do k = 1, m
+            do j = 1, n
                do i = 1, size(dim1)
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) - rf3(dim2(i),j,k)
                enddo
@@ -794,17 +799,20 @@
 ! local data
          character(len=18), save :: sname = 'multiply1:'
          integer :: i,j,k
+         integer :: m,n
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
          rf1 => this%rf         
          rf2 => a1%rf
+         m = min(size(rf1,3),size(rf2,3))
+         n = min(size(rf1,1),size(rf2,1))
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
+         do k = 1, m
             do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+               do i = 1, n
                   rf1(i,j,k) = rf2(i,j,k) * value
                enddo
             enddo
@@ -825,16 +833,19 @@
 ! local data
          character(len=18), save :: sname = 'multiply2:'
          integer :: i,j,k
+         integer :: m,n
          real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
          
          call this%err%werrfl2(class//sname//' started')
 
          rf1 => this%rf         
          rf2 => a1%rf
+         m = min(size(rf1,3),size(rf2,3))
+         n = min(size(rf1,2),size(rf2,2))
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
-            do j = 1, size(rf1,2)
+         do k = 1, m
+            do j = 1, n
                do i = 1, size(dim,1)
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) * value(i)
                enddo
