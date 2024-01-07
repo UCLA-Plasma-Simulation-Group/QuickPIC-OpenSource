@@ -850,8 +850,10 @@
                end do
                call this%fields%qb%fftrk(1)
                write(*,*) "aaa"
+!epwb is the normalized unit/dex.                
                call this%fields%qb%elf(this%fields%epwb) !E⊥ of beam
-               call this%fields%epwb%mult(this%fields%epwb,this%dex) !epwb需要进行单位换算吗？需要，经过泊松方程求出来的值就需要单位换算？什么时候*dex*dex？
+!epwb is the normalized unit.               
+               call this%fields%epwb%mult(this%fields%epwb,this%dex) 
                call this%fields%epwb%fftkr(1)
                write(*,*) "bbb"
                call this%fields%qe%as(0.0)
@@ -860,7 +862,9 @@
                end do
                call this%fields%qe%fftrk(1)
                write(*,*) "ccc"
+!psi is the normalized unit/dex**2.               
                call this%fields%qe%pot(this%fields%psi)
+!fxy is the normalized unit/dex.                
                call this%fields%psi%grad(this%fields%fxy)
                call this%fields%fxy%fftkr(1)
                write(*,*) "ddd" 
@@ -869,83 +873,103 @@
                do l = 1, this%nspecies
                   call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
                end do
+!psi is the normalized unit.               
                call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
                if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
                call this%fields%cu%as(0.0)
+!J, cu is the normalized unit/dex.              
                do m = 1, this%nspecies
                   call this%species%spe(m)%jdp(this%fields%cu,this%dex) !deposit J
                end do
                write(*,*) "ggg"
+!cu is the normalized unit.               
                call this%fields%cu%mult(this%fields%cu,this%dex)
                if (allocated(this%fields%cu3d)) call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                call this%fields%cu%fftrk(1)
                write(*,*) "hhh"
-               if (allocated(this%fields%vpot)) then
-                  call this%fields%cu%vpot(this%fields%vpot)
-                  call this%fields%vpot%fftkr(1)
-                  write(*,*) "iii"
-                  call this%fields%vpot%mult(this%fields%vpot,-this%dex)
-                  call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
-               end if 
-
+!potencil A,???               
+               ! if (allocated(this%fields%vpot)) then
+               !    call this%fields%cu%vpot(this%fields%vpot)
+               !    call this%fields%vpot%fftkr(1)
+               !    write(*,*) "iii"
+               !    call this%fields%vpot%mult(this%fields%vpot,-this%dex)
+               !    call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
+               ! end if 
                call this%fields%cu%div(this%fields%div_vpot)
-               call this%fields%div_vpot%pot(this%fields%psit) !Ez of plasma
+!Ez of plasma, psit is the normalized unit/dex.              
+               call this%fields%div_vpot%pot(this%fields%psit)
+!Ez=Ez*(-dex)，psit is the normalized unit.                
                call this%fields%psit%mult(this%fields%psit,-this%dex)
                call this%fields%psit%fftkr(1)
                write(*,*) "jjj"
+!Bz is the normalized unit/dex.                
                call this%fields%cu%bf(this%fields%bxyz)!Bz of plasma, bxyz in kspace.
+!Bz is the normalized unit.               
                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
                call this%fields%bxyz%fftkr(2)
                write(*,*) "kkk"
                write(*,*) "dcu%gcell=",this%fields%dcu%getgcells() !0
                write(*,*) "amu%gcell=",this%fields%amu%getgcells() !0
-               ! do m = 1, this%nspecies
-               !    call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-               !    &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
-               ! end do
+!partial J⊥/partial n; psit and Bz are the normalized unit. fxy, dcu and amu are the normalized unit/dex.               
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+                  &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
+               end do
                write(*,*) "111"
                call this%fields%amu%fftrk(3)
-               write(*,*) "lll"     
+               write(*,*) "lll" 
+!damu is the normalized unit/dex**2.
                call this%fields%amu%bfqpn(this%fields%damu) !divergence of amu, damu in kspace.
                write(*,*) "damu%state1=",this%fields%damu%getstate()!1,in kspace
+!dccu is the normalized unit/dex**2.               
                call this%fields%cu%bfqpn(this%fields%dccu) !divergence of Jz, dccu in kspace.               
                call this%fields%damu%add(this%fields%damu,this%fields%dccu,(/1,2/),(/1,2/),(/1,2/))
                write(*,*) "damu%state2=",this%fields%damu%getstate()!1
                call this%fields%damu%fftkr(1)
                write(*,*) "damu%state3=",this%fields%damu%getstate()!0
                write(*,*) "mmm"
+!damu is the normalized unit/dex.               
+               call this%fields%damu%mult(this%fields%damu,this%dex)
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
+!damu is the normalized unit.               
+               call this%fields%damu%mult(this%fields%damu,this%dex)
                write(*,*) "damu%state4=",this%fields%damu%getstate()!0
                write(*,*) "dcu%state=",this%fields%dcu%getstate()!0
-               write(*,*) "bxyzfd%state1=",this%fields%bxyzfd%getstate()!0,in rspace             
+               write(*,*) "bxyzfd%state1=",this%fields%bxyzfd%getstate()!0,in rspace
+!qe and psi are the normalized unit, bxyzfd is the normalized unit.                            
                call this%fields%bxyzfd%renew_fd(this%fields%qe, this%fields%psi) !update stencil when qe and psi change.
                write(*,*) "222"
                write(*,*) "damu%state5=",this%fields%damu%getstate()!0,in rspace
                write(*,*) "bxyzfd%state2=",this%fields%bxyzfd%getstate()!0,in rspace
-               !call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+!damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units？？？              
+               call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
                write(*,*) "333"
-               !call this%fields%bxyzfd%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
-               write(*,*) "444"
+!Bx=Bx(plasma)-Ey(beam)= Bx(plasma)+Bx(beam)=Bx, bxyzfd and epwb are the normalized unit.           
                call this%fields%bxyzfd%sub(this%fields%bxyzfd,this%fields%epwb,(/1/),(/1/),(/2/))
+               write(*,*) "444"
+!By=By(plasma)+Ex(beam)= By(plasma)+By(beam)=By , bxyzfd and epwb are the normalized unit.              
+               call this%fields%bxyzfd%add(this%fields%bxyzfd,this%fields%epwb,(/2/),(/2/),(/1/))
                write(*,*) "555"
-               !call this%fields%bxyzfd%add(this%fields%bxyzfd,this%fields%epwb,(/2/),(/2/),(/1/))
+!bxyz is the normalized unit.               
+               call this%fields%bxyz%mult(this%fields%bxyzfd,1.0)
                write(*,*) "666"
-               !call this%fields%bxyz%mult(this%fields%bxyzfd,1.0)
-               ! call this%fields%fxy%mult(this%fields%fxy,-1.0)
-               ! write(*,*) "777"
-               ! call this%fields%fxy%add(this%fields%fxy,this%fields%bxyzfd,(/1/),(/1/),(/2/)) !Ex
-               ! write(*,*) "888"
-               ! call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyzfd,(/2/),(/2/),(/1/)) !Ey
-               ! write(*,*) "nnn"
+!fxy is the normalized unit.                 
+               call this%fields%fxy%mult(this%fields%fxy,-this%dex)
+               write(*,*) "777"
+               call this%fields%fxy%add(this%fields%fxy,this%fields%bxyzfd,(/1/),(/1/),(/2/)) !Ex
+               write(*,*) "888"
+               call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyzfd,(/2/),(/2/),(/1/)) !Ey
+               write(*,*) "nnn"
                do m = 1, this%nspecies
                   call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%dex) !push particle
                end do
-               call this%fields%fxy%mult(this%fields%fxy,this%dex)
                write(*,*) "ooo"
+!fxy is the normalized unit.               
                call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))
+!psit is the normalized unit.               
                call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))
-               call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+!bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
             enddo
 

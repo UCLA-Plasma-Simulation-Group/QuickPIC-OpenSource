@@ -2444,6 +2444,8 @@ c rot2 = omzt
       dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
       dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
       
+      dx = dx * idex
+      dy = dy * idex
       dz = dz * idex
 
 ! find magnetic field
@@ -2460,8 +2462,8 @@ c rot2 = omzt
       oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
       oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
 
-      ox = ox * dex
-      oy = oy * dex
+!      ox = ox * dex
+!      oy = oy * dex
 
 ! calculate half impulse
       dx = qtmh2*dx
