@@ -2,8 +2,8 @@
     "simulation": {
         "algorithm": "standard",
         "nodes": [
-            1,
-            1
+            8,
+            2
         ],
         "indx": 9, 
         "indy": 9,
@@ -39,33 +39,41 @@
     "beam": [
         {
             "evolution": true,
-            "profile": 0,
-            "np": [
-                128,
-                128,
-                128
+            "profile": 13,
+            "ppc": [
+                2,
+                2,
+                2
             ],
-            "npmax": 32000000,
+	    "density" : 1.0,
+            "npmax": 234217728,
             "q": -1.0,
             "m": 1.0,
             "gamma": 97847,
-            "peak_density": 0.0,
             "quiet_start": true,
             "center": [
                 0.0,
                 0.0,
-                1.0
+                0.0
             ],
-            "sigma": [
-                0.18,
-                0.18,
-		0.18818
-            ],
-            "sigma_v": [
+            "math_func" : "exp(-(z-3)^2/1.0) * exp(-(x^2 + y^2)/1.0)",
+	    "sigma_v": [
                 0.0,
                 0.0,
                 0.0
             ],
+	    "range_x": [
+		    -3.0,
+		    3.0
+	    ],
+	    "range_y": [
+		    -3.0,
+		    3.0
+	    ],
+	    "range_z" : [
+		    1,
+		    5
+	    ],
             "centroid_x": [
                 0.0,
                 0.0,
@@ -91,11 +99,11 @@
                     "slice": [
                         [
                             "xz",
-                            256
+                            257
                         ],
                         [
                             "yz",
-                            256
+                            257
                         ]
                     ]
                 },
@@ -120,9 +128,9 @@
             "m": 1.0,
             !"push_type" : "standard",
     	    "push_type" : "robust",
-    	    "math_func" : "z^2/(z + 10.0)^2 * exp(-(x^2 + y^2)/50.0)",
-    	    "density": 1.0,
-            "npmax": 32000000,
+    	    "math_func" : "s^2/(s + 10.0)^2 * exp(-(x^2 + y^2)/50.0)",
+	    "density": 1.0,
+            "npmax": 3200000,
     	    "diag": [
                 {
                     "name": [

@@ -1024,7 +1024,7 @@
           allocate( t_fparser :: this%math_func )
         endif
         call input%get( trim(s1) // '.math_func', read_str )
-        call setup(this%math_func, trim(read_str), (/'x','y','z'/), ierr)
+        call setup(this%math_func, trim(read_str), (/'x','y','s'/), ierr)
 
         call this%err%werrfl2(class//sname//' ended')
          
