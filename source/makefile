@@ -26,10 +26,10 @@ FORMAT_FIXED = ${FORMAT_FIXED_${SYS_SFX}}
 
 OBJS_BASE = \
 parallel_class.o parallel_pipe_class.o perrors_class.o dtimer.o spect2d_class.o \
-spect3d_class.o fd2d_lib.o \
+spect3d_class.o \
 hdf5io_class.o \
 ufield2d_class.o ufield2d_lib77.o ufield2d_lib.o \
-fft2d_lib.o fft2d_lib77.o fft2d_class.o fd2d_class.o \
+fft2d_lib.o fft2d_lib77.o fft2d_class.o fd2d_lib.o fd2d_class.o \
 fpois2d_lib.o fpois2d_lib77.o fpois2d_class.o fpois2d_mg_class.o \
 part2d_lib.o part2d_lib77.o part2d_class.o fdist2d_class.o \
 ufield3d_class.o ufield3d_lib77.o ufield3d_lib.o \
@@ -74,7 +74,7 @@ OPTS = ${HDF_INCLUDE_PATH} ${OPTS_C}
 
 # Linkage rule
 main :: ${OBJS} 
-	${LINKER} ${MEM_OPTIONS} ${STATIC_LINK} ${SHARED_LINK} ${OBJS} ${FFTW_LIBS} ${HDF_LIBS} ${OTHER_LIBS} -o qpic.e
+	${LINKER} ${MEM_OPTIONS} ${STATIC_LINK} ${SHARED_LINK} ${OBJS} ${FFTW_LIBS} ${HDF_LIBS} ${OTHER_LIBS} -o qpic.e 
 
 clean ::
 	rm *.o *.mod; rm qpic.e

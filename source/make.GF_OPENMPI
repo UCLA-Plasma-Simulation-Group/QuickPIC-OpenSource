@@ -4,7 +4,7 @@ JSON_INC = /Users/hainan/code/json-fortran-8.3.0/build/include
 
 FC_GF_OPENMPI = mpif90 -g -fbacktrace -fbounds-check -c -I$(JSON_INC) -fopenmp
 CC_GF_OPENMPI = mpicc -c -O3 -std=c99
-LINKER_GF_OPENMPI = mpif90 -fopenmp -O3
+LINKER_GF_OPENMPI = mpif90 -fopenmp -O3 
 
 OPTS_DBL_GF_OPENMPI = -fdefault-real-8 -fdefault-double-8
 OPTS_SGL_GF_OPENMPI = -O3

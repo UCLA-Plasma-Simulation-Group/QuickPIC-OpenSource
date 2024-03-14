@@ -485,6 +485,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
   nd1p = iupper(1) - ilower(1) + 1
   nd2p = iupper(2) - ilower(2) + 1
   
+  write(*,*) "iupper", iupper, ilower
 
   select case ( order )
   case ( p_fd_2order )
@@ -522,7 +523,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
       !write (*,*) "pqe", size(pqe,1), size(pqe,2)
       do z = 1, nd1p
         do y = 1, nd2p
-          values(i)   =  4.0 * idex2 + (1 - pqe(1, y, z)) / (1 + ppsi(1, y, z))
+          values(i)   =  4.0 * idex2 + (1 - pqe(1, z, y)) / (1 + ppsi(1, z, y))
           values(i+1) = -1.0 * idex2
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
@@ -974,15 +975,16 @@ subroutine solve_hypre_poisson( this, src, sol, bnd_types, stencil_kind )
   character(len=18), save :: sname = 'solve_hypre_poisson:'
 
   call this%err%werrfl2( class//sname//' started' )
-
+  write(*,*) "bnd_types",bnd_types
   ndim = size( bnd_types )
+  write(*,*) "ndim",ndim, stencil_kind
   l = stencil_kind
-
+  write(*,*) "solve_hypre_poisson1"
   do dim = 1, ndim
 
     k = bnd_types(dim) 
     call this%set_src( src, dim )
-
+    write(*,*) "solve_hypre_poisson2"
     select case ( this%solver_type )
     case ( p_solver_smg )
       call HYPRE_StructSMGSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
@@ -991,7 +993,7 @@ subroutine solve_hypre_poisson( this, src, sol, bnd_types, stencil_kind )
     case ( p_solver_pcg )
       call HYPRE_StructPCGSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
     end select
-
+    
     call this%get_sol( sol, dim )
 
   enddo

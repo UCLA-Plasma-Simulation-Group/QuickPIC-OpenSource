@@ -33,8 +33,8 @@
          class(ufield2d), pointer :: rs => null(), ks => null()
          class(fft2d), pointer :: ft => null()
          class(fpois2d), pointer :: pt => null()
-         class(fpois2d_mg), pointer :: pt_mg
-         class(fd2d), pointer :: fd
+         class(fpois2d_mg), pointer :: pt_mg => null()
+         class(fd2d), pointer :: fd => null()
          integer :: state, gcells
                   
          contains
@@ -62,11 +62,12 @@
          generic :: precv => piperecv_field2d
          generic :: cp => copyfrom
          generic :: ca => copyadd
-         generic :: cb => copyto
+         generic :: cb => copyto, copyto_2d
          generic :: as => asc, asa
          generic :: add => sum1, sum2
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
+         generic :: mult3 => multiply3
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
 
@@ -80,9 +81,9 @@
          procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
          procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
-         procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
-         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
-         procedure :: getstate, getgcells, getrs, getks
+         procedure, private :: writehdf5_field2d, multiply2, sum2, minus2, multiply3
+         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d, copyto_2d
+         procedure :: getstate, getgcells, getrs, getks, getsum
          procedure, private :: solve_field2d_mg
 
       end type 
@@ -200,9 +201,9 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
                gc_dir = 0
             ! second order finite difference
             case (1)
-               gc(1) = max( inorder-1, 1 )
+               gc(1) = max( inorder-1, 1 )!左右两个方向的gc，左gc或右gc的个数取决于平滑函数、插值阶数、
                gc(2) = max( inorder, 1 )
-               gc_dir = 2
+               gc_dir = 2 !可能是y方向
             ! fourth order finite difference
             case (2)
                gc(1) = max( inorder-1, 2 )
@@ -513,9 +514,9 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
             call this%err%equit( class//sname//'data is in ks' )
             return
          endif
-
+         write(*,*) "solve1", bnd, stencil_kind
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
-
+         write(*,*) "solve2"
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
 
@@ -825,6 +826,38 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyadd
+!
+      subroutine copyto_2d(this,a1,dim,dim1) 
+
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         class(field2d), intent(in) :: a1
+         integer, dimension(:), intent(in) :: dim, dim1
+         character(len=18), save :: sname = 'copyto_2d'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state /= a1%state) then
+            call this%err%equit(class//sname//'states are different')
+            return
+         else if (this%state == 0) then
+            if (this%gcells /= a1%gcells) then
+               call this%err%equit(class//sname//'gcells are different')
+               return
+            else            
+               call this%rs%cb(a1%rs,dim,dim1)
+               this%state = 0
+               this%gcells = a1%gcells
+            endif
+         else
+            call this%ks%cb(a1%ks,dim,dim1)
+            this%state = 1         
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+                 
+      end subroutine copyto_2d
 !      
       subroutine asa(this,that) 
 
@@ -1023,6 +1056,30 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
                  
       end subroutine multiply2
 !
+      subroutine multiply3(this,a1,value) 
+
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         class(field2d), intent(in) :: a1
+         real, intent(in) :: value
+         character(len=18), save :: sname = 'multiply3:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (a1%state == 0) then
+            call this%rs%mult3(a1%rs,value)
+            this%state = 0
+            this%gcells = a1%gcells            
+         else
+            call this%ks%mult3(a1%ks,value)
+            this%state = 1         
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+                 
+      end subroutine multiply3
+!
       subroutine writehdf5_field2d(this,file,dim) 
 
          implicit none
@@ -1084,4 +1141,15 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
 
       end function getks
 !      
+      function getsum(this)
+
+         implicit none
+
+         class(field2d), intent(in) :: this
+         real :: getsum
+
+         getsum = sum(this%rs%getrf())
+
+      end function getsum
+!
       end module field2d_class

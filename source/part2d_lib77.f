@@ -769,78 +769,8 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGRDCJPPOST2L_QP_J(ppart,cu,kpic,noff,nyp,qbm,dt,ci,
-     1idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
-! for 2-1/2d code, this subroutine calculates particle momentum flux,
-! acceleration density and current density using first-order spline
-! interpolation for relativistic particles.
-! OpenMP version using guard cells, for distributed data
-! data read/written in tiles
-! particles stored segmented array
-! 241 flops/particle, 2 divide, 1 sqrt, 69 loads, 40 stores
-! input: all, output: cu, dcu, amu
-! current density is approximated by values at the nearest grid points
-! cu(i,n,m)=qci*(1.-dx)*(1.-dy)
-! cu(i,n+1,m)=qci*dx*(1.-dy)
-! cu(i,n,m+1)=qci*(1.-dx)*dy
-! cu(i,n+1,m+1)=qci*dx*dy
-! and qci = qm*pj*gami, where j = x,y,z, for i = 1, 3
-! where pj = .5*(pj(t+dt/2)+pj(t-dt/2))
-! where gami = 1./sqrt(1.+sum(pi**2)*ci*ci)
-! acceleration density is approximated by values at the nearest grid
-! points
-! dcu(i,n,m)=qci*(1.-dx)*(1.-dy)
-! dcu(i,n+1,m)=qci*dx*(1.-dy)
-! dcu(i,n,m+1)=qci*(1.-dx)*dy
-! dcu(i,n+1,m+1)=qci*dx*dy
-! and qci = qm*dvj*gami/dt, where j = x,y,z, for i = 1, 3
-! where dvj = dpj - pj*gami*dgamma, dpj = (pj(t+dt/2)-pj(t-dt/2)), 
-! pj = .5*(pj(t+dt/2)+pj(t-dt/2)),
-! dgamma = (q/m)*ci*ci*gami*(sum(pj*Ej))*dt,
-! and Ej = jth component of electric field
-! momentum flux is approximated by values at the nearest grid points
-! amu(i,n,m)=qci*(1.-dx)*(1.-dy)
-! amu(i,n+1,m)=qci*dx*(1.-dy)
-! amu(i,n,m+1)=qci*(1.-dx)*dy
-! amu(i,n+1,m+1)=qci*dx*dy
-! and qci = qm*pj*pk*gami**2, where jk = xx-yy,xy,zx,zy, for i = 1, 4
-! where pj = 0.5*(pj(t+dt/2)+pj(t-dt/2),
-! and pk = 0.5*(pk(t+dt/2)+pk(t-dt/2))
-! where n,m = nearest grid points and dx = x-n, dy = y-m
-! momentum equations at t=t+dt/2 are calculated from:
-! px(t+dt/2) = rot(1)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(2)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(3)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fx(x(t),y(t))*dt)
-! py(t+dt/2) = rot(4)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(5)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(6)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fy(x(t),y(t))*dt)
-! pz(t+dt/2) = rot(7)*(px(t-dt/2) + .5*(q/m)*fx(x(t),y(t))*dt) +
-!    rot(8)*(py(t-dt/2) + .5*(q/m)*fy(x(t),y(t))*dt) +
-!    rot(9)*(pz(t-dt/2) + .5*(q/m)*fz(x(t),y(t))*dt) +
-!    .5*(q/m)*fz(x(t),y(t))*dt)
-! where q/m is charge/mass, and the rotation matrix is given by:
-!    rot(1) = (1 - (om*dt/2)**2 + 2*(omx*dt/2)**2)/(1 + (om*dt/2)**2)
-!    rot(2) = 2*(omz*dt/2 + (omx*dt/2)*(omy*dt/2))/(1 + (om*dt/2)**2)
-!    rot(3) = 2*(-omy*dt/2 + (omx*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(4) = 2*(-omz*dt/2 + (omx*dt/2)*(omy*dt/2))/(1 + (om*dt/2)**2)
-!    rot(5) = (1 - (om*dt/2)**2 + 2*(omy*dt/2)**2)/(1 + (om*dt/2)**2)
-!    rot(6) = 2*(omx*dt/2 + (omy*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(7) = 2*(omy*dt/2 + (omx*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(8) = 2*(-omx*dt/2 + (omy*dt/2)*(omz*dt/2))/(1 + (om*dt/2)**2)
-!    rot(9) = (1 - (om*dt/2)**2 + 2*(omz*dt/2)**2)/(1 + (om*dt/2)**2)
-! and om**2 = omx**2 + omy**2 + omz**2
-! the rotation matrix is determined by:
-! omx = (q/m)*bx(x(t),y(t))*gami, omy = (q/m)*by(x(t),y(t))*gami, and
-! omz = (q/m)*bz(x(t),y(t))*gami.
-! fx(x(t),y(t)), fy(x(t),y(t)), and fz(x(t),y(t))
-! bx(x(t),y(t)), by(x(t),y(t)), and bz(x(t),y(t))
-! are approximated by interpolation from the nearest grid points:
-! fx(x,y) = (1-dy)*((1-dx)*fx(n,m)+dx*fx(n+1,m)) + dy*((1-dx)*fx(n,m+1)
-!    + dx*fx(n+1,m+1))
-! where n,m = leftmost grid points and dx = x-n, dy = y-m
-! similarly for fy(x,y), fz(x,y), bx(x,y), by(x,y), bz(x,y)
+      subroutine PPGRDCJPPOST2L_QP_J(ppart,cu,kpic,noff,nyp,idimp,nppmx,
+     1nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
 ! ppart(1,n,m) = position x of particle n in partition in tile m at t
 ! ppart(2,n,m) = position y of particle n in partition in tile m at t
 ! ppart(3,n,m) = momentum px of particle n in partition in tile m
@@ -849,30 +779,13 @@
 ! at t - dt/2
 ! ppart(5,n,m) = momentum pz of particle n in partition in tile m
 ! at t - dt/2
-! fxy(1,j,k) = x component of force/charge at grid (j,kk)
-! fxy(2,j,k) = y component of force/charge at grid (j,kk)
-! fxy(3,j,k) = z component of force/charge at grid (j,kk)
-! that is, convolution of electric field over particle shape,
-! where kk = k + noff - 1
-! bxy(1,j,k) = x component of magnetic field at grid (j,kk)
-! bxy(2,j,k) = y component of magnetic field at grid (j,kk)
-! bxy(3,j,k) = z component of magnetic field at grid (j,kk)
-! that is, the convolution of magnetic field over particle shape,
-! where kk = k + noff - 1
 ! cu(i,j,k) = ith component of current density
 ! at grid point j,kk for i = 1, 3
-! dcu(i,j,k) = ith component of acceleration density
-! at grid point j,kk for i = 1, 3
-! amu(i,j,k) = ith component of momentum flux
-! at grid point j,kk for i = 1, 4
 ! where kk = k + noff - 1
 ! kpic = number of particles per tile
 ! noff = lowermost global gridpoint in particle partition.
 ! nyp = number of primary (complete) gridpoints in particle partition
 ! qm = charge on particle, in units of e
-! qbm = particle charge/mass ratio
-! dt = time interval between successive calculations
-! ci = reciprical of velocity of light
 ! idimp = size of phase space = 5
 ! nppmx = maximum number of particles in tile
 ! nx = system length in x direction
@@ -884,7 +797,7 @@
       implicit none
       integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
       integer mx1, mxyp1
-      real qbm, dt, ci,dex
+      real dex
       !real ppart, fxy, bxy, cu, dcu, amu, psit
       real ppart, cu
       integer kpic
@@ -894,75 +807,34 @@
       dimension cu(3,nxv,nypmx)
       dimension kpic(mxyp1)
 ! local data
-!      integer MXV, MYV
-!      parameter(MXV=33,MYV=33)
       integer noffp, moffp, nppp
       integer mnoff, i, j, k, nn, mm
-      real qtmh, dti, ci2, gami, qtmg, gh, dxp, dyp, amx, amy
-      real dx, dy, dz, ox, oy, oz, qm
-      real acx, acy, acz, omxt, omyt, omzt, omt, anorm
-      real rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9
-      real x, y, vx, vy, vz, p2, v1, v2, v3, v4
+      !real qtmh, dti, ci2, gami, qtmg, gh, dxp, dyp, amx, amy
+      real dx, dy, qm
+      real x, y, vx, vy, vz, dxp, dyp, amx, amy
       !real sfxy, sbxy, scu, sdcu, samu, spsit
       real scu
-      !dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1)
-      !dimension spsit(mx+1,my+1)
       !dimension scu(3,mx+1,my+1), sdcu(2,mx+1,my+1), samu(3,mx+1,my+1)
       dimension scu(3,mx+1,my+1)
-!      dimension sfxy(2,MXV,MYV), sbxy(3,MXV,MYV)
-!      dimension spsit(MXV,MYV)
-!      dimension scu(3,MXV,MYV), sdcu(2,MXV,MYV), samu(3,MXV,MYV)
-      real qm1, qtmh1,qtmh2,idex,inv_part_7,ddx,ddy,p6,p7
-!     dimension sfxy(3,mx+1,my+1), sbxy(3,mx+1,my+1)
-!     dimension scu(3,mx+1,my+1,), sdcu(3,mx+1,my+1), samu(4,mx+1,my+1)
-      qtmh = 0.5*qbm*dt
-      dti = 1.0/dt
-      ci2 = ci*ci
-      idex = 1.0/dex
-! error if local array is too small
-!     if ((mx.ge.MXV).or.(my.ge.MYV)) return
-! loop over tiles
+      !real qm1, qtmh1,qtmh2,idex,inv_part_7,ddx,ddy,p6,p7
+      real qm1, inv_part_7, p7
+      
 !$OMP PARALLEL DO
-!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,v1,v2,v3,
-!$OMP& dxp,dyp,amx,amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omzt, 
-!$OMP& omt,anorm,rot1,rot2,  
-!$OMP& scu,qm1,qtmh1,qtmh2,inv_part_7,ddx,
-!$OMP& ddy,p6,p7,qm)
+!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,vz,
+!$OMP& dxp,dyp,amx,amy,dx,dy, 
+!$OMP& scu,qm1,inv_part_7,
+!$OMP& p7,qm)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
       noffp = mx*(k - mx1*noffp - 1)
       nppp = kpic(k)
       mnoff = moffp + noff - 1
-! load local fields from global arrays
       nn = min(mx,nx-noffp) + 1
       mm = min(my,nyp-moffp) + 1
-c       do 20 j = 1, mm
-c       do 10 i = 1, nn
-c       sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
-c       sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
-c    10 continue
-c    20 continue
-c       do 40 j = 1, mm
-c       do 30 i = 1, nn
-c       sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
-c       sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
-c       sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
-c    30 continue
-c    40 continue
-c       do 46 j = 1, mm
-c       do 42 i = 1, nn
-c       spsit(i,j) = psit(i+noffp,j+moffp)
-c    42 continue
-c    46 continue
-! zero out local accumulators
+
       do 60 j = 1, my+1
       do 50 i = 1, mx+1
-      !samu(1,i,j) = 0.0
-      !samu(2,i,j) = 0.0
-      !samu(3,i,j) = 0.0
-      !sdcu(1,i,j) = 0.0
-      !sdcu(2,i,j) = 0.0
       scu(1,i,j) = 0.0
       scu(2,i,j) = 0.0
       scu(3,i,j) = 0.0
@@ -971,9 +843,9 @@ c    46 continue
 ! loop over particles in tile
       do 70 j = 1, nppp
 ! find interpolation weights
-      x = ppart(1,j,k)
-      y = ppart(2,j,k)
-      p6 = ppart(6,j,k) !gamma
+      x = ppart(1,j,k)  !x
+      y = ppart(2,j,k)  !y
+      !p6 = ppart(6,j,k) !gamma
       p7 = ppart(7,j,k) !1+psi
       qm = ppart(8,j,k) !q
       nn = x
@@ -986,157 +858,44 @@ c    46 continue
       amy = 1.0 - dyp
       
       inv_part_7 = 1.0 / p7
-      qtmh1 = qtmh * inv_part_7
-      qtmh2 = qtmh1 * p6
-      
-! find electric field
-c dx = amx*sfxy(1,nn,mm)
-c dy = amx*sfxy(2,nn,mm)
-c dz = amx*spsit(nn,mm)
+ 
+      vx = ppart(3,j,k) !px
+      vy = ppart(4,j,k) !py
+      vz = ppart(5,j,k) !pz
 
-c dx = amy*(dxp*sfxy(1,nn+1,mm) + dx)
-c dy = amy*(dxp*sfxy(2,nn+1,mm) + dy)
-c dz = amy*(dxp*spsit(nn+1,mm) + dz)
-
-c acx = amx*sfxy(1,nn,mm+1)
-c acy = amx*sfxy(2,nn,mm+1)
-c acz = amx*spsit(nn,mm+1)
-
-c dx = dx + dyp*(dxp*sfxy(1,nn+1,mm+1) + acx) 
-c dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
-c dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
-
-! find magnetic field
-c ox = amx*sbxy(1,nn,mm)
-c oy = amx*sbxy(2,nn,mm)
-c oz = amx*sbxy(3,nn,mm)
-
-c ox = amy*(dxp*sbxy(1,nn+1,mm) + ox)
-c oy = amy*(dxp*sbxy(2,nn+1,mm) + oy)
-c oz = amy*(dxp*sbxy(3,nn+1,mm) + oz)
-
-c acx = amx*sbxy(1,nn,mm+1)
-c acy = amx*sbxy(2,nn,mm+1)
-c acz = amx*sbxy(3,nn,mm+1)
-
-c ox = ox + dyp*(dxp*sbxy(1,nn+1,mm+1) + acx) 
-c oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
-c oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
-
-! calculate half impulse
-      ddx = (-1.0)*qtmh2*dx + qtmh*oy
-      ddy = (-1.0)*qtmh2*dy - qtmh*ox
-
-! half acceleration
-      vx = ppart(3,j,k)
-      vy = ppart(4,j,k)
-
-      acx = vx + ddx
-      acy = vy + ddy
-
-! find inverse gamma
-! renormalize magnetic field
-! calculate cyclotron frequency
-      omzt = qtmh1*oz
-! calculate rotation matrix
-      omt = omzt*omzt
-      anorm = 2.0/(1.0 + omt)
-      rot1 = 0.5*(1.0 - omt)
-      rot2 = omzt
-
-
-! new momentum
-      v1 = (rot1*acx + rot2*acy)*anorm + ddx
-      v2 = (rot1*acy - rot2*acx)*anorm + ddy
-
-! deposit momentum flux, acceleration density, and current density
       qm1 = qm*inv_part_7
-
       amx = qm1*amx
       dxp = qm1*dxp
-
-      ox = 0.5*(v1 + vx)
-      oy = 0.5*(v2 + vy)
-      oz = 0.5*(1.0+dex*dex*(ox*ox+oy*oy))*inv_part_7 - 0.5*p7
-
-      ppart(6,j,k) = p7 + oz
-
-c oz = oz*idex
-
-c !vx = (v1 - vx)*dti
-c !vy = (v2 - vy)*dti
-
-c dz = qbm*(dz + (dx*ox+dy*oy)*dex*dex*inv_part_7)
-
 
       dx = amx*amy
       dy = dxp*amy
 
-      !v1 = ox*ox*inv_part_7
-      !v2 = oy*oy*inv_part_7
-      !v3 = ox*oy*inv_part_7
-
-      !vx = vx+ox*dz*inv_part_7
-      !vy = vy+oy*dz*inv_part_7
-
-      !samu(1,nn,mm) = samu(1,nn,mm) + v1*dx
-      !samu(2,nn,mm) = samu(2,nn,mm) + v2*dx
-      !samu(3,nn,mm) = samu(3,nn,mm) + v3*dx
-
-      !sdcu(1,nn,mm) = sdcu(1,nn,mm) + vx*dx
-      !sdcu(2,nn,mm) = sdcu(2,nn,mm) + vy*dx
-
-      scu(1,nn,mm) = scu(1,nn,mm) + ox*dx
-      scu(2,nn,mm) = scu(2,nn,mm) + oy*dx
-      scu(3,nn,mm) = scu(3,nn,mm) + oz*dx
+      scu(1,nn,mm) = scu(1,nn,mm) + vx*dx
+      scu(2,nn,mm) = scu(2,nn,mm) + vy*dx
+      scu(3,nn,mm) = scu(3,nn,mm) + vz*dx
 
       dx = amx*dyp
-      !samu(1,nn+1,mm) = samu(1,nn+1,mm) + v1*dy
-      !samu(2,nn+1,mm) = samu(2,nn+1,mm) + v2*dy
-      !samu(3,nn+1,mm) = samu(3,nn+1,mm) + v3*dy
 
-      !sdcu(1,nn+1,mm) = sdcu(1,nn+1,mm) + vx*dy
-      !sdcu(2,nn+1,mm) = sdcu(2,nn+1,mm) + vy*dy
-
-      scu(1,nn+1,mm) = scu(1,nn+1,mm) + ox*dy
-      scu(2,nn+1,mm) = scu(2,nn+1,mm) + oy*dy
-      scu(3,nn+1,mm) = scu(3,nn+1,mm) + oz*dy
+      scu(1,nn+1,mm) = scu(1,nn+1,mm) + vx*dy
+      scu(2,nn+1,mm) = scu(2,nn+1,mm) + vy*dy
+      scu(3,nn+1,mm) = scu(3,nn+1,mm) + vz*dy
 
       dy = dxp*dyp
-      !samu(1,nn,mm+1) = samu(1,nn,mm+1) + v1*dx
-      !samu(2,nn,mm+1) = samu(2,nn,mm+1) + v2*dx
-      !samu(3,nn,mm+1) = samu(3,nn,mm+1) + v3*dx
 
-      !sdcu(1,nn,mm+1) = sdcu(1,nn,mm+1) + vx*dx
-      !sdcu(2,nn,mm+1) = sdcu(2,nn,mm+1) + vy*dx
+      scu(1,nn,mm+1) = scu(1,nn,mm+1) + vx*dx
+      scu(2,nn,mm+1) = scu(2,nn,mm+1) + vy*dx
+      scu(3,nn,mm+1) = scu(3,nn,mm+1) + vz*dx
 
-      scu(1,nn,mm+1) = scu(1,nn,mm+1) + ox*dx
-      scu(2,nn,mm+1) = scu(2,nn,mm+1) + oy*dx
-      scu(3,nn,mm+1) = scu(3,nn,mm+1) + oz*dx
-
-      !samu(1,nn+1,mm+1) = samu(1,nn+1,mm+1) + v1*dy
-      !samu(2,nn+1,mm+1) = samu(2,nn+1,mm+1) + v2*dy
-      !samu(3,nn+1,mm+1) = samu(3,nn+1,mm+1) + v3*dy
-
-      !sdcu(1,nn+1,mm+1) = sdcu(1,nn+1,mm+1) + vx*dy
-      !sdcu(2,nn+1,mm+1) = sdcu(2,nn+1,mm+1) + vy*dy
-
-      scu(1,nn+1,mm+1) = scu(1,nn+1,mm+1) + ox*dy
-      scu(2,nn+1,mm+1) = scu(2,nn+1,mm+1) + oy*dy
-      scu(3,nn+1,mm+1) = scu(3,nn+1,mm+1) + oz*dy
+      scu(1,nn+1,mm+1) = scu(1,nn+1,mm+1) + vx*dy
+      scu(2,nn+1,mm+1) = scu(2,nn+1,mm+1) + vy*dy
+      scu(3,nn+1,mm+1) = scu(3,nn+1,mm+1) + vz*dy
    70 continue
 ! deposit currents to interior points in global array
       nn = min(mx,nxv-noffp)
       mm = min(my,nypmx-moffp)
       do 90 j = 2, mm
       do 80 i = 2, nn
-      !amu(1,i+noffp,j+moffp) = amu(1,i+noffp,j+moffp) + samu(1,i,j)
-      !amu(2,i+noffp,j+moffp) = amu(2,i+noffp,j+moffp) + samu(2,i,j)
-      !amu(3,i+noffp,j+moffp) = amu(3,i+noffp,j+moffp) + samu(3,i,j)
-
-      !dcu(1,i+noffp,j+moffp) = dcu(1,i+noffp,j+moffp) + sdcu(1,i,j)
-      !dcu(2,i+noffp,j+moffp) = dcu(2,i+noffp,j+moffp) + sdcu(2,i,j)
-
+ 
       cu(1,i+noffp,j+moffp) = cu(1,i+noffp,j+moffp) + scu(1,i,j)
       cu(2,i+noffp,j+moffp) = cu(2,i+noffp,j+moffp) + scu(2,i,j)
       cu(3,i+noffp,j+moffp) = cu(3,i+noffp,j+moffp) + scu(3,i,j)

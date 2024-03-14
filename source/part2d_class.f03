@@ -352,8 +352,8 @@
          ! call PPGRDCJPPOST2L_QP(this%ppart,pef,pbf,ppsit(1,:,:),pcu,pdcu,&
          ! &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
          ! &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
-         call PPGRDCJPPOST2L_QP_J(this%ppart,pcu,this%kpic,noff,nyp,this%qbm,&
-         &this%dt,this%ci,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         call PPGRDCJPPOST2L_QP_J(this%ppart,pcu,this%kpic,noff,nyp,&
+         &this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          
          call this%err%werrfl2(class//sname//' ended')
          

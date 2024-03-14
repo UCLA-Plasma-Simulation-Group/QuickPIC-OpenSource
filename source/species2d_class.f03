@@ -110,7 +110,7 @@
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          if (ntd) then
-            call this%qn%as(0.0)
+            call this%qn%as(0.0)!有问题
          else
             call this%q%as(0.0)
          end if
@@ -307,6 +307,7 @@
          !call this%cu%ag()
          call this%dcu%ag()
          call this%amu%ag()
+         !write(*,*) "dcu%gcell=",this%dcu%getgcells(),dcu%getgcells()
 
 !         call cu%add(this%cu,cu)
          call dcu%add(this%dcu,dcu)
