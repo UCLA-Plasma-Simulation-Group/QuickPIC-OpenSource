@@ -1,0 +1,180 @@
+{
+    "simulation": {
+        "algorithm": "standard",
+        "nodes": [
+            1,
+            1
+        ],
+        "indx": 9, 
+        "indy": 9,
+        "indz": 9,
+        "box": {
+            "x": [
+                 -30,
+                 30
+            ],
+            "y": [
+                -30,
+                 30
+            ],
+            "z": [
+                0,
+                9.45
+            ]
+        },
+        "boundary": "conducting",
+	"interpolation": "linear",
+	"n0": 1e+18,
+        "time": 11,
+        "dt": 10.0,
+        "nbeams": 1,
+        "nspecies": 1,
+        "dump_restart": false,
+        "ndump_restart": 1,
+        "read_restart": false,
+        "restart_timestep": 0,
+        "iter": 1,
+        "verbose": 0
+    },
+    "beam": [
+        {
+            "evolution": true,
+            "profile": 0,
+            "np": [
+                128,
+                128,
+                128
+            ],
+            "npmax": 32000000,
+            "q": -1.0,
+            "m": 1.0,
+            "gamma": 97847,
+            "peak_density": 400.0,
+            "quiet_start": true,
+            "center": [
+                0.0,
+                0.0,
+                1.0
+            ],
+            "sigma": [
+                0.18,
+                0.18,
+		0.18818
+            ],
+            "sigma_v": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "centroid_x": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "centroid_y": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "diag": [
+                {
+                    "name": [
+                        "charge"
+                    ],
+                    "ndump": 0
+                },
+                {
+                    "name": [
+                        "charge"
+                    ],
+                    "ndump": 1,
+                    "slice": [
+                        [
+                            "xz",
+                            256
+                        ],
+                        [
+                            "yz",
+                            256
+                        ]
+                    ]
+                },
+                {
+                    "name": [
+                        "raw"
+                    ],
+                    "ndump": 1,
+                    "sample": 100
+                }
+            ]
+        }
+    ],
+    "species": [
+        {
+            "profile": 0,
+            "ppc": [
+                2,
+                2
+            ],
+            "q": -1.0,
+            "m": 1.0,
+            !"push_type" : "standard",
+	    "push_type" : "robust",
+	    "longitudinal_profile" : "uniform",
+	    "density": 1.0,
+            "npmax": 32000000,
+	    "diag": [
+                {
+                    "name": [
+                        "charge"
+                    ],
+                    "ndump": 0
+                },
+                {
+                    "name": [
+                        "charge","jx","jy","jz"
+                    ],
+                    "ndump": 1,
+                    "slice": [
+                        [
+                            "xz",
+                            256
+                        ],
+                        [
+                            "yz",
+                            256
+                        ]
+                    ]
+                }
+            ]
+        }
+    ],
+    "field": {
+        "diag": [
+            {
+                "name": [
+                    "ex",
+                    "ez"
+                ],
+                "ndump": 0
+            },
+            {
+                "name": [
+                    "ez", "ex", "ey", "bx", "by", "bz","psi"
+                ],
+                "ndump": 1,
+                "slice": [
+                    [
+                        "xz",
+                        256
+                    ],
+		    [
+                        "yz",
+                        256
+                    ]
+                ]
+            }
+        ]
+    }
+}
+

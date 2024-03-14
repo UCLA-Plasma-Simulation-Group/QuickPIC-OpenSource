@@ -17,6 +17,7 @@
       use hdf5io_class
       use input_class
       use mpi
+      use param
 
       implicit none
 
@@ -438,6 +439,9 @@
             case (3)
                allocate(fdist3d_003::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            case (13)
+               allocate(fdist3d_013::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
             case (100)
                allocate(fdist3d_100::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
@@ -511,9 +515,10 @@
          integer :: npf
          real, dimension(3,100) :: arg
          character(len=20) :: sn,s1
-         integer :: indz, xppc, yppc
+         integer :: indz, xppc, yppc, push_type
          real :: min, max, cwp, n0
          real :: qm, qbm, dz
+         character(len=:), allocatable :: str
 
          this%err => input%err
          this%p => input%pp
@@ -539,6 +544,23 @@
             write (sn,'(I3.3)') i
             s1 = 'species('//trim(sn)//')'
             call input%get(trim(s1)//'.profile',npf)
+
+            push_type = p_push2_std
+
+            if (input%found(trim(s1)//'.push_type')) then
+               call input%get( trim(s1)//'.push_type', str )
+               select case (trim(str))
+               case ( 'standard' )
+                  push_type = p_push2_std
+               case ( 'robust' )
+                  push_type = p_push2_robust
+               case default
+                  write (erstr,*) 'Invalid pusher type! Only "standard", "robust" &
+                    &are supported currently.'
+               end select
+
+            endif
+
             select case (npf)
             case (0)
                allocate(fdist2d_000::this%pf(i)%p)
@@ -552,6 +574,9 @@
             case (12)
                allocate(fdist2d_012::this%pf(i)%p)
                call this%pf(i)%p%new(input,i)
+            case (13)
+               allocate(fdist2d_013::this%pf(i)%p)
+               call this%pf(i)%p%new(input,i)
 ! Add new distributions right above this line
             case default
                write (erstr,*) 'Invalid species profile number:', npf
@@ -562,7 +587,7 @@
             call input%get(trim(s1)//'.m',qbm)
             qbm = qm/qbm
             call this%spe(i)%new(this%p,this%err,this%sp3,this%pf(i)%p,&
-            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s)
+            &qbm=qbm,dt=dz,ci=1.0,xdim=8,s=s,push_type=push_type)
 
          end do
          call this%err%werrfl2(class//sname//' ended')

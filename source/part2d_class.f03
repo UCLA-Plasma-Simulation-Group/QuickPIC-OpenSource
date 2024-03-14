@@ -28,6 +28,7 @@
       use part2d_lib
       use hdf5io_class
       use mpi
+      use param
                
       implicit none
 
@@ -74,6 +75,7 @@
          generic :: del => end_part2d
          generic :: qdp => qdeposit
          generic :: amjdp => amjdeposit
+         generic :: amjdp_robust => amjdeposit_robust
          generic :: push => partpush
          generic :: pmv => pmove
          generic :: extpsi => extractpsi
@@ -86,6 +88,7 @@
          procedure, private :: end_part2d
          procedure, private :: qdeposit
          procedure, private :: amjdeposit
+         procedure, private :: amjdeposit_robust
          procedure, private :: partpush
          procedure, private :: pmove
          procedure, private :: extractpsi
@@ -321,6 +324,38 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine amjdeposit
+
+      subroutine amjdeposit_robust(this,ef,bf,psit,cu,amu,dcu,dex)
+! deposit the current, acceleration and momentum flux      
+      
+         implicit none
+         
+         class(part2d), intent(inout) :: this
+         class(ufield2d), pointer, intent(in) :: cu, amu, dcu
+         class(ufield2d), pointer, intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'amjdeposit_robust'
+! local data
+         real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
+         real, dimension(:,:,:), pointer :: ppsit => null(), pcu => null()
+         real, dimension(:,:,:), pointer :: pamu => null(), pdcu => null()
+         integer :: noff, nyp, nx, nxv, nypmx
+
+         call this%err%werrfl2(class//sname//' started')
+         pef => ef%getrf(); pbf => bf%getrf()
+         ppsit => psit%getrf(); pcu => cu%getrf()
+         pamu => amu%getrf(); pdcu => dcu%getrf()
+         noff = ef%getnoff()
+         nxv = size(pef,2); nypmx = size(pef,3)
+         nx = ef%getnd1(); nyp = ef%getnd2p()
+         call PPGRDCJPPOST2L_QP_ROBUST(this%ppart,pef,pbf,ppsit(1,:,:),pcu,pdcu,&
+         &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
+         &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine amjdeposit_robust
 !      
       subroutine partpush(this,ef,bf,psit,dex)
       
@@ -608,13 +643,14 @@
          
       end subroutine pmove
 !      
-      subroutine extractpsi(this,psi,dex)
+      subroutine extractpsi(this,psi,dex, push_type)
       
          implicit none
          
          class(part2d), intent(inout) :: this
          class(ufield2d), pointer, intent(in) :: psi
          real, intent(in) :: dex
+         integer, intent(in) :: push_type
          character(len=18), save :: sname = 'extractpsi'
 ! local data
          real, dimension(:,:,:), pointer :: ppsi
@@ -626,8 +662,15 @@
          nyp = psi%getnd2p(); nx = psi%getnd1()
          nxv = size(ppsi,2); nypmx = size(ppsi,3)
          
-         call WPGPSIPOST2L_QP(this%ppart,ppsi(1,:,:),this%kpic,this%qbm,noff,&
-         &nyp,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         select case (push_type)
+            case (p_push2_std)
+               call WPGPSIPOST2L_QP(this%ppart,ppsi(1,:,:),this%kpic,this%qbm,noff,&
+               &nyp,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+            case(p_push2_robust)
+               call WPGPSIPOST2L_QP_ROBUST(this%ppart,ppsi(1,:,:),this%kpic,this%qbm,noff,&
+               &nyp,this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         end select
+
 
          call this%err%werrfl2(class//sname//' ended')
          

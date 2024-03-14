@@ -89,6 +89,26 @@
          real, intent(in) :: dex
          end subroutine
       end interface
+ !
+      interface
+         subroutine PPGRDCJPPOST2L_QP_ROBUST(ppart,fxy,bxy,psit,cu,dcu,amu,kpic,noff,&
+     &nyp,qbm,dt,ci,idimp,nppmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         implicit none
+         integer, intent(in) :: noff, nyp, idimp, nppmx, nx, mx, my
+         integer, intent(in) :: nxv, nypmx, mx1, mxyp1
+         real, intent(in) ::  qbm, dt, ci
+         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
+         real, dimension(2,nxv,nypmx), intent(in) :: fxy
+         real, dimension(3,nxv,nypmx), intent(in) :: bxy
+         real, dimension(nxv,nypmx), intent(in) :: psit
+         real, dimension(3,nxv,nypmx), intent(inout) :: cu
+         real, dimension(2,nxv,nypmx), intent(inout) :: dcu
+         real, dimension(3,nxv,nypmx), intent(inout) :: amu
+         integer, dimension(mxyp1), intent(in) :: kpic
+         real, intent(in) :: dex
+         end subroutine
+      end interface
+
 !
       interface
          subroutine PPGRBPPUSH23L_QP(ppart,fxy,bxy,psit,kpic,noff,nyp,  &
@@ -207,6 +227,19 @@
          integer, dimension(2,ntmax+1,mxyp1), intent(in) :: ihole
          end subroutine
       end interface
+!
+      interface
+         subroutine WPGPSIPOST2L_QP_ROBUST(ppart,psi,kpic,qbm,noff,nyp,idimp,np&
+     &pmx,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         implicit none
+         integer, intent(in) :: noff, nyp, idimp, nppmx, nx, mx, my
+         integer, intent(in) :: mx1, mxyp1, nxv, nypmx
+         real, intent(in) :: dex,qbm
+         real, dimension(idimp,nppmx,mxyp1), intent(inout) :: ppart
+         real, dimension(nxv,nypmx), intent(in) :: psi
+         integer, dimension(mxyp1), intent(in) :: kpic
+         end subroutine
+      end interface  
 !
       interface
          subroutine WPGPSIPOST2L_QP(ppart,psi,kpic,qbm,noff,nyp,idimp,np&

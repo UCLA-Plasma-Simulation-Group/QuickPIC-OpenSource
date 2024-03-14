@@ -12,7 +12,7 @@
       use field3d_class
       use part2d_class
       use hdf5io_class
-               
+      use param
       implicit none
 
       private
@@ -31,6 +31,7 @@
          class(field2d), pointer :: amu => null(), dcu => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
+         integer :: push_type
          
          contains
          
@@ -71,7 +72,7 @@
       
       contains
 !
-      subroutine init_species2d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s)
+      subroutine init_species2d(this,pp,perr,psp,pf,qbm,dt,ci,xdim,s,push_type)
 
          implicit none
          
@@ -82,6 +83,7 @@
          class(fdist2d), intent(inout), target :: pf
          real, intent(in) :: qbm, dt, ci, s
          integer, intent(in) :: xdim
+         integer, intent(in) :: push_type
 
 ! local data
          character(len=18), save :: sname = 'init_species2d:'
@@ -90,6 +92,7 @@
          this%err => perr
          this%p => pp
          this%pf => pf
+         this%push_type = push_type
 
          call this%err%werrfl2(class//sname//' started')
          
@@ -201,8 +204,14 @@
          call this%dcu%as(0.0)
          call this%amu%as(0.0)
          
-         call this%pd%amjdp(ef%getrs(),bf%getrs(),psit%getrs(),this%cu%getrs(),&
-         &this%amu%getrs(),this%dcu%getrs(),dex)
+         select case (this%push_type)
+            case (p_push2_std)
+                call this%pd%amjdp(ef%getrs(),bf%getrs(),psit%getrs(),this%cu%getrs(),&
+                &this%amu%getrs(),this%dcu%getrs(),dex)
+            case ( p_push2_robust )
+               call this%pd%amjdp_robust(ef%getrs(),bf%getrs(),psit%getrs(),this%cu%getrs(),&
+               &this%amu%getrs(),this%dcu%getrs(),dex)
+         end select
          
          call this%cu%ag()
          call this%dcu%ag()
@@ -265,7 +274,7 @@
          
          call this%err%werrfl2(class//sname//' started')
          
-         call this%pd%extpsi(psi%getrs(),dex)
+         call this%pd%extpsi(psi%getrs(),dex, this%push_type)
 
          call this%err%werrfl2(class//sname//' ended')
          

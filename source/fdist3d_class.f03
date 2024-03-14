@@ -9,6 +9,7 @@
       use ufield3d_class
       use part3d_lib
       use input_class
+      use m_fparser
          
       implicit none
 
@@ -16,6 +17,7 @@
 
       public :: fdist3d, fdist3d_000, fdist3d_001, fdist3d_002, fdist3d_100
       public :: fdist3d_003
+      public :: fdist3d_013
 
       type, abstract :: fdist3d
 
@@ -131,6 +133,22 @@
 
       end type fdist3d_003
 !
+      type, extends(fdist3d) :: fdist3d_013
+! math func profile
+         private
+
+         integer :: xppc, yppc, zppc
+         real :: qm, bcx, bcy, bcz, dx, dy, dz
+         real, dimension(3) :: lb, ub
+         real :: gamma, np
+         type(t_fparser), pointer :: math_func => null()
+
+         contains
+         procedure, private :: init_fdist3d => init_fdist3d_013
+         procedure, private :: dist3d => dist3d_013
+
+      end type fdist3d_013
+
       type, extends(fdist3d) :: fdist3d_100
 ! Ring profile
          private
@@ -972,6 +990,202 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine dist3d_003
+
+      subroutine init_fdist3d_013(this,input,i)
+      
+         implicit none
+         
+         class(fdist3d_013), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i        
+! local data
+         integer :: xppc,yppc,zppc,npmax,npf
+         real :: qm, bcx, bcy, bcz
+         real, dimension(3) :: lb, ub
+         real :: gamma, np
+         real :: min, max, n0
+         real :: alx, aly, alz, dx, dy, dz
+         integer :: indx, indy, indz, ierr         
+         character(len=20) :: sn,s1
+
+         character(len=18), save :: sname = 'init_fdist3d_013:'
+         character(len=:), allocatable :: read_str
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+
+         write (sn,'(I3.3)') i
+         s1 = 'beam('//trim(sn)//')'
+
+         call input%get('simulation.n0',n0)
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get('simulation.indz',indz)
+
+         call input%get('simulation.box.x(1)',min)
+         call input%get('simulation.box.x(2)',max)
+         call input%get(trim(s1)//'.center(1)',bcx)
+         call input%get(trim(s1)//'.range_x(1)',lb(1))
+         call input%get(trim(s1)//'.range_x(2)',ub(1))
+         lb(1) = lb(1) - min
+         ub(1) = ub(1) - min
+         bcx = bcx - min
+         alx = (max-min) 
+         dx=alx/real(2**indx)
+         call input%get('simulation.box.y(1)',min)
+         call input%get('simulation.box.y(2)',max)
+         call input%get(trim(s1)//'.center(2)',bcy)
+         call input%get(trim(s1)//'.range_y(1)',lb(2))
+         call input%get(trim(s1)//'.range_y(2)',ub(2))
+         lb(2) = lb(2) - min
+         ub(2) = ub(2) - min
+         bcy = bcy -min
+         aly = (max-min) 
+         dy=aly/real(2**indy)
+         call input%get('simulation.box.z(1)',min)
+         call input%get('simulation.box.z(2)',max)
+         call input%get(trim(s1)//'.center(3)',bcz)
+         call input%get(trim(s1)//'.range_z(1)',lb(3))
+         call input%get(trim(s1)//'.range_z(2)',ub(3))
+         lb(3) = lb(3) - min
+         ub(3) = ub(3) - min
+         bcz = bcz -min
+         alz = (max-min) 
+         dz=alz/real(2**indz)
+
+         call input%get(trim(s1)//'.profile',npf)
+         call input%get(trim(s1)//'.ppc(1)',xppc)
+         call input%get(trim(s1)//'.ppc(2)',yppc)
+         call input%get(trim(s1)//'.ppc(3)',zppc)
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.density',np)
+         call input%get(trim(s1)//'.gamma',gamma)
+         call input%get(trim(s1)//'.npmax',npmax)
+
+         this%npf = npf
+         this%npmax = npmax
+         this%xppc = xppc
+         this%yppc = yppc
+         this%zppc = zppc
+         this%bcx = bcx/dx
+         this%bcy = bcy/dy
+         this%bcz = bcz/dz
+         this%lb(1) = lb(1)/dx
+         this%lb(2) = lb(2)/dy
+         this%lb(3) = lb(3)/dz
+         this%ub(1) = ub(1)/dx
+         this%ub(2) = ub(2)/dy
+         this%ub(3) = ub(3)/dz
+         this%dx = dx
+         this%dy = dy
+         this%dz = dz
+         this%gamma = gamma
+         this%np = np
+
+         this%qm = qm
+
+         if ( .not. associated( this%math_func ) ) then
+          allocate( t_fparser :: this%math_func )
+        endif
+        call input%get( trim(s1) // '.math_func', read_str )
+        call setup(this%math_func, trim(read_str), (/'x','y','z'/), ierr)
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist3d_013
+!
+      subroutine dist3d_013(this,part3d,npp,fd)
+      
+         implicit none
+         
+         class(fdist3d_013), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part3d
+         integer, intent(inout) :: npp
+         class(ufield3d), intent(in), pointer :: fd
+! local data1
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: xppc,yppc,zppc
+         real :: qm, bcx, bcy, bcz
+         real, dimension(3) :: lb, ub
+         real :: r1, r2, tx, ty, tz, a1, a2, a3, a4
+         real :: gamma, np, den_temp
+         integer, dimension(2) :: noff
+         integer :: nps
+         integer :: i, j, k, ix, iy, iz
+         integer :: idimp, npmax, ierr
+         character(len=18), save :: sname = 'dist3d_013:'
+         real(p_k_fparse), dimension(3) :: fparser_arr 
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         nps = 1
+         ierr = 0
+         xppc = this%xppc; yppc = this%yppc; zppc = this%zppc;
+         noff = fd%getnoff()
+         lb(1) = max(this%lb(1),0.0)
+         ub(1) = min(this%ub(1),real(fd%getnd1()-1))
+
+         if (this%lb(2) > real(noff(1)+fd%getnd2p()) .or. &
+         &this%ub(2) < real(noff(1))) then
+            npp = 0
+            return
+         else
+            lb(2) = max(this%lb(2),real(noff(1)))
+            ub(2) = min(this%ub(2),real(noff(1)+fd%getnd2p()-1))
+         end if
+         if (this%lb(3) > real(noff(2)+fd%getnd3p()) .or. &
+         &this%ub(3) < real(noff(2))) then
+            npp = 0
+            return
+         else
+            lb(3) = max(this%lb(3),real(noff(2)))
+            ub(3) = min(this%ub(3),real(noff(2)+fd%getnd3p()-1))
+         end if
+         pt => part3d
+         np = this%np
+         gamma = this%gamma
+         bcx = this%bcx; bcy = this%bcy; bcz = this%bcz
+         qm = this%qm
+         den_temp = 1.0
+         qm = this%np*this%qm/abs(this%qm)/real(xppc)/real(yppc)/real(zppc)
+
+         do i=int(lb(1)), int(ub(1))
+            do j=int(lb(2)), int(ub(2)) 
+               do k = int(lb(3)), int(ub(3)) 
+                  do ix = 0, xppc-1
+                     do iy= 0, yppc-1
+                        do iz= 0, zppc-1
+                           tx = (ix + 0.5)/xppc + i 
+                           ty = (iy + 0.5)/yppc + j 
+                           tz = (iz + 0.5)/zppc + k 
+                           fparser_arr(1) = (tx-bcx) * this%dx
+                           fparser_arr(2) = (ty-bcy) * this%dy
+                           fparser_arr(3) = (tz-bcz) * this%dz
+                           den_temp = eval(this%math_func, fparser_arr)
+                           pt(1,nps) = tx
+                           pt(2,nps) = ty
+                           pt(3,nps) = tz
+                           pt(4,nps) = 0.0
+                           pt(5,nps) = 0.0
+                           pt(6,nps) = gamma
+                           pt(7,nps) = qm*den_temp
+                           nps = nps + 1
+                        enddo
+                     enddo
+                  enddo
+               enddo
+            enddo
+         enddo
+
+         npp = nps - 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine dist3d_013
+
 !
       subroutine init_fdist3d_100(this,input,i)
       
