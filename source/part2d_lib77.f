@@ -1815,7 +1815,8 @@ c rot2 = omzt
 !$OMP PARALLEL DO                                                       &
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,dxp,dyp,amx,amy,  &
 !$OMP& dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1,rot2,&
-!$OMP& rot3,rot4,rot5,rot6,rot7,rot8,rot9,sum1,sfxy,sbxy,spsit,
+!$OMP& rot3,rot4,rot5,rot6,rot7,rot8,rot9,sum1,sfxy,sbxy,spsit,         &
+!$OMP& x_temp, y_temp, px_temp, py_temp, pz_temp,                       &
 !$OMP& ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1) REDUCTION(+:sum2)
       do 60 k = 1, mxyp1
       noffp = (k - 1)/mx1
@@ -2203,8 +2204,6 @@ c rot2 = omzt
       dy = dy + dyp*(dxp*sfxy(2,nn+1,mm+1) + acy)
       dz = dz + dyp*(dxp*spsit(nn+1,mm+1) + acz)
       
-      dx = dx * idex
-      dy = dy * idex
       dz = dz * idex
 
 ! find magnetic field
@@ -2221,8 +2220,8 @@ c rot2 = omzt
       oy = oy + dyp*(dxp*sbxy(2,nn+1,mm+1) + acy)
       oz = oz + dyp*(dxp*sbxy(3,nn+1,mm+1) + acz)
 
-!      ox = ox * dex
-!      oy = oy * dex
+      ox = ox * dex
+      oy = oy * dex
 
 ! calculate half impulse
       dx = qtmh2*dx
@@ -2475,6 +2474,7 @@ c rot2 = omzt
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,&
 !$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,omt,anorm,rot1, &
 !$OMP& rot2,rot3,rot4,rot5,rot6,rot7,rot8,rot9,edgelx,edgely,edgerx,    &
+!$OMP& x_temp, y_temp, px_temp, py_temp, pz_temp,                       &
 !$OMP& edgery,sum1,sfxy,sbxy,spsit,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7,dtc1)  &
 !$OMP& REDUCTION(+:sum2)
       do 70 k = 1, mxyp1
@@ -2494,20 +2494,20 @@ c rot2 = omzt
 ! load local fields from global arrays
       do 20 j = 1, mm+1
       do 10 i = 1, nn+1
-      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp)
-      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp)
+      sfxy(1,i,j) = fxy(1,i+noffp,j+moffp) !N/dex
+      sfxy(2,i,j) = fxy(2,i+noffp,j+moffp) !N/dex
    10 continue
    20 continue
       do 40 j = 1, mm+1
       do 30 i = 1, nn+1
-      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp)
-      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp)
-      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp)
+      sbxy(1,i,j) = bxy(1,i+noffp,j+moffp) !N/dex
+      sbxy(2,i,j) = bxy(2,i+noffp,j+moffp) !N/dex
+      sbxy(3,i,j) = bxy(3,i+noffp,j+moffp) !N
    30 continue
    40 continue
       do 46 j = 1, mm+1
       do 42 i = 1, nn+1
-      spsit(i,j) = psit(i+noffp,j+moffp)
+      spsit(i,j) = psit(i+noffp,j+moffp)   !N
    42 continue
    46 continue
 ! clear counters
@@ -2518,20 +2518,20 @@ c rot2 = omzt
 ! loop over particles in tile
       do 60 j = 1, nppp
 ! find interpolation weights
-      x = ppart(1,j,k) !x1
-      y = ppart(2,j,k)
+      x = ppart(1,j,k) !x1, N/dex
+      y = ppart(2,j,k) !y1, N/dex
       nn = x
       mm = y
       x_temp = ppart(1,j,k)
       y_temp = ppart(2,j,k)
 
-      px_temp = ppart(3,j,k) !p1
-      py_temp = ppart(4,j,k)
-      pz_temp = ppart(5,j,k)
+      px_temp = ppart(3,j,k) !p1, N/dex
+      py_temp = ppart(4,j,k) !p2, N/dex
+      pz_temp = ppart(5,j,k) !p3, N/dex
 
 
-      p6 = ppart(6,j,k)
-      p7 = ppart(7,j,k)
+      p6 = ppart(6,j,k) !gamma, N
+      p7 = ppart(7,j,k) !1+psi, N
 
       qtmh1 = qtmh / p7 
       qtmh2 = qtmh1 * p6

@@ -151,14 +151,14 @@
 
       end subroutine init_field2d
 !
-subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algorithm)
+subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,algorithm)
 
 ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
          implicit none
          
          class(field2d), intent(inout) :: this
          class(spect2d), intent(in), pointer :: psp
-         class(field2d), intent(in) :: qe, psi
+         class(field2d), intent(in) :: qe1, psi
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          integer, intent(in) :: dim
@@ -234,7 +234,7 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
          call this%fd%new( pp, perr, kind=0 )
 
          ! 2nd order multigrid solver
-         uqe => qe%getrs()
+         uqe => qe1%getrs()
          upsi => psi%getrs()
          this%pt_mg => get_poismg2table( pp, perr, psp, 1, uqe, upsi)
          
@@ -514,9 +514,9 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
             call this%err%equit( class//sname//'data is in ks' )
             return
          endif
-         write(*,*) "solve1", bnd, stencil_kind
+         !write(*,*) "solve1", bnd, stencil_kind
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
-         write(*,*) "solve2"
+         !write(*,*) "solve2"
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
 
@@ -1151,5 +1151,17 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe,psi,state,gcells,algo
          getsum = sum(this%rs%getrf())
 
       end function getsum
+!
+      ! function getsum(this,dim)
+
+      !    implicit none
+
+      !    class(field2d), intent(in) :: this
+      !    integer, intent(in) :: dim
+      !    real :: getsum
+
+      !    getsum = sum(this%rs%getrf(dim,:,:))
+
+      ! end function getsum
 !
       end module field2d_class

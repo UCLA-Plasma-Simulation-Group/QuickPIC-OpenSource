@@ -135,7 +135,7 @@
             this%noff = (pp%getlkstrt()-1)*nd2/nvpy
             ! allocate(this%rf(dim,this%nd1p+2,this%nd2p*2+psp%getinorder()))
             allocate(this%rf(dim,this%nd1p+2,this%nd2p+psp%getinorder()))
-            write(*,*) "nd1p", this%nd1p, this%nd2p*2+psp%getinorder()
+            !write(*,*) "nd1p", this%nd1p, this%nd2p*2+psp%getinorder()
             this%rf(:,:,:) = 0.0         
          case (1)
             this%nd1p = nd2/nvpy
@@ -214,7 +214,7 @@
             ! gc2 = max( gc2, psp%getinorder() )
             allocate( this%rf( dim, 1:this%nd1p+2, 1-gc1:this%nd2p+gc2 ) )
             this%lindex = -gc1
-            write(*,*) "gc1", gc1, gc2, this%nd1p, this%nd2p
+            !write(*,*) "gc1", gc1, gc2, this%nd1p, this%nd2p
             ! allocate( this%rf( dim, this%nd1p+2, this%nd2p+psp%getinorder() ) )
             this%rf(:,:,:) = 0.0         
          case (1)
@@ -752,7 +752,7 @@
             enddo
          enddo
 !$OMP END PARALLEL DO    
-         write(*,*) "sum2-size(rf1)", size(rf1,2), size(rf1,3)+this%lindex, size(rf2,2), size(rf2,3), size(rf3,2), size(rf3,3)
+         !write(*,*) "sum2-size(rf1)", size(rf1,2), size(rf1,3)+this%lindex, size(rf2,2), size(rf2,3), size(rf3,2), size(rf3,3)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine sum2
@@ -974,7 +974,7 @@
          ! do k = 1 - this%gc(1), size(rf1,3) + this%gc(1)
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
+               do i = 1, size(rf2,1)
                   rf1(i,j,k) = rf2(i,j,k)
                enddo
             enddo
