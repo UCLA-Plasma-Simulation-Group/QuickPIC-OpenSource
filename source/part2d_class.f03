@@ -343,7 +343,7 @@
          
          !pef => ef%getrf(); pbf => bf%getrf()
          !ppsit => psit%getrf(); pcu => cu%getrf()
-         ! pamu => amu%getrf(); pdcu => dcu%getrf()
+         !pamu => amu%getrf(); pdcu => dcu%getrf()
          pcu => cu%getrf()
          noff = cu%getnoff()
          nxv = size(pcu,2); nypmx = size(pcu,3)

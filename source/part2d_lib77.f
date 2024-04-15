@@ -862,6 +862,7 @@
       vx = ppart(3,j,k) !px
       vy = ppart(4,j,k) !py
       vz = ppart(5,j,k) !pz
+      !write(2,*) "vx=",vx
 
       qm1 = qm*inv_part_7
       amx = qm1*amx
@@ -869,7 +870,7 @@
 
       dx = amx*amy
       dy = dxp*amy
-
+      !write(2,*) "dx=",dx
       scu(1,nn,mm) = scu(1,nn,mm) + vx*dx
       scu(2,nn,mm) = scu(2,nn,mm) + vy*dx
       scu(3,nn,mm) = scu(3,nn,mm) + vz*dx

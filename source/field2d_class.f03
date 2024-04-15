@@ -1152,16 +1152,15 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
 
       end function getsum
 !
-      ! function getsum(this,dim)
+      ! function getvalue(this)
 
       !    implicit none
 
       !    class(field2d), intent(in) :: this
-      !    integer, intent(in) :: dim
-      !    real :: getsum
+      !    real, dimension(:,:,:) :: getvalue
 
-      !    getsum = sum(this%rs%getrf(dim,:,:))
+      !    getvalue = this%rs%getrf()
 
-      ! end function getsum
+      ! end function getvalue
 !
       end module field2d_class

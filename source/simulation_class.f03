@@ -911,25 +911,23 @@
                call this%fields%psit%mult(this%fields%psit,-this%dex)
 !psit is the normalized unit in r space.               
                call this%fields%psit%fftkr(1)
-               write(2,*) this%fields%psit%getsum() , "psit"
+               ! write(2,*) this%fields%psit%getsum() , "psit"
                call this%fields%bxyz%as(0.0)
 !Bz of plasma, bxyz is the normalized unit/dex in k space.               
                call this%fields%cu%bf(this%fields%bxyz)
 !Bz is the normalized unit in k space.             
                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
-               ! write(2,*) this%fields%bxyz%getsum() , "Bz"
-!Bz is the normalized unit in r space.
+!Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
+               call this%fields%bxyz%mult(this%fields%epwb,(/1,2/),(/2,1/),(/-1.0,1.0/))
+!Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
                call this%fields%bxyz%fftkr(2)
                call this%fields%dcu%as(0.0)
-               call this%fields%amu%as(0.0)
-               
+               call this%fields%amu%as(0.0)              
 !partial J⊥/partial n; psit and Bz(bxyz) are the normalized unit. fxy, dcu and amu are the normalized unit/dex.               
                do m = 1, this%nspecies
                   call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
                end do
-               ! write(2,*) this%fields%amu%getsum() , "amu"
-               ! write(2,*) this%fields%dcu%getsum() , "dcu"
 !amu=amu*dex，the amu is the normalized unit in r space.
                call this%fields%amu%mult(this%fields%amu,this%dex) 
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            
@@ -946,31 +944,25 @@
                call this%fields%damu%fftkr(1)
 !damu is the normalized unit in r space.               
                call this%fields%damu%mult(this%fields%damu,this%dex)
-!damu and dcu are the normalized unit and in r space.
+!damu and dcu are the normalized unit in r space.
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
-               ! write(2,*) this%fields%damu%getsum() , "damu"
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, bxyzfd is the normalized unit in r space.                            
                call this%fields%bxyzfd%renew_fd(this%fields%qe1, this%fields%psi) !update stencil when qe and psi change.
-               ! write(2,*) this%fields%bxyzfd%getsum() , "bxyzfd"
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.     
                call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+!bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,1.0/this%dex)
-               call this%fields%bxyz%as(this%fields%bxyzfd)
-               call this%fields%bxyz%fftrk(2)
-               ! write(2,*) "epwb%gcell=",this%fields%epwb%getgcells()
-!Bx=Bx(plasma)-Ey(beam)= Bx(plasma)+Bx(beam)=Bx, bxyzfd  and epwb are N/dex.         
-               call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
-!By=By(plasma)+Ex(beam)= By(plasma)+By(beam)=By , bxyzfd and epwb are the normalized unit/dex.              
-               call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
-!Bz is the normalized unit, Bx and By are  N/dex.
-               call this%fields%bxyz%fftkr(2)            
-               write(2,*) this%fields%bxyz%getsum() , "B"
-!fxy is the normalized unit/dex.                 
+!Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.         
+               call this%fields%bxyz%add(this%fields%bxyz,this%fields%bxyzfd,(/1/),(/1/),(/1/))
+!By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
+               call this%fields%bxyz%add(this%fields%bxyz,this%fields%bxyzfd,(/2/),(/2/),(/2/))         
+               ! write(2,*) this%fields%bxyz%getsum() , "B"
+!fxy is the normalized unit/dex in r space.                 
                call this%fields%fxy%mult(this%fields%fxy,-1.0)
                call this%fields%fxy%add(this%fields%fxy,this%fields%bxyz,(/1/),(/1/),(/2/)) !Ex
                call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/)) !Ey
-               write(2,*) this%fields%fxy%getsum() , "ExEy"
+               ! write(2,*) this%fields%fxy%getsum() , "ExEy"
 !ex、ey(fxy)、bx and by are the normalized unit/dex,bz、ez(psit) are the normalized unit.              
                do m = 1, this%nspecies
                   call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
