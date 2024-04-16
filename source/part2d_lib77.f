@@ -1798,7 +1798,7 @@ c rot2 = omzt
       real idex,dtc1,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7
       
       idex = 1.0/dex
-      qtmh = 0.5*qbm*dt
+      qtmh = qbm*dt
       ci2 = ci*ci
 ! set boundary values
       edgelx = 0.0
@@ -1955,7 +1955,7 @@ c rot2 = omzt
       ppart(12,j,k) = py_temp
       ppart(13,j,k) = pz_temp
 ! update inverse gamma
-      dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
+      dtc1 = 2.0*dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
 
 !      p2 = dx*dx + dy*dy + dz*dz
 !      dtg = dtc/sqrt(1.0 + p2*ci2)
@@ -2463,7 +2463,7 @@ c rot2 = omzt
       real idex,dtc1,ddx,ddy,ddz,qtmh1,qtmh2,p6,p7
       
       idex = 1.0/dex
-      qtmh = 0.5*qbm*dt
+      qtmh = qbm*dt
       ci2 = ci*ci
       anx = real(nx)
       any = real(ny)
@@ -2623,7 +2623,7 @@ c rot2 = omzt
       ppart(12,j,k) = py_temp
       ppart(13,j,k) = pz_temp
 ! update inverse gamma
-      dtc1 = dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
+      dtc1 = 2.0*dt/(sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)-dz*dex)
 
 !      p2 = dx*dx + dy*dy + dz*dz
 !      dtg = dtc/sqrt(1.0 + p2*ci2)

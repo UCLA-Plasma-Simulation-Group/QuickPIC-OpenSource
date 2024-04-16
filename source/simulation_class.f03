@@ -977,6 +977,9 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%cbq(j+1)
+               end do
                write(2,*) this%fields%fxy%getsum() , "fxy_3d"
                write(2,*) this%fields%psit%getsum() , "psit_3d"
                write(2,*) this%fields%bxyz%getsum() , "B_3d"
