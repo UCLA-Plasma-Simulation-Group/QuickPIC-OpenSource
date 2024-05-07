@@ -60,6 +60,7 @@ type :: fpois2d_mg
   ! (4,*) - Neumann-Neumann
   ! (*,1) - Poisson stencil
   ! (*,2) - pseudo-Poisson stencil
+  ! (*,3) - explicit stencil
   ! integer(HYPRE_TYPE), dimension(4,2) :: A, solver, precond
   integer(HYPRE_TYPE), dimension(4,3) :: A, solver, precond
   integer(HYPRE_TYPE) :: b, x, grid, stencil
@@ -67,7 +68,7 @@ type :: fpois2d_mg
   
   contains
 
-  generic :: new => init_fpois2d_mg_explicit
+  generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
   !generic :: new_fd => init_fpois2d_mg_explicit
   generic :: renew => renew_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
@@ -229,17 +230,17 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
 
   ! set up HYPRE matrix
-  do j = 1, 3
+  j = 1
     do i = 1, 4
       call HYPRE_StructMatrixCreate( this%p%getlgrp(), this%grid, this%stencil, this%A(i,j), ierr )
       call HYPRE_StructMatrixInitialize( this%A(i,j), ierr )
       ! call HYPRE_StructMatrixSetNumGhost( this%A(i), gc, ierr )
-      ! call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
-      call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
+      call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
+      ! call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
-  enddo
+  
 
   ! set up HYPRE vector
   call HYPRE_StructVectorCreate( this%p%getlgrp(), this%grid, this%b, ierr )
@@ -249,12 +250,11 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   call HYPRE_StructVectorInitialize( this%x, ierr )
 
   ! set up solver
-  do j = 1, 3
+  j = 1
     do i = 1, 4
       call setup_hypre_solver( this%p%getlgrp(), this%solver(i,j), this%A(i,j), this%b, this%x, &
       solver_type, maxiter, n_pre, n_post, tol, this%precond(i,j), this%precond_type )
     enddo
-  enddo
 
   call perr%werrfl2( class//sname//' ended' )
 
@@ -312,27 +312,27 @@ subroutine end_fpois2d_mg( this )
 
   ! do j = 1, 2
   !   do i = 1, 4
-    do j = 1, 3
-     do i = 1, 4
-      call HYPRE_StructMatrixDestroy( this%A(i,j), ierr )
+  do j = 1, 3
+    do i = 1, 4
+    call HYPRE_StructMatrixDestroy( this%A(i,j), ierr )
 
-      select case ( this%solver_type )
-      case ( p_solver_smg )
-        call HYPRE_StructSMGDestroy( this%solver(i,j), ierr )
-      case ( p_solver_pfmg )
-        call HYPRE_StructPFMGDestroy( this%solver(i,j), ierr )
-      case ( p_solver_pcg )
-        call HYPRE_StructPCGDestroy( this%solver(i,j), ierr )
-      end select
+    select case ( this%solver_type )
+    case ( p_solver_smg )
+      call HYPRE_StructSMGDestroy( this%solver(i,j), ierr )
+    case ( p_solver_pfmg )
+      call HYPRE_StructPFMGDestroy( this%solver(i,j), ierr )
+    case ( p_solver_pcg )
+      call HYPRE_StructPCGDestroy( this%solver(i,j), ierr )
+    end select
 
-      select case ( this%precond_type )
-      case ( p_precond_smg )
-        call HYPRE_StructSMGDestroy( this%precond(i,j), ierr )
-      case ( p_precond_pfmg )
-        call HYPRE_StructPFMGDestroy( this%precond(i,j), ierr )
-      case ( p_precond_ds )
-        ! do nothing
-      end select
+    select case ( this%precond_type )
+    case ( p_precond_smg )
+      call HYPRE_StructSMGDestroy( this%precond(i,j), ierr )
+    case ( p_precond_pfmg )
+      call HYPRE_StructPFMGDestroy( this%precond(i,j), ierr )
+    case ( p_precond_ds )
+      ! do nothing
+    end select
 
     enddo
   enddo
@@ -475,7 +475,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
 
   ! local variables
   ! integer :: i, nd1p, nd2p, stencil_num, local_vol, ierr
-  integer :: i, y, z, nd1p, nd2p, stencil_num, local_vol, ierr
+  integer :: i, y, x, nd1p, nd2p, stencil_num, local_vol, ierr
   integer, dimension(:), pointer :: stencil_idx
   real, dimension(:,:,:), pointer :: pqe  
   real, dimension(:,:,:), pointer :: ppsi 
@@ -521,9 +521,9 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
 
       i = 1
       !write (*,*) "pqe", size(pqe,1), size(pqe,2)
-      do z = 1, nd1p
-        do y = 1, nd2p
-          values(i)   =  4.0 * idex2 + (1 - pqe(1, z, y)) / (1 + ppsi(1, z, y))
+      do y = 1, nd2p
+        do x = 1, nd1p
+          values(i)   =  4.0 * idex2 !+ (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
           values(i+1) = -1.0 * idex2
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
@@ -1142,7 +1142,8 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   link%table => ltable
   table => link%table
   call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &
-    precond_type, mg_prec, pqe, ppsi)
+    precond_type, mg_prec)
+    ! precond_type, mg_prec, pqe, ppsi)
   link%refcount = 1
   numtables = numtables + 1
 

@@ -890,6 +890,9 @@
                end do
 !cu is the normalized unit in r space.               
                call this%fields%cu%mult(this%fields%cu,this%dex)
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%cbq(j+1)
+               end do  
                if (allocated(this%fields%cu3d)) then
                   call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                end if
@@ -939,7 +942,8 @@
                call this%fields%amu%bfqpn(this%fields%damu) !divergence of amu, damu in kspace.
 !dccu is the normalized unit/dex in k space.               
                call this%fields%cu%bfqpn(this%fields%dccu) !divergence of Jz, dccu in kspace.         
-               call this%fields%damu%add(this%fields%damu,this%fields%dccu,(/1,2/),(/1,2/),(/1,2/))
+               ! call this%fields%damu%add(this%fields%damu,this%fields%dccu,(/1,2/),(/1,2/),(/1,2/))
+               call this%fields%damu%sub(this%fields%dccu,this%fields%damu,(/1,2/),(/1,2/),(/1,2/))
 !damu is the normalized unit/dex in r space.
                call this%fields%damu%fftkr(1)
 !damu is the normalized unit in r space.               
@@ -948,9 +952,10 @@
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, bxyzfd is the normalized unit in r space.                            
-               call this%fields%bxyzfd%renew_fd(this%fields%qe1, this%fields%psi) !update stencil when qe and psi change.
-!damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.     
-               call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+               ! call this%fields%bxyzfd%renew_fd(this%fields%qe1, this%fields%psi) !update stencil when qe and psi change.
+!damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.  
+               call this%fields%damu%as(1.0)   
+               call this%fields%damu%solve_mg(this%fields%bxyzfd,(/1,1/),2) !damu and bxyzfd are both in rspace.
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,1.0/this%dex)
 !Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.         
@@ -977,9 +982,6 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
-               do m = 1, this%nspecies
-                  call this%species%spe(m)%cbq(j+1)
-               end do
                write(2,*) this%fields%fxy%getsum() , "fxy_3d"
                write(2,*) this%fields%psit%getsum() , "psit_3d"
                write(2,*) this%fields%bxyz%getsum() , "B_3d"

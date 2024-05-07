@@ -387,8 +387,8 @@
          nxv = size(pef,2); nypmx = size(pef,3)
          nx = ef%getnd1(); nyp = ef%getnd2p()
          
-         call PPGRDCJPPOST2L_QP_B(this%ppart,pef,pbf,ppsit(1,:,:),pdcu,&
-         &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
+         call PPGRDCJPPOST2L_QP_BN(this%ppart,pef,pbf,ppsit(1,:,:),pdcu,&
+         &pamu,this%kpic,noff,nyp,this%qbm,this%dt,this%ci,this%xdim,&
          &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          
          call this%err%werrfl2(class//sname//' ended')

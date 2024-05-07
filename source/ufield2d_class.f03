@@ -974,7 +974,7 @@
          ! do k = 1 - this%gc(1), size(rf1,3) + this%gc(1)
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
-               do i = 1, size(rf2,1)
+               do i = 1, size(rf1,1)
                   rf1(i,j,k) = rf2(i,j,k)
                enddo
             enddo
