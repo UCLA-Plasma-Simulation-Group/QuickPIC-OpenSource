@@ -39,12 +39,14 @@
          generic :: fcct => iwpfcct2r       
          generic :: fs3t => iwpfs3t2r
          generic :: divf => ipdivfd2
+         generic :: divf_new => ipdivfd2_NEW
          generic :: gradf => ipgradfd2
+         generic :: gradf_new => ipgradfd2_NEW
          generic :: curlf => ipcurlfd2
          procedure, private :: init_fft2d
          procedure, private :: end_fft2d
          procedure, private :: iwpfsst2r, iwpfcct2r, iwpfs3t2r 
-         procedure, private :: ipdivfd2, ipgradfd2, ipcurlfd2
+         procedure, private :: ipdivfd2, ipdivfd2_NEW, ipgradfd2, ipgradfd2_NEW, ipcurlfd2
       end type 
 !
       type fft2d_link
@@ -440,6 +442,37 @@
 
       end subroutine ipdivfd2
 !      
+      subroutine ipdivfd2_NEW(this,krspace,kdspace)
+! this subroutine calculates the divergence in fourier space
+! with dirichlet (zero potential) boundary conditions
+! this = fft2d descriptor
+! krspace = source ufield2d
+! kdspace = destiny ufield2d
+         implicit none
+         class(fft2d), intent(in) :: this
+         class(ufield2d), intent(inout) :: krspace, kdspace
+! local data
+         real, dimension(:,:,:), pointer :: f => null()
+         real, dimension(:,:,:), pointer :: df => null()
+         ! integer :: nx, ny, ndim, nyv, kxp2
+         integer :: nx, ny, ndim1, ndim2, nyv, kxp2
+         character(len=10), save :: sname = 'ipdivfd2_NEW:'
+
+         call this%err%werrfl2(class//sname//' started')
+! unpack arguments
+         nx = 2**this%ind(1); ny = 2**this%ind(2)
+         f => krspace%getrf()
+         df => kdspace%getrf()
+         ndim1 = size(f,1)
+         ndim2 = size(df,1)
+         nyv = size(f,2); kxp2 = size(f,3) - 1;
+! call the operator
+         ! call MPPDIVFD2_NEW(f,df(1,:,:),nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2)
+         call MPPDIVFD2_NEW(f,df,nx,ny,this%p%getlkstrt(),ndim1,ndim2,nyv,kxp2)
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine ipdivfd2_NEW
+!      
       subroutine ipgradfd2(this,krspace,kdspace)
 ! this subroutine calculates the gradient in fourier space
 ! with dirichlet (zero potential) boundary conditions
@@ -467,6 +500,37 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine ipgradfd2
+!
+      subroutine ipgradfd2_NEW(this,krspace,kdspace)
+! this subroutine calculates the gradient in fourier space
+! with dirichlet (zero potential) boundary conditions
+! this = fft2d descriptor
+! krspace = source ufield2d
+! kdspace = destiny ufield2d
+         implicit none
+         class(fft2d), intent(in) :: this
+         class(ufield2d), intent(inout) :: krspace, kdspace
+! local data
+!         integer :: nx, ny, ndim, nyv, kxp2, j2blok
+         integer :: nx, ny, ndim1, ndim2, nyv, kxp2, j2blok
+         real, dimension(:,:,:), pointer :: df => null()
+         real, dimension(:,:,:), pointer :: f => null()
+         character(len=11), save :: sname = 'ipgradfd2_NEW:'
+
+         call this%err%werrfl2(class//sname//' started')
+! unpack arguments
+         nx = 2**this%ind(1); ny = 2**this%ind(2)
+         f => krspace%getrf()
+         df => kdspace%getrf()
+!         ndim = size(df,1)
+         ndim1 = size(f,1); ndim2 = size(df,1)
+         nyv = size(df,2); kxp2 = size(df,3) - 1;
+! call the operator
+!         call MPPGRADFD2(f(1,:,:),df,nx,ny,this%p%getlkstrt(),ndim,nyv,kxp2)
+         call MPPGRADFD2_J(f(3,:,:),df,nx,ny,this%p%getlkstrt(),ndim1,ndim2,nyv,kxp2)
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine ipgradfd2_NEW
 !
       subroutine ipcurlfd2(this,krspace,kdspace)
 ! this subroutine calculates the curl in fourier space

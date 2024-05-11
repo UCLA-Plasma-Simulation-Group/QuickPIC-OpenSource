@@ -68,8 +68,8 @@ type :: fpois2d_mg
   
   contains
 
-  generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
-  !generic :: new_fd => init_fpois2d_mg_explicit
+  ! generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
+  generic :: new_fd => init_fpois2d_mg_explicit
   generic :: renew => renew_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
   generic :: set_src => set_hypre_src
@@ -230,13 +230,13 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
 
   ! set up HYPRE matrix
-  j = 1
+  j = 3
     do i = 1, 4
       call HYPRE_StructMatrixCreate( this%p%getlgrp(), this%grid, this%stencil, this%A(i,j), ierr )
       call HYPRE_StructMatrixInitialize( this%A(i,j), ierr )
       ! call HYPRE_StructMatrixSetNumGhost( this%A(i), gc, ierr )
-      call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
-      ! call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
+      ! call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
+      call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
@@ -250,7 +250,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   call HYPRE_StructVectorInitialize( this%x, ierr )
 
   ! set up solver
-  j = 1
+  j = 3
     do i = 1, 4
       call setup_hypre_solver( this%p%getlgrp(), this%solver(i,j), this%A(i,j), this%b, this%x, &
       solver_type, maxiter, n_pre, n_post, tol, this%precond(i,j), this%precond_type )
@@ -523,7 +523,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
       !write (*,*) "pqe", size(pqe,1), size(pqe,2)
       do y = 1, nd2p
         do x = 1, nd1p
-          values(i)   =  4.0 * idex2 !+ (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
+          values(i)   =  4.0 * idex2 + (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
           values(i+1) = -1.0 * idex2
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
@@ -1141,9 +1141,8 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   allocate(ltable)
   link%table => ltable
   table => link%table
-  call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &
-    precond_type, mg_prec)
-    ! precond_type, mg_prec, pqe, ppsi)
+  call table%new_fd(pp, perr, noff, nd, ndp, order, dex, solver_type, &
+    precond_type, mg_prec, pqe, ppsi)
   link%refcount = 1
   numtables = numtables + 1
 

@@ -9228,6 +9228,74 @@ c-----------------------------------------------------------------------
       return
       end
 !-----------------------------------------------------------------------
+      subroutine MPPDIVFD2_NEW(f,df,nx,ny,kstrt,ndim1,ndim2,nyv,kxp2)
+! this subroutine calculates the divergence in fourier space
+! with dirichlet boundary conditions (zero potential)
+! using fast sine/cosine transforms for distributed data.
+! intended for calculating the current Jz to solve B_perp's equation 
+! input: all except df, output: df
+! approximate flop count is: 6*nx*ny
+! the divergence is calculated using the equation:
+! df(kx,ky) = -(kx*fx(kx,ky)+ky*fy(kx,ky))
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! modes nx and ny are zeroed out
+! nx/ny = system length in x/y direction
+! ndim = number of field arrays, must be >= 2
+! kstrt = starting data block number
+! nyv = first dimension of field arrays, must be >= ny+1
+! kxp2 = number of data values per block
+      implicit none
+      integer nx, ny, kstrt, ndim1, ndim2, nyv ,kxp2
+      real f, df
+!      dimension f(ndim,nyv,kxp2+1), df(nyv,kxp2+1)
+      dimension f(ndim1,nyv,kxp2+1), df(ndim2,nyv,kxp2+1)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real dnx, dny, dkx, dky
+!      if (ndim.lt.2) return
+      if (ndim1.lt.2) return
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+      dnx = 6.28318530717959/real(nx + nx)
+      dny = 6.28318530717959/real(ny + ny)
+! calculate the divergence
+      if (kstrt.gt.nx) return
+! mode numbers 0 < kx < nx and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky)
+      do 20 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      if ((j+joff).gt.0) then
+         do 10 k = 2, ny
+         dky = dny*real(k - 1)
+         df(1,k,j) = dkx*f(1,k,j) - dky*f(3,k,j)
+         df(2,k,j) = - dkx*f(3,k,j) + dky*f(2,k,j)
+   10    continue
+      endif
+! mode numbers ky = 0, ny
+      df(1,1,j) = 0.0
+      df(2,1,j) = 0.0
+      df(1,ny+1,j) = 0.0
+      df(2,ny+1,j) = 0.0
+   20 continue
+!$OMP END PARALLEL DO
+! mode numbers kx = 0, nx
+      if (ks.eq.0) then
+         do 30 k = 2, ny
+         df(1,k,1) = 0.0
+         df(2,k,1) = 0.0
+   30    continue
+      endif
+      do 40 k = 1, ny1
+      df(1,k,kxp2s+1) = 0.0
+      df(2,k,kxp2s+1) = 0.0
+   40 continue
+      return
+      end
+!-----------------------------------------------------------------------
       subroutine MPPGRADFD2(df,f,nx,ny,kstrt,ndim,nyv,kxp2)
 ! this subroutine calculates the gradient in fourier space
 ! with dirichlet boundary conditions (zero potential)
@@ -9271,6 +9339,73 @@ c-----------------------------------------------------------------------
          dky = dny*real(k - 1)
          f(1,k,j) = dkx*df(k,j)
          f(2,k,j) = dky*df(k,j)
+   10    continue
+      endif
+! mode numbers ky = 0, ny
+      f(1,1,j) = 0.0
+      f(2,1,j) = 0.0
+      f(1,ny+1,j) = 0.0
+      f(2,ny+1,j) = 0.0
+   20 continue
+!$OMP END PARALLEL DO
+! mode numbers kx = 0, nx
+      if (ks.eq.0) then
+         do 30 k = 2, ny
+         f(1,k,1) = 0.0
+         f(2,k,1) = 0.0
+   30    continue
+      endif
+      do 40 k = 1, ny1
+      f(1,k,kxp2s+1) = 0.0
+      f(2,k,kxp2s+1) = 0.0
+   40 continue
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine MPPGRADFD2_J(cu,f,nx,ny,kstrt,ndim1,ndim2,nyv,kxp2)
+! this subroutine calculates the gradient in fourier space
+! with dirichlet boundary conditions (zero potential)
+! using fast sine/cosine transforms for distributed data.
+! intended for calculating the current Jz to solve B_perp's equation
+! input: all except f, output: f
+! approximate flop count is: 4*nx*ny
+! the gradient is calculated using the equations:
+! fx(kx,ky) = kx*df(kx,ky)
+! fy(kx,ky) = ky*df(kx,ky)
+! where kx = pi*j/nx, ky = pi*k/ny, and j,k = fourier mode numbers,
+! all for fourier mode (jj-1,k-1), where jj = j + kxp2*(kstrt - 1)
+! modes nx and ny are zeroed out
+! nx/ny = system length in x/y direction
+! ndim = number of field arrays, must be >= 2
+! kstrt = starting data block number
+! nyv = first dimension of field arrays, must be >= ny+1
+! kxp2 = number of data values per block
+      implicit none
+!      integer nx, ny, kstrt, ndim, nyv, kxp2
+      integer nx, ny, kstrt, ndim1, ndim2, nyv, kxp2
+      real cu, f
+      dimension cu(ndim1,nyv,kxp2+1), f(ndim2,nyv,kxp2+1)
+! local data
+      integer j, k, ks, ny1, joff, kxp2s
+      real dnx, dny, dkx, dky
+      ks = kstrt - 1
+      ny1 = ny + 1
+      joff = kxp2*ks
+      kxp2s = min(kxp2,max(0,nx-joff))
+      joff = joff - 1
+      dnx = 6.28318530717959/real(nx + nx)
+      dny = 6.28318530717959/real(ny + ny)
+! calculate the gradient
+      if (kstrt.gt.nx) return
+! mode numbers 0 < kx < nx and 0 < ky < ny
+!$OMP PARALLEL DO PRIVATE(j,k,dkx,dky)
+      do 20 j = 1, kxp2s
+      dkx = dnx*real(j + joff)
+      if ((j+joff).gt.0) then
+         do 10 k = 2, ny
+         dky = dny*real(k - 1)
+         f(1,k,j) = dkx*cu(3,k,j)
+         f(2,k,j) = dky*cu(3,k,j)
    10    continue
       endif
 ! mode numbers ky = 0, ny

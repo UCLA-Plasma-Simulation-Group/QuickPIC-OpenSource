@@ -46,8 +46,10 @@
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
          generic :: div => divf_field2d
-         ! generic :: grad => gradf_field2d
-         generic :: grad => gradf_field2d, gradf_field2d_fd
+         generic :: div_new => divf_field2d_new
+         generic :: grad => gradf_field2d
+         generic :: grad_new => gradf_field2d_new
+         ! generic :: grad => gradf_field2d, gradf_field2d_fd
          generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
          generic :: vpot => vpotential_field2d
@@ -73,9 +75,9 @@
 
          ! procedure, private :: init_field2d, end_field2d
          procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
-         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
+         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d, divf_field2d_new
          ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
-         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_fd
+         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_new
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
          !procedure, private :: bfield_qp_field2d, copyguard_field2d
          procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
@@ -381,7 +383,29 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine divf_field2d      
-!            
+! 
+      subroutine divf_field2d_new(this,that)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this,that
+         character(len=18), save :: sname = 'divf_field2d_new:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state /= 1) then 
+            call this%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         
+         call this%ft%divf_new(this%ks,that%ks)
+
+         that%state = 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine divf_field2d_new 
+!              
       subroutine gradf_field2d(this,that)
       
          implicit none
@@ -404,31 +428,53 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          
       end subroutine gradf_field2d      
 !            
-      subroutine gradf_field2d_fd( this, that, dx, order )
-
+      subroutine gradf_field2d_new(this,that)
+      
          implicit none
+         
+         class(field2d), intent(inout) :: this,that
+         character(len=18), save :: sname = 'gradf_field2d_new:'
 
-         class(field2d), intent(inout) :: this, that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'gradf_field2d_fd:'
-
-         call this%err%werrfl2( class//sname//' started' )
-         call this%err%add_profile( 'solve_fd_start' )
-
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state /= 1) then 
+            call this%err%equit(class//sname//'data is in rs')
             return
          endif
+         
+         call this%ft%gradf_new(this%ks,that%ks)
 
-         call this%fd%gradf( this%rs, that%rs, dx, order )
-
-         that%state = 0
-
-         call this%err%add_profile( 'solve_fd_end' )
+         that%state = 1
+         
          call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine gradf_field2d_new      
+!            
+      ! subroutine gradf_field2d_fd( this, that, dx, order )
 
-      end subroutine gradf_field2d_fd
+      !    implicit none
+
+      !    class(field2d), intent(inout) :: this, that
+      !    real, intent(in) :: dx
+      !    integer, intent(in) :: order
+      !    character(len=18), save :: sname = 'gradf_field2d_fd:'
+
+      !    call this%err%werrfl2( class//sname//' started' )
+      !    call this%err%add_profile( 'solve_fd_start' )
+
+      !    if (this%state /= 0) then 
+      !       call this%err%equit(class//sname//'data is in ks')
+      !       return
+      !    endif
+
+      !    call this%fd%gradf( this%rs, that%rs, dx, order )
+
+      !    that%state = 0
+
+      !    call this%err%add_profile( 'solve_fd_end' )
+      !    call this%err%werrfl2(class//sname//' ended')
+
+      ! end subroutine gradf_field2d_fd
 !  
       subroutine curlf_field2d(this,that)
       
