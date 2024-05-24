@@ -46,9 +46,10 @@
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
          generic :: div => divf_field2d
-         generic :: div_new => divf_field2d_new
+         ! generic :: div_new_cu => divf_field2d_new_cu
+         ! generic :: div_new_amu => divf_field2d_new_amu
          generic :: grad => gradf_field2d
-         generic :: grad_new => gradf_field2d_new
+         ! generic :: grad_new => gradf_field2d_new
          ! generic :: grad => gradf_field2d, gradf_field2d_fd
          generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
@@ -75,9 +76,9 @@
 
          ! procedure, private :: init_field2d, end_field2d
          procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
-         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d, divf_field2d_new
-         ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
-         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, gradf_field2d_new
+         procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
+         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
+         ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d,divf_field2d_new_cu
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
          !procedure, private :: bfield_qp_field2d, copyguard_field2d
          procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
@@ -153,7 +154,7 @@
 
       end subroutine init_field2d
 !
-subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,algorithm)
+      subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,algorithm)
 
 ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
          implicit none
@@ -170,9 +171,7 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          character(len=18), save :: sname = 'init_field2d_fd:'
          integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
          integer, dimension(2) :: gc
-         integer :: gc_dir
-         ! real, dimension(:,:,:), pointer :: pqe => null() 
-         ! real, dimension(:,:,:), pointer :: ppsi => null()  
+         integer :: gc_dir 
          class(ufield2d), pointer :: uqe, upsi
 
          inorder = psp%getinorder()
@@ -384,28 +383,51 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          
       end subroutine divf_field2d      
 ! 
-      subroutine divf_field2d_new(this,that)
+!       subroutine divf_field2d_new_cu(this,that,dex)
       
-         implicit none
+!          implicit none
          
-         class(field2d), intent(inout) :: this,that
-         character(len=18), save :: sname = 'divf_field2d_new:'
+!          class(field2d), intent(inout) :: this,that
+!          real, intent(in) :: dex
+!          character(len=18), save :: sname = 'divf_field2d_new_cu:'
 
-         call this%err%werrfl2(class//sname//' started')
+!          call this%err%werrfl2(class//sname//' started')
          
-         if (this%state /= 1) then 
-            call this%err%equit(class//sname//'data is in rs')
-            return
-         endif
+!          if (this%state /= 1) then 
+!             call this%err%equit(class//sname//'data is in rs')
+!             return
+!          endif
          
-         call this%ft%divf_new(this%ks,that%ks)
+!          call this%ft%divf_new_cu(this%ks,that%ks,dex)
 
-         that%state = 1
+!          that%state = 1
          
-         call this%err%werrfl2(class//sname//' ended')
+!          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine divf_field2d_new 
-!              
+!       end subroutine divf_field2d_new_cu 
+! !              
+!       subroutine divf_field2d_new_amu(this,that)
+      
+!          implicit none
+         
+!          class(field2d), intent(inout) :: this,that
+!          character(len=18), save :: sname = 'divf_field2d_new_amu:'
+
+!          call this%err%werrfl2(class//sname//' started')
+         
+!          if (this%state /= 1) then 
+!             call this%err%equit(class//sname//'data is in rs')
+!             return
+!          endif
+         
+!          call this%ft%divf_new_amu(this%ks,that%ks)
+
+!          that%state = 1
+         
+!          call this%err%werrfl2(class//sname//' ended')
+         
+!       end subroutine divf_field2d_new_amu 
+! 
       subroutine gradf_field2d(this,that)
       
          implicit none
@@ -428,27 +450,27 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          
       end subroutine gradf_field2d      
 !            
-      subroutine gradf_field2d_new(this,that)
+      ! subroutine gradf_field2d_new(this,that)
       
-         implicit none
+      !    implicit none
          
-         class(field2d), intent(inout) :: this,that
-         character(len=18), save :: sname = 'gradf_field2d_new:'
+      !    class(field2d), intent(inout) :: this,that
+      !    character(len=18), save :: sname = 'gradf_field2d_new:'
 
-         call this%err%werrfl2(class//sname//' started')
+      !    call this%err%werrfl2(class//sname//' started')
          
-         if (this%state /= 1) then 
-            call this%err%equit(class//sname//'data is in rs')
-            return
-         endif
+      !    if (this%state /= 1) then 
+      !       call this%err%equit(class//sname//'data is in rs')
+      !       return
+      !    endif
          
-         call this%ft%gradf_new(this%ks,that%ks)
+      !    call this%ft%gradf_new(this%ks,that%ks)
 
-         that%state = 1
+      !    that%state = 1
          
-         call this%err%werrfl2(class//sname//' ended')
+      !    call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine gradf_field2d_new      
+      ! end subroutine gradf_field2d_new      
 !            
       ! subroutine gradf_field2d_fd( this, that, dx, order )
 
@@ -661,37 +683,29 @@ subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,alg
          
       end subroutine bfield_qp_field2d      
 !            
-      subroutine bfield_qp_new_field2d(this,that)
+      subroutine bfield_qp_new_field2d(cu,dcu,amu,damu,dex)
       
          implicit none
          
-         !class(field2d), intent(inout) :: cu,dcu,amu,bxy
-         !class(field2d), intent(inout) :: damu,amu
-         class(field2d), intent(inout) :: this,that
-         !real, intent(in) :: c, dex
+         class(field2d), intent(inout) :: cu,dcu,amu,damu
+         !class(field2d), intent(inout) :: ,amu
+         ! class(field2d), intent(inout) :: this,that
+         real, intent(in) :: dex
          character(len=18), save :: sname = 'bfield_qp_new_field2d:'
          !real :: we
 
-         !call amu%err%werrfl2(class//sname//' started')
-         call this%err%werrfl2(class//sname//' started')
+         call cu%err%werrfl2(class//sname//' started')
          
-         ! if (amu%state /= 1)  then 
-         !    call amu%err%equit(class//sname//'data is in rs')
-         !    return
-         ! endif
-         
-         if (this%state /= 1)  then 
-            call this%err%equit(class//sname//'data is in rs')
+         if ((cu%state /= 1).or.(dcu%state /= 1).or.(amu%state /= 1))  then 
+            call cu%err%equit(class//sname//'data is in rs')
             return
          endif
+         
+         call cu%pt%bfield_qp_new(cu%ks,dcu%ks,amu%ks,damu%ks,dex)
 
-         !call amu%pt%bfield_qp_new(damu%ks,amu%ks)
-         call this%pt%bfield_qp_new(this%ks,that%ks)
-
-         !damu%state = 1
-         that%state = 1
-         !call amu%err%werrfl2(class//sname//' ended')
-         call that%err%werrfl2(class//sname//' ended')
+         damu%state = 1
+         
+         call cu%err%werrfl2(class//sname//' ended')
          
       end subroutine bfield_qp_new_field2d      
 !

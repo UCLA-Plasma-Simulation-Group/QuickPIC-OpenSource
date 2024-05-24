@@ -599,6 +599,25 @@
          end subroutine
       end interface
 !
+!       interface
+!          subroutine MPPDIVFD2_NEW_CU(f,df,nx,ny,kstrt,ndim1,ndim2,nyv,kxp2,dex)
+!          implicit none
+!          integer, intent(in) :: nx, ny, kstrt, ndim1, ndim2, nyv, kxp2
+!          real, intent(in) :: dex
+!          real, dimension(3,nyv,kxp2+1), intent(in) :: f
+!          real, dimension(2,nyv,kxp2+1), intent(inout) :: df
+!          end subroutine
+!       end interface
+! !
+!       interface
+!          subroutine MPPDIVFD2_NEW_AMU(f,df,nx,ny,kstrt,ndim1,ndim2,nyv,kxp2)
+!          implicit none
+!          integer, intent(in) :: nx, ny, kstrt, ndim1, ndim2, nyv, kxp2
+!          real, dimension(3,nyv,kxp2+1), intent(in) :: f
+!          real, dimension(2,nyv,kxp2+1), intent(inout) :: df
+!          end subroutine
+!       end interface
+!
       interface
          subroutine MPPGRADFD2(df,f,nx,ny,kstrt,ndim,nyv,kxp2)
          implicit none

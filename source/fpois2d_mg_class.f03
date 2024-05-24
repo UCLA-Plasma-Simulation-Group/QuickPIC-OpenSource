@@ -191,7 +191,10 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   integer, intent(in), optional :: precond_type
   real, dimension(:,:,:), intent(in), pointer :: pqe
   real, dimension(:,:,:), intent(in), pointer :: ppsi 
-  real, intent(in) :: dex, tol
+  ! real, intent(in) :: dex, tol
+  real, intent(in) :: tol
+  real, intent(inout) :: dex
+
 
   ! local variables
   integer :: i, j, ierr
@@ -209,6 +212,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   this%order = order
   this%solver_type = solver_type
   this%tol = tol
+  dex = 0.0468
   if ( present(precond_type) ) then
     this%precond_type = precond_type
   else
@@ -279,7 +283,8 @@ subroutine renew_fpois2d_mg_explicit(this, qe, psi )
 
   pqe => qe%getrf()
   ppsi => psi%getrf()
-
+  dex = 0.0468
+  write(2,*) dex, "dex"
 ! renew HYPRE matrix
   j = 3
   do i = 1, 4
@@ -520,7 +525,6 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
     case ( p_stencil_explicit )
 
       i = 1
-      !write (*,*) "pqe", size(pqe,1), size(pqe,2)
       do y = 1, nd2p
         do x = 1, nd1p
           values(i)   =  4.0 * idex2 + (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
@@ -1100,6 +1104,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   noff(1) = 0
   noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
   dex = psp%getdex()
+  ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
   precond_type = 1 ! SMG preconditioner
@@ -1141,6 +1146,8 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   allocate(ltable)
   link%table => ltable
   table => link%table
+  write(2,*) dex, "dex"
+
   call table%new_fd(pp, perr, noff, nd, ndp, order, dex, solver_type, &
     precond_type, mg_prec, pqe, ppsi)
   link%refcount = 1

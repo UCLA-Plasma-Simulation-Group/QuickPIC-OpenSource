@@ -543,7 +543,7 @@
 
          end subroutine jpbpoisd23n_qp
 !
-         subroutine jpbpoisd23n_qp_new(this,amu,damu)
+         subroutine jpbpoisd23n_qp_new(this,cu,dcu,amu,damu,dex)
 ! this = poisson solver descriptor
 ! cu = input current density array, in fourier space
 ! bxy = output magnetic field array, in fourier space
@@ -553,14 +553,14 @@
 ! kstrt = starting data block number, a global variable
          implicit none
          class(fpois2d), intent(in) :: this
-         !real, intent(in) :: ci, c, dex
+         real, intent(in) :: dex
          !real, intent(inout) :: wm
-         !class(ufield2d), intent(inout) :: cu, dcu, amu, bxy
-         class(ufield2d), intent(inout) :: damu, amu
+         class(ufield2d), intent(inout) :: cu, dcu, amu, damu
+         ! class(ufield2d), intent(inout) :: damu, amu
 ! local data
          integer :: isign = 1
-         !real, dimension(:,:,:), pointer :: pcu, pdcu, pamu, pbxy
-         real, dimension(:,:,:), pointer :: pdamu, pamu
+         real, dimension(:,:,:), pointer :: pcu, pdcu, pamu, pdamu
+         ! real, dimension(:,:,:), pointer :: pdamu, pamu
          integer :: nx, ny, nyv, kxp2, j2blok, nyd
          !real :: ax, ay, affp
          !real, dimension(1,1,1) :: dxy
@@ -568,34 +568,35 @@
          character(len=20), save :: sname = 'jpbpoisd23n_qp_new:'
 
          call this%err%werrfl2(class//sname//' started')
-         !pcu => cu%getrf()
-         !pdcu => dcu%getrf()
+         pcu => cu%getrf()
+         pdcu => dcu%getrf()
          pdamu => damu%getrf()
          pamu => amu%getrf()
          !pbxy => bxy%getrf()
-         !if ((size(pcu,1) < 2) .or. (size(pcu,1) > 3)) then
-            !write (erstr,*) 'invalid cu vector size=', size(pcu,1)
-            !call this%err%equit(class//sname//erstr)
-            !return
-         !endif
+         if ((size(pcu,1) < 2) .or. (size(pcu,1) > 3)) then
+            write (erstr,*) 'invalid cu vector size=', size(pcu,1)
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
 
 ! unpack common arguments
          ffc => this%ffc
          nx = this%nd(1); ny = this%nd(2)
 ! choose the proper solver
-         !select case (this%sp%getpsolver())
-         !case (1)
-         nyv = size(pdamu,2); nyd = size(ffc,1)
-         kxp2 = size(ffc,2); j2blok = 1
+         select case (this%sp%getpsolver())
+         case (1)
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
             !call PBPOISD22N_QP(pcu,pdcu,pamu,pbxy,dxy,isign,ffc,ax,ay,&
             !&affp,ci,wm,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,c,dex)
-         call PBPOISD22N_QP_NEW(pamu,pdamu,isign,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok,nyd)
-         !case default
-            !nyv = size(pcu,2); nyd = size(ffc,1)
-            !kxp2 = size(ffc,2); j2blok = 1
-            !call PBPOISD22N_QP(pcu,pdcu,pamu,pbxy,dxy,isign,ffc,ax,ay,&
-            !&affp,ci,wm,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,c,dex)
-         !end select
+            call PBPOISD22N_QP_NEW_test(pcu,pdcu,pamu,pdamu,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,dex)
+         case default
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_NEW_test(pcu,pdcu,pamu,pdamu,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,dex)
+         end select
          call this%err%werrfl2(class//sname//' ended')
 
          end subroutine jpbpoisd23n_qp_new
