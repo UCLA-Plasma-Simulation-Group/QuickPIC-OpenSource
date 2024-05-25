@@ -967,7 +967,7 @@
                call this%fields%bxyzfd%as(0.0)   
                ! call this%fields%damu%mult(this%fields%damu,-1.0)
 !qe1 and psi are the normalized unit, bxyzfd is the normalized unit in r space.                            
-               call this%fields%damu%renew_fd(this%fields%qe1, this%fields%psi) !update stenci l when qe and psi change.
+               call this%fields%damu%renew_fd(this%fields%qe1, this%fields%psi,this%dex) !update stenci l when qe and psi change.
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.  
                ! call this%fields%damu%as(1.0)   
                call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.

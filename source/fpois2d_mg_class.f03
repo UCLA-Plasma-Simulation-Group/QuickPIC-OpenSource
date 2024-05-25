@@ -68,8 +68,8 @@ type :: fpois2d_mg
   
   contains
 
-  ! generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
-  generic :: new_fd => init_fpois2d_mg_explicit
+  generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
+  ! generic :: new_fd => init_fpois2d_mg_explicit
   generic :: renew => renew_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
   generic :: set_src => set_hypre_src
@@ -265,14 +265,15 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
 end subroutine init_fpois2d_mg_explicit
 
 ! ----------------------------------------------------------------------------------------
-subroutine renew_fpois2d_mg_explicit(this, qe, psi )
+subroutine renew_fpois2d_mg_explicit(this, qe, psi, dex )
 
   implicit none
 
   class( fpois2d_mg ), intent(inout) :: this
   class( ufield2d ), intent(in), pointer :: qe, psi
+  real, intent(in) :: dex
   integer :: i, j, ierr
-  real :: dex
+  ! real :: dex
   real, dimension(:,:,:), pointer :: pqe  
   real, dimension(:,:,:), pointer :: ppsi  
   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
@@ -283,8 +284,8 @@ subroutine renew_fpois2d_mg_explicit(this, qe, psi )
 
   pqe => qe%getrf()
   ppsi => psi%getrf()
-  dex = 0.0468
-  write(2,*) dex, "dex"
+  ! dex = 0.0468
+  ! write(2,*) dex, "dex"
 ! renew HYPRE matrix
   j = 3
   do i = 1, 4
@@ -1147,8 +1148,10 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   link%table => ltable
   table => link%table
   write(2,*) dex, "dex"
-
-  call table%new_fd(pp, perr, noff, nd, ndp, order, dex, solver_type, &
+  dex = 0.0468
+  ! call table%new_fd(pp, perr, noff, nd, ndp, order, dex, solver_type, &
+    ! precond_type, mg_prec, pqe, ppsi)
+  call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &
     precond_type, mg_prec, pqe, ppsi)
   link%refcount = 1
   numtables = numtables + 1

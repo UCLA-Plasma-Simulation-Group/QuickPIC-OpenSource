@@ -256,17 +256,18 @@
 
       end subroutine init_field2d_fd
 !
-      subroutine renew_field2d_fd(this, qe, psi)
+      subroutine renew_field2d_fd(this, qe, psi, dex)
 
       implicit none
 
       class(field2d), intent(inout) :: this
       class(field2d), intent(inout) :: qe, psi
+      real, intent(in) :: dex
       character(len=18), save :: sname = 'renew_field2d_fd'
 
       call this%err%werrfl2(class//sname//' started')
  
-      call this%pt_mg%renew(qe%getrs(), psi%getrs())
+      call this%pt_mg%renew(qe%getrs(), psi%getrs(),dex)
 
       call this%err%werrfl2(class//sname//' ended')
 
