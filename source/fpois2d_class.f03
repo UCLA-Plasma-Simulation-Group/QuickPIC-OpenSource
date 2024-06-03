@@ -590,12 +590,12 @@
             !call PBPOISD22N_QP(pcu,pdcu,pamu,pbxy,dxy,isign,ffc,ax,ay,&
             !&affp,ci,wm,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,c,dex)
             call PBPOISD22N_QP_NEW_test(pcu,pdcu,pamu,pdamu,nx,ny,&
-            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,dex)
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
          case default
             nyv = size(pcu,2); nyd = size(ffc,1)
             kxp2 = size(ffc,2); j2blok = 1
             call PBPOISD22N_QP_NEW_test(pcu,pdcu,pamu,pdamu,nx,ny,&
-            &this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,dex)
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
          end select
          call this%err%werrfl2(class//sname//' ended')
 

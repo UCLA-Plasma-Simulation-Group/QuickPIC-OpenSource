@@ -1104,7 +1104,9 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   ndp(2) = nd(2)/nvp(2)
   noff(1) = 0
   noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
+  write(2,*) dex, "dexa"
   dex = psp%getdex()
+  write(2,*) dex, "dexb"
   ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()

@@ -175,7 +175,8 @@
          class(ufield2d), pointer :: uqe, upsi
 
          inorder = psp%getinorder()
-
+         write(*,*) psp%getdex(), "dexc"
+         write(*,*) psp%getinorder(), "dexc"
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -701,7 +702,6 @@
             call cu%err%equit(class//sname//'data is in rs')
             return
          endif
-         
          call cu%pt%bfield_qp_new(cu%ks,dcu%ks,amu%ks,damu%ks,dex)
 
          damu%state = 1
