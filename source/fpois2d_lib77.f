@@ -1710,6 +1710,261 @@ c   240 continue
 c       return
       end
 !-----------------------------------------------------------------------
+      subroutine PBPOISD22N_QP_NEW_test2(cu,amu,damu,nx,ny,kstrt,
+     1nyv,kxp2,j2blok,dex)
+c if isign = 1, vector potential is calculated using the equation:
+c bx(kx,ky) = ci*ci*g(kx,ky)*cux(kx,ky)
+c by(kx,ky) = ci*ci*g(kx,ky)*cuy(kx,ky)
+c if isign = 2, smoothing is calculated using the equation:
+c bx(kx,ky) = cux(kx,ky)*s(kx,ky)
+c by(kx,ky) = cuy(kx,ky)*s(kx,ky)
+c cu(i,k,j,l) = i-th component of complex current density and
+c bxy(i,k,j,l) = i-th component of complex vector potential,
+c bz(k,j,l) = i-th component of complex magnetic field,
+c for fourier mode (jj-1,k-1), where jj = j + kxp*(l - 1)
+c j2blok = number of data blocks
+c kxp2 = number of data values per block
+c kstrt = starting data block number
+c aimag(ffd(k,j,l)) = finite-size particle shape factor s
+c real(ffd(k,j,l)) = potential green's function g
+c for fourier mode (jj-1,k-1), where jj = j + kxp*(l - 1)
+c ax/ay = half-width of particle in x/y direction
+c affp = normalization constant = nx*ny/np, where np=number of particles
+c ci = reciprical of velocity of light
+c magnetic field energy is also calculated, using
+c wm = nx*ny*nz*sum((affp/(kx**2+ky**2+kz**2))*ci*ci
+c    |cu(kx,ky,kz)*s(kx,ky,kz)|**2)
+c this expression is valid only if the current is divergence-free
+c nx/ny = system length in x/y direction
+c nyv = first dimension of field arrays, must be >= ny+1
+c nyd = first dimension of form factor array, must be >= ny
+      !double precision wp
+      !complex ffd
+      real cu, amu, damu, dex, idex
+      dimension cu(3,nyv,kxp2+1,j2blok)
+      dimension damu(2,nyv,kxp2+1,j2blok), amu(3,nyv,kxp2+1,j2blok)
+      !dimension bz(nyv,kxp2+1,j2blok)
+      !dimension ffd(nyd,kxp2,j2blok)
+      idex = 1.0/dex
+      ks = kstrt - 2
+      ny1 = ny + 1
+      dnx = 6.28318530717959/float(nx + nx)
+      dny = 6.28318530717959/float(ny + ny)
+      !ci2 = ci*ci
+      !if (isign.ne.0) go to 40
+      !if (kstrt.gt.nx) return
+c prepare form factor array
+      !do 30 l = 1, j2blok
+      !joff = kxp2*(l + ks) - 1
+      !do 20 j = 1, kxp2
+      !dkx = dnx*float(j + joff)
+      !at1 = dkx*dkx
+      !at2 = (dkx*ax)**2
+!      do 10 k = 1, ny
+!      dky = dny*float(k - 1)
+      !at3 = dky*dky + at1
+      !at4 = exp(-.5*((dky*ay)**2 + at2))
+!      if (at3.eq.0.) then
+!         ffd(k,j,l) = cmplx(affp,1.)
+!      else
+!         ffd(k,j,l) = cmplx(affp*at4/at3,at4)
+!      endif
+!   10 continue
+!   20 continue
+!   30 continue
+!      return
+!   40 if (isign.gt.0) go to 110
+c calculate magnetic field and sum field energy
+!      wp = 0.0d0
+!      if (kstrt.gt.nx) go to 100
+!      do 90 l = 1, j2blok
+c mode numbers 0 < kx < nx and 0 < ky < ny
+!      joff = kxp2*(l + ks) - 1
+!      do 60 j = 1, kxp2
+!      dkx = dnx*float(j + joff)
+      !if ((j+joff).gt.0) then
+         !do 50 k = 2, ny
+         !dky = dny*float(k - 1)
+         !at1 = ci2*real(ffd(k,j,l))*aimag(ffd(k,j,l))
+         !at2 = dky*at1
+         !at3 = dkx*at1
+         !bz(k,j,l) = at3*cu(2,k,j,l) - at2*cu(1,k,j,l)
+         !wp = wp + 2.0*at1*(cu(1,k,j,l)**2 + cu(2,k,j,l)**2)
+   !50    continue
+c mode numbers ky = 0, ny
+         !at1 = ci2*real(ffd(1,j,l))*aimag(ffd(1,j,l))
+         !at2 = dkx*at1
+         !bz(1,j,l) = at2*cu(2,1,j,l)
+         !wp = wp + at1*cu(2,1,j,l)**2
+      !endif
+      !bz(ny+1,j,l) = 0.
+   !60 continue
+c mode numbers kx = 0, nx/2
+!      if ((l+ks).eq.0) then
+!         do 70 k = 2, ny
+!         dky = dny*float(k - 1)
+         !at1 = ci2*real(ffd(k,1,l))*aimag(ffd(k,1,l))
+         !at2 = dky*at1
+         !bz(k,1,l) = -at2*cu(1,k,1,l)
+         !wp = wp + at1*cu(1,k,1,l)**2
+!   70    continue
+         !bz(1,1,l) = 0.
+!      endif
+      !do 80 k = 1, ny1
+      !bz(k,kxp2+1,l) = 0.
+   !80 continue
+!   90 continue
+!  100 continue
+      !wm = float(nx*ny)*wp
+!      return
+c calculate vector potential and sum field energy
+c   110 if (isign.gt.1) go to 180
+c       wp = 0.0d0
+      if (kstrt.gt.nx) go to 170
+      do 160 l = 1, j2blok
+c mode numbers 0 < kx < nx and 0 < ky < ny
+      joff = kxp2*(l + ks) - 1
+      do 130 j = 1, kxp2
+      dkx = dnx*float(j + joff)
+      if ((j+joff).gt.0) then
+         do 120 k = 2, ny
+         dky = dny*float(k - 1)
+!         dcu(1,k,j,l) = -dcu(1,k,j,l)+dkx*amu(1,k,j,l)-dky*amu(3,k,j,l)
+!         dcu(2,k,j,l) = -dcu(2,k,j,l)-dkx*amu(3,k,j,l)+dky*amu(2,k,j,l)
+!         damu(1,k,j,l) = -dcu(2,k,j,l) + dky*cu(3,k,j,l)*idex     
+!         damu(2,k,j,l) = dcu(1,k,j,l) - dkx*cu(3,k,j,l)*idex    
+!         damu(1,k,j,l) = dkx*amu(3,k,j,l)-dky*amu(2,k,j,l)+dky*cu(3,k,j,l)*idex     
+!         damu(2,k,j,l) = dkx*amu(1,k,j,l)-dky*amu(3,k,j,l)-dkx*cu(3,k,j,l)*idex 
+         damu(1,k,j,l) = dkx*amu(3,k,j,l) - dky*amu(2,k,j,l) + 
+     & dky*cu(3,k,j,l)*idex
+         damu(2,k,j,l) = dkx*amu(1,k,j,l) - dky*amu(3,k,j,l) - 
+     & dkx*cu(3,k,j,l)*idex   
+c-------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at2 = ci2*at2/(1+aa*at2)
+c         at1 = at2*aimag(ffd(k,j,l))
+c         bxy(1,k,j,l) = at2*cu(1,k,j,l)
+c         bxy(2,k,j,l) = at2*cu(2,k,j,l)
+c-------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at1 = at2*aimag(ffd(k,j,l))
+c         at2 = at2/aimag(ffd(k,j,l))*aa
+c         bxy(1,k,j,l) = (at1*cu(1,k,j,l)+at2*bxy(1,k,j,l))/(1+at2)
+c         bxy(2,k,j,l) = (at1*cu(2,k,j,l)+at2*bxy(2,k,j,l))/(1+at2)
+c-------------------------------------------------------
+         !at2 = real(ffd(k,j,l))
+         !at2 = ci2*at2/(1+aa*at2)
+         !at1 = at2*aimag(ffd(k,j,l))
+         !bxy(1,k,j,l) = at1*aat1+aa*at2*bxy(1,k,j,l) 
+         !bxy(2,k,j,l) = at1*aat2+aa*at2*bxy(2,k,j,l)
+         !wp = wp + 2.0*at1*(dcu(1,k,j,l)**2 + dcu(2,k,j,l)**2)
+  120    continue
+c mode numbers ky = 0, ny
+c-----------------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at2 = ci2*at2/(1+aa*at2)
+c         at1 = at2*aimag(ffd(1,j,l))
+c         bxy(1,1,j,l) = 0.
+c         bxy(2,1,j,l) = at2*cu(2,1,j,l)
+c-----------------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at1 = at2*aimag(ffd(k,j,l))
+c         at2 = at2/aimag(ffd(k,j,l))*aa
+c         bxy(1,1,j,l) = 0.
+c         bxy(2,1,j,l) = (at1*cu(2,1,j,l)+at2*bxy(2,1,j,l))/(1+at2)
+c-----------------------------------------------------------------
+         !dcu(1,1,j,l) = -dcu(1,1,j,l)+dkx*amu(1,1,j,l)
+         !dcu(2,1,j,l) = -dcu(2,1,j,l)-dkx*amu(3,1,j,l)         
+
+         !at2 = real(ffd(1,j,l))
+         !at2 = ci2*at2/(1+aa*at2)
+         !at1 = at2*aimag(ffd(1,j,l))
+         damu(2,1,j,l) = 0.
+         !damu(1,1,j,l) = dcu(2,1,j,l)+dkx*amu(3,1,j,l)-damu(1,1,j,l)
+         damu(1,1,j,l) = dkx*amu(3,1,j,l)-damu(1,1,j,l)
+         !wp = wp + at1*dcu(2,1,j,l)**2
+      endif
+      damu(1,ny+1,j,l) = 0.
+      damu(2,ny+1,j,l) = 0.
+  130 continue
+c mode numbers kx = 0, nx/2
+      if ((l+ks).eq.0) then
+         do 140 k = 2, ny
+c-----------------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at2 = ci2*at2/(1+aa*at2)
+c         at1 = at2*aimag(ffd(k,1,l))
+c         bxy(1,k,1,l) = at2*cu(1,k,1,l)
+c         bxy(2,k,1,l) = 0.
+c-----------------------------------------------------------------
+c         at2 = real(ffd(k,j,l))
+c         at1 = at2*aimag(ffd(k,j,l))
+c         at2 = at2/aimag(ffd(k,j,l))*aa
+c         bxy(1,k,1,l) = (at1*cu(1,k,1,l)+at2*bxy(1,k,1,l))/(1+at2)
+c         bxy(2,k,1,l) = 0.
+c-----------------------------------------------------------------
+         dky = dny*float(k - 1)
+         !dcu(1,k,1,l) = -dcu(1,k,1,l)-dky*amu(3,k,1,l)
+         !dcu(2,k,1,l) = -dcu(2,k,1,l)+dky*amu(2,k,1,l)
+
+         !at2 = real(ffd(k,1,l))
+         !at2 = ci2*at2/(1+aa*at2)
+         !at1 = at2*aimag(ffd(k,1,l))
+         !damu(2,k,1,l) = -dcu(1,k,1,l)-dky*amu(3,k,1,l)+damu(2,k,1,l)
+         damu(2,k,1,l) = -dky*amu(3,k,1,l)+damu(2,k,1,l)
+         damu(1,k,1,l) = 0.
+         !wp = wp + at1*dcu(1,k,1,l)**2
+  140    continue
+         damu(1,1,1,l) = 0.
+         damu(2,1,1,l) = 0.
+      endif
+      do 150 k = 1, ny1
+      damu(1,k,kxp2+1,l) = 0.
+      damu(2,k,kxp2+1,l) = 0.
+  150 continue
+  160 continue
+  170 continue
+      !wm = float(nx*ny)*wp
+      return
+c calculate smoothing
+c   180 if (kstrt.gt.nx) go to 240
+c       do 230 l = 1, j2blok
+c c mode numbers 0 < kx < nx and 0 < ky < ny
+c       joff = kxp2*(l + ks) - 1
+c       do 200 j = 1, kxp2
+c       if ((j+joff).gt.0) then
+c          do 190 k = 2, ny
+c          !at1 = aimag(ffd(k,j,l))
+c          damu(1,k,j,l) = cu(1,k,j,l)
+c          damu(2,k,j,l) = cu(2,k,j,l)
+c   190    continue
+c c mode numbers ky = 0, ny
+c          !at1 = aimag(ffd(1,j,l))
+c          damu(1,1,j,l) = 0.
+c          damu(2,1,j,l) = cu(2,1,j,l)
+c       endif
+c       damu(1,ny+1,j,l) = 0.
+c       damu(2,ny+1,j,l) = 0.
+c   200 continue
+c c mode numbers kx = 0, nx/2
+c       if ((l+ks).eq.0) then
+c          do 210 k = 2, ny
+c          !at1 = aimag(ffd(k,1,l))
+c          damu(1,k,1,l) = cu(1,k,1,l)
+c          damu(2,k,1,l) = 0.
+c   210    continue
+c          damu(1,1,1,l) = 0.
+c          damu(2,1,1,l) = 0.
+c       endif
+c       do 220 k = 1, ny1
+c       damu(1,k,kxp2+1,l) = 0.
+c       damu(2,k,kxp2+1,l) = 0.
+c   220 continue
+c   230 continue
+c   240 continue
+c       return
+      end
+!-----------------------------------------------------------------------
       subroutine MPPOISD22(q,fxy,isign,ffd,ax,ay,affp,we,nx,ny,kstrt,nyv&
      &,kxp2,nyd)
 ! this subroutine solves 2d poisson's equation in fourier space for

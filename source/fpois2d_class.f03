@@ -45,11 +45,12 @@
          generic :: bfield => ibfieldd2
          generic :: bfield_qp => jpbpoisd23n_qp
          generic :: bfield_qp_new => jpbpoisd23n_qp_new
+         generic :: bfield_qp_new2 => jpbpoisd23n_qp_new2
          procedure, private :: init_fpois2d, init_fpois2d_fd
          procedure, private :: end_fpois2d
          procedure, private :: ipotd2, ismoothfd2, ippoisd23, ibfieldd2
          procedure, private :: ivpotd2
-         procedure, private :: jpbpoisd23n_qp,jpbpoisd23n_qp_new                  
+         procedure, private :: jpbpoisd23n_qp,jpbpoisd23n_qp_new, jpbpoisd23n_qp_new2                  
       end type 
 !
       type fpois2d_link
@@ -600,6 +601,64 @@
          call this%err%werrfl2(class//sname//' ended')
 
          end subroutine jpbpoisd23n_qp_new
+!
+         subroutine jpbpoisd23n_qp_new2(this,cu,amu,damu,dex)
+! this = poisson solver descriptor
+! cu = input current density array, in fourier space
+! bxy = output magnetic field array, in fourier space
+! isign = (-1,1,2) = solve for (magnetic field,vector potential,smooth)
+! ci = reciprical of velocity of light
+! wm = output magnetic energy
+! kstrt = starting data block number, a global variable
+         implicit none
+         class(fpois2d), intent(in) :: this
+         real, intent(in) :: dex
+         !real, intent(inout) :: wm
+         class(ufield2d), intent(inout) :: cu, amu, damu
+         ! class(ufield2d), intent(inout) :: damu, amu
+! local data
+         integer :: isign = 1
+         real, dimension(:,:,:), pointer :: pcu, pamu, pdamu
+         ! real, dimension(:,:,:), pointer :: pdamu, pamu
+         integer :: nx, ny, nyv, kxp2, j2blok, nyd
+         !real :: ax, ay, affp
+         !real, dimension(1,1,1) :: dxy
+         complex, dimension(:,:), pointer :: ffc
+         character(len=20), save :: sname = 'jpbpoisd23n_qp_new2:'
+
+         call this%err%werrfl2(class//sname//' started')
+         pcu => cu%getrf()
+         !pdcu => dcu%getrf()
+         pdamu => damu%getrf()
+         pamu => amu%getrf()
+         !pbxy => bxy%getrf()
+         if ((size(pcu,1) < 2) .or. (size(pcu,1) > 3)) then
+            write (erstr,*) 'invalid cu vector size=', size(pcu,1)
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
+
+! unpack common arguments
+         ffc => this%ffc
+         nx = this%nd(1); ny = this%nd(2)
+! choose the proper solver
+         select case (this%sp%getpsolver())
+         case (1)
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            !call PBPOISD22N_QP(pcu,pdcu,pamu,pbxy,dxy,isign,ffc,ax,ay,&
+            !&affp,ci,wm,nx,ny,this%p%getlkstrt(),nyv,kxp2,j2blok,nyd,c,dex)
+            call PBPOISD22N_QP_NEW_test2(pcu,pamu,pdamu,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         case default
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_NEW_test2(pcu,pamu,pdamu,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         end select
+         call this%err%werrfl2(class//sname//' ended')
+
+         end subroutine jpbpoisd23n_qp_new2
 !
       function get_pois2table(pp,perr,psp,ax,ay,affp) result(table)
 

@@ -58,7 +58,7 @@
          generic :: elf => elfield_field2d
          generic :: bf => bfield_field2d
          generic :: bfqp => bfield_qp_field2d
-         generic :: bfqpn => bfield_qp_new_field2d
+         generic :: bfqpn => bfield_qp_new_field2d, bfield_qp_new2_field2d
          generic :: cg => copyguard_field2d
          generic :: ag => acopyguard_field2d
          generic :: psend => pipesend_field2d
@@ -82,7 +82,7 @@
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
          !procedure, private :: bfield_qp_field2d, copyguard_field2d
          procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
-         procedure, private :: acopyguard_field2d, pipesend_field2d
+         procedure, private :: acopyguard_field2d, pipesend_field2d, bfield_qp_new2_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2, multiply3
          procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d, copyto_2d
@@ -710,6 +710,30 @@
          
       end subroutine bfield_qp_new_field2d      
 !
+      subroutine bfield_qp_new2_field2d(cu,amu,damu,dex)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: cu,amu,damu
+         ! class(field2d), intent(inout) :: this,that
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'bfield_qp_new2_field2d:'
+         !real :: we
+
+         call cu%err%werrfl2(class//sname//' started')
+         
+         if ((cu%state /= 1).or.(amu%state /= 1))  then 
+            call cu%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         call cu%pt%bfield_qp_new2(cu%ks,amu%ks,damu%ks,dex)
+
+         damu%state = 1
+         
+         call cu%err%werrfl2(class//sname//' ended')
+         
+      end subroutine bfield_qp_new2_field2d  
+!
       subroutine copyguard_field2d(this) 
 
          implicit none
@@ -1209,8 +1233,11 @@
          class(field2d), intent(in) :: this
          real :: getsum
 
-         getsum = sum(this%rs%getrf())
-
+         if (this%state == 0) then
+            getsum = sum(this%rs%getrf())            
+         else
+            getsum = sum(this%ks%getrf()) 
+         endif
       end function getsum
 !
       ! function getvalue(this)
@@ -1224,4 +1251,4 @@
 
       ! end function getvalue
 !
-      end module field2d_class
+    end module field2d_class

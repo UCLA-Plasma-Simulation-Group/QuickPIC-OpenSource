@@ -307,7 +307,6 @@
          !call this%cu%ag()
          call this%dcu%ag()
          call this%amu%ag()
-         !write(*,*) "dcu%gcell=",this%dcu%getgcells(),dcu%getgcells()
 
 !         call cu%add(this%cu,cu)
          call dcu%add(this%dcu,dcu)
