@@ -421,17 +421,24 @@
          nx = ef%getnd1(); nyp = ef%getnd2p()
 ! periodic push, calculates list of particles leaving tile
          if (this%list) then
-            call PPGRBPPUSHF23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
+            ! call PPGRBPPUSHF23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
+            ! &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
+            ! &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,&
+            ! &mx1,mxyp1,this%ntmaxp,this%irc,dex)
+            call PPGRBPPUSHF23L_QP_NEW_test(this%ppart,pef,pbf,ppsit(1,:,:),&
             &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
             &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,&
             &mx1,mxyp1,this%ntmaxp,this%irc,dex)
             if (this%irc /= 0) then
-               write (erstr,*) 'PPGRBPPUSHF23L_QP_NEW ihole overflow, irc=',&
+               write (erstr,*) 'PPGRBPPUSHF23L_QP_NEW_test ihole overflow, irc=',&
                &this%irc
             endif
 ! push supports particle boundary conditions, does not calculate list
          else
-            call PPGRBPPUSH23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
+            ! call PPGRBPPUSH23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
+            ! &this%kpic,noff,nyp,this%qbm,this%dt,this%ci,ek,this%xdim,&
+            ! &this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
+            call PPGRBPPUSH23L_QP_NEW_test(this%ppart,pef,pbf,ppsit(1,:,:),&
             &this%kpic,noff,nyp,this%qbm,this%dt,this%ci,ek,this%xdim,&
             &this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
          endif
