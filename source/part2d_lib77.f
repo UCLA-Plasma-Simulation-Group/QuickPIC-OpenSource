@@ -770,15 +770,12 @@
       end
 !-----------------------------------------------------------------------
       subroutine PPGRDCJPPOST2L_QP_J(ppart,cu,kpic,noff,nyp,idimp,nppmx,
-     1nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+     1nx,mx,my,nxv,nypmx,mx1,mxyp1)
 ! ppart(1,n,m) = position x of particle n in partition in tile m at t
 ! ppart(2,n,m) = position y of particle n in partition in tile m at t
-! ppart(3,n,m) = momentum px of particle n in partition in tile m
-! at t - dt/2
-! ppart(4,n,m) = momentum py of particle n in partition in tile m
-! at t - dt/2
-! ppart(5,n,m) = momentum pz of particle n in partition in tile m
-! at t - dt/2
+! ppart(3,n,m) = momentum px of particle n in partition in tile m at t 
+! ppart(4,n,m) = momentum py of particle n in partition in tile m at t 
+! ppart(5,n,m) = momentum pz of particle n in partition in tile m at t 
 ! cu(i,j,k) = ith component of current density
 ! at grid point j,kk for i = 1, 3
 ! where kk = k + noff - 1
@@ -797,7 +794,7 @@
       implicit none
       integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
       integer mx1, mxyp1
-      real dex
+      !real dex
       !real ppart, fxy, bxy, cu, dcu, amu, psit
       real ppart, cu
       integer kpic
@@ -820,10 +817,8 @@
       real qm1, inv_part_7, p7
       
 !$OMP PARALLEL DO
-!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,vz,
-!$OMP& dxp,dyp,amx,amy,dx,dy, 
-!$OMP& scu,qm1,inv_part_7,
-!$OMP& p7,qm)
+!$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,vx,vy,vz,dxp,dyp, &
+!$OMP& amx,amy,dx,dy,scu,qm1,inv_part_7,p7,qm)
       do 120 k = 1, mxyp1
       noffp = (k - 1)/mx1
       moffp = my*noffp
@@ -1204,12 +1199,6 @@
       vx = ppart(3,j,k)
       vy = ppart(4,j,k)
 
-      !acx = vx + ddx
-      !acy = vy + ddy
-
-! find inverse gamma
-! renormalize magnetic field
-! calculate cyclotron frequency
       omzt = qtmh1*oz
 ! calculate rotation matrix
 c omt = omzt*omzt

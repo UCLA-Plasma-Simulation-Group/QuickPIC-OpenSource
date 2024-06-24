@@ -259,7 +259,7 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine amjdp_species2d
-!      
+!         
       subroutine jdp_species2d(this,cu,dex)
 ! deposit the current      
       
@@ -275,7 +275,7 @@
          call this%err%werrfl2(class//sname//' started')
          call this%cu%as(0.0)
          
-         call this%pd%jdp(this%cu%getrs(),dex)
+         call this%pd%jdp(this%cu%getrs())
          
          call this%cu%ag()
          call cu%add(this%cu,cu)

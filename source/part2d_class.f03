@@ -323,7 +323,7 @@
          
       end subroutine amjdeposit
 !      
-      subroutine jdeposit(this,cu,dex)
+      subroutine jdeposit(this,cu)
 ! deposit the current     
       
          implicit none
@@ -331,7 +331,7 @@
          class(part2d), intent(inout) :: this
          class(ufield2d), pointer, intent(in) :: cu
          !class(ufield2d), pointer, intent(in) :: ef, bf, psit
-         real, intent(in) :: dex
+         !real, intent(in) :: dex
          character(len=18), save :: sname = 'jdeposit'
 ! local data
          !real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
@@ -353,7 +353,7 @@
          ! &pamu,this%kpic,noff,nyp,this%qbm, this%dt,this%ci,this%xdim,&
          ! &this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
          call PPGRDCJPPOST2L_QP_J(this%ppart,pcu,this%kpic,noff,nyp,&
-         &this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1,dex)
+         &this%xdim,this%nppmx0,nx,mx,my,nxv,nypmx,mx1,mxyp1)
          
          call this%err%werrfl2(class//sname//' ended')
          

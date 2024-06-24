@@ -1578,11 +1578,6 @@ c mode numbers 0 < kx < nx and 0 < ky < ny
          do 120 k = 2, ny
          dky = dny*float(k - 1)
          dcu(1,k,j,l) = -dcu(1,k,j,l)+dkx*amu(1,k,j,l)-dky*amu(3,k,j,l)
-         !write(2,*) dcu(1,k,j,l),"dcu(1,k,j,l)"
-         
-         !write(2,*) dkx*cu(3,k,j,l),"dkx*cu(3,k,j,l)"
-         !write(2,*) cu(3,k,j,l),"cu(3,k,j,l)"       
-         !write(2,*) damu(1,k,j,l),"damu(1,k,j,l)"
          dcu(2,k,j,l) = -dcu(2,k,j,l)-dkx*amu(3,k,j,l)+dky*amu(2,k,j,l)
          damu(1,k,j,l) = -dcu(2,k,j,l) + dky*cu(3,k,j,l)*idex     
          damu(2,k,j,l) = dcu(1,k,j,l) - dkx*cu(3,k,j,l)*idex    
@@ -1835,10 +1830,14 @@ c mode numbers 0 < kx < nx and 0 < ky < ny
 !         damu(2,k,j,l) = dcu(1,k,j,l) - dkx*cu(3,k,j,l)*idex    
 !         damu(1,k,j,l) = dkx*amu(3,k,j,l)-dky*amu(2,k,j,l)+dky*cu(3,k,j,l)*idex     
 !         damu(2,k,j,l) = dkx*amu(1,k,j,l)-dky*amu(3,k,j,l)-dkx*cu(3,k,j,l)*idex 
-         damu(1,k,j,l) = dkx*amu(3,k,j,l) - dky*amu(2,k,j,l) + 
+c          damu(1,k,j,l) = dkx*amu(3,k,j,l) - dky*amu(2,k,j,l) + 
+c      & dky*cu(3,k,j,l)*idex
+c          damu(2,k,j,l) = dkx*amu(1,k,j,l) - dky*amu(3,k,j,l) - 
+c      & dkx*cu(3,k,j,l)*idex 
+         damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
      & dky*cu(3,k,j,l)*idex
-         damu(2,k,j,l) = dkx*amu(1,k,j,l) - dky*amu(3,k,j,l) - 
-     & dkx*cu(3,k,j,l)*idex   
+         damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
+     & dkx*cu(3,k,j,l)*idex  
 c-------------------------------------------------------
 c         at2 = real(ffd(k,j,l))
 c         at2 = ci2*at2/(1+aa*at2)
@@ -1881,7 +1880,8 @@ c-----------------------------------------------------------------
          !at1 = at2*aimag(ffd(1,j,l))
          damu(2,1,j,l) = 0.
          !damu(1,1,j,l) = dcu(2,1,j,l)+dkx*amu(3,1,j,l)-damu(1,1,j,l)
-         damu(1,1,j,l) = dkx*amu(3,1,j,l)-damu(1,1,j,l)
+         !damu(1,1,j,l) = dkx*amu(3,1,j,l)-damu(1,1,j,l)
+         damu(1,1,j,l) = - dkx*amu(3,1,j,l) + damu(1,1,j,l)
          !wp = wp + at1*dcu(2,1,j,l)**2
       endif
       damu(1,ny+1,j,l) = 0.
@@ -1911,7 +1911,8 @@ c-----------------------------------------------------------------
          !at2 = ci2*at2/(1+aa*at2)
          !at1 = at2*aimag(ffd(k,1,l))
          !damu(2,k,1,l) = -dcu(1,k,1,l)-dky*amu(3,k,1,l)+damu(2,k,1,l)
-         damu(2,k,1,l) = -dky*amu(3,k,1,l)+damu(2,k,1,l)
+         !damu(2,k,1,l) = -dky*amu(3,k,1,l)+damu(2,k,1,l)
+         damu(2,k,1,l) = dky*amu(3,k,1,l)-damu(2,k,1,l)
          damu(1,k,1,l) = 0.
          !wp = wp + at1*dcu(1,k,1,l)**2
   140    continue
