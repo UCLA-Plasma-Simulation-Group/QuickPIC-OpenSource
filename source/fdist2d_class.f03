@@ -13,7 +13,7 @@
 
       private
 
-      public :: fdist2d, fdist2d_000, fdist2d_010, fdist2d_011, fdist2d_012
+      public :: fdist2d, fdist2d_000, fdist2d_010, fdist2d_011, fdist2d_012, fdist2d_020
 
       type, abstract :: fdist2d
 
@@ -26,7 +26,7 @@
 ! ndprof = profile type 
          integer :: npf, npmax
          logical :: ntd
-                          
+
          contains
          generic :: new => init_fdist2d         
          generic :: del => end_fdist2d
@@ -67,7 +67,7 @@
          private
 ! xppc, yppc = particle per cell in x and y directions
          integer :: xppc, yppc
-         real :: qm, den
+         real :: qm, den,sigma_vx,sigma_vy,sigma_vz 
          character(len=:), allocatable :: long_prof
          real, dimension(:), allocatable :: s, fs
                           
@@ -76,6 +76,21 @@
          procedure, private :: dist2d => dist2d_000
                   
       end type fdist2d_000
+!
+      type, extends(fdist2d) :: fdist2d_020
+! Transeversely uniform profile with uniform or piecewise longitudinal profile
+         private
+! xppc, yppc = particle per cell in x and y directions
+         integer :: xppc, yppc
+         real :: qm, den,den1,sigma_vx,sigma_vy,sigma_vz 
+         character(len=:), allocatable :: long_prof
+         real, dimension(:), allocatable :: s, fs
+                          
+         contains
+         procedure, private :: init_fdist2d => init_fdist2d_020
+         procedure, private :: dist2d => dist2d_020
+                  
+      end type fdist2d_020
 !
       type, extends(fdist2d) :: fdist2d_010
 ! sharp edge hollow channel with different radius in x and y
@@ -205,10 +220,18 @@
             call input%get(trim(s1)//'.neutralized',this%ntd)
          else
             this%ntd = .true.
-         end if
-
+         end if         
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
+         if (input%found(trim(s1)//'.sigma_v')) then
+            call input%get(trim(s1)//'.sigma_v(1)',this%sigma_vx)
+            call input%get(trim(s1)//'.sigma_v(2)',this%sigma_vy)
+            call input%get(trim(s1)//'.sigma_v(3)',this%sigma_vz)
+         else
+            this%sigma_vx = 0.0
+            this%sigma_vy = 0.0
+            this%sigma_vz = 0.0
+         end if         
          call input%get(trim(s1)//'.q',qm)
          call input%get(trim(s1)//'.density',den)
          npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4
@@ -278,11 +301,11 @@
                   do iy=0, yppc-1
                      pt(1,nps) = (ix + 0.5)/xppc + i - 1
                      pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
                      nps = nps + 1
                   enddo
@@ -296,11 +319,11 @@
                   do iy=0, yppc-1
                      pt(1,nps) = (ix + 0.5)/xppc + i - 1
                      pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
                      nps = nps + 1
                   enddo
@@ -314,11 +337,11 @@
                   do iy=0, yppc-1
                      pt(1,nps) = (ix + 0.5)/xppc + i - 1
                      pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
-                     pt(3,nps) = 0.0
-                     pt(4,nps) = 0.0
-                     pt(5,nps) = 0.0
-                     pt(6,nps) = 1.0
-                     pt(7,nps) = 1.0
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
                      nps = nps + 1
                   enddo
@@ -332,6 +355,175 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine dist2d_000
+!
+      subroutine init_fdist2d_020(this,input,i)
+      
+         implicit none
+         
+         class(fdist2d_020), intent(inout) :: this
+         type(input_json), intent(inout), pointer :: input
+         integer, intent(in) :: i
+! local data
+         integer :: npf,xppc,yppc,npmax,indx,indy
+         real :: qm, den,den1
+         character(len=20) :: sn,s1
+         character(len=18), save :: sname = 'init_fdist2d_001:'
+         
+         this%sp => input%sp
+         this%err => input%err
+         this%p => input%pp
+
+         call this%err%werrfl2(class//sname//' started')
+         write (sn,'(I3.3)') i
+         s1 = 'species('//trim(sn)//')'
+         call input%get('simulation.indx',indx)
+         call input%get('simulation.indy',indy)
+         call input%get(trim(s1)//'.profile',npf)
+         if (input%found(trim(s1)//'.neutralized')) then
+            call input%get(trim(s1)//'.neutralized',this%ntd)
+         else
+            this%ntd = .true.
+         end if         
+         call input%get(trim(s1)//'.ppc(1)',xppc)
+         call input%get(trim(s1)//'.ppc(2)',yppc)
+         if (input%found(trim(s1)//'.sigma_v')) then
+            call input%get(trim(s1)//'.sigma_v(1)',this%sigma_vx)
+            call input%get(trim(s1)//'.sigma_v(2)',this%sigma_vy)
+            call input%get(trim(s1)//'.sigma_v(3)',this%sigma_vz)
+         else
+            this%sigma_vx = 0.0
+            this%sigma_vy = 0.0
+            this%sigma_vz = 0.0
+         end if         
+         call input%get(trim(s1)//'.q',qm)
+         call input%get(trim(s1)//'.density(1)',den)
+         call input%get(trim(s1)//'.density(2)',den1)
+         npmax = xppc*yppc*(2**indx)*(2**indy)/this%p%getlnvp()*4
+         call input%get(trim(s1)//'.longitudinal_profile',this%long_prof)
+         if (trim(this%long_prof) == 'piecewise') then
+            call input%get(trim(s1)//'.piecewise_density',this%fs)
+            call input%get(trim(s1)//'.piecewise_s',this%s)
+         end if
+         this%npf = npf
+         this%xppc = xppc
+         this%yppc = yppc
+         this%qm = qm
+         this%den = den
+         this%den1 = den1
+         this%npmax = npmax
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine init_fdist2d_020
+!
+      subroutine dist2d_020(this,part2d,npp,fd,s)
+         implicit none
+         class(fdist2d_020), intent(inout) :: this
+         real, dimension(:,:), pointer, intent(inout) :: part2d
+         integer, intent(inout) :: npp
+         class(ufield2d), intent(in), pointer :: fd
+         real, intent(in) :: s 
+! local data
+         character(len=18), save :: sname = 'dist2d_020:'
+         real, dimension(:,:), pointer :: pt => null()
+         integer :: nps, nx, ny, noff, xppc, yppc, i, j
+         integer :: ix, iy
+         real :: qm, den_temp,qm1
+         integer :: prof_l
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         nx = fd%getnd1p(); ny = fd%getnd2p(); noff = fd%getnoff()
+         xppc = this%xppc; yppc = this%yppc
+         den_temp = 1.0
+         if (trim(this%long_prof) == 'piecewise') then
+            prof_l = size(this%fs)
+            if (s<this%s(1) .or. s>this%s(prof_l)) then
+               write (erstr,*) 'The s is out of the bound!'
+               call this%err%equit(class//sname//erstr)
+               return
+            end if
+            do i = 2, prof_l
+               if (this%s(i) < this%s(i-1)) then
+                  write (erstr,*) 's is not monotonically increasing!'
+                  call this%err%equit(class//sname//erstr)
+                  return
+               end if
+               if (s<=this%s(i)) then
+                  den_temp = this%fs(i-1) + (this%fs(i)-this%fs(i-1))/&
+                  &(this%s(i)-this%s(i-1))*(s-this%s(i-1))
+                  exit
+               end if
+            end do
+         end if
+         qm = den_temp*this%den*this%qm/abs(this%qm)/real(xppc)/real(yppc)
+         qm1 = den_temp*this%den1*this%qm/abs(this%qm)/real(xppc)/real(yppc)
+         nps = 1
+         pt => part2d
+! initialize the particle positions
+         if (noff < ny) then
+         print*,"1"
+         do i=2, nx-1
+            do j=2, ny
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     pt(1,nps) = (ix + 0.5)/xppc + i - 1
+                     pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
+                     pt(8,nps) = (qm1-qm)*i/nx+qm
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         else if (noff > (nx-ny-1)) then       
+         print*,"2"
+         do i=2, nx-1
+            do j=1, ny-1
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     pt(1,nps) = (ix + 0.5)/xppc + i - 1
+                     pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
+                     pt(8,nps) = (qm1-qm)*i/nx+qm
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         else
+         print*,"3"
+         do i=2, nx-1
+            do j=1, ny
+               do ix = 0, xppc-1
+                  do iy=0, yppc-1
+                     pt(1,nps) = (ix + 0.5)/xppc + i - 1
+                     pt(2,nps) = (iy + 0.5)/yppc + j - 1 + noff
+                     pt(3,nps) = this%sigma_vx*ranorm()
+                     pt(4,nps) = this%sigma_vy*ranorm()
+                     pt(5,nps) = this%sigma_vz*ranorm()
+                     pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
+                     pt(7,nps) = pt(6,nps)-pt(5,nps)
+                     pt(8,nps) = (qm1-qm)*i/nx+qm
+                     nps = nps + 1
+                  enddo
+               enddo
+            enddo
+         enddo
+         endif
+         
+         npp = nps - 1
+         
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine dist2d_020
 !
       subroutine init_fdist2d_010(this,input,i)
       
@@ -588,7 +780,7 @@
             call input%get(trim(s1)//'.neutralized',this%ntd)
          else
             this%ntd = .true.
-         end if
+         end if         
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
@@ -780,7 +972,7 @@
             call input%get(trim(s1)//'.neutralized',this%ntd)
          else
             this%ntd = .true.
-         end if
+         end if         
          call input%get(trim(s1)//'.ppc(1)',xppc)
          call input%get(trim(s1)//'.ppc(2)',yppc)
          call input%get(trim(s1)//'.q',qm)
@@ -982,4 +1174,63 @@
 
       end subroutine dist2d_012
 !
-      end module fdist2d_class
+function ranorm()
+    
+integer, save :: r1 = 885098780, r2 = 1824280461
+integer, save :: iflg = 0, r4 = 1396483093, r5 = 55318673
+double precision, save :: h1l = 65531.0d0, h1u = 32767.0d0
+double precision, save :: h2l = 65525.0d0,r0 = 0.0d0
+double precision :: ranorm, r3, asc, bsc, temp
+integer :: isc, i1
+
+if (iflg == 0) then
+  isc = 65536
+  asc = dble(isc)
+  bsc = asc*asc
+  i1 = r1 - (r1/isc)*isc
+  r3 = h1l*dble(r1) + asc*h1u*dble(i1)
+  i1 = r3/bsc
+  r3 = r3 - dble(i1)*bsc
+  bsc = 0.5d0*bsc
+  i1 = r2/isc
+  isc = r2 - i1*isc
+  r0 = h1l*dble(r2) + asc*h1u*dble(isc)
+  asc = 1.0d0/bsc
+  isc = r0*asc
+  r2 = r0 - dble(isc)*bsc
+  r3 = r3 + (dble(isc) + 2.0d0*h1u*dble(i1))
+  isc = r3*asc
+  r1 = r3 - dble(isc)*bsc
+  temp = dsqrt(-2.0d0*dlog((dble(r1) + dble(r2)*asc)*asc))
+  isc = 65536
+  asc = dble(isc)
+  bsc = asc*asc
+  i1 = r4 - (r4/isc)*isc
+  r3 = h2l*dble(r4) + asc*h1u*dble(i1)
+  i1 = r3/bsc
+  r3 = r3 - dble(i1)*bsc
+  bsc = 0.5d0*bsc
+  i1 = r5/isc
+  isc = r5 - i1*isc
+  r0 = h2l*dble(r5) + asc*h1u*dble(isc)
+  asc = 1.0d0/bsc
+  isc = r0*asc
+  r5 = r0 - dble(isc)*bsc
+  r3 = r3 + (dble(isc) + 2.0d0*h1u*dble(i1))
+  isc = r3*asc
+  r4 = r3 - dble(isc)*bsc
+  r0 = 6.28318530717959d0*((dble(r4) + dble(r5)*asc)*asc)
+  ranorm = temp*dsin(r0)
+  r0 = temp*dcos(r0)
+  iflg = 1
+  return
+else
+  ranorm = r0
+  r0 = 0.0d0
+  iflg = 0
+  return
+endif
+
+end function ranorm
+end module fdist2d_class
+
