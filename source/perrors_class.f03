@@ -90,7 +90,7 @@
          
          if (this%p%getidproc() == 0) then
             
-            call system('mkdir ./ELOG')
+            call system('mkdir -p ./ELOG')
             
          endif
          

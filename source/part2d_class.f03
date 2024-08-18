@@ -15,7 +15,8 @@
 ! update: 03/11/2021 by Viktor Decyk
 ! In init_part2d, added 1 to initial values of this%ntmaxp, this%npbmx
 ! to avoid possible zero-sized allocatable arrays in pmove
-! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y coordinates
+! update: 03/19/2021 by Viktor Decyk
+! In init_part2d and pmove, if PPPCHECK2L fails, printed x,y,vx,vy coordinates
 
       module part2d_class
 
@@ -164,6 +165,7 @@
 ! find number of particles in each of mx, my tiles: updates kpic, nppmx
          call PPDBLKP2L(this%part,this%kpic,this%npp,noff,this%nppmx,&
          &this%xdim,npmax,mx,my,mx1,mxyp1,this%irc)
+         if (this%nppmx < 100) this%nppmx = 100 
 ! check for errors
          if (this%irc /= 0) then
             write (erstr,*) 'PPDBLKP2L error, irc=', this%irc
@@ -175,6 +177,7 @@
          this%ntmaxp = xtras*this%nppmx + 1
          this%npbmx = xtras*this%nppmx + 1
          this%nbmaxp = 0.25*mx1*this%npbmx
+
          allocate(this%ppart(xdim,this%nppmx0,mxyp1))
          allocate(this%ncl(8,mxyp1))
          allocate(this%ihole(2,this%ntmaxp+1,mxyp1))
@@ -197,6 +200,8 @@
              call this%err%werrfl0(class//sname//erstr)
              j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
              write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
+             call this%err%werrfl0(class//sname//erstr)
+             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
              call this%err%equit(class//sname//erstr); return
           endif
 
@@ -673,10 +678,12 @@
          &this%nppmx0,nx,mx,my,mx1,myp1,this%irc)
 ! check error
          if (this%irc /= 0) then
-            write (erstr,*) 'pmove PPPCHECK2L error: irc=', this%irc
+            write (erstr,*) 'PPPCHECK2L error: irc=', this%irc
              call this%err%werrfl0(class//sname//erstr)
              j = (this%irc - 1)/mxyp1; k = this%irc - mxyp1*j
              write (erstr,*) 'x,y=',this%ppart(1:2,j+1,k)
+             call this%err%werrfl0(class//sname//erstr)
+             write (erstr,*) 'vx,vy=',this%ppart(3:4,j+1,k)
             call this%err%equit(class//sname//erstr); return
          endif
 !
@@ -761,7 +768,7 @@
 
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine partcopyback  
+      end subroutine partcopyback
 !
       subroutine pipesend_part2d(this,tag,id)
       
@@ -843,20 +850,20 @@
          
       end subroutine piperecv_part2d
 !      
-      subroutine writehdf5_part2d(this,file,delta)
+      subroutine writehdf5_part2d(this,file,delta,origin)
 
          implicit none
          
          class(part2d), intent(inout) :: this
          class(hdf5file), intent(in) :: file
-         real, dimension(2), intent(in) :: delta
+         real, dimension(2), intent(in) :: delta, origin
 ! local data
          character(len=18), save :: sname = 'writehdf5_part2d:'
          integer :: ierr
 
          call this%err%werrfl2(class//sname//' started')                  
          call this%pcb()
-         call pwpart(this%p,this%err,file,this%part,this%npp,1,delta,ierr)
+         call pwpart(this%p,this%err,file,this%part,this%npp,1,delta,origin,ierr)
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_part2d

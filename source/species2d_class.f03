@@ -98,7 +98,6 @@
 
          call this%err%werrfl2(class//sname//' started')
          
-
          ntd = this%pf%getntd()
          if (ntd) allocate(this%qn)
          allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3)
@@ -454,7 +453,7 @@
 
          call this%err%werrfl2(class//sname//' started')                  
          
-         call this%pd%wr(file,delta) 
+         call this%pd%wr(file,delta,this%pf%getorigin()) 
 
          call this%err%werrfl2(class//sname//' ended')
       
