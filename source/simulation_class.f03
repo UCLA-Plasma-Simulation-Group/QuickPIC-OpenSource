@@ -794,8 +794,8 @@
          real :: min, max, n0, dt
          real :: alx1, aly1, alz1, alx2, aly2, alz2
          logical :: rst
-         integer :: ierr, indx, indy, indz, dim
-         class (*), pointer :: obj => null()
+         integer :: ierr, indx, indy, indz, dim, dim2
+         class (*), pointer :: obj => null(), obj2 => null()
 
 
          call this%err%werrfl2(class//sname//' started')
@@ -871,12 +871,13 @@
                if(this%in%found('field.diag('//trim(s1)//').slice')) then
                   call this%in%info('field.diag('//trim(s1)//').slice',n_children=m)
                   n_diag = n_diag + l*m
+               else if(this%in%found('field.diag('//trim(s1)//').debug')) then
+                  n_diag2 = n_diag2 + l
                else
                   n_diag = n_diag + l
                end if
             end if
          end do
-
          call this%in%get('simulation.dump_restart',rst)
          if (rst) n_diag = n_diag + this%nbeams
 
@@ -1159,6 +1160,8 @@
                      sn4 = 'Electric Field'
                      dim = 1
                      obj => this%fields%bexyz
+                     obj2 => this%fields%fxy
+                     dim2 = 1
                   case ('ey')
                      sn1 = 'Ey'
                      sn2 = 'ey'
@@ -1166,6 +1169,8 @@
                      sn4 = 'Electric Field'
                      dim = 2
                      obj => this%fields%bexyz
+                     obj2 => this%fields%fxy
+                     dim2 = 2
                   case ('ez')
                      sn1 = 'Ez'
                      sn2 = 'ez'
@@ -1173,6 +1178,8 @@
                      sn4 = 'Electric Field'
                      dim = 3
                      obj => this%fields%bexyz
+                     obj2 => this%fields%psit
+                     dim2 = 1
                   case ('bx')
                      sn1 = 'Bx'
                      sn2 = 'bx'
@@ -1180,6 +1187,8 @@
                      sn4 = 'Magnetic Field'
                      dim = 1
                      obj => this%fields%bbxyz
+                     obj2 => this%fields%bxyz
+                     dim2 = 1
                   case ('by')
                      sn1 = 'By'
                      sn2 = 'by'
@@ -1187,6 +1196,8 @@
                      sn4 = 'Magnetic Field'
                      dim = 2
                      obj => this%fields%bbxyz
+                     obj2 => this%fields%bxyz
+                     dim2 = 2
                   case ('bz')
                      sn1 = 'Bz'
                      sn2 = 'bz'
@@ -1194,6 +1205,8 @@
                      sn4 = 'Magnetic Field'
                      dim = 3
                      obj => this%fields%bbxyz
+                     obj2 => this%fields%bxyz
+                     dim2 = 3
                   case ('psi')
                      sn1 = 'Psi'
                      sn2 = 'psi'
@@ -1274,6 +1287,62 @@
                         &units = trim(sn3),&
                         &label = trim(sn4))
                      end do
+                  else if (this%in%found('field.diag('//trim(s1)//').debug')) then
+                        n_diag2 = n_diag2 + 1
+                        this%diag2(n_diag2)%df = ndump
+                        this%diag2(n_diag2)%obj => obj2
+                        ! allocate(this%diag2(n_diag2)%slice,this%diag(n_diag)%slice_pos)
+                        allocate(this%diag2(n_diag2)%dim)
+                        this%diag2(n_diag2)%dim = dim2
+                        ! if (allocated(sl)) deallocate(sl)
+                        ! write (s3, '(I4.4)') k
+                        ! call this%in%get('field.diag('//trim(s1)//').&
+                        ! &slice('//trim(s3)//').(1)',sl)
+                        call this%diag2(n_diag2)%file%new(&
+                        &axismin = (/alx1,aly1,alz1/),&
+                        &axismax = (/alx2,aly2,alz2/),&
+                        &axisname  = (/'x','y','z'/),&
+                        &axislabel = (/'x','y','z'/))
+
+                        ! select case (sl)
+                        ! case ('yz')
+                        !    this%diag(n_diag)%slice = 1
+                        !    call this%diag(n_diag)%file%new(&
+                        !    &axismin = (/aly1,alz1,alx1/),&
+                        !    &axismax = (/aly2,alz2,alx2/),&
+                        !    &axisname  = (/'y  ','\xi','x  '/),&
+                        !    &axislabel = (/'y  ','\xi','x  '/))
+                        ! case ('xz')
+                        !    this%diag(n_diag)%slice = 2
+                        !    call this%diag(n_diag)%file%new(&
+                        !    &axismin = (/alx1,alz1,aly1/),&
+                        !    &axismax = (/alx2,alz2,aly2/),&
+                        !    &axisname  = (/'x  ','\xi','y  '/),&
+                        !    &axislabel = (/'x  ','\xi','y  '/))
+                        ! case ('xy')
+                        !    this%diag(n_diag)%slice = 3
+                        !    call this%diag(n_diag)%file%new(&
+                        !    &axismin = (/alx1,aly1,alz1/),&
+                        !    &axismax = (/alx2,aly2,alz2/),&
+                        !    &axisname  = (/'x','y','z'/),&
+                        !    &axislabel = (/'x','y','z'/))
+                        ! end select
+                        ! call this%in%get('field.diag('//trim(s1)//').&
+                        ! &slice('//trim(s3)//').(2)',this%diag(n_diag)%slice_pos)
+                        if (this%p%getidproc() == 0) then
+                           call system('mkdir -p ./Fields/'//trim(sn1)//'_debug'//'/')
+                        end if
+                        this%diag2(n_diag2)%path2 = './Fields/'//trim(sn1)//'_debug'//'/'
+
+                        call this%diag2(n_diag2)%file%new(&
+                        &timeunits = '1 / \omega_p',&
+                        &dt = dt,&
+                        &axisunits = (/'c / \omega_p','c / \omega_p','c / \omega_p'/),&
+                        &rank = 2,&
+                        &filename = './Fields/'//trim(sn1)//'_debug'//'/',&
+                        &dataname = trim(sn2),&
+                        &units = trim(sn3),&
+                        &label = trim(sn4))
                   else
                      n_diag = n_diag + 1
                      this%diag(n_diag)%df = ndump
@@ -1344,15 +1413,19 @@
          n = size(this%diag2)
 
          do i = 1, n
-            if (mod(this%tstep,this%diag(i)%df) == 0) then
+            if (mod(this%tstep,this%diag2(i)%df) == 0) then
                write (s1, '(I8.8)') this%tstep
                if (this%p%getidproc() == 0) then
                   call system('mkdir -p '//trim(this%diag2(i)%path2)//trim(s1)//'/')
                end if               
-               call this%diag2(i)%file%new(n = this%tstep2, t = real(this%tstep2),filename = trim(this%diag2(i)%path2)&
-               &//trim(s1)//'/')
                select type (obj => this%diag2(i)%obj)
+               type is (field2d)
+                  call this%diag2(i)%file%new(n = this%tstep2, t = real(this%tstep2),filename = trim(this%diag2(i)%path2)&
+                  &//trim(s1)//'/')
+                  call obj%wr(this%diag2(i)%file,this%diag2(i)%dim)
                type is (species2d)
+                  call this%diag2(i)%file%new(n = this%tstep2, t = real(this%tstep2),filename = trim(this%diag2(i)%path2)&
+                  &//trim(s1)//'/')
                   call obj%wr(this%diag2(i)%file,(/this%dex,this%dex/))
                end select
             end if
