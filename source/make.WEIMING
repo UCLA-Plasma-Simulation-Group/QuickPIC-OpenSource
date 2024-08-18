@@ -23,7 +23,7 @@ HYPRE_LIB = /Users/anweiming/work/codes/hypre-2.26.0/src/hypre/lib
 
 
 # other libs
-OTHER_LIBS_GF_OPENMPI = -L$(JSON_LIB) -ljsonfortran -L$(HYPRE_LIB) -lHYPRE
+OTHER_LIBS_WEIMING = -L$(JSON_LIB) -ljsonfortran -L$(HYPRE_LIB) -lHYPRE
 
 # memory options
 MEM_OPTIONS_WEIMING = 

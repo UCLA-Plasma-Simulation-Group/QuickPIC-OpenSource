@@ -1,4 +1,4 @@
-SYS_SFX=WEIMING
+SYS_SFX=GF_OPENMPI
 
 # precision
 # SGL = single precision, float(4)
