@@ -107,13 +107,31 @@
       end interface
 !
       interface
-         subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,&
+         subroutine POGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,&
      &noff,nyp,qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,&
      &ntmax,irc,dex)
          implicit none
          integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
          integer mx1, mxyp1, ntmax, irc
          real qbm, dt, ci, ek, dex
+         real ppart, fxy, bxy, psit
+         integer kpic, ncl, ihole
+         dimension ppart(idimp,nppmx,mxyp1)
+         dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx)
+         dimension psit(nxv,nypmx)
+         dimension kpic(mxyp1), ncl(8,mxyp1)
+         dimension ihole(2,ntmax+1,mxyp1)     
+         end subroutine     
+      end interface
+!
+      interface
+         subroutine PPGRBPPUSHF23L_QP(ppart,fxy,bxy,psit,kpic,ncl,ihole,nof&
+     &f,nyp,qbm,dt,dtc,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1&
+     &,ntmax,irc,dex)
+         implicit none
+         integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
+         integer mx1, mxyp1, ntmax, irc
+         real qbm, dt, dtc, ci, ek, dex
          real ppart, fxy, bxy, psit
          integer kpic, ncl, ihole
          dimension ppart(idimp,nppmx,mxyp1)
