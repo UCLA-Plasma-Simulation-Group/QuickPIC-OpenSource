@@ -130,7 +130,8 @@
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
          integer, dimension(:,:), allocatable :: id_bq, tag_bq
-         real :: dex, dxi, dex2, dt
+         !real :: dex, dxi, dex2, dt
+         real :: dex, dxi, dex2, dt, Bx, By, Bz, Ex, Ey, Ez, bxp, byp
 
          contains
 
@@ -273,6 +274,7 @@
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%dccu)
          allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
          allocate(this%bexyz, this%bbxyz)
+         
 
          call this%bexyz%new(this%p,this%err,this%sp3,dim=3)
          call this%bbxyz%new(this%p,this%err,this%sp3,dim=3)
@@ -285,7 +287,6 @@
          call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%reg%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         !call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.,state=1)
          call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%dcu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
@@ -293,16 +294,12 @@
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%dccu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          !call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         write(*,*) this%sp2%getdex(), "dexd"
+         !write(*,*) this%sp2%getdex(), "dexd"
          call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
          ! call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
          ! call this%bxyzfd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe1,psi=this%psi,algorithm=1)
-
-         !call this%qe%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1) !algorithm=1 meaning 2d fd.
-         !call this%psi%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=1)
-         !call this%fxy%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,algorithm=1)
          
          call input%get('simulation.nspecies',n)
 
@@ -894,9 +891,9 @@
                end do
 !cu is the normalized unit in r space.               
                call this%fields%cu%mult(this%fields%cu,this%dex)
-               ! do m = 1, this%nspecies
-               !    call this%species%spe(m)%cbq(j+1)
-               ! end do  
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%cbq(j+1)
+               end do  
                if (allocated(this%fields%cu3d)) then
                   call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                end if
@@ -919,7 +916,7 @@
                call this%fields%psit%mult(this%fields%psit,-this%dex)
 !psit is the normalized unit in r space.               
                call this%fields%psit%fftkr(1)
-               write(2,*) this%fields%psit%getsum() , "psit"
+               !write(2,*) this%fields%psit%getsum() , "psit"
                call this%fields%bxyz%as(0.0)
 !Bz of plasma, bxyz is the normalized unit/dex in k space.               
                call this%fields%cu%bf(this%fields%bxyz)
@@ -953,6 +950,7 @@
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
                write(2,*) this%fields%damu%getsum() , "damu-r-N"
+               !call this%fields%damu%mult(this%fields%damu,-1.0)
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
                call this%fields%damu%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
@@ -961,6 +959,10 @@
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,1.0/this%dex)
                write(2,*) this%fields%bxyzfd%getsum(), "bxyzfd(B_perp)-r-N/dex"
+               call this%fields%bxyzfd%sum_ele((/1/),this%bxp)
+               write(2,*) this%bxp , "bxp"
+               call this%fields%bxyzfd%sum_ele((/2/),this%byp)
+               write(2,*) this%byp , "byp"
 !Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.     
                call this%fields%bxyz%add(this%fields%bxyz,this%fields%bxyzfd,(/1/),(/1/),(/1/))
 !By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
@@ -984,8 +986,18 @@
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
                write(2,*) this%fields%fxy%getsum() , "fxy_3d"
+               call this%fields%fxy%sum_ele((/1/),this%Ex)
+               write(2,*) this%Ex , "Ex"
+               call this%fields%fxy%sum_ele((/2/),this%Ey)
+               write(2,*) this%Ey , "Ey"
                write(2,*) this%fields%psit%getsum() , "psit_3d"
                write(2,*) this%fields%bxyz%getsum() , "B_3d"
+               call this%fields%bxyz%sum_ele((/1/),this%Bx)
+               write(2,*) this%Bx , "Bx"
+               call this%fields%bxyz%sum_ele((/2/),this%By)
+               write(2,*) this%By , "By"
+               call this%fields%bxyz%sum_ele((/3/),this%Bz)
+               write(2,*) this%Bz , "Bz"
             enddo
 
             do m = 1, this%nspecies
