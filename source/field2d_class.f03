@@ -46,11 +46,7 @@
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
          generic :: div => divf_field2d
-         ! generic :: div_new_cu => divf_field2d_new_cu
-         ! generic :: div_new_amu => divf_field2d_new_amu
          generic :: grad => gradf_field2d
-         ! generic :: grad_new => gradf_field2d_new
-         ! generic :: grad => gradf_field2d, gradf_field2d_fd
          generic :: curl => curlf_field2d
          generic :: pot => potential_field2d
          generic :: vpot => vpotential_field2d
@@ -73,6 +69,7 @@
          generic :: mult3 => multiply3
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
+         generic :: sum_ele => sum_elements
 
          ! procedure, private :: init_field2d, end_field2d
          procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
@@ -87,7 +84,7 @@
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2, multiply3
          procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d, copyto_2d
          procedure :: getstate, getgcells, getrs, getks, getsum
-         procedure, private :: solve_field2d_mg
+         procedure, private :: solve_field2d_mg, sum_elements
 
       end type 
 
@@ -175,8 +172,8 @@
          class(ufield2d), pointer :: uqe, upsi
 
          inorder = psp%getinorder()
-         write(*,*) psp%getdex(), "dexc"
-         write(*,*) psp%getinorder(), "dexc"
+         !write(*,*) psp%getdex(), "dexc" 0
+         !write(*,*) psp%getinorder(), "dexc" 1
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -265,10 +262,10 @@
       class(field2d), intent(inout) :: qe, psi
       real, intent(in) :: dex
       character(len=18), save :: sname = 'renew_field2d_fd'
-
+      !write(*,*) "renew_dex is", dex
       call this%err%werrfl2(class//sname//' started')
  
-      call this%pt_mg%renew(qe%getrs(), psi%getrs(),dex)
+      call this%pt_mg%renew(qe%getrs(), psi%getrs(), dex)
 
       call this%err%werrfl2(class//sname//' ended')
 
@@ -1182,6 +1179,27 @@
                  
       end subroutine writehdf5_field2d
 !
+      subroutine sum_elements(this,dim,result) 
+
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         integer, dimension(:), intent(in) :: dim
+         real, intent(out) :: result
+         character(len=18), save :: sname = 'sum_elements:'
+
+         call this%err%werrfl2(class//sname//' started')
+         
+         if (this%state == 0) then
+            call this%rs%sum_ele(dim,result)                       
+         else
+            call this%ks%sum_ele(dim,result)        
+         endif
+         
+         call this%err%werrfl2(class//sname//' ended')
+                 
+      end subroutine sum_elements
+!
       function getstate(this)
 
          implicit none
@@ -1234,21 +1252,24 @@
          real :: getsum
 
          if (this%state == 0) then
-            getsum = sum(this%rs%getrf())            
+            getsum = sum(this%rs%getrf())        
          else
-            getsum = sum(this%ks%getrf()) 
+            getsum = sum(this%ks%getrf())
          endif
       end function getsum
-!
-      ! function getvalue(this)
+!     
+      ! function getsum(this)
 
       !    implicit none
 
       !    class(field2d), intent(in) :: this
-      !    real, dimension(:,:,:) :: getvalue
+      !    real :: getsum
 
-      !    getvalue = this%rs%getrf()
-
-      ! end function getvalue
+      !    if (this%state == 0) then
+      !       getsum = sum(abs(this%rs%getrf()))            
+      !    else
+      !       getsum = sum(abs(this%ks%getrf())) 
+      !    endif
+      ! end function getsum
 !
     end module field2d_class

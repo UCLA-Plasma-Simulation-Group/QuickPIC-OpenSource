@@ -212,7 +212,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   this%order = order
   this%solver_type = solver_type
   this%tol = tol
-  dex = 0.0468
+  dex = 0.046875
   if ( present(precond_type) ) then
     this%precond_type = precond_type
   else
@@ -284,8 +284,7 @@ subroutine renew_fpois2d_mg_explicit(this, qe, psi, dex )
 
   pqe => qe%getrf()
   ppsi => psi%getrf()
-  ! dex = 0.0468
-  ! write(2,*) dex, "dex"
+  !write(*,*) "renew_fpois2d_mg_explicit_dex is", dex
 ! renew HYPRE matrix
   j = 3
   do i = 1, 4
@@ -490,9 +489,10 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
   idex2 = 1.0 / (dex*dex)
   nd1p = iupper(1) - ilower(1) + 1
   nd2p = iupper(2) - ilower(2) + 1
-  
-  !write(*,*) "iupper", iupper, ilower
-
+  !write(*,*) "idex2", idex2
+  ! write(*,*) "iupper", iupper, ilower
+  ! write(*,*) "nd1p", nd1p
+  ! write(*,*) "nd2p", nd2p
   select case ( order )
   case ( p_fd_2order )
 
@@ -528,21 +528,23 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
       i = 1
       do y = 1, nd2p
         do x = 1, nd1p
-          ! values(i)   =  4.0 * idex2 + (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
-          ! values(i+1) = -1.0 * idex2
-          ! values(i+2) = -1.0 * idex2
-          ! values(i+3) = -1.0 * idex2
-          ! values(i+4) = -1.0 * idex2
+          ! write(2,*) "pqe(1, ", x, ", ", y, ") = ", pqe(1, x, y)
+          ! write(2,*) "ppsi(1, ", x, ", ", y, ") = ", ppsi(1, x, y)
           values(i)   = -4.0 * idex2 - (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
           values(i+1) = 1.0 * idex2
           values(i+2) = 1.0 * idex2
           values(i+3) = 1.0 * idex2
           values(i+4) = 1.0 * idex2
+          ! values(i)   = -4.0  - (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
+          ! values(i+1) = 1.0 
+          ! values(i+2) = 1.0 
+          ! values(i+3) = 1.0 
+          ! values(i+4) = 1.0 
           i = i + 5
         enddo
       enddo
     end select
-
+    !write(2,*) values, "values"  
     call HYPRE_StructMatrixSetBoxValues( matrix, ilower, iupper, stencil_num, stencil_idx, values, ierr )
   
   case ( p_fd_4order )
@@ -584,7 +586,8 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   select case ( order )
   case ( p_fd_2order )
 
-    stencil_num = 5
+    !stencil_num = 5
+    stencil_num = 2
     allocate( stencil_idx( stencil_num ) )
 
     ! top boundary
@@ -1109,9 +1112,11 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   ndp(2) = nd(2)/nvp(2)
   noff(1) = 0
   noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
-  write(2,*) dex, "dexa"
+  ! write(*,*) "nvp2", nvp(2) 2
+  !write(2,*) dex, "dexa" 0
+  write(*,*) "noff(2)", noff(2)
   dex = psp%getdex()
-  write(2,*) dex, "dexb"
+  !write(2,*) dex, "dexb" 0
   ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
@@ -1154,8 +1159,8 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   allocate(ltable)
   link%table => ltable
   table => link%table
-  write(2,*) dex, "dex"
-  dex = 0.0468
+  ! write(2,*) dex, "dex"
+  ! dex = 0.0468
   ! call table%new_fd(pp, perr, noff, nd, ndp, order, dex, solver_type, &
     ! precond_type, mg_prec, pqe, ppsi)
   call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &

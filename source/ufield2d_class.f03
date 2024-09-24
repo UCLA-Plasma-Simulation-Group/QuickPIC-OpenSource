@@ -56,6 +56,7 @@
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
          generic :: mult3 => multiply3
+         generic :: sum_ele => sum_specific_dim
          final :: final_ufield2d
          
          procedure, private :: init_ufield2d
@@ -70,7 +71,7 @@
          procedure, private :: copyguard, acopyguard, writehdf5
          procedure, private :: pipesend_ufield2d, piperecv_ufield2d
          procedure, private :: asc, asa, sum1, multiply1, multiply2, minus1
-         procedure, private :: sum2, minus2, multiply3, copyto_2d
+         procedure, private :: sum2, minus2, multiply3, copyto_2d, sum_specific_dim
 !         procedure, private :: asc,asa,add,mult1
          
       end type 
@@ -809,8 +810,16 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-
-
+         ! write(*,*) "Array bounds for rf1: dimension 1 = ", lbound(rf1,1), "-", ubound(rf1,1)
+         ! write(*,*) "Array bounds for rf1: dimension 2 = ", lbound(rf1,2), "-", ubound(rf1,2)
+         ! write(*,*) "Array bounds for rf1: dimension 3 = ", lbound(rf1,3), "-", ubound(rf1,3)
+         ! write(*,*) "Array bounds for rf2: dimension 1 = ", lbound(rf2,1), "-", ubound(rf2,1)
+         ! write(*,*) "Array bounds for rf2: dimension 2 = ", lbound(rf2,2), "-", ubound(rf2,2)
+         ! write(*,*) "Array bounds for rf2: dimension 3 = ", lbound(rf2,3), "-", ubound(rf2,3)
+         ! write(*,*) "Array bounds for rf3: dimension 1 = ", lbound(rf3,1), "-", ubound(rf3,1)
+         ! write(*,*) "Array bounds for rf3: dimension 2 = ", lbound(rf3,2), "-", ubound(rf3,2)
+         ! write(*,*) "Array bounds for rf3: dimension 3 = ", lbound(rf3,3), "-", ubound(rf3,3)
+         ! write(*,*) "this%lindex = ", this%lindex
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
@@ -1008,7 +1017,6 @@
          allocate(add%rf(size(rf2,1),size(rf2,2),size(rf2,3)))
 
          rf1 => add%rf
-
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)
             do j = 1, size(rf1,2)
@@ -1060,7 +1068,7 @@
 
       end function mult1
 !
-      function mult2(value,this)
+      function mult2(this,value)
       
          implicit none
          
@@ -1093,5 +1101,41 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end function mult2
+!
+      subroutine sum_specific_dim(this, dim, result)
+         implicit none
+    
+         class(ufield2d), intent(in) :: this
+         integer, dimension(:), intent(in) :: dim
+         real, intent(out) :: result
+! local data
+         character(len=18), save :: sname = 'sum_specific_dim:'
+         integer :: i, j, k
+         real, dimension(:,:,:), pointer :: rf1 => null()
+         real :: sum_value
+
+         call this%err%werrfl2(class//sname//' started')
+
+         rf1 => this%rf
+         ! write(*,*) "Size of dimension 3: ", size(rf1, 3)
+         ! write(*,*) "Array bounds for rf1: dimension 1 = ", lbound(rf1,1), "-", ubound(rf1,1)
+         ! write(*,*) "Array bounds for rf1: dimension 2 = ", lbound(rf1,2), "-", ubound(rf1,2)
+         ! write(*,*) "Array bounds for rf1: dimension 3 = ", lbound(rf1,3), "-", ubound(rf1,3)
+
+         sum_value = 0.0
+
+!$OMP PARALLEL DO PRIVATE(i, j, k) REDUCTION(+:sum_value)
+         do k = 1, size(rf1, 3) + this%lindex!数组 rf1 的第3维度的大小
+            do j = 1, size(rf1, 2)
+                  do i = 1, size(dim, 1)
+                     sum_value = sum_value + rf1(dim(i), j, k)
+                  end do
+            end do
+         end do
+!$OMP END PARALLEL DO
+
+         result = sum_value
+         call this%err%werrfl2(class//sname//' ended')
+      end subroutine sum_specific_dim
 !
       end module ufield2d_class
