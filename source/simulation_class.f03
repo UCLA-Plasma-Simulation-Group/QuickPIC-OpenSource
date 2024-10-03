@@ -987,7 +987,7 @@
                ! call this%fields%damu%sum_ele((/2/),this%damuy1)
                ! write(2,*) this%damuy1 , "damu2-2"
 !bxyzfd is the normalized uni/dex in r space.
-               call this%fields%bxyzfd%mult(this%fields%bxyzfd,1.0/this%dex)
+               call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
                write(2,*) this%fields%bxyzfd%getsum(), "bxyzfd(B_perp)-r-N/dex"
                call this%fields%bxyzfd%sum_ele((/1/),this%bxp)
                write(2,*) this%bxp , "bxp"
