@@ -284,7 +284,7 @@
 
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
-         call this%qe1%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
+         call this%qe1%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
          call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%div_vpot%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
@@ -882,7 +882,7 @@
                   call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
                end do
                call this%fields%qe1%as(0.0)
-               call this%fields%qe1%as(this%fields%qe)
+               call this%species%spe(1)%cq(this%fields%qe1) !deposit rho-Jz
                write(2,*) this%fields%qe%getsum() , "qe"
 !qe is the normalized unit in k space.                
                call this%fields%qe%fftrk(1)
@@ -1497,6 +1497,8 @@
                      sn4 = '\Psi'
                      dim = 1
                      obj => this%fields%psi3d
+                     obj2 => this%fields%psi
+                     dim2 = 1
                   case ('vpotx')
                      sn1 = 'Ax'
                      sn2 = 'ax'
@@ -1518,6 +1520,15 @@
                      sn4 = 'Vector Potential'
                      dim = 3
                      obj => this%fields%vpot3d
+                  case ('qe')
+                     sn1 = 'Qe'
+                     sn2 = 'Qe'
+                     sn3 = 'n_0'
+                     sn4 = '\Qe'
+                     dim = 1
+                     obj => this%fields%qe1
+                     obj2 => this%fields%qe1
+                     dim2 = 1
                   end select
                   if (this%in%found('field.diag('//trim(s1)//').slice')) then
                      call this%in%info('field.diag('//trim(s1)//').slice',n_children=l)

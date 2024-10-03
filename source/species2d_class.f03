@@ -52,6 +52,7 @@
          generic :: wr => writehdf5_species2d
          generic :: wrq => writeq_species2d, writeqslice_species2d
          generic :: cbq => cbq_species2d
+         generic :: cq => cq_species2d
          procedure, private :: init_species2d, renew_species2d
          procedure, private :: end_species2d
          procedure, private :: qdp_species2d
@@ -66,6 +67,7 @@
          procedure, private :: psend_species2d
          procedure, private :: precv_species2d, writehdf5_species2d
          procedure, private :: cbq_species2d, writeq_species2d, writeqslice_species2d
+         procedure, private :: cq_species2d
       end type 
 
       save      
@@ -517,5 +519,22 @@
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine cbq_species2d
+!
+      subroutine cq_species2d(this,q)
+! copy out the 2d species density
+      
+         implicit none
+         
+         class(species2d), intent(in) :: this
+         class(field2d), intent(inout) :: q
+! local data
+         character(len=18), save :: sname = 'cq_species2d:'
+         logical :: ntd
+
+         call this%err%werrfl2(class//sname//' started')
+         call q%as(this%q)                  
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine cq_species2d
 !      
       end module species2d_class
