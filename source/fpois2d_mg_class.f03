@@ -240,7 +240,6 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
       ! call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
       call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
-      ! call setvalue_hypre_matrix_bnd_NEW( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
   
@@ -556,7 +555,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
 
 end subroutine setvalue_hypre_matrix_inter_explicit
 
-subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
+subroutine setvalue_hypre_matrix_bnd_ori( matrix, order, ilower, iupper, bnd_type, &
   bnd_flag, dex )
 
   implicit none
@@ -755,9 +754,9 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
 
   end select
 
-end subroutine setvalue_hypre_matrix_bnd
+end subroutine setvalue_hypre_matrix_bnd_ori
 
-subroutine setvalue_hypre_matrix_bnd_NEW( matrix, order, ilower, iupper, bnd_type, &
+subroutine setvalue_hypre_matrix_bnd_1( matrix, order, ilower, iupper, bnd_type, &
   bnd_flag, dex )
 
   implicit none
@@ -967,9 +966,9 @@ subroutine setvalue_hypre_matrix_bnd_NEW( matrix, order, ilower, iupper, bnd_typ
 
   end select
 
-end subroutine setvalue_hypre_matrix_bnd_NEW
+end subroutine setvalue_hypre_matrix_bnd_1
 
-subroutine setvalue_hypre_matrix_bnd_NEW1( matrix, order, ilower, iupper, bnd_type, &
+subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   bnd_flag, dex )
 
   implicit none
@@ -1183,7 +1182,7 @@ subroutine setvalue_hypre_matrix_bnd_NEW1( matrix, order, ilower, iupper, bnd_ty
 
   end select
 
-end subroutine setvalue_hypre_matrix_bnd_NEW1
+end subroutine setvalue_hypre_matrix_bnd
 
 subroutine setup_hypre_solver( comm, solver, A, b, x, type_, maxiter, n_pre, n_post, tol, &
   precond, precond_type )
