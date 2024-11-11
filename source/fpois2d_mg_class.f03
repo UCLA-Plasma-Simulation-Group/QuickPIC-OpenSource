@@ -69,7 +69,6 @@ type :: fpois2d_mg
   contains
 
   generic :: new => init_fpois2d_mg_explicit,init_fpois2d_mg
-  ! generic :: new_fd => init_fpois2d_mg_explicit
   generic :: renew => renew_fpois2d_mg_explicit
   generic :: get_sol => get_hypre_sol
   generic :: set_src => set_hypre_src
@@ -201,7 +200,6 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
   integer, dimension(3), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo, p_stencil_explicit/)
   integer :: n_pre = 1, n_post = 1, maxiter = 1000
-  
   character(len=18), save :: sname = 'init_fpois2d_mg_explicit:'
 
   call perr%werrfl2( class//sname//' started' )
@@ -242,6 +240,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
       ! call setvalue_hypre_matrix_inter( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j) )
       call setvalue_hypre_matrix_inter_explicit( this%A(i,j), this%order, this%ilower, this%iupper, dex, p_stencil(j), pqe, ppsi )
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
+      ! call setvalue_hypre_matrix_bnd_NEW( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
   
@@ -536,11 +535,6 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
           values(i+4) = -1.0 * idex2
-          ! values(i)   = -4.0  - (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
-          ! values(i+1) = 1.0 
-          ! values(i+2) = 1.0 
-          ! values(i+3) = 1.0 
-          ! values(i+4) = 1.0 
           i = i + 5
         enddo
       enddo
@@ -609,7 +603,6 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       case ( p_bnd_nn, p_bnd_nd )
 
         stencil_num = 2
-        ! stencil_idx(1:2) = (/0,1/)
         stencil_idx(1:2) = (/1,2/)
         do i = 1, nd2p*stencil_num, stencil_num
           values(i)   = 0.0
@@ -641,7 +634,6 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       case ( p_bnd_nn, p_bnd_nd )
 
         stencil_num = 2
-        ! stencil_idx(1:2) = (/0,2/)
         stencil_idx(1:2) = (/1,2/)
         do i = 1, nd2p*stencil_num, stencil_num
           values(i)   = -2.0 * idex2
@@ -673,7 +665,6 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       case ( p_bnd_nn, p_bnd_dn )
 
         stencil_num = 2
-        ! stencil_idx(1:2) = (/0,3/)
         stencil_idx(1:2) = (/3,4/)
         do i = 1, nd1p*stencil_num, stencil_num
           values(i)   = 0.0
@@ -705,7 +696,6 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       case ( p_bnd_nn, p_bnd_dn )
 
         stencil_num = 2
-        ! stencil_idx(1:2) = (/0,4/)
         stencil_idx(1:2) = (/3,4/)
         do i = 1, nd1p*stencil_num, stencil_num
           values(i)   = -2.0 * idex2
@@ -766,6 +756,434 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   end select
 
 end subroutine setvalue_hypre_matrix_bnd
+
+subroutine setvalue_hypre_matrix_bnd_NEW( matrix, order, ilower, iupper, bnd_type, &
+  bnd_flag, dex )
+
+  implicit none
+
+  integer(HYPRE_TYPE), intent(inout) :: matrix
+  integer, intent(in), dimension(2) :: ilower, iupper
+  integer, intent(in) :: order, bnd_type
+  logical, intent(in), dimension(4) :: bnd_flag
+  real, intent(in) :: dex
+
+  ! local
+  integer, dimension(2) :: ilower_bnd, iupper_bnd, icorner
+  integer :: nd1p, nd2p, stencil_num, ierr, i
+  integer, dimension(:), pointer :: stencil_idx
+  real :: idex2
+
+  nd1p = iupper(1) - ilower(1) + 1
+  nd2p = iupper(2) - ilower(2) + 1
+  
+  idex2 = 1.0/(dex**2)
+
+  select case ( order )
+  case ( p_fd_2order )
+
+    stencil_num = 5
+    allocate( stencil_idx( stencil_num ) )
+
+    ! top boundary
+    if ( bnd_flag(1) ) then
+
+      ilower_bnd = ilower
+      iupper_bnd = (/ ilower(1), iupper(2) /)
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_dn )
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,3,4/)
+        do i = 1, nd2p*stencil_num,  stencil_num
+          values(i) = 0.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_nd )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/1,2/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i)   = 0.0
+          values(i+1) = -2.0 * idex2
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! bottom boundary
+    if ( bnd_flag(2) ) then
+
+      ilower_bnd = (/ iupper(1), ilower(2) /)
+      iupper_bnd = iupper
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_dn )
+
+        stencil_num = 4
+        stencil_idx(1:4) =  (/0,2,3,4/)
+        do i = 1, nd2p*stencil_num,  stencil_num
+          values(i) = 0.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_nd )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/1,2/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i)   = -2.0 * idex2
+          values(i+1) = 0.0
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! left boundary
+    if ( bnd_flag(3) ) then
+
+      ilower_bnd = ilower
+      iupper_bnd = (/ iupper(1), ilower(2) /)
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_nd )
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,2,3/)
+        do i = 1, nd1p*stencil_num,  stencil_num
+          values(i) = 0.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_dn )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i)   = 0.0
+          values(i+1) = -2.0 * idex2
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! right boundary
+    if ( bnd_flag(4) ) then
+
+      ilower_bnd = (/ ilower(1), iupper(2) /)
+      iupper_bnd = iupper
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_nd )
+        
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,2,4/)
+        do i = 1, nd1p*stencil_num,  stencil_num
+          values(i) = 0.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_dn )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i)   = -2.0 * idex2
+          values(i+1) = 0.0
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! deal four corners if pure Neumann boundary is used
+    ! top left
+    if ( bnd_type == p_bnd_nn ) then
+
+      if ( bnd_flag(1) .and. bnd_flag(3) ) then 
+        icorner = ilower
+        stencil_idx(1:2) = (/2,4/)
+      endif
+      ! top right
+      if ( bnd_flag(1) .and. bnd_flag(4) ) then
+        icorner = (/ ilower(1), iupper(2) /)
+        stencil_idx(1:2) = (/2,3/)
+      endif
+      ! bottom left
+      if ( bnd_flag(2) .and. bnd_flag(3) ) then
+        icorner = (/ iupper(1), ilower(2) /)
+        stencil_idx(1:2) = (/1,4/)
+      endif
+      ! bottom right
+      if ( bnd_flag(2) .and. bnd_flag(4) ) then
+        icorner = iupper
+        stencil_idx(1:2) = (/1,3/)
+      endif
+
+      stencil_num = 2
+      values(1) = 0.0
+      values(2) = 0.0
+      call HYPRE_StructMatrixSetValues( matrix, icorner, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    deallocate( stencil_idx )
+
+  case ( p_fd_4order )
+
+    print *, "HYPRE solver not implemented for 4order algorithm"
+    stop
+
+  case default
+
+    print *, "HYPRE solver not implemented for specified algorithm"
+    stop
+
+  end select
+
+end subroutine setvalue_hypre_matrix_bnd_NEW
+
+subroutine setvalue_hypre_matrix_bnd_NEW1( matrix, order, ilower, iupper, bnd_type, &
+  bnd_flag, dex )
+
+  implicit none
+
+  integer(HYPRE_TYPE), intent(inout) :: matrix
+  integer, intent(in), dimension(2) :: ilower, iupper
+  integer, intent(in) :: order, bnd_type
+  logical, intent(in), dimension(4) :: bnd_flag
+  real, intent(in) :: dex
+
+  ! local
+  integer, dimension(2) :: ilower_bnd, iupper_bnd, icorner
+  integer :: nd1p, nd2p, stencil_num, ierr, i
+  integer, dimension(:), pointer :: stencil_idx
+  real :: idex2
+
+  nd1p = iupper(1) - ilower(1) + 1
+  nd2p = iupper(2) - ilower(2) + 1
+  
+  idex2 = 1.0/(dex**2)
+
+  select case ( order )
+  case ( p_fd_2order )
+
+    stencil_num = 5
+    allocate( stencil_idx( stencil_num ) )
+
+    ! top boundary
+    if ( bnd_flag(1) ) then
+
+      ilower_bnd = ilower
+      iupper_bnd = (/ ilower(1), iupper(2) /)
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_dn )
+
+        stencil_num = 5
+        stencil_idx(1:5) = (/0,1,2,3,4/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i) = 1.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+          values(i+4) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_nd )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/1,2/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i)   = 0.0
+          values(i+1) = -2.0 * idex2
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! bottom boundary
+    if ( bnd_flag(2) ) then
+
+      ilower_bnd = (/ iupper(1), ilower(2) /)
+      iupper_bnd = iupper
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_dn )
+
+        stencil_num = 5
+        stencil_idx(1:5) = (/0,1,2,3,4/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i) = 1.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+          values(i+4) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_nd )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/1,2/)
+        do i = 1, nd2p*stencil_num, stencil_num
+          values(i)   = -2.0 * idex2
+          values(i+1) = 0.0
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! left boundary
+    if ( bnd_flag(3) ) then
+
+      ilower_bnd = ilower
+      iupper_bnd = (/ iupper(1), ilower(2) /)
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_nd )
+
+        stencil_num = 5
+        stencil_idx(1:5) = (/0,1,2,3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i) = 1.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+          values(i+4) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_dn )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i)   = 0.0
+          values(i+1) = -2.0 * idex2
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! right boundary
+    if ( bnd_flag(4) ) then
+
+      ilower_bnd = (/ ilower(1), iupper(2) /)
+      iupper_bnd = iupper
+
+      select case ( bnd_type )
+      case ( p_bnd_dd, p_bnd_nd )
+        
+        stencil_num = 5
+        stencil_idx(1:5) = (/0,1,2,3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i) = 1.0
+          values(i+1) = 0.0
+          values(i+2) = 0.0
+          values(i+3) = 0.0
+          values(i+4) = 0.0
+        enddo
+
+      case ( p_bnd_nn, p_bnd_dn )
+
+        stencil_num = 2
+        stencil_idx(1:2) = (/3,4/)
+        do i = 1, nd1p*stencil_num, stencil_num
+          values(i)   = -2.0 * idex2
+          values(i+1) = 0.0
+        enddo
+
+      end select
+
+      call HYPRE_StructMatrixSetBoxValues( matrix, ilower_bnd, iupper_bnd, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    ! deal four corners if pure Neumann boundary is used
+    ! top left
+    if ( bnd_type == p_bnd_nn ) then
+
+      if ( bnd_flag(1) .and. bnd_flag(3) ) then 
+        icorner = ilower
+        stencil_idx(1:2) = (/2,4/)
+      endif
+      ! top right
+      if ( bnd_flag(1) .and. bnd_flag(4) ) then
+        icorner = (/ ilower(1), iupper(2) /)
+        stencil_idx(1:2) = (/2,3/)
+      endif
+      ! bottom left
+      if ( bnd_flag(2) .and. bnd_flag(3) ) then
+        icorner = (/ iupper(1), ilower(2) /)
+        stencil_idx(1:2) = (/1,4/)
+      endif
+      ! bottom right
+      if ( bnd_flag(2) .and. bnd_flag(4) ) then
+        icorner = iupper
+        stencil_idx(1:2) = (/1,3/)
+      endif
+
+      stencil_num = 2
+      values(1) = 0.0
+      values(2) = 0.0
+      call HYPRE_StructMatrixSetValues( matrix, icorner, stencil_num, &
+        stencil_idx, values, ierr )
+
+    endif
+
+    deallocate( stencil_idx )
+
+  case ( p_fd_4order )
+
+    print *, "HYPRE solver not implemented for 4order algorithm"
+    stop
+
+  case default
+
+    print *, "HYPRE solver not implemented for specified algorithm"
+    stop
+
+  end select
+
+end subroutine setvalue_hypre_matrix_bnd_NEW1
 
 subroutine setup_hypre_solver( comm, solver, A, b, x, type_, maxiter, n_pre, n_post, tol, &
   precond, precond_type )
@@ -1115,7 +1533,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
   ! write(*,*) "nvp2", nvp(2) 2
   !write(2,*) dex, "dexa" 0
-  write(*,*) "noff(2)", noff(2)
+  ! write(*,*) "noff(2)", noff(2)
   dex = psp%getdex()
   !write(2,*) dex, "dexb" 0
   ! dex = 0.0468

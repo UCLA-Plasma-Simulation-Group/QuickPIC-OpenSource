@@ -266,7 +266,7 @@
          this%p => input%pp
          this%sp3 => input%sp
          this%sp2 => input%sp
-         write(*,*) input%sp%getdex(), "dexe"
+         ! write(*,*) input%sp%getdex(), "dexe"
 
 
          call this%err%werrfl2(class//sname//' started')
@@ -871,19 +871,17 @@
 !2d charge density of beam,copy and add the charge density to a 2d slice
                   call this%beams%beam(m)%qdp(this%fields%qb,j+1) 
                end do
-               write(2,*) this%fields%qb%getsum() , "qb"
 !qb is the normalized unit in k space.               
                call this%fields%qb%fftrk(1)
 !epwb is the normalized unit/dex in k space.                
-               call this%fields%qb%elf(this%fields%epwb) !E⊥ of beam
-               write(2,*) this%fields%epwb%getsum() , "epwb in k"              
+               call this%fields%qb%elf(this%fields%epwb) !E⊥ of beam           
                call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
                   call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
                end do
                call this%fields%qe1%as(0.0)
                call this%species%spe(1)%cq(this%fields%qe1) !deposit rho-Jz
-               write(2,*) this%fields%qe%getsum() , "qe"
+               ! write(2,*) this%fields%qe%getsum() , "qe"
 !qe is the normalized unit in k space.                
                call this%fields%qe%fftrk(1)
 !psi is the normalized unit/dex**2 in k space.             
@@ -893,7 +891,7 @@
                call this%fields%psi%grad(this%fields%fxy)
 !fxy is the normalized unit/dex in r space.               
                call this%fields%fxy%fftkr(1)
-               write(2,*) this%fields%fxy%getsum() , "fxy"
+               ! write(2,*) this%fields%fxy%getsum() , "fxy"
 !psi is the normalized unit/dex**2 in r space.               
                call this%fields%psi%fftkr(1)
                do l = 1, this%nspecies
@@ -901,7 +899,7 @@
                end do
 !psi is the normalized unit in r space.               
                call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
-               write(2,*) this%fields%psi%getsum() , "psi"
+               ! write(2,*) this%fields%psi%getsum() , "psi"
                if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
                call this%fields%cu%as(0.0)
 !J, cu is the normalized unit/dex in r space.              
@@ -916,10 +914,10 @@
                if (allocated(this%fields%cu3d)) then
                   call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                end if
-               write(2,*) this%fields%cu%getsum() , "cu-r-N"
+               ! write(2,*) this%fields%cu%getsum() , "cu-r-N"
 !cu is the normalized unit in k space.
                call this%fields%cu%fftrk(1)
-               write(2,*) this%fields%cu%getsum() , "cu-k-N"
+               ! write(2,*) this%fields%cu%getsum() , "cu-k-N"
 !potencil A,???               
                ! if (allocated(this%fields%vpot)) then
                !    call this%fields%cu%vpot(this%fields%vpot)
@@ -953,12 +951,12 @@
                   call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%fields%dcu,this%fields%amu,this%dex) !source of equation when solving B⊥ in rspace.
                end do 
-               write(2,*) this%fields%amu%getsum() , "amu-r-N/dex^2"
+               ! write(2,*) this%fields%amu%getsum() , "amu-r-N/dex^2"
 !amu=amu*dex，the amu is the normalized unit/dex in r space.
                call this%fields%amu%mult(this%fields%amu,this%dex) 
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            
                call this%fields%dcu%mult(this%fields%dcu,this%dex)
-               write(2,*) this%fields%dcu%getsum() , "dcu-r-N" 
+               ! write(2,*) this%fields%dcu%getsum() , "dcu-r-N" 
 !amu is the normalized unit/dex in k space.           
                call this%fields%amu%fftrk(3) 
                call this%fields%damu%as(0.0)
@@ -971,12 +969,11 @@
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
                ! write(2,*) this%fields%damu%getsum() , "damu-r-N-1"
-               !call this%fields%damu%mult(this%fields%damu,-1.0)
                call this%fields%bxyzfd%as(0.0)   
-               call this%fields%damu%sum_ele((/1/),this%damux)
-               write(2,*) this%damux , "damu1-1"
-               call this%fields%damu%sum_ele((/2/),this%damuy)
-               write(2,*) this%damuy , "damu1-2"
+               ! call this%fields%damu%sum_ele((/1/),this%damux)
+               ! write(2,*) this%damux , "damu1-1"
+               ! call this%fields%damu%sum_ele((/2/),this%damuy)
+               ! write(2,*) this%damuy , "damu1-2"
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
                call this%fields%damu%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
@@ -988,11 +985,11 @@
                ! write(2,*) this%damuy1 , "damu2-2"
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
-               write(2,*) this%fields%bxyzfd%getsum(), "bxyzfd(B_perp)-r-N/dex"
-               call this%fields%bxyzfd%sum_ele((/1/),this%bxp)
-               write(2,*) this%bxp , "bxp"
-               call this%fields%bxyzfd%sum_ele((/2/),this%byp)
-               write(2,*) this%byp , "byp"
+               ! write(2,*) this%fields%bxyzfd%getsum(), "bxyzfd(B_perp)-r-N/dex"
+               ! call this%fields%bxyzfd%sum_ele((/1/),this%bxp)
+               ! write(2,*) this%bxp , "bxp"
+               ! call this%fields%bxyzfd%sum_ele((/2/),this%byp)
+               ! write(2,*) this%byp , "byp"
 !Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.     
                call this%fields%bxyz%add(this%fields%bxyz,this%fields%bxyzfd,(/1/),(/1/),(/1/))
 !By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
@@ -1015,19 +1012,19 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
-               write(2,*) this%fields%fxy%getsum() , "fxy_3d"
-               call this%fields%fxy%sum_ele((/1/),this%Ex)
-               write(2,*) this%Ex , "Ex"
-               call this%fields%fxy%sum_ele((/2/),this%Ey)
-               write(2,*) this%Ey , "Ey"
-               write(2,*) this%fields%psit%getsum() , "psit_3d"
-               write(2,*) this%fields%bxyz%getsum() , "B_3d"
-               call this%fields%bxyz%sum_ele((/1/),this%Bx)              
-               call this%fields%bxyz%sum_ele((/2/),this%By)
-               call this%fields%bxyz%sum_ele((/3/),this%Bz)
-                write(2,*) this%By , "By"
-               write(2,*) this%Bx , "Bx"
-               write(2,*) this%Bz , "Bz"
+               ! write(2,*) this%fields%fxy%getsum() , "fxy_3d"
+               ! call this%fields%fxy%sum_ele((/1/),this%Ex)
+               ! write(2,*) this%Ex , "Ex"
+               ! call this%fields%fxy%sum_ele((/2/),this%Ey)
+               ! write(2,*) this%Ey , "Ey"
+               ! write(2,*) this%fields%psit%getsum() , "psit_3d"
+               ! write(2,*) this%fields%bxyz%getsum() , "B_3d"
+               ! call this%fields%bxyz%sum_ele((/1/),this%Bx)              
+               ! call this%fields%bxyz%sum_ele((/2/),this%By)
+               ! call this%fields%bxyz%sum_ele((/3/),this%Bz)
+               !  write(2,*) this%By , "By"
+               ! write(2,*) this%Bx , "Bx"
+               ! write(2,*) this%Bz , "Bz"
             enddo
 
             do m = 1, this%nspecies

@@ -135,7 +135,7 @@
          
          ! call sp%new(this%pp,this%err,indx,indy,indz,psolve,1)
          call sp%new(this%pp,this%err,indx,indy,indz,dx,psolve,1,mg_prec,mg_type)
-         write(*,*) sp%getdex()
+         ! write(*,*) sp%getdex()
          this%sp => sp
 
          call this%err%werrfl0(ff)

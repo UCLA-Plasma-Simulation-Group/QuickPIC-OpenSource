@@ -1051,7 +1051,7 @@
       integer noff, nyp, idimp, nppmx, nx, mx, my, nxv, nypmx
       integer mx1, mxyp1
       real qbm, dt, ci, dex
-      real ppart, fxy, bxy, cu, dcu, amu, psit
+      real ppart, fxy, bxy, dcu, amu, psit
       integer kpic
       dimension ppart(idimp,nppmx,mxyp1)
       dimension fxy(2,nxv,nypmx), bxy(3,nxv,nypmx), psit(nxv,nypmx)
