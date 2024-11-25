@@ -1005,14 +1005,23 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       select case ( bnd_type )
       case ( p_bnd_dd, p_bnd_dn )
 
-        stencil_num = 5
-        stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! stencil_num = 5
+        ! stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! do i = 1, nd2p*stencil_num, stencil_num
+        !   values(i) = 1.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        !   values(i+4) = 0.0
+        ! enddo
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,3,4/)
         do i = 1, nd2p*stencil_num, stencil_num
-          values(i) = 1.0
+          values(i) = 0.0 
           values(i+1) = 0.0
           values(i+2) = 0.0
           values(i+3) = 0.0
-          values(i+4) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_nd )
@@ -1040,14 +1049,23 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       select case ( bnd_type )
       case ( p_bnd_dd, p_bnd_dn )
 
-        stencil_num = 5
-        stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! stencil_num = 5
+        ! stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! do i = 1, nd2p*stencil_num, stencil_num
+        !   values(i) = 1.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        !   values(i+4) = 0.0
+        ! enddo
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,2,3,4/)
         do i = 1, nd2p*stencil_num, stencil_num
-          values(i) = 1.0
+          values(i) = 0.0 
           values(i+1) = 0.0
           values(i+2) = 0.0
           values(i+3) = 0.0
-          values(i+4) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_nd )
@@ -1075,14 +1093,29 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       select case ( bnd_type )
       case ( p_bnd_dd, p_bnd_nd )
 
-        stencil_num = 5
-        stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! stencil_num = 5
+        ! stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! do i = 1, nd1p*stencil_num, stencil_num
+        !   values(i) = 1.0
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        !   values(i+4) = 0.0
+        ! enddo
+
+        ! stencil_num = 1
+        ! stencil_idx(1) = 3
+        ! do i = 1, nd1p*stencil_num
+        !   values(i) = 0.0
+        ! enddo
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,2,3/)
         do i = 1, nd1p*stencil_num, stencil_num
-          values(i) = 1.0
+          values(i) = 0.0 
           values(i+1) = 0.0
           values(i+2) = 0.0
           values(i+3) = 0.0
-          values(i+4) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_dn )
@@ -1110,14 +1143,29 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
       select case ( bnd_type )
       case ( p_bnd_dd, p_bnd_nd )
         
-        stencil_num = 5
-        stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! stencil_num = 5
+        ! stencil_idx(1:5) = (/0,1,2,3,4/)
+        ! do i = 1, nd1p*stencil_num, stencil_num
+        !   values(i) = 1.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        !   values(i+4) = 0.0
+        ! enddo
+
+        ! stencil_num = 1
+        ! stencil_idx(1) = 4
+        ! do i = 1, nd1p*stencil_num
+        !   values(i) = 0.0
+        ! enddo
+
+        stencil_num = 4
+        stencil_idx(1:4) = (/0,1,2,4/)
         do i = 1, nd1p*stencil_num, stencil_num
-          values(i) = 1.0
+          values(i) = 0.0 
           values(i+1) = 0.0
           values(i+2) = 0.0
           values(i+3) = 0.0
-          values(i+4) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_dn )
