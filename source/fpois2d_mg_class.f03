@@ -146,6 +146,7 @@ subroutine init_fpois2d_mg( this, pp, perr, noff, nd, ndp, order, dex, solver_ty
 
   if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
 
+
   ! set up HYPRE matrix
   do j = 1, 2
     do i = 1, 4
@@ -229,8 +230,8 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   ! set up HYPRE stencil
   call setup_hypre_stencil( this%stencil, this%stencil_num, this%offsets, this%stencil_idx, order )
 
-  if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
-
+  ! if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
+  if (.not. associated(values)) allocate( values( (ndp(1)+1)*(ndp(2)+1)*this%stencil_num ) )
   ! set up HYPRE matrix
   j = 3
     do i = 1, 4
@@ -485,8 +486,11 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
   real :: idex2
 
   idex2 = 1.0 / (dex*dex)
-  nd1p = iupper(1) - ilower(1) + 1
-  nd2p = iupper(2) - ilower(2) + 1
+  ! nd1p = iupper(1) - ilower(1) + 1
+  ! nd2p = iupper(2) - ilower(2) + 1
+
+  nd1p = iupper(1) - ilower(1) + 2
+  nd2p = iupper(2) - ilower(2) + 2
   !write(*,*) "idex2", idex2
   ! write(*,*) "iupper", iupper, ilower
   ! write(*,*) "nd1p", nd1p
@@ -525,10 +529,7 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
 
       i = 1
       do y = 1, nd2p
-        do x = 1, nd1p
-          ! write(2,*) "pqe(1, ", x, ", ", y, ") = ", pqe(1, x, y)
-          ! write(2,*) "ppsi(1, ", x, ", ", y, ") = ", ppsi(1, x, y)
-          ! values(i)   = -4.0 * idex2 - (1 - pqe(1, x, y)) / (1 + ppsi(1, x, y))
+        do x = 1, nd1p 
           values(i)   = 4.0 * idex2 - pqe(1, x, y) / (1 + ppsi(1, x, y))
           values(i+1) = -1.0 * idex2
           values(i+2) = -1.0 * idex2
@@ -985,8 +986,11 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   integer, dimension(:), pointer :: stencil_idx
   real :: idex2
 
-  nd1p = iupper(1) - ilower(1) + 1
-  nd2p = iupper(2) - ilower(2) + 1
+  ! nd1p = iupper(1) - ilower(1) + 1
+  ! nd2p = iupper(2) - ilower(2) + 1
+
+  nd1p = iupper(1) - ilower(1) + 2
+  nd2p = iupper(2) - ilower(2) + 2
   
   idex2 = 1.0/(dex**2)
 
@@ -1015,13 +1019,19 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
         !   values(i+4) = 0.0
         ! enddo
 
-        stencil_num = 4
-        stencil_idx(1:4) = (/0,1,3,4/)
-        do i = 1, nd2p*stencil_num, stencil_num
-          values(i) = 0.0 
-          values(i+1) = 0.0
-          values(i+2) = 0.0
-          values(i+3) = 0.0
+        ! stencil_num = 4
+        ! stencil_idx(1:4) = (/0,1,3,4/)
+        ! do i = 1, nd2p*stencil_num, stencil_num
+        !   values(i) = 0.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        ! enddo
+
+        stencil_num = 1
+        stencil_idx(1) = 1
+        do i = 1, nd2p*stencil_num
+          values(i) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_nd )
@@ -1059,13 +1069,19 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
         !   values(i+4) = 0.0
         ! enddo
 
-        stencil_num = 4
-        stencil_idx(1:4) = (/0,2,3,4/)
-        do i = 1, nd2p*stencil_num, stencil_num
-          values(i) = 0.0 
-          values(i+1) = 0.0
-          values(i+2) = 0.0
-          values(i+3) = 0.0
+        ! stencil_num = 4
+        ! stencil_idx(1:4) = (/0,2,3,4/)
+        ! do i = 1, nd2p*stencil_num, stencil_num
+        !   values(i) = 0.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        ! enddo
+
+        stencil_num = 1
+        stencil_idx(1) = 2
+        do i = 1, nd2p*stencil_num
+          values(i) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_nd )
@@ -1109,13 +1125,19 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
         !   values(i) = 0.0
         ! enddo
 
-        stencil_num = 4
-        stencil_idx(1:4) = (/0,1,2,3/)
-        do i = 1, nd1p*stencil_num, stencil_num
-          values(i) = 0.0 
-          values(i+1) = 0.0
-          values(i+2) = 0.0
-          values(i+3) = 0.0
+        ! stencil_num = 4
+        ! stencil_idx(1:4) = (/0,1,2,3/)
+        ! do i = 1, nd1p*stencil_num, stencil_num
+        !   values(i) = 0.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        ! enddo
+
+        stencil_num = 1
+        stencil_idx(1) = 3
+        do i = 1, nd1p*stencil_num
+          values(i) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_dn )
@@ -1159,13 +1181,19 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
         !   values(i) = 0.0
         ! enddo
 
-        stencil_num = 4
-        stencil_idx(1:4) = (/0,1,2,4/)
-        do i = 1, nd1p*stencil_num, stencil_num
-          values(i) = 0.0 
-          values(i+1) = 0.0
-          values(i+2) = 0.0
-          values(i+3) = 0.0
+        ! stencil_num = 4
+        ! stencil_idx(1:4) = (/0,1,2,4/)
+        ! do i = 1, nd1p*stencil_num, stencil_num
+        !   values(i) = 0.0 
+        !   values(i+1) = 0.0
+        !   values(i+2) = 0.0
+        !   values(i+3) = 0.0
+        ! enddo
+
+        stencil_num = 1
+        stencil_idx(1) = 4
+        do i = 1, nd1p*stencil_num
+          values(i) = 0.0
         enddo
 
       case ( p_bnd_nn, p_bnd_dn )
@@ -1369,8 +1397,11 @@ subroutine get_hypre_sol( this, dspace, dim )
   call this%err%werrfl2( class//sname//' started' )
 
   df => dspace%getrf()
-  nd1p = dspace%getnd1p()
-  nd2p = dspace%getnd2p()
+  ! nd1p = dspace%getnd1p()
+  ! nd2p = dspace%getnd2p()
+
+  nd1p = dspace%getnd1p() + 1
+  nd2p = dspace%getnd2p() + 1
 
   call HYPRE_StructVectorGetBoxValues( this%x, this%ilower, this%iupper, values, ierr )
   
@@ -1423,9 +1454,21 @@ subroutine set_hypre_src( this, rspace, dim )
   call this%err%werrfl2( class//sname//' started' )
 
   f => rspace%getrf()
-  nd1p = rspace%getnd1p()
-  nd2p = rspace%getnd2p()
+  ! nd1p = rspace%getnd1p()
+  ! nd2p = rspace%getnd2p()
 
+  nd1p = rspace%getnd1p() + 1
+  nd2p = rspace%getnd2p() + 1
+  ! write(*,*) "nd1p=", nd1p
+  ! write(*,*) "nd2p=", nd2p
+  ! f(1,1,:) = 0
+  ! f(1,257,:) = 0
+  ! f(1,:,1) = 0
+  ! f(1,:,257) = 0
+  ! f(2,1,:) = 0
+  ! f(2,257,:) = 0
+  ! f(2,:,1) = 0
+  ! f(2,:,257) = 0
   k = 1
   do j = 1, nd2p
     do i = 1, nd1p
@@ -1433,7 +1476,14 @@ subroutine set_hypre_src( this, rspace, dim )
       k = k + 1
     enddo
   enddo
-
+  ! write(2,*) "f(1,1,:)=", f(1,1,:) 
+  ! write(2,*) "f(1,257,:)=", f(1,257,:)
+  ! write(2,*) "f(1,:,1)=", f(1,:,1)  
+  ! write(2,*) "f(1,:,257)=", f(1,:,257)  
+  ! write(2,*) "f(2,1,:)=", f(2,1,:) 
+  ! write(2,*) "f(2,257,:)=", f(2,257,:)  
+  ! write(2,*) "f(2,:,1)=", f(2,:,1)
+  ! write(2,*) "f(2,:,257)=", f(2,:,257) 
   call HYPRE_StructVectorSetBoxValues( this%b, this%ilower, this%iupper, values, ierr )
 
   call this%err%werrfl2( class//sname//' ended' )
