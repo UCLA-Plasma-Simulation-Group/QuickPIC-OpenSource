@@ -42,7 +42,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, qe1, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
-         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, dccu, damu, epw, epwb, vpot        
+         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, damu, epw, epwb, vpot        
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
 
@@ -274,7 +274,7 @@
          allocate(this%qb, this%qe, this%qe1, this%psit, this%psi)
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
-         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%dccu)
+         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu)
          allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
          allocate(this%bexyz, this%bbxyz)
          
@@ -295,7 +295,6 @@
          call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%epw%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.,state=1) !state=1 meaning in kspace.
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%dccu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          !call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          !write(*,*) this%sp2%getdex(), "dexd"
          call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
@@ -397,7 +396,6 @@
          call this%cu%del()
          call this%dcu%del()
          call this%amu%del()
-         call this%dccu%del()
          call this%damu%del()         
          call this%epw%del()
          call this%epwb%del()
@@ -911,9 +909,9 @@
                do m = 1, this%nspecies
                   call this%species%spe(m)%cbq(j+1)
                end do  
-               if (allocated(this%fields%cu3d)) then
-                  call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
-               end if
+               ! if (allocated(this%fields%cu3d)) then
+               !    call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
+               ! end if
                ! write(2,*) this%fields%cu%getsum() , "cu-r-N"
 !cu is the normalized unit in k space.
                call this%fields%cu%fftrk(1)
@@ -968,6 +966,9 @@
                call this%fields%damu%fftkr(2)
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
+               if (allocated(this%fields%cu3d)) then
+                  call this%fields%damu%cb(this%fields%cu3d,j+1,(/1,2/),(/1,2/))
+               end if
                ! write(2,*) this%fields%damu%getsum() , "damu-r-N-1"
                call this%fields%bxyzfd%as(0.0)   
                ! call this%fields%damu%sum_ele((/1/),this%damux)

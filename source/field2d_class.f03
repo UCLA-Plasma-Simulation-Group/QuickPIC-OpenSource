@@ -129,7 +129,7 @@
          indy = psp%getindy()         
          nd1 = 2**indx
          nd2 = 2**indy
-         
+         ! write(*,*) "this%gcells=", this%gcells 
          allocate(this%rs)
          
          call this%rs%new(pp,perr,psp,dim,0,0,nvpy)
@@ -173,7 +173,7 @@
 
          inorder = psp%getinorder()
          !write(*,*) psp%getdex(), "dexc" 0
-         !write(*,*) psp%getinorder(), "dexc" 1
+         write(*,*) "inorder=", inorder 
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -189,7 +189,7 @@
          else
             this%gcells = 0
          endif
-
+         ! write(*,*) "(fd)this%gcells=", this%gcells 
          ! determine the guard cells according to solver type and interpolation order
          if (present(algorithm)) then
             select case (algorithm)

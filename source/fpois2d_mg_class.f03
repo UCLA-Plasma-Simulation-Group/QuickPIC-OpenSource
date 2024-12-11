@@ -486,11 +486,11 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
   real :: idex2
 
   idex2 = 1.0 / (dex*dex)
-  ! nd1p = iupper(1) - ilower(1) + 1
-  ! nd2p = iupper(2) - ilower(2) + 1
+  nd1p = iupper(1) - ilower(1) + 1
+  nd2p = iupper(2) - ilower(2) + 1
 
-  nd1p = iupper(1) - ilower(1) + 2
-  nd2p = iupper(2) - ilower(2) + 2
+  ! nd1p = iupper(1) - ilower(1) + 2
+  ! nd2p = iupper(2) - ilower(2) + 2
   !write(*,*) "idex2", idex2
   ! write(*,*) "iupper", iupper, ilower
   ! write(*,*) "nd1p", nd1p
@@ -986,11 +986,11 @@ subroutine setvalue_hypre_matrix_bnd( matrix, order, ilower, iupper, bnd_type, &
   integer, dimension(:), pointer :: stencil_idx
   real :: idex2
 
-  ! nd1p = iupper(1) - ilower(1) + 1
-  ! nd2p = iupper(2) - ilower(2) + 1
+  nd1p = iupper(1) - ilower(1) + 1
+  nd2p = iupper(2) - ilower(2) + 1
 
-  nd1p = iupper(1) - ilower(1) + 2
-  nd2p = iupper(2) - ilower(2) + 2
+  ! nd1p = iupper(1) - ilower(1) + 2
+  ! nd2p = iupper(2) - ilower(2) + 2
   
   idex2 = 1.0/(dex**2)
 
@@ -1397,11 +1397,11 @@ subroutine get_hypre_sol( this, dspace, dim )
   call this%err%werrfl2( class//sname//' started' )
 
   df => dspace%getrf()
-  ! nd1p = dspace%getnd1p()
-  ! nd2p = dspace%getnd2p()
+  nd1p = dspace%getnd1p()
+  nd2p = dspace%getnd2p()
 
-  nd1p = dspace%getnd1p() + 1
-  nd2p = dspace%getnd2p() + 1
+  ! nd1p = dspace%getnd1p() + 1
+  ! nd2p = dspace%getnd2p() + 1
 
   call HYPRE_StructVectorGetBoxValues( this%x, this%ilower, this%iupper, values, ierr )
   
@@ -1454,11 +1454,11 @@ subroutine set_hypre_src( this, rspace, dim )
   call this%err%werrfl2( class//sname//' started' )
 
   f => rspace%getrf()
-  ! nd1p = rspace%getnd1p()
-  ! nd2p = rspace%getnd2p()
+  nd1p = rspace%getnd1p()
+  nd2p = rspace%getnd2p()
 
-  nd1p = rspace%getnd1p() + 1
-  nd2p = rspace%getnd2p() + 1
+  ! nd1p = rspace%getnd1p() + 1
+  ! nd2p = rspace%getnd2p() + 1
   ! write(*,*) "nd1p=", nd1p
   ! write(*,*) "nd2p=", nd2p
   ! f(1,1,:) = 0
