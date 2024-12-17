@@ -70,7 +70,7 @@
          character(len=:), allocatable :: ff, boundary, error_msg
          integer :: length, num_stages, verbose, indx, indy, indz, psolve, ierr
          real :: mg_prec = 1.0d-6
-         integer :: mg_type = 3
+         integer :: mg_type = 4
          real :: dx
 
          call p%new()

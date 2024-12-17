@@ -20,7 +20,9 @@ integer, parameter :: p_lower = 1, p_upper = 2
 ! integer, parameter :: p_fd_2order = 1, p_fd_4order = 2
 integer, parameter :: p_solver_smg = 1, &
                       p_solver_pfmg = 2, &
-                      p_solver_pcg = 3
+                      p_solver_pcg = 3, &
+                      p_solver_gmres = 4, &
+                      p_solver_bicgstab = 5
 integer, parameter :: p_precond_smg = 1, &
                       p_precond_pfmg = 2, &
                       p_precond_ds = 3, &
@@ -327,6 +329,10 @@ subroutine end_fpois2d_mg( this )
       call HYPRE_StructPFMGDestroy( this%solver(i,j), ierr )
     case ( p_solver_pcg )
       call HYPRE_StructPCGDestroy( this%solver(i,j), ierr )
+    case ( p_solver_gmres )
+      call HYPRE_StructGMRESDestroy( this%solver(i,j), ierr )
+    case ( p_solver_bicgstab )
+      call HYPRE_StructBICGSTABDestroy( this%solver(i,j), ierr )      
     end select
 
     select case ( this%precond_type )
@@ -1323,6 +1329,31 @@ subroutine setup_hypre_solver( comm, solver, A, b, x, type_, maxiter, n_pre, n_p
 
     call HYPRE_StructPCGSetup( solver, A, b, x, ierr )
 
+  case ( p_solver_gmres )
+
+    print *, 'Using GMRES solver'
+    call HYPRE_StructGMRESCreate( comm, solver, ierr )
+    ! call HYPRE_StructPFMGSetMaxIter( solver, maxiter, ierr )
+    ! call HYPRE_StructPFMGSetTol( solver, tol, ierr )
+    ! call HYPRE_StructPFMGSetRelChange( solver, 0, ierr )
+    ! call HYPRE_StructPFMGSetRelaxType( solver, 1, ierr )
+    ! call HYPRE_StructPFMGSetNumPreRelax( solver, n_pre, ierr )
+    ! call HYPRE_StructPFMGSetNumPostRelax( solver, n_post, ierr )
+    ! call HYPRE_StructPFMGSetLogging( solver, 1, ierr )
+    call HYPRE_StructGMRESSetup( solver, A, b, x, ierr )
+
+  case ( p_solver_bicgstab )
+
+    print *, 'Using BICGSTAB solver'
+    call HYPRE_StructBICGSTABCreate( comm, solver, ierr )
+    ! call HYPRE_StructPFMGSetMaxIter( solver, maxiter, ierr )
+    ! call HYPRE_StructPFMGSetTol( solver, tol, ierr )
+    ! call HYPRE_StructPFMGSetRelChange( solver, 0, ierr )
+    ! call HYPRE_StructPFMGSetRelaxType( solver, 1, ierr )
+    ! call HYPRE_StructPFMGSetNumPreRelax( solver, n_pre, ierr )
+    ! call HYPRE_StructPFMGSetNumPostRelax( solver, n_post, ierr )
+    ! call HYPRE_StructPFMGSetLogging( solver, 1, ierr )
+    call HYPRE_StructBICGSTABSetup( solver, A, b, x, ierr )    
   end select
 
 end subroutine setup_hypre_solver
@@ -1521,6 +1552,10 @@ subroutine solve_hypre_poisson( this, src, sol, bnd_types, stencil_kind )
       call HYPRE_StructPFMGSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
     case ( p_solver_pcg )
       call HYPRE_StructPCGSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
+    case ( p_solver_gmres )
+      call HYPRE_StructGMRESSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
+    case ( p_solver_bicgstab )
+      call HYPRE_StructBICGSTABSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )            
     end select
     
     call this%get_sol( sol, dim )
@@ -1636,7 +1671,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
-  precond_type = 1 ! SMG preconditioner
+  precond_type = 99 ! SMG preconditioner
   pqe => uqe%getrf()
   ppsi => upsi%getrf()
   nullify(table)         
