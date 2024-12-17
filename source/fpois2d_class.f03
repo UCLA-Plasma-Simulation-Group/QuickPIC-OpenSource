@@ -239,7 +239,7 @@
          real, intent(inout) :: we
          real, dimension(:,:,:), pointer, intent(inout) :: q, fx
 ! local data
-         integer :: nx, ny, nyv, kxp2, nyd
+         integer :: nx, ny, nyv, kxp2, nyd, i
          complex, dimension(:,:), pointer :: ffc
          character(len=10), save :: sname = 'ippoisd2:'
 
@@ -254,8 +254,10 @@
             call MPPOTPD2(q(1,:,:),fx(1,:,:),ffc,we,nx,ny,this%p%getlkstrt(),&
             &nyv,kxp2,nyd)
          else if (isign==2) then
-            call MPPSMOOTHD2(q(1,:,:),fx(1,:,:),ffc,nx,ny,this%p%getlkstrt(),&
+            do i = 1, size(q,1)
+                call MPPSMOOTHD2(q(i,:,:),fx(i,:,:),ffc,nx,ny,this%p%getlkstrt(),&
             &nyv,kxp2,nyd)
+            end do
          endif
          call this%err%werrfl2(class//sname//' ended')
 

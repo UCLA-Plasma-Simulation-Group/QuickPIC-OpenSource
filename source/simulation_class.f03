@@ -1434,6 +1434,24 @@
                   if (allocated(ss)) deallocate(ss)
                   call this%in%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ss)
                   select case (trim(ss))
+                  case ('sx')
+                     sn1 = 'Sx'
+                     sn2 = 'sx'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in x'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu
+                     dim2 = 1
+                  case ('sy')
+                     sn1 = 'Sy'
+                     sn2 = 'sy'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in y'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu
+                     dim2 = 2
                   case ('ex')
                      sn1 = 'Ex'
                      sn2 = 'ex'
