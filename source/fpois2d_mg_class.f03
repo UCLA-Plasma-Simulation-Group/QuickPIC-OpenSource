@@ -1671,7 +1671,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
-  precond_type = 99 ! SMG preconditioner
+  precond_type = 1 ! SMG preconditioner
   pqe => uqe%getrf()
   ppsi => upsi%getrf()
   nullify(table)         
