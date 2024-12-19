@@ -1491,7 +1491,16 @@
                      dim = 1
                      obj => this%fields%bexyz
                      obj2 => this%fields%amu_r
-                     dim2 = 2                     
+                     dim2 = 2 
+                  case ('amuz')
+                     sn1 = 'Amuz'
+                     sn2 = 'amuz'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu in z'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_r
+                     dim2 = 3                                                             
                   case ('ex')
                      sn1 = 'Ex'
                      sn2 = 'ex'
