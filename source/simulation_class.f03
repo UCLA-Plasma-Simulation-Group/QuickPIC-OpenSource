@@ -955,8 +955,8 @@
                end do 
                ! write(2,*) this%fields%amu%getsum() , "amu-r-N/dex^2"
 !amu=amu*dex，the amu is the normalized unit/dex in r space.
-               ! call this%fields%amu%mult(this%fields%amu,this%dex)
-               call this%fields%amu%mult(this%fields%amu,this%dex*this%dex) 
+               call this%fields%amu%mult(this%fields%amu,this%dex)
+               ! call this%fields%amu%mult(this%fields%amu,this%dex*this%dex) 
                call this%fields%amu_r%as(0.0)               
                call this%fields%amu_r%as(this%fields%amu)
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            

@@ -1752,14 +1752,14 @@ c mode numbers 0 < kx < nx and 0 < ky < ny
       if ((j+joff).gt.0) then
          do 120 k = 2, ny
          dky = dny*float(k - 1)   
-c          damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
-c      & dky*cu(3,k,j,l)*idex
-c          damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
-c      & dkx*cu(3,k,j,l)*idex  
          damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
-     & dky*cu(3,k,j,l)
+     & dky*cu(3,k,j,l)*idex
          damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
-     & dkx*cu(3,k,j,l)       
+     & dkx*cu(3,k,j,l)*idex  
+c          damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
+c      & dky*cu(3,k,j,l)
+c          damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
+c      & dkx*cu(3,k,j,l)       
   120    continue
 c mode numbers ky = 0, ny
 c-----------------------------------------------------------------
