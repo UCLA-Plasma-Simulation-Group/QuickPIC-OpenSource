@@ -42,7 +42,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, qe1, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
-         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, amu_r, damu, epw, epwb, vpot        
+         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, amu_r, damu, damu_1, epw, epwb, vpot        
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
 
@@ -275,7 +275,7 @@
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu)
-         allocate(this%dcu, this%amu, this%amu_r, this%damu, this%epw, this%epwb)
+         allocate(this%dcu, this%amu, this%amu_r, this%damu, this%damu_1, this%epw, this%epwb)
          allocate(this%bexyz, this%bbxyz)
          
 
@@ -299,6 +299,7 @@
          !call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          !write(*,*) this%sp2%getdex(), "dexd"
          call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
+         call this%damu_1%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
          ! call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
@@ -398,7 +399,8 @@
          call this%dcu%del()
          call this%amu%del()
          call this%amu_r%del()         
-         call this%damu%del()         
+         call this%damu%del() 
+         call this%damu_1%del()                 
          call this%epw%del()
          call this%epwb%del()
          call this%bxyz%del()
@@ -953,7 +955,8 @@
                end do 
                ! write(2,*) this%fields%amu%getsum() , "amu-r-N/dex^2"
 !amu=amu*dex，the amu is the normalized unit/dex in r space.
-               call this%fields%amu%mult(this%fields%amu,this%dex) 
+               ! call this%fields%amu%mult(this%fields%amu,this%dex)
+               call this%fields%amu%mult(this%fields%amu,this%dex*this%dex) 
                call this%fields%amu_r%as(0.0)               
                call this%fields%amu_r%as(this%fields%amu)
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            
@@ -968,6 +971,9 @@
                call this%fields%cu%bfqpn(this%fields%amu,this%fields%damu,this%dex)
 !damu is the normalized unit in r space.               
                call this%fields%damu%fftkr(2)
+               ! call this%fields%damu%mult(this%fields%damu,this%dex)                
+               call this%fields%damu_1%as(0.0)               
+               call this%fields%damu_1%as(this%fields%damu)               
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
                ! if (allocated(this%fields%cu3d)) then
@@ -1456,6 +1462,24 @@
                      obj => this%fields%bexyz
                      obj2 => this%fields%damu
                      dim2 = 2
+                  case ('damu_1x')
+                     sn1 = 'Damu_1x'
+                     sn2 = 'damu_1x'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'damu_1 in x'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu_1
+                     dim2 = 1
+                  case ('damu_1y')
+                     sn1 = 'Damu_1y'
+                     sn2 = 'damu_1y'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'damu_1 in y'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu_1
+                     dim2 = 2                     
                   case ('dcux')
                      sn1 = 'Dcux'
                      sn2 = 'dcux'
