@@ -46,11 +46,14 @@
          generic :: bfield_qp => jpbpoisd23n_qp
          generic :: bfield_qp_new => jpbpoisd23n_qp_new
          generic :: bfield_qp_new2 => jpbpoisd23n_qp_new2
+         generic :: bfield_amu => jpbpoisd23n_amu
+         generic :: bfield_cu => jpbpoisd23n_cu                 
          procedure, private :: init_fpois2d, init_fpois2d_fd
          procedure, private :: end_fpois2d
          procedure, private :: ipotd2, ismoothfd2, ippoisd23, ibfieldd2
          procedure, private :: ivpotd2
-         procedure, private :: jpbpoisd23n_qp,jpbpoisd23n_qp_new, jpbpoisd23n_qp_new2                  
+         procedure, private :: jpbpoisd23n_qp,jpbpoisd23n_qp_new, jpbpoisd23n_qp_new2  
+         procedure, private :: jpbpoisd23n_amu, jpbpoisd23n_cu                         
       end type 
 !
       type fpois2d_link
@@ -661,6 +664,88 @@
          call this%err%werrfl2(class//sname//' ended')
 
          end subroutine jpbpoisd23n_qp_new2
+!
+         subroutine jpbpoisd23n_amu(this,amu,damu1,dex)
+         implicit none
+         class(fpois2d), intent(in) :: this
+         real, intent(in) :: dex
+         class(ufield2d), intent(inout) :: amu,damu1
+! local data
+         integer :: isign = 1
+         real, dimension(:,:,:), pointer :: pamu,pdamu1
+         integer :: nx, ny, nyv, kxp2, j2blok, nyd
+         complex, dimension(:,:), pointer :: ffc
+         character(len=20), save :: sname = 'jpbpoisd23n_amu:'
+
+         call this%err%werrfl2(class//sname//' started')
+         pdamu1 => damu1%getrf()
+         pamu => amu%getrf()
+         if ((size(pamu,1) < 2) .or. (size(pamu,1) > 3)) then
+            write (erstr,*) 'invalid cu vector size=', size(pamu,1)
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
+
+! unpack common arguments
+         ffc => this%ffc
+         nx = this%nd(1); ny = this%nd(2)
+! choose the proper solver
+         select case (this%sp%getpsolver())
+         case (1)
+            nyv = size(pamu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_amu(pamu,pdamu1,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         case default
+            nyv = size(pamu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_amu(pamu,pdamu1,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         end select
+         call this%err%werrfl2(class//sname//' ended')
+
+         end subroutine jpbpoisd23n_amu
+!
+         subroutine jpbpoisd23n_cu(this,cu,damu2,dex)
+         implicit none
+         class(fpois2d), intent(in) :: this
+         real, intent(in) :: dex
+         class(ufield2d), intent(inout) :: cu,damu2
+! local data
+         integer :: isign = 1
+         real, dimension(:,:,:), pointer :: pcu, pdamu2
+         integer :: nx, ny, nyv, kxp2, j2blok, nyd
+         complex, dimension(:,:), pointer :: ffc
+         character(len=20), save :: sname = 'jpbpoisd23n_cu:'
+
+         call this%err%werrfl2(class//sname//' started')
+         pcu => cu%getrf()
+         pdamu2 => damu2%getrf()
+         if ((size(pcu,1) < 2) .or. (size(pcu,1) > 3)) then
+            write (erstr,*) 'invalid cu vector size=', size(pcu,1)
+            call this%err%equit(class//sname//erstr)
+            return
+         endif
+
+! unpack common arguments
+         ffc => this%ffc
+         nx = this%nd(1); ny = this%nd(2)
+! choose the proper solver
+         select case (this%sp%getpsolver())
+         case (1)
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_cu(pcu,pdamu2,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         case default
+            nyv = size(pcu,2); nyd = size(ffc,1)
+            kxp2 = size(ffc,2); j2blok = 1
+            call PBPOISD22N_QP_cu(pcu,pdamu2,nx,ny,&
+            &this%p%getlkstrt(),nyv,kxp2,j2blok,dex)
+         end select
+         call this%err%werrfl2(class//sname//' ended')
+
+         end subroutine jpbpoisd23n_cu
 !
       function get_pois2table(pp,perr,psp,ax,ay,affp) result(table)
 

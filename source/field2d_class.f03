@@ -55,6 +55,8 @@
          generic :: bf => bfield_field2d
          generic :: bfqp => bfield_qp_field2d
          generic :: bfqpn => bfield_qp_new_field2d, bfield_qp_new2_field2d
+         generic :: bfqpn_1 => gradf_amu_field2d
+         generic :: bfqpn_2 => gradf_cu_field2d
          generic :: cg => copyguard_field2d
          generic :: ag => acopyguard_field2d
          generic :: psend => pipesend_field2d
@@ -85,6 +87,7 @@
          procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d, copyto_2d
          procedure :: getstate, getgcells, getrs, getks, getsum
          procedure, private :: solve_field2d_mg, sum_elements
+         procedure, private :: gradf_amu_field2d, gradf_cu_field2d        
 
       end type 
 
@@ -712,6 +715,7 @@
          implicit none
          
          class(field2d), intent(inout) :: cu,amu,damu
+         ! class(field2d), intent(inout) :: this,amu,damu
          ! class(field2d), intent(inout) :: this,that
          real, intent(in) :: dex
          character(len=18), save :: sname = 'bfield_qp_new2_field2d:'
@@ -730,6 +734,52 @@
          call cu%err%werrfl2(class//sname//' ended')
          
       end subroutine bfield_qp_new2_field2d  
+!
+      subroutine gradf_amu_field2d(amu,damu1,dex)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: amu, damu1
+         ! class(field2d), intent(inout) :: this,that
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'gradf_amu_field2d:'
+
+         call amu%err%werrfl2(class//sname//' started')
+         
+         if ((amu%state /= 1).or.(damu1%state /= 1))  then 
+            call amu%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         call amu%pt%bfield_amu(amu%ks,damu1%ks,dex)
+
+         damu1%state = 1
+         
+         call amu%err%werrfl2(class//sname//' ended')
+         
+      end subroutine gradf_amu_field2d  
+!
+      subroutine gradf_cu_field2d(cu,damu2,dex)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: cu, damu2
+         ! class(field2d), intent(inout) :: this,that
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'bfield_qp_new2_field2d:'
+
+         call cu%err%werrfl2(class//sname//' started')
+         
+         if ((cu%state /= 1).or.(damu2%state /= 1))  then 
+            call cu%err%equit(class//sname//'data is in rs')
+            return
+         endif
+         call cu%pt%bfield_cu(cu%ks,damu2%ks,dex)
+
+         damu2%state = 1
+         
+         call cu%err%werrfl2(class//sname//' ended')
+         
+      end subroutine gradf_cu_field2d  
 !
       subroutine copyguard_field2d(this) 
 
