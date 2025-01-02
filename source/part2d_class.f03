@@ -77,6 +77,7 @@
          generic :: jdp => jdeposit
          generic :: bdp => bdeposit
          generic :: push => partpush
+         generic :: push_fd => partpush_fd
          generic :: pmv => pmove
          generic :: extpsi => extractpsi
          generic :: pcp => partcopy
@@ -91,6 +92,7 @@
          procedure, private :: jdeposit
          procedure, private :: bdeposit        
          procedure, private :: partpush
+         procedure, private :: partpush_fd
          procedure, private :: pmove
          procedure, private :: extractpsi
          procedure, private :: partcopy
@@ -426,7 +428,52 @@
          nx = ef%getnd1(); nyp = ef%getnd2p()
 ! periodic push, calculates list of particles leaving tile
          if (this%list) then
-            ! call PPGRBPPUSHF23L_QP_NEW(this%ppart,pef,pbf,ppsit(1,:,:),&
+            call PPGRBPPUSHF23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
+            &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
+            &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,&
+            &mxyp1,this%ntmaxp,this%irc,dex)
+            if (this%irc /= 0) then
+               write (erstr,*) 'PPGRBPPUSHF23L_QP ihole overflow, irc=',&
+               &this%irc
+            endif
+! push supports particle boundary conditions, does not calculate list
+         else
+            call PPGRBPPUSH23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
+            &this%kpic,noff,nyp,this%qbm,this%dt,this%ci,ek,this%xdim,&
+            &this%nppmx0,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
+         endif
+
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine partpush
+!
+      subroutine partpush_fd(this,ef,bf,psit,dex)
+      
+         implicit none
+         
+         class(part2d), intent(inout) :: this
+         class(ufield2d), pointer, intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+         character(len=18), save :: sname = 'partpush_fd'
+! local data
+         real, dimension(:,:,:), pointer :: pef => null(), pbf => null()
+         real, dimension(:,:,:), pointer :: ppsit => null()
+! ipbc = particle boundary condition = (0,1,2,3) =
+! (none,2d periodic,2d reflecting,mixed reflecting/periodic)
+         integer :: ipbc = 2
+         integer :: noff, nyp, nx, ny, nxv, nypmx
+         real :: ek
+         
+         call this%err%werrfl2(class//sname//' started')
+
+         pef => ef%getrf(); pbf => bf%getrf()
+         ppsit => psit%getrf()
+         noff = ef%getnoff(); ny = ef%getnd2()
+         nxv = size(pef,2); nypmx = size(pef,3)
+         nx = ef%getnd1(); nyp = ef%getnd2p()
+! periodic push, calculates list of particles leaving tile
+         if (this%list) then
+            ! call PPGRBPPUSHF23L_QP(this%ppart,pef,pbf,ppsit(1,:,:),&
             ! &this%kpic,this%ncl,this%ihole,noff,nyp,this%qbm,this%dt,&
             ! &this%ci,ek,this%xdim,this%nppmx0,nx,ny,mx,my,nxv,nypmx,&
             ! &mx1,mxyp1,this%ntmaxp,this%irc,dex)
@@ -450,7 +497,7 @@
 
          call this%err%werrfl2(class//sname//' ended')
          
-      end subroutine partpush
+      end subroutine partpush_fd
 !
       subroutine pmove(this,fd)
       

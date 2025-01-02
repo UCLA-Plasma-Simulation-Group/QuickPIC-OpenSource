@@ -1375,7 +1375,7 @@ c rot2 = omzt
       end
 !-----------------------------------------------------------------------
       subroutine PPGRBPPUSH23L_QP(ppart,fxy,bxy,psit,kpic,noff,nyp,qbm, &
-     &dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)
+     &dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1,ipbc,dex)    
 ! for 2-1/2d code, this subroutine updates particle co-ordinates and
 ! velocities using leap-frog scheme in time and first-order linear
 ! interpolation in space, for relativistic particles with magnetic field

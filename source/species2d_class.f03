@@ -43,6 +43,7 @@
          generic :: jdp => jdp_species2d
          generic :: bdp => bdp_species2d
          generic :: push => push_species2d
+         generic :: push_fd => push_species2d_fd         
          generic :: pmv => pmove_species2d
          generic :: extpsi => extpsi_species2d
          generic :: pcp => pcp_species2d
@@ -60,6 +61,7 @@
          procedure, private :: jdp_species2d
          procedure, private :: bdp_species2d
          procedure, private :: push_species2d
+         procedure, private :: push_species2d_fd
          procedure, private :: pmove_species2d
          procedure, private :: extpsi_species2d
          procedure, private :: pcp_species2d
@@ -338,6 +340,25 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine push_species2d
+!
+      subroutine push_species2d_fd(this,ef,bf,psit,dex)
+      
+         implicit none
+         
+         class(species2d), intent(inout) :: this
+         class(field2d), intent(in) :: ef, bf, psit
+         real, intent(in) :: dex
+! local data
+         character(len=18), save :: sname = 'push_species2d_fd'
+
+         call this%err%werrfl2(class//sname//' started')
+
+         call this%pd%push_fd(ef%getrs(),bf%getrs(),psit%getrs(),dex)         
+         call this%pmv(psit)
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine push_species2d_fd
 !
       subroutine pmove_species2d(this,fd)
       

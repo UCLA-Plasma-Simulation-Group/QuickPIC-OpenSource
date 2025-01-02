@@ -134,8 +134,8 @@
             this%nd1p = nd1
             this%nd2p = nd2/nvpy
             this%noff = (pp%getlkstrt()-1)*nd2/nvpy
-            ! allocate(this%rf(dim,this%nd1p+2,this%nd2p*2+psp%getinorder()))
-            allocate(this%rf(dim,this%nd1p+2,this%nd2p+psp%getinorder()))
+            allocate(this%rf(dim,this%nd1p+2,this%nd2p*2+psp%getinorder()))
+            ! allocate(this%rf(dim,this%nd1p+2,this%nd2p+psp%getinorder()))
             !write(*,*) "nd1p", this%nd1p, this%nd2p*2+psp%getinorder()
             this%rf(:,:,:) = 0.0         
          case (1)
