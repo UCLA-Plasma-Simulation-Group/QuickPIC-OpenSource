@@ -978,18 +978,19 @@
                call this%fields%damu2%fftrk(2)            
 !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
                !call this%fields%cu%bfqpn(this%fields%dcu,this%fields%amu,this%fields%damu,this%dex)
-               ! call this%fields%cu%bfqpn(this%fields%amu,this%fields%damu,this%dex)
+               call this%fields%cu%bfqpn(this%fields%amu,this%fields%damu,this%dex)
                call this%fields%amu%bfqpn_1(this%fields%damu1,this%dex)
                call this%fields%cu%bfqpn_2(this%fields%damu2,this%dex)    
                call this%fields%damu1%fftkr(2) 
-               call this%fields%damu2%fftkr(2)              
-               call this%fields%damu%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))                                         
+               call this%fields%damu2%fftkr(2)      
+               call this%fields%damu_1%as(0.0)                       
+               call this%fields%damu_1%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))                                         
 !damu is the normalized unit in r space.               
-               ! call this%fields%damu%fftkr(2)                    
-               call this%fields%damu_1%as(0.0)               
-               call this%fields%damu_1%as(this%fields%damu)                       
+               call this%fields%damu%fftkr(2)                                                       
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
+               call this%fields%damu_1%sub(this%fields%damu_1,this%fields%dcu,(/1/),(/1/),(/2/))
+               call this%fields%damu_1%add(this%fields%damu_1,this%fields%dcu,(/2/),(/2/),(/1/))               
                ! if (allocated(this%fields%cu3d)) then
                !    call this%fields%damu%cb(this%fields%cu3d,j+1,(/1,2/),(/1,2/))
                ! end if
