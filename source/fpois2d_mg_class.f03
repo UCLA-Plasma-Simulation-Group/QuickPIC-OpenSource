@@ -280,9 +280,9 @@ subroutine renew_fpois2d_mg_explicit(this, qe, psi, dex )
   integer, dimension(4), parameter :: p_bnd = (/p_bnd_dd, p_bnd_dn, p_bnd_nd, p_bnd_nn/)
   integer, dimension(3), parameter :: p_stencil = (/p_stencil_poisson, p_stencil_pseudo, p_stencil_explicit/)
   character(len=18), save :: sname = 'renew_fpois2d_mg_explicit:'
-
+  write(*,*) "222"
   call this%err%werrfl2(class//sname//' started')
-
+  write(*,*) "33"
   pqe => qe%getrf()
   ppsi => psi%getrf()
   !write(*,*) "renew_fpois2d_mg_explicit_dex is", dex

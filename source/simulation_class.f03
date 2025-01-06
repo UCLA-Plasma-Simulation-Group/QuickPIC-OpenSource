@@ -46,6 +46,8 @@
          type(field2d), allocatable :: amu_r, damu_1, damu1, damu2               
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
+         type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, damu_t, dcu_r, fxy_t, psit_t, qe_t, div_vpot_t
+         type(field3d), allocatable :: bexyz_t, bbxyz_t, cu3d_t
 
          contains
 
@@ -127,7 +129,7 @@
          type(sim_beams) :: beams
          type(sim_species) :: species
          type(sim_diag), dimension(:), allocatable :: diag, diag2
-         integer :: iter, nstep3d, nstep2d, start3d,nbeams,nspecies, tstep, tstep2, noffstep2d
+         integer :: iter, nstep3d, nstep2d, start3d, nbeams, nspecies, tstep, tstep2, noffstep2d
          integer, dimension(8) :: tag
          integer, dimension(:), allocatable :: tag_spe, id_spe, id
          integer, dimension(:), allocatable :: tag_beam, id_beam
@@ -139,12 +141,13 @@
 
          generic :: new => init_simulation
          generic :: del => end_simulation
-         ! generic :: go => go_simulation_2
-         generic :: go=> go_simulation_1
+         generic :: go => go_simulation_2
+         ! generic :: go => go_simulation_1
+         ! generic :: go => go_simulation_3
 
          procedure, private :: init_simulation, end_simulation
          procedure, private :: init_diag, diag_simulation
-         procedure, private :: go_simulation_1, go_simulation_2
+         procedure, private :: go_simulation_1, go_simulation_2, go_simulation_3
          procedure, private :: diag2_simulation
 
       end type simulation
@@ -279,6 +282,9 @@
          allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
          allocate(this%amu_r, this%damu_1, this%damu1, this%damu2)         
          allocate(this%bexyz, this%bbxyz)
+         allocate(this%bxyz_t, this%cu_t, this%dcu_t, this%amu_t, this%damu_t, this%dcu_r, this%fxy_t, this%psit_t)
+         allocate(this%qe_t,this%div_vpot_t)   
+         allocate(this%bexyz_t, this%bbxyz_t, this%cu3d_t)
          
 
          call this%bexyz%new(this%p,this%err,this%sp3,dim=3)
@@ -298,17 +304,30 @@
          call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%epw%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.,state=1) !state=1 meaning in kspace.
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%damu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          !write(*,*) this%sp2%getdex(), "dexd"
+         call this%damu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          ! call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
-         ! call this%bxyzfd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe1,psi=this%psi,algorithm=1)
 
          call this%amu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%damu_1%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
          call this%damu1%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%damu2%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+
+         call this%bexyz_t%new(this%p,this%err,this%sp3,dim=3)
+         call this%bbxyz_t%new(this%p,this%err,this%sp3,dim=3)
+         call this%cu3d_t%new(this%p,this%err,this%sp3,dim=3)
+         call this%qe_t%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)                  
+         call this%psit_t%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)  
+         call this%div_vpot_t%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)                
+         call this%fxy_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%cu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)      
+         call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%dcu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%amu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         call this%bxyz_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)         
+         call this%damu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
 
          call input%get('simulation.nspecies',n)
 
@@ -413,6 +432,20 @@
          call this%damu_1%del()
          call this%damu1%del()                
          call this%damu2%del()        
+
+         call this%qe_t%del()
+         call this%psit_t%del()
+         call this%div_vpot_t%del()         
+         call this%fxy_t%del()
+         call this%cu_t%del()
+         call this%dcu_t%del()
+         call this%dcu_r%del()
+         call this%amu_t%del()     
+         call this%damu_t%del()   
+         call this%bxyz_t%del()
+         call this%cu3d_t%del()
+         call this%bexyz%del()
+         call this%bbxyz%del()
 
          if(allocated(this%psi3d)) call this%psi3d%del()
          if(allocated(this%cu3d)) call this%cu3d%del()
@@ -1087,6 +1120,280 @@
 
       end subroutine go_simulation_2
 !
+      subroutine go_simulation_3(this)
+
+         implicit none
+
+         class(simulation), intent(inout) :: this
+! local data
+         character(len=18), save :: sname = 'go_simulation_3:'
+         integer, dimension(10) :: istat
+         integer :: i,j,l,m,n,ierr
+
+         call this%err%werrfl2(class//sname//' started')
+
+         ! dump initialization data
+         if (this%start3d == 1) then
+            this%tstep = 0
+            call this%diag_simulation()
+         endif
+
+         do i = this%start3d, this%nstep3d
+
+            this%tstep = i
+            write (erstr,*) '3D step:', i
+            call this%err%werrfl0(erstr)
+
+            do m = 1, this%nbeams
+               this%tag_bq(m,1) = ntag()
+               this%tag_bq(m,2) = ntag()
+               call this%beams%beam(m)%qdp(this%id_bq(m,1),this%id_bq(m,2),&
+               &this%id_bq(m,3),this%tag_bq(m,1),this%tag_bq(m,2))
+            end do
+
+            do l =  1, this%nspecies
+               this%tag_spe(l) = ntag()
+               call this%species%spe(l)%precv(this%tag_spe(l))
+            end do
+            this%tag(3) = ntag()
+            call this%fields%cu%precv(this%tag(3))
+            this%tag(4) = ntag()
+            call this%fields%epw%precv(this%tag(4))
+            this%tag(5) = ntag()
+            call this%fields%fxy%precv(this%tag(5))
+            this%tag(6) = ntag()
+            call this%fields%psit%precv(this%tag(6))
+            this%tag(7) = ntag()
+            call this%fields%bxyz%precv(this%tag(7))
+
+            call this%fields%fxy%cb(this%fields%bexyz,1,(/1,2/),(/1,2/))
+            call this%fields%psit%cb(this%fields%bexyz,1,(/1/),(/3/))
+            call this%fields%bxyz%cb(this%fields%bbxyz,1,(/1,2,3/),(/1,2,3/))
+
+            do j = 1, this%nstep2d
+               write (erstr,*) '2D step:', j
+               call this%err%werrfl0(erstr)
+               this%tstep2 = j+this%noffstep2d
+               call this%diag2_simulation()
+               if (j == this%nstep2d) then
+                  do m = 1, this%nbeams
+                     call MPI_WAIT(this%id_bq(m,2),istat,ierr)
+                  end do
+               endif
+               call this%fields%qb%as(0.0)
+               do m = 1, this%nbeams
+                  call this%beams%beam(m)%qdp(this%fields%qb,j+1)
+               end do
+               call this%fields%qb%fftrk(1)
+               !epwb is the normalized unit/dex in k space.         
+               call this%fields%qb%elf(this%fields%epwb)
+               call this%fields%qe%as(0.0)
+               do l = 1, this%nspecies
+                  call this%species%spe(l)%qdp(this%fields%qe)!r space
+               end do
+               call this%fields%qe_t%as(0.0)
+               !qe_t is the normalized unit in r space.         
+               call this%species%spe(1)%cq(this%fields%qe_t)
+               !qe is the normalized unit in k space.         
+               call this%fields%qe%fftrk(1)
+               !psi is the normalized unit/dex**2 in k space.         
+               call this%fields%qe%pot(this%fields%psi)
+               !fxy is the normalized unit/dex in k space.         
+               call this%fields%psi%grad(this%fields%fxy)
+               !fxy is the normalized unit/dex in r space.          
+               call this%fields%fxy%fftkr(1)
+               !psi is the normalized unit/dex**2 in r space.          
+               call this%fields%psi%fftkr(1)
+               do l = 1, this%nspecies
+                  call this%species%spe(l)%extpsi(this%fields%psi,this%dex)
+               end do
+               !psi is the normalized unit in r space.         
+               call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
+               if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
+               call this%fields%cu_t%as(0.0)
+               !J, cu_t is the normalized unit/dex in r space.              
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%jdp(this%fields%cu_t,this%dex) !deposit J
+               end do
+               !cu_t is the normalized unit in r space.               
+               call this%fields%cu_t%mult(this%fields%cu_t,this%dex)
+               !cu is the normalized unit in k space.
+               call this%fields%cu_t%fftrk(1)
+               if (allocated(this%fields%cu3d_t)) then
+                  call this%fields%cu_t%cb(this%fields%cu3d_t,j+1,(/1,2,3/),(/1,2,3/))
+               end if         
+               call this%fields%cu_t%div(this%fields%div_vpot_t)
+!Ez of plasma, psit is the normalized unit/dex in k space.              
+               call this%fields%div_vpot_t%pot(this%fields%psit_t)
+!Ez=Ez*(-dex)，psit is the normalized unit in k space.                
+               call this%fields%psit_t%mult(this%fields%psit_t,-this%dex)
+!psit is the normalized unit in r space.               
+               call this%fields%psit_t%fftkr(1)
+               !write(2,*) this%fields%psit%getsum() , "psit"
+               call this%fields%bxyz_t%as(0.0)
+!Bz of plasma, bxyz is the normalized unit/dex in k space.               
+               call this%fields%cu_t%bf(this%fields%bxyz_t)
+!Bz is the normalized unit in k space.             
+               call this%fields%bxyz_t%mult(this%fields%bxyz_t,(/3/),(/3/),(/this%dex/))
+!Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
+               call this%fields%bxyz_t%mult(this%fields%epwb,(/1,2/),(/2,1/),(/-1.0,1.0/))
+!Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
+               call this%fields%bxyz_t%fftkr(2)
+               call this%fields%dcu_t%as(0.0)
+               call this%fields%amu_t%as(0.0)              
+!partial J⊥/partial n; psit and Bz(bxyz) are the normalized unit. bxy、fxy.    
+!dcu is normalized unit/dex, amu is the normalized unit/dex^2.            
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz_t,this%fields%psit_t,&
+                  &this%fields%dcu_t,this%fields%amu_t,this%dex) !source of equation when solving B⊥ in rspace.
+               end do 
+!amu=amu*dex，the amu is the normalized unit/dex in r space.
+               call this%fields%amu_t%mult(this%fields%amu_t,this%dex)
+!dcu=dcu*dex，the dcu is the normalized unit in r space.            
+               call this%fields%dcu_t%mult(this%fields%dcu_t,this%dex)
+               call this%fields%amu_t%fftrk(3) 
+
+!/xi-1/2/deta/xi时刻的电流
+               call this%fields%cu%div(this%fields%div_vpot)
+               call this%fields%div_vpot%pot(this%fields%psit)
+               call this%fields%psit%mult(this%fields%psit,-this%dex)
+               call this%fields%psit%fftkr(1)
+               call this%fields%cu%bf(this%fields%bxyz)
+               !循环开始
+               do l = 1, this%iter
+                  call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+                  call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+                  call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+                  call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+                  call this%fields%bxyz%fftkr(2)
+                  call this%fields%cu%as(0.0)
+                  call this%fields%dcu%as(0.0)
+                  call this%fields%amu%as(0.0)
+                  do m = 1, this%nspecies
+                     call this%species%spe(m)%amjdp(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+                     &this%fields%cu,this%fields%amu,this%fields%dcu,this%dex)
+                  end do
+                  call this%fields%cu%mult(this%fields%cu,this%dex)
+                  !amu is the normalized unit/dex**2 in r space.
+                  call this%fields%amu%mult(this%fields%amu,this%dex)
+                  call this%fields%dcu%mult(this%fields%dcu,this%dex)
+                  call this%fields%amu_r%as(0.0)               
+                  call this%fields%amu_r%as(this%fields%amu)
+                  call this%fields%dcu_r%as(0.0)               
+                  call this%fields%dcu_r%as(this%fields%dcu)            
+                  if (l == this%iter) then
+                     do m = 1, this%nspecies
+                        call this%species%spe(m)%cbq(j+1)
+                     end do
+                     if (allocated(this%fields%cu3d)) then
+                        call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
+                     end if
+                  endif
+                  call this%fields%cu%fftrk(1)
+                  call this%fields%dcu%fftrk(1)
+                  call this%fields%amu%fftrk(3)
+                  !epw is the normalized unit/dex**2 in k space.
+                  call this%fields%cu%bfqp(this%fields%dcu,this%fields%amu,this%fields%epw,this%dex2,&
+                  &this%dex)
+                  call this%fields%cu%div(this%fields%div_vpot)
+                  call this%fields%div_vpot%pot(this%fields%psit)
+                  call this%fields%psit%mult(this%fields%psit,-this%dex)
+                  call this%fields%psit%fftkr(1)
+                  call this%fields%cu%bf(this%fields%bxyz)
+               enddo
+               !循环结束
+               call this%fields%damu_t%as(0.0)             
+               call this%fields%damu_t%fftrk(2)               
+               !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
+               call this%fields%cu_t%bfqpn(this%fields%amu_t,this%fields%damu_t,this%dex) 
+!damu is the normalized unit in r space.               
+               call this%fields%damu_t%fftkr(2)                                                       
+               call this%fields%damu_t%sub(this%fields%damu_t,this%fields%dcu_t,(/1/),(/1/),(/2/))
+               call this%fields%damu_t%add(this%fields%damu_t,this%fields%dcu_t,(/2/),(/2/),(/1/))
+               call this%fields%bxyzfd%as(0.0)
+!qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
+               call this%fields%damu_t%renew_fd(this%fields%qe_t,this%fields%psi,this%dex) !update stenci l when qe and psi change.
+!damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
+               call this%fields%damu_t%solve_mg(this%fields%bxyzfd,(/2,3/),3)
+!bxyzfd is the normalized uni/dex in r space.
+               call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
+!Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.     
+               call this%fields%bxyz_t%add(this%fields%bxyz_t,this%fields%bxyzfd,(/1/),(/1/),(/1/))
+!By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
+               call this%fields%bxyz_t%add(this%fields%bxyz_t,this%fields%bxyzfd,(/2/),(/2/),(/2/))         
+!fxy is the normalized unit/dex in r space. 
+
+               if (allocated(this%fields%vpot)) then
+                  call this%fields%cu%vpot(this%fields%vpot)
+                  call this%fields%vpot%fftkr(1)
+                  call this%fields%vpot%mult(this%fields%vpot,-this%dex)
+                  call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
+               end if               
+               call this%fields%bxyz%mult(this%fields%epw,(/1,2/),(/2,1/),(/-this%dex,this%dex/))
+               call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+               call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
+               call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
+               call this%fields%bxyz%fftkr(2)
+               call this%fields%fxy_t%mult(this%fields%fxy,-1.0)
+               call this%fields%fxy_t%add(this%fields%fxy_t,this%fields%bxyz_t,(/1/),(/1/),(/2/)) !Ex
+               call this%fields%fxy_t%sub(this%fields%fxy_t,this%fields%bxyz_t,(/2/),(/2/),(/1/)) !Ey
+
+               call this%fields%fxy%mult(this%fields%fxy,-1.0)
+               call this%fields%fxy%add(this%fields%fxy,this%fields%bxyz,(/1/),(/1/),(/2/))
+               call this%fields%fxy%sub(this%fields%fxy,this%fields%bxyz,(/2/),(/2/),(/1/))
+               call this%fields%dcu%mult(this%fields%dcu,this%dxi)
+               call this%fields%cu%sub(this%fields%cu,this%fields%dcu,(/1,2/),(/1,2/),(/1,2/))
+               do m = 1, this%nspecies
+                  call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+                  &this%dex)
+               end do
+
+!ex、ey(fxy)、bx and by are the normalized unit/dex,bz、ez(psit) are the normalized unit.              
+               ! do m = 1, this%nspecies
+               !    call this%species%spe(m)%push_fd(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
+               !    &this%dex) !push particle
+               ! end do
+
+               call this%fields%fxy_t%mult(this%fields%fxy_t,this%dex)
+               call this%fields%fxy_t%cb(this%fields%bexyz_t,j+1,(/1,2/),(/1,2/))
+               call this%fields%psit_t%cb(this%fields%bexyz_t,j+1,(/1/),(/3/))
+               call this%fields%bxyz_t%mult(this%fields%bxyz_t,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+               call this%fields%bxyz_t%cb(this%fields%bbxyz_t,j+1,(/1,2,3/),(/1,2,3/))
+            enddo
+
+            do m = 1, this%nspecies
+               call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
+            end do
+            call MPI_WAIT(this%id(5),istat,ierr)
+            call this%fields%cu%psend(this%tag(3),this%id(5))
+            call MPI_WAIT(this%id(6),istat,ierr)
+            call this%fields%epw%psend(this%tag(4),this%id(6))
+            call MPI_WAIT(this%id(7),istat,ierr)
+            call this%fields%fxy%psend(this%tag(5),this%id(7))
+            call MPI_WAIT(this%id(8),istat,ierr)
+            call this%fields%psit%psend(this%tag(6),this%id(8))
+            call MPI_WAIT(this%id(9),istat,ierr)
+            call this%fields%bxyz%psend(this%tag(7),this%id(9))
+
+            do m = 1, this%nbeams
+               this%tag_beam(m) = ntag()
+               call MPI_WAIT(this%id_beam(m),istat,ierr)
+               call this%beams%beam(m)%push(this%fields%bexyz,this%fields%bbxyz,this%dex,this%dxi,&
+               &this%tag_beam(m),this%tag_beam(m),this%id_beam(m))
+            end do
+
+            call this%diag_simulation()
+
+            do m = 1, this%nspecies
+               call MPI_WAIT(this%id_spe(m),istat,ierr)
+               call this%species%spe(m)%renew(i*this%dt)
+            end do
+         end do
+
+         call this%err%werrfl2(class//sname//' ended')
+
+      end subroutine go_simulation_3
+!
       subroutine init_diag(this)
 
          implicit none
@@ -1318,6 +1625,27 @@
                      call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').name'&
                      &//'('//trim(s3)//')',ss)
                      select case (trim(ss))
+                     case ('jx_t')
+                        sn1 = 'Jx_t'
+                        sn2 = 'jx_t'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_x_t'
+                        dim = 1
+                        obj => this%fields%cu3d_t
+                     case ('jy_t')
+                        sn1 = 'Jy_t'
+                        sn2 = 'jy_t'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_y_t'
+                        dim = 2
+                        obj => this%fields%cu3d_t
+                     case ('jz_t')
+                        sn1 = 'Jz_t'
+                        sn2 = 'jz_t'
+                        sn3 = 'n_0 c'
+                        sn4 = 'J_z_t'
+                        dim = 3
+                        obj => this%fields%cu3d_t                     
                      case ('charge')
                         sn1 = 'Charge'
                         sn2 = 'charge'
@@ -1460,6 +1788,124 @@
                   if (allocated(ss)) deallocate(ss)
                   call this%in%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ss)
                   select case (trim(ss))
+                  case ('sx_t')
+                     sn1 = 'Sx_t'
+                     sn2 = 'sx_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in x_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu_t
+                     dim2 = 1
+                  case ('sy_t')
+                     sn1 = 'Sy_t'
+                     sn2 = 'sy_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in y_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%damu_t
+                     dim2 = 2      
+                  case ('dcux_t')
+                     sn1 = 'Dcux_t'
+                     sn2 = 'dcux_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Dcu in x_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%dcu_t
+                     dim2 = 1
+                  case ('dcuy_t')
+                     sn1 = 'Dcuy_t'
+                     sn2 = 'dcuy_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Dcu in y_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%dcu_t
+                     dim2 = 2
+                  case ('amux_t')
+                     sn1 = 'Amux_t'
+                     sn2 = 'amux_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu in x_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_t
+                     dim2 = 1
+                  case ('amuy_t')
+                     sn1 = 'Amuy_t'
+                     sn2 = 'amuy_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu in y_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_t
+                     dim2 = 2 
+                  case ('amuz_t')
+                     sn1 = 'Amuz_t'
+                     sn2 = 'amuz_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu in z_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_t
+                     dim2 = 3      
+                  case ('ex_t')
+                     sn1 = 'Ex_t'
+                     sn2 = 'ex_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field_t'
+                     dim = 1
+                     obj => this%fields%bexyz_t
+                     obj2 => this%fields%fxy_t
+                     dim2 = 1
+                  case ('ey_t')
+                     sn1 = 'Ey_t'
+                     sn2 = 'ey_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field_t'
+                     dim = 2
+                     obj => this%fields%bexyz_t
+                     obj2 => this%fields%fxy_t
+                     dim2 = 2
+                  case ('ez_t')
+                     sn1 = 'Ez_t'
+                     sn2 = 'ez_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Electric Field_t'
+                     dim = 3
+                     obj => this%fields%bexyz_t
+                     obj2 => this%fields%psit_t
+                     dim2 = 1
+                  case ('bx_t')
+                     sn1 = 'Bx_t'
+                     sn2 = 'bx_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field_t'
+                     dim = 1
+                     obj => this%fields%bbxyz_t
+                     obj2 => this%fields%bxyz_t
+                     dim2 = 1
+                  case ('by_t')
+                     sn1 = 'By_t'
+                     sn2 = 'by_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field_t'
+                     dim = 2
+                     obj => this%fields%bbxyz_t
+                     obj2 => this%fields%bxyz_t
+                     dim2 = 2
+                  case ('bz_t')
+                     sn1 = 'Bz_t'
+                     sn2 = 'bz_t'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Magnetic Field_t'
+                     dim = 3
+                     obj => this%fields%bbxyz_t
+                     obj2 => this%fields%bxyz_t
+                     dim2 = 3
+
                   case ('sx')
                      sn1 = 'Sx'
                      sn2 = 'sx'
