@@ -41,7 +41,6 @@
          
          generic :: new => init_field2d
          generic :: new_fd => init_field2d_fd
-         generic :: new_fd_t => init_field2d_fd_t
          generic :: renew_fd => renew_field2d_fd
          generic :: del => end_field2d
          generic :: fftrk => fftrk_field2d
@@ -75,7 +74,7 @@
          generic :: sum_ele => sum_elements
 
          ! procedure, private :: init_field2d, end_field2d
-         procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd, init_field2d_fd_t
+         procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
          procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
          procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
          ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d,divf_field2d_new_cu
@@ -177,7 +176,7 @@
 
          inorder = psp%getinorder()
          !write(*,*) psp%getdex(), "dexc" 0
-         write(*,*) "inorder=", inorder 
+         ! write(*,*) "inorder=", inorder 
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -258,109 +257,6 @@
 
       end subroutine init_field2d_fd
 !
-      subroutine init_field2d_fd_t(this,pp,perr,psp,dim,fftflag,qe_t,psi,state,gcells,algorithm)
-
-! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
-         implicit none
-         
-         class(field2d), intent(inout) :: this
-         class(spect2d), intent(in), pointer :: psp
-         class(field2d), intent(in) :: qe_t, psi
-         class(perrors), intent(in), pointer :: perr
-         class(parallel_pipe), intent(in), pointer :: pp
-         integer, intent(in) :: dim
-         logical, intent(in) :: fftflag
-         integer, intent(in), optional :: state, gcells, algorithm
-! local data
-         character(len=18), save :: sname = 'init_field2d_fd_t:'
-         integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
-         integer, dimension(2) :: gc
-         integer :: gc_dir 
-         class(ufield2d), pointer :: uqe, upsi
-
-         inorder = psp%getinorder()
-         !write(*,*) psp%getdex(), "dexc" 0
-         write(*,*) "inorder=", inorder 
-         this%err => perr
-         call this%err%werrfl2(class//sname//' started')
-
-         this%sp => psp
-         this%p => pp
-         if (present(state)) then
-            this%state = state
-         else
-            this%state = 0
-         endif
-         if (present(gcells)) then
-            this%gcells = gcells
-         else
-            this%gcells = 0
-         endif
-         ! write(*,*) "(fd)this%gcells=", this%gcells 
-         ! determine the guard cells according to solver type and interpolation order
-         if (present(algorithm)) then
-            select case (algorithm)
-            ! spectral solver
-            case (0)
-               gc(1) = inorder - 1
-               gc(2) = inorder
-               gc_dir = 0
-            ! second order finite difference
-            case (1)
-               gc(1) = max( inorder-1, 1 )!左右两个方向的gc，左gc或右gc的个数取决于平滑函数、插值阶数、
-               gc(2) = max( inorder, 1 )
-               gc_dir = 2 !可能是y方向
-            ! fourth order finite difference
-            case (2)
-               gc(1) = max( inorder-1, 2 )
-               gc(2) = max( inorder, 2 )
-               gc_dir = 2
-            case default
-               call this%err%equit(class//sname//' invalid algorithm')
-            end select
-            alg = algorithm
-         else
-            gc(1) = inorder - 1
-            gc(2) = inorder
-            alg = 0
-            gc_dir = 0
-         endif
-            
-         nvpy = pp%getlnvp()
-         indx = psp%getindx()
-         indy = psp%getindy()         
-         nd1 = 2**indx
-         nd2 = 2**indy
-         
-         allocate(this%rs)
-         call this%rs%new_fd(pp,perr,psp,dim,0,0,nvpy,gc,gc_dir)
-
-         ! create finite difference
-         allocate( this%fd )
-         call this%fd%new( pp, perr, kind=0 )
-
-         ! 2nd order multigrid solver
-         uqe => qe_t%getrs()
-         upsi => psi%getrs()
-         this%pt_mg => get_poismg2table( pp, perr, psp, 1, uqe, upsi)
-         
-         if (fftflag) then
-            allocate(this%ks)
-            call this%ks%new(pp,perr,psp,dim,1,nd1,nd2,0,nvpy)
-            select case (psp%getpsolver())
-            case (1)
-               this%ft => get_fft2table(pp,perr,psp,indx,indy)
-               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
-            case default
-               this%ft => get_fft2table(pp,perr,psp,indx,indy)
-               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
-            end select
-         endif
-
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine init_field2d_fd_t
-!
       subroutine renew_field2d_fd(this, qe, psi, dex)
 
       implicit none
@@ -371,9 +267,7 @@
       character(len=18), save :: sname = 'renew_field2d_fd'
 
       call this%err%werrfl2(class//sname//' started')
-      write(*,*) "renew_dex is", dex 
       call this%pt_mg%renew(qe%getrs(), psi%getrs(), dex)
-      write(*,*) "111" 
       call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_field2d_fd
@@ -1158,7 +1052,6 @@
          character(len=18), save :: sname = 'sum:'
 
          call this%err%werrfl2(class//sname//' started')
-         
          if (a1%state /= a2%state) then
             call this%err%equit(class//sname//'states are different')
             return

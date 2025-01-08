@@ -42,11 +42,11 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, qe1, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
-         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, damu, epw, epwb, vpot 
+         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, cu_fd, dcu, amu, damu, epw, epwb, vpot 
          type(field2d), allocatable :: amu_r, damu_1, damu1, damu2               
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
-         type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, damu_t, dcu_r, fxy_t, psit_t, qe_t, div_vpot_t
+         type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, damu_t, dcu_r, fxy_t, psit_t, qe_t, div_vpot_t, amu_r_t
          type(field3d), allocatable :: bexyz_t, bbxyz_t, cu3d_t
 
          contains
@@ -141,9 +141,9 @@
 
          generic :: new => init_simulation
          generic :: del => end_simulation
-         generic :: go => go_simulation_2
+         ! generic :: go => go_simulation_2
          ! generic :: go => go_simulation_1
-         ! generic :: go => go_simulation_3
+         generic :: go => go_simulation_3
 
          procedure, private :: init_simulation, end_simulation
          procedure, private :: init_diag, diag_simulation
@@ -278,12 +278,12 @@
          allocate(this%qb, this%qe, this%qe1, this%psit, this%psi)
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
-         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu)
+         allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%cu_fd)
          allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
          allocate(this%amu_r, this%damu_1, this%damu1, this%damu2)         
          allocate(this%bexyz, this%bbxyz)
          allocate(this%bxyz_t, this%cu_t, this%dcu_t, this%amu_t, this%damu_t, this%dcu_r, this%fxy_t, this%psit_t)
-         allocate(this%qe_t,this%div_vpot_t)   
+         allocate(this%qe_t,this%div_vpot_t, this%amu_r_t)   
          allocate(this%bexyz_t, this%bbxyz_t, this%cu3d_t)
          
 
@@ -298,15 +298,14 @@
          call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%reg%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%fxy%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         ! call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         call this%cu_fd%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%cu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.,state=1)      
          call this%dcu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%amu%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%epw%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.,state=1) !state=1 meaning in kspace.
          call this%epwb%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          !write(*,*) this%sp2%getdex(), "dexd"
-         call this%damu%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         ! call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
+         call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
 
@@ -326,6 +325,7 @@
          call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%dcu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%amu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         call this%amu_r_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyz_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)         
          call this%damu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
 
@@ -420,9 +420,10 @@
          call this%reg%del()
          call this%fxy%del()
          call this%cu%del()
+         call this%cu_fd%del()         
          call this%dcu%del()
          call this%amu%del()     
-         call this%damu%del()          
+         call this%damu%del()                 
          call this%epw%del()
          call this%epwb%del()
          call this%bxyz%del()
@@ -440,7 +441,8 @@
          call this%cu_t%del()
          call this%dcu_t%del()
          call this%dcu_r%del()
-         call this%amu_t%del()     
+         call this%amu_t%del()
+         call this%amu_r_t%del()     
          call this%damu_t%del()   
          call this%bxyz_t%del()
          call this%cu3d_t%del()
@@ -884,9 +886,10 @@
                call this%species%spe(l)%precv(this%tag_spe(l))
             end do
             this%tag(3) = ntag()
-            call this%fields%cu%precv(this%tag(3))
+            call this%fields%cu_fd%precv(this%tag(3))
             this%tag(4) = ntag()
-            call this%fields%epw%precv(this%tag(4))
+            ! call this%fields%epw%precv(this%tag(4))
+            call this%fields%bxyzfd%precv(this%tag(4))
             this%tag(5) = ntag()
             call this%fields%fxy%precv(this%tag(5))
             this%tag(6) = ntag()
@@ -944,22 +947,22 @@
                call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
                ! write(2,*) this%fields%psi%getsum() , "psi"
                if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
-               call this%fields%cu%as(0.0)
+               call this%fields%cu_fd%as(0.0)
 !J, cu is the normalized unit/dex in r space.              
                do m = 1, this%nspecies
-                  call this%species%spe(m)%jdp(this%fields%cu,this%dex) !deposit J
+                  call this%species%spe(m)%jdp(this%fields%cu_fd,this%dex) !deposit J
                end do
 !cu is the normalized unit in r space.               
-               call this%fields%cu%mult(this%fields%cu,this%dex)
+               call this%fields%cu_fd%mult(this%fields%cu_fd,this%dex)
                do m = 1, this%nspecies
                   call this%species%spe(m)%cbq(j+1)
                end do  
                if (allocated(this%fields%cu3d)) then
-                  call this%fields%cu%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
+                  call this%fields%cu_fd%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                end if
                ! write(2,*) this%fields%cu%getsum() , "cu-r-N"
 !cu is the normalized unit in k space.
-               call this%fields%cu%fftrk(1)
+               call this%fields%cu_fd%fftrk(1)
                ! write(2,*) this%fields%cu%getsum() , "cu-k-N"
 !potencil A,???               
                ! if (allocated(this%fields%vpot)) then
@@ -969,7 +972,7 @@
                !    call this%fields%vpot%cb(this%fields%vpot3d,j+1,(/1,2,3/),(/1,2,3/))
                ! end if 
 
-               call this%fields%cu%div(this%fields%div_vpot)
+               call this%fields%cu_fd%div(this%fields%div_vpot)
 !Ez of plasma, psit is the normalized unit/dex in k space.              
                call this%fields%div_vpot%pot(this%fields%psit)
 !Ez=Ez*(-dex)，psit is the normalized unit in k space.                
@@ -979,7 +982,7 @@
                !write(2,*) this%fields%psit%getsum() , "psit"
                call this%fields%bxyz%as(0.0)
 !Bz of plasma, bxyz is the normalized unit/dex in k space.               
-               call this%fields%cu%bf(this%fields%bxyz)
+               call this%fields%cu_fd%bf(this%fields%bxyz)
 !Bz is the normalized unit in k space.             
                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
 !Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
@@ -1012,9 +1015,9 @@
                call this%fields%damu2%fftrk(2)            
 !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
                !call this%fields%cu%bfqpn(this%fields%dcu,this%fields%amu,this%fields%damu,this%dex)
-               call this%fields%cu%bfqpn(this%fields%amu,this%fields%damu,this%dex)
+               call this%fields%cu_fd%bfqpn(this%fields%amu,this%fields%damu,this%dex)
                call this%fields%amu%bfqpn_1(this%fields%damu1,this%dex)
-               call this%fields%cu%bfqpn_2(this%fields%damu2,this%dex)    
+               call this%fields%cu_fd%bfqpn_2(this%fields%damu2,this%dex)    
                call this%fields%damu1%fftkr(2) 
                call this%fields%damu2%fftkr(2)      
                call this%fields%damu_1%as(0.0)                       
@@ -1091,9 +1094,10 @@
                call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
             end do
             call MPI_WAIT(this%id(5),istat,ierr)
-            call this%fields%cu%psend(this%tag(3),this%id(5))
+            call this%fields%cu_fd%psend(this%tag(3),this%id(5))
             call MPI_WAIT(this%id(6),istat,ierr)
-            call this%fields%epw%psend(this%tag(4),this%id(6))
+            ! call this%fields%epw%psend(this%tag(4),this%id(6))
+            call this%fields%bxyzfd%psend(this%tag(4),this%id(6))            
             call MPI_WAIT(this%id(7),istat,ierr)
             call this%fields%fxy%psend(this%tag(5),this%id(7))
             call MPI_WAIT(this%id(8),istat,ierr)
@@ -1198,7 +1202,8 @@
                call this%fields%qe%fftrk(1)
                !psi is the normalized unit/dex**2 in k space.         
                call this%fields%qe%pot(this%fields%psi)
-               !fxy is the normalized unit/dex in k space.         
+               !fxy is the normalized unit/dex in k space.    
+               call this%fields%fxy%as(0.0)                    
                call this%fields%psi%grad(this%fields%fxy)
                !fxy is the normalized unit/dex in r space.          
                call this%fields%fxy%fftkr(1)
@@ -1217,47 +1222,50 @@
                end do
                !cu_t is the normalized unit in r space.               
                call this%fields%cu_t%mult(this%fields%cu_t,this%dex)
-               !cu is the normalized unit in k space.
-               call this%fields%cu_t%fftrk(1)
                if (allocated(this%fields%cu3d_t)) then
                   call this%fields%cu_t%cb(this%fields%cu3d_t,j+1,(/1,2,3/),(/1,2,3/))
-               end if         
+               end if      
+                !cu is the normalized unit in k space.    
+               call this%fields%cu_t%fftrk(1)
                call this%fields%cu_t%div(this%fields%div_vpot_t)
-!Ez of plasma, psit is the normalized unit/dex in k space.              
+               !Ez of plasma, psit is the normalized unit/dex in k space.              
                call this%fields%div_vpot_t%pot(this%fields%psit_t)
-!Ez=Ez*(-dex)，psit is the normalized unit in k space.                
+               !Ez=Ez*(-dex)，psit is the normalized unit in k space.                
                call this%fields%psit_t%mult(this%fields%psit_t,-this%dex)
-!psit is the normalized unit in r space.               
+               !psit is the normalized unit in r space.               
                call this%fields%psit_t%fftkr(1)
                !write(2,*) this%fields%psit%getsum() , "psit"
                call this%fields%bxyz_t%as(0.0)
-!Bz of plasma, bxyz is the normalized unit/dex in k space.               
+               !Bz of plasma, bxyz is the normalized unit/dex in k space.               
                call this%fields%cu_t%bf(this%fields%bxyz_t)
-!Bz is the normalized unit in k space.             
+               !Bz is the normalized unit in k space.             
                call this%fields%bxyz_t%mult(this%fields%bxyz_t,(/3/),(/3/),(/this%dex/))
-!Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
+               !Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
                call this%fields%bxyz_t%mult(this%fields%epwb,(/1,2/),(/2,1/),(/-1.0,1.0/))
-!Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
+               !Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
                call this%fields%bxyz_t%fftkr(2)
                call this%fields%dcu_t%as(0.0)
                call this%fields%amu_t%as(0.0)              
-!partial J⊥/partial n; psit and Bz(bxyz) are the normalized unit. bxy、fxy.    
-!dcu is normalized unit/dex, amu is the normalized unit/dex^2.            
+               !partial J⊥/partial n; psit and Bz(bxyz) are the normalized unit. bxy、fxy.    
+               !dcu is normalized unit/dex, amu is the normalized unit/dex^2.            
                do m = 1, this%nspecies
                   call this%species%spe(m)%bdp(this%fields%fxy,this%fields%bxyz_t,this%fields%psit_t,&
                   &this%fields%dcu_t,this%fields%amu_t,this%dex) !source of equation when solving B⊥ in rspace.
                end do 
-!amu=amu*dex，the amu is the normalized unit/dex in r space.
+               !amu=amu*dex，the amu is the normalized unit/dex in r space.
                call this%fields%amu_t%mult(this%fields%amu_t,this%dex)
-!dcu=dcu*dex，the dcu is the normalized unit in r space.            
+                  !dcu=dcu*dex，the dcu is the normalized unit in r space.            
                call this%fields%dcu_t%mult(this%fields%dcu_t,this%dex)
+               call this%fields%amu_r_t%as(0.0)               
+               call this%fields%amu_r_t%as(this%fields%amu_t)               
                call this%fields%amu_t%fftrk(3) 
 
-!/xi-1/2/deta/xi时刻的电流
+               !/xi-1/2/deta/xi时刻的电流
                call this%fields%cu%div(this%fields%div_vpot)
                call this%fields%div_vpot%pot(this%fields%psit)
                call this%fields%psit%mult(this%fields%psit,-this%dex)
                call this%fields%psit%fftkr(1)
+               call this%fields%bxyz%as(0.0)
                call this%fields%cu%bf(this%fields%bxyz)
                !循环开始
                do l = 1, this%iter
@@ -1321,7 +1329,6 @@
                call this%fields%bxyz_t%add(this%fields%bxyz_t,this%fields%bxyzfd,(/1/),(/1/),(/1/))
 !By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
                call this%fields%bxyz_t%add(this%fields%bxyz_t,this%fields%bxyzfd,(/2/),(/2/),(/2/))         
-!fxy is the normalized unit/dex in r space. 
 
                if (allocated(this%fields%vpot)) then
                   call this%fields%cu%vpot(this%fields%vpot)
@@ -1334,6 +1341,8 @@
                call this%fields%bxyz%sub(this%fields%bxyz,this%fields%epwb,(/1/),(/1/),(/2/))
                call this%fields%bxyz%add(this%fields%bxyz,this%fields%epwb,(/2/),(/2/),(/1/))
                call this%fields%bxyz%fftkr(2)
+               call this%fields%fxy_t%as(0.0)
+               !fxy_t and bxyz_t are normalized unit/dex in r space. 
                call this%fields%fxy_t%mult(this%fields%fxy,-1.0)
                call this%fields%fxy_t%add(this%fields%fxy_t,this%fields%bxyz_t,(/1/),(/1/),(/2/)) !Ex
                call this%fields%fxy_t%sub(this%fields%fxy_t,this%fields%bxyz_t,(/2/),(/2/),(/1/)) !Ey
@@ -1347,12 +1356,15 @@
                   call this%species%spe(m)%push(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
                   &this%dex)
                end do
-
-!ex、ey(fxy)、bx and by are the normalized unit/dex,bz、ez(psit) are the normalized unit.              
-               ! do m = 1, this%nspecies
-               !    call this%species%spe(m)%push_fd(this%fields%fxy,this%fields%bxyz,this%fields%psit,&
-               !    &this%dex) !push particle
-               ! end do
+!fxy=fxy*dex，fxy is the normalized unit.           
+               call this%fields%fxy%mult(this%fields%fxy,this%dex)
+!bexyz is the normalized unit.              
+               call this%fields%fxy%cb(this%fields%bexyz,j+1,(/1,2/),(/1,2/))!将2DE⊥赋给3DE
+               call this%fields%psit%cb(this%fields%bexyz,j+1,(/1/),(/3/))!将Ez赋给3DE
+!Bx=Bx*dex, By=By*dex, bxyz is the normalized unit.
+               call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
+!bbxyz is the normalized unit.  
+               call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))!将2DB赋给3DB
 
                call this%fields%fxy_t%mult(this%fields%fxy_t,this%dex)
                call this%fields%fxy_t%cb(this%fields%bexyz_t,j+1,(/1,2/),(/1,2/))
@@ -1831,7 +1843,7 @@
                      sn4 = 'Amu in x_t'
                      dim = 1
                      obj => this%fields%bexyz
-                     obj2 => this%fields%amu_t
+                     obj2 => this%fields%amu_r_t
                      dim2 = 1
                   case ('amuy_t')
                      sn1 = 'Amuy_t'
@@ -1840,7 +1852,7 @@
                      sn4 = 'Amu in y_t'
                      dim = 1
                      obj => this%fields%bexyz
-                     obj2 => this%fields%amu_t
+                     obj2 => this%fields%amu_r_t
                      dim2 = 2 
                   case ('amuz_t')
                      sn1 = 'Amuz_t'
@@ -1849,7 +1861,7 @@
                      sn4 = 'Amu in z_t'
                      dim = 1
                      obj => this%fields%bexyz
-                     obj2 => this%fields%amu_t
+                     obj2 => this%fields%amu_r_t
                      dim2 = 3      
                   case ('ex_t')
                      sn1 = 'Ex_t'
