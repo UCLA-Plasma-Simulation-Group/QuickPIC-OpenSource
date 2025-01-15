@@ -1252,6 +1252,14 @@ c nyd = first dimension of form factor array, must be >= ny
       dnx = 6.28318530717959/float(nx + nx)
       dny = 6.28318530717959/float(ny + ny)
       ci2 = ci*ci !1/c**2
+      write(2,*) "nx=", nx
+      write(2,*) "ny=", ny
+      write(2,*) "dnx=", dnx
+      write(2,*) "dny=", dny    
+      write(2,*) "j=", j
+      write(2,*) "joff=", joff   
+      write(2,*) "k=", k      
+
       if (isign.ne.0) go to 40
       if (kstrt.gt.nx) return
 c prepare form factor array
@@ -1705,8 +1713,8 @@ c   240 continue
 c       return
       end
 !-----------------------------------------------------------------------
-      subroutine PBPOISD22N_QP_NEW_test2(cu,amu,damu,nx,ny,kstrt,
-     1nyv,kxp2,j2blok,dex)
+      subroutine PBPOISD22N_QP_NEW_test2(cu,amu,damu,nx,ny,kstrt,nyv,kxp
+     12,j2blok,dex)
 c if isign = 1, vector potential is calculated using the equation:
 c bx(kx,ky) = ci*ci*g(kx,ky)*cux(kx,ky)
 c by(kx,ky) = ci*ci*g(kx,ky)*cuy(kx,ky)
@@ -1743,37 +1751,37 @@ c nyd = first dimension of form factor array, must be >= ny
       ny1 = ny + 1
       dnx = 6.28318530717959/float(nx + nx)
       dny = 6.28318530717959/float(ny + ny)
+      write(2,*) "nx1=", nx
+      write(2,*) "ny1=", ny
+      write(2,*) "dnx1=", dnx
+      write(2,*) "dny1=", dny    
+      write(2,*) "j1=", j
+      write(2,*) "joff1=", joff   
+      write(2,*) "k1=", k           
 
       do 160 l = 1, j2blok
 c mode numbers 0 < kx < nx and 0 < ky < ny
       joff = kxp2*(l + ks) - 1
       do 130 j = 1, kxp2
-      dkx = dnx*float(j + joff)
+      dkx = dnx * float(j + joff)
       if ((j+joff).gt.0) then
          do 120 k = 2, ny
-         dky = dny*float(k - 1)   
+         dky = dny * float(k - 1)   
          damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
      & dky*cu(3,k,j,l)*idex
          damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
-     & dkx*cu(3,k,j,l)*idex  
-c          damu(1,k,j,l) = - dkx*amu(3,k,j,l) + dky*amu(2,k,j,l) - 
-c      & dky*cu(3,k,j,l)
-c          damu(2,k,j,l) = - dkx*amu(1,k,j,l) + dky*amu(3,k,j,l) + 
-c      & dkx*cu(3,k,j,l)       
+     & dkx*cu(3,k,j,l)*idex
   120    continue
 c mode numbers ky = 0, ny
-c-----------------------------------------------------------------
-         !dcu(1,1,j,l) = -dcu(1,1,j,l)+dkx*amu(1,1,j,l)
-         !dcu(2,1,j,l) = -dcu(2,1,j,l)-dkx*amu(3,1,j,l)         
-
-         !damu(2,1,j,l) = 0.
-         !damu(1,1,j,l) = - dkx*amu(3,1,j,l) + damu(1,1,j,l)
-         damu(1,1,j,l) = - dkx*amu(3,1,j,l)
-         damu(2,1,j,l) = - dkx*amu(1,1,j,l) + dkx*cu(3,1,j,l)*idex
+c-----------------------------------------------------------------       
+         !damu(1,1,j,l) = - dkx*amu(3,1,j,l)
+        ! damu(2,1,j,l) = - dkx*amu(1,1,j,l) + dkx*cu(3,1,j,l)*idex
+         damu(1,1,j,l) = 0
+         damu(2,1,j,l) = 0
          
       endif
-      damu(1,ny+1,j,l) = 0.
-      damu(2,ny+1,j,l) = 0.
+      !damu(1,ny+1,j,l) = 0.
+      !damu(2,ny+1,j,l) = 0.
       !damu(1,ny+1,j,l) = - dkx*amu(3,1,j,l)
       !damu(2,ny+1,j,l) = - dkx*amu(1,1,j,l) + dkx*cu(3,1,j,l)*idex
   130 continue
@@ -1781,20 +1789,20 @@ c mode numbers kx = 0, nx/2
       if ((l+ks).eq.0) then
          do 140 k = 2, ny
          dky = dny*float(k - 1)
-         !damu(2,k,1,l) = dky*amu(3,k,1,l)-damu(2,k,1,l)
-         !damu(1,k,1,l) = 0.
-         damu(1,k,1,l) = dky*amu(2,k,1,l) - dky*cu(3,k,1,l)*idex
-         damu(2,k,1,l) = dky*amu(3,k,1,l)
+         !damu(1,k,1,l) = dky*amu(2,k,1,l) - dky*cu(3,k,1,l)*idex
+         !damu(2,k,1,l) = dky*amu(3,k,1,l)
+         damu(1,k,1,l) = 0
+         damu(2,k,1,l) = 0
   140    continue
-         damu(1,1,1,l) = 0.
-         damu(2,1,1,l) = 0.
+         !damu(1,1,1,l) = 0.
+         !damu(2,1,1,l) = 0.
       endif
-      do 150 k = 1, ny1
-      damu(1,k,kxp2+1,l) = 0.
-      damu(2,k,kxp2+1,l) = 0.
+      !do 150 k = 1, ny1
+      !damu(1,k,kxp2+1,l) = 0.
+      !damu(2,k,kxp2+1,l) = 0.
       !damu(1,k,kxp2+1,l) = dky*amu(2,k,1,l) - dky*cu(3,k,1,l)*idex
       !damu(2,k,kxp2+1,l) = dky*amu(3,k,1,l)
-  150 continue
+  !150 continue
   160 continue
       return
       end

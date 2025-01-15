@@ -792,4 +792,103 @@ subroutine bfqp_src_2order( cu, dcu, amu, bxy, src, m, n, dx, kstrt, nvp )
 
 end subroutine bfqp_src_2order
 
+subroutine bfqp_src_2order_new( cu, dcu, amu, src, m, n, dx, kstrt, nvp )
+
+  implicit none
+
+  real, intent(in), dimension(:,:,:), pointer :: cu, dcu, amu
+  real, intent(inout), dimension(:,:,:), pointer :: src
+  integer, intent(in) :: m, n, kstrt, nvp
+  real, intent(in) :: dx
+
+  ! local variables
+  integer :: i, j, k, kl, ku
+  real :: inv_dxh, a1, a2, a3
+
+  inv_dxh = 0.5 / dx
+  a1 = -3.0 * inv_dxh
+  a2 =  4.0 * inv_dxh
+  a3 = -1.0 * inv_dxh
+
+  kl = 1; ku = n
+  if ( kstrt == 1 ) kl = 2
+  if ( kstrt == nvp ) ku = n-1
+
+  ! interior
+  do k = kl, ku
+    do j = 2, m-1
+      src(1,j,k) = -dcu(2,j,k) + inv_dxh * ( amu(3,j+1,k) - amu(3,j-1,k) + amu(2,j,k+1) - &
+                    amu(2,j,k-1) ) - inv_dxh * ( cu(3,j,k+1) - cu(3,j,k-1) )
+      src(2,j,k) =  dcu(1,j,k) - inv_dxh * ( amu(1,j+1,k) - amu(1,j-1,k) + amu(3,j,k+1) - &
+                    amu(3,j,k-1) ) + inv_dxh * ( cu(3,j+1,k) - cu(3,j-1,k) )
+    enddo
+  enddo
+
+  ! top and bottom boundaries
+  do k = kl, ku
+    src(1,1,k) = -dcu(2,1,k) + a1 * amu(3,1,k) + a2 * amu(3,2,k)   + a3 * amu(3,3,k)   + &
+                  inv_dxh * ( amu(2,1,k+1) - amu(2,1,k-1) ) - inv_dxh * ( cu(3,1,k+1) - cu(3,1,k-1) )
+    src(2,1,k) =  dcu(1,1,k) - a1 * amu(1,1,k) - a2 * amu(1,2,k)   - a3 * amu(1,3,k)   - &
+                  inv_dxh * ( amu(3,1,k+1) - amu(3,1,k-1) ) + a1 * cu(3,1,k) + a2 * cu(3,2,k) + a3 * cu(3,3,k)
+    src(1,m,k) = -dcu(2,m,k) - a1 * amu(3,m,k) - a2 * amu(3,m-1,k) - a3 * amu(3,m-2,k) + &
+                  inv_dxh * ( amu(2,m,k+1) - amu(2,m,k-1) ) - inv_dxh * ( cu(3,m,k+1) - cu(3,m,k-1) )
+    src(2,m,k) =  dcu(1,m,k) + a1 * amu(1,m,k) + a2 * amu(1,m-1,k) + a3 * amu(1,m-2,k) - &
+                  inv_dxh * ( amu(3,m,k+1) - amu(3,m,k-1) ) - a1 * cu(3,m,k) - a2 * cu(3,m-1,k) - a3 * cu(3,m-2,k)
+  enddo
+
+  ! left boundary
+  if ( kstrt == 1 ) then
+    do j = 2, m-1
+      src(1,j,1) = -dcu(2,j,1) + inv_dxh * ( amu(3,j+1,1) - amu(3,j-1,1) ) + &
+                    a1 * amu(2,j,1) + a2 * amu(2,j,2) + a3 * amu(2,j,3) - a1 * cu(3,j,1) - a2 * cu(3,j,2) - a3 * cu(3,j,3)
+      src(2,j,1) =  dcu(1,j,1) - inv_dxh * ( amu(1,j+1,1) - amu(1,j-1,1) ) - &
+                    a1 * amu(3,j,1) - a2 * amu(3,j,2) - a3 * amu(3,j,3) + inv_dxh * ( cu(3,j+1,1) - cu(3,j-1,1) )
+    enddo
+    src(1,1,1) = -dcu(2,1,1) + &
+                  a1 * ( amu(3,1,1) + amu(2,1,1) - cu(3,1,1) ) + &
+                  a2 * ( amu(3,2,1) + amu(2,1,2) - cu(3,1,2) ) + &
+                  a3 * ( amu(3,3,1) + amu(2,1,3) - cu(3,1,3) )
+    src(2,1,1) =  dcu(1,1,1) - &
+                  a1 * ( amu(1,1,1) + amu(3,1,1) - cu(3,1,1) ) - &
+                  a2 * ( amu(1,2,1) + amu(3,1,2) - cu(3,2,1) ) - &
+                  a3 * ( amu(1,3,1) + amu(3,1,3) - cu(3,3,1) )
+    src(1,m,1) = -dcu(2,m,1) - &
+                  a1 * ( amu(3,m,1)   - amu(2,m,1) + cu(3,m,1) ) - &
+                  a2 * ( amu(3,m-1,1) - amu(2,m,2) + cu(3,m,2) ) - &
+                  a3 * ( amu(3,m-2,1) - amu(2,m,3) + cu(3,m,3) )
+    src(2,m,1) =  dcu(1,m,1) + &
+                  a1 * ( amu(1,m,1)   - amu(3,m,1) - cu(3,m,1) ) + &
+                  a2 * ( amu(1,m-1,1) - amu(3,m,2) - cu(3,m-1,1) ) + &
+                  a3 * ( amu(1,m-2,1) - amu(3,m,3) - cu(3,m-2,1) )
+  endif
+
+  ! right boundary
+  if ( kstrt == nvp ) then
+    do j = 2, m-1
+      src(1,j,n) = -dcu(2,j,n) + inv_dxh * ( amu(3,j+1,n) - amu(3,j-1,n) ) - &
+                    a1 * amu(2,j,n) - a2 * amu(2,j,n-1) - a3 * amu(2,j,n-2) + a1 * cu(3,j,n) + a2 * cu(3,j,n-1) + a3 * cu(3,j,n-2)
+      src(2,j,n) =  dcu(1,j,n) - inv_dxh * ( amu(1,j+1,n) - amu(1,j-1,n) ) + &
+                    a1 * amu(3,j,n) + a2 * amu(3,j,n-1) + a3 * amu(3,j,n-2) + inv_dxh * ( cu(3,j+1,n) - cu(3,j-1,n) )
+    enddo
+
+    src(1,1,n) = -dcu(2,1,n) + &
+                  a1 * ( amu(3,1,n) - amu(2,1,n)   + cu(3,1,n) ) + &
+                  a2 * ( amu(3,2,n) - amu(2,1,n-1) + cu(3,1,n-1) ) + &
+                  a3 * ( amu(3,3,n) - amu(2,1,n-2) + cu(3,1,n-2) )
+    src(2,1,n) =  dcu(1,1,n) - &
+                  a1 * ( amu(1,1,n) - amu(3,1,n) - cu(3,1,n) ) - &
+                  a2 * ( amu(1,2,n) - amu(3,1,n-1) - cu(3,2,n) ) - &
+                  a3 * ( amu(1,3,n) - amu(3,1,n-2) - cu(3,3,n) )
+    src(1,m,n) = -dcu(2,m,n) - &
+                  a1 * ( amu(3,m,n)   + amu(2,m,n)   - cu(3,m,n) ) - &
+                  a2 * ( amu(3,m-1,n) + amu(2,m,n-1) - cu(3,m,n-1) ) - &
+                  a3 * ( amu(3,m-2,n) + amu(2,m,n-2) - cu(3,m,n-2) )
+    src(2,m,n) =  dcu(1,m,n) + &
+                  a1 * ( amu(1,m,n)   + amu(3,m,n)   - cu(3,m,n) ) + &
+                  a2 * ( amu(1,m-1,n) + amu(3,m,n-1) - cu(3,m-1,n) ) + &
+                  a3 * ( amu(1,m-2,n) + amu(3,m,n-2) - cu(3,m-2,n) )
+  endif
+
+end subroutine bfqp_src_2order_new
+
 end module fd2d_lib

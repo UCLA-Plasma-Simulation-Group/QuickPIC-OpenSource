@@ -35,11 +35,12 @@ type fd2d
   generic :: curlf => select_curlf
   generic :: curlfz => select_curlfz
   generic :: bfqp_src => select_bfqp_src
+  generic :: bfqp_src_new => select_bfqp_src_new
   generic :: smoothf => select_smoothf
   procedure, private :: init_fd2d
   procedure, private :: end_fd2d
   procedure, private :: select_gradf, select_divf, select_curlf, select_divf_dyad, select_bfqp_src, &
-                        select_curlfz, select_smoothf
+                        select_curlfz, select_smoothf, select_bfqp_src_new
 
 end type fd2d
 
@@ -308,6 +309,49 @@ subroutine select_bfqp_src( this, cu, dcu, amu, bxy, src, dx, order )
   call this%err%werrfl2(class//sname//' ended')
 
 end subroutine select_bfqp_src
+
+subroutine select_bfqp_src_new( this, cu, dcu, amu, src, dx, order )
+
+  implicit none
+
+  class(fd2d), intent(in) :: this
+  class(ufield2d), intent(in) :: cu, dcu, amu
+  class(ufield2d), intent(inout) :: src
+  real, intent(in) :: dx
+  integer, intent(in) :: order
+
+  ! local variables
+  integer :: kstrt, nvp, nd1p, nd2p
+  real, dimension(:,:,:), pointer :: pcu => null(), pdcu => null(), &
+                                     pamu => null(), psrc => null()
+
+  character(len=18), save :: sname = 'select_bfqp_src_new:'
+  
+  call this%err%werrfl2(class//sname//' started')
+
+  kstrt = this%p%getlkstrt()
+  nvp   = this%p%getlnvp()
+  pcu  => cu%getrf_gc()
+  pdcu => dcu%getrf_gc()
+  pamu => amu%getrf_gc()
+  psrc => src%getrf_gc()
+  nd1p = cu%getnd1p()
+  nd2p = cu%getnd2p()
+
+  select case ( order )
+  case ( p_fd_2order )
+    ! call bfqp_src_2order( pcu, pdcu, pamu, pbxy, psrc, nd1p, nd2p, dx, kstrt, nvp )
+    call bfqp_src_2order_new( pcu, pdcu, pamu, psrc, nd1p, nd2p, dx, kstrt, nvp )
+  case ( p_fd_4order )
+    ! call divf_dyad_4order( f, df, nd1p, nd2p, dx, kstrt, nvp )
+    call this%err%equit(class//sname//' bfqp_src_4order not implemented')
+  case default
+    call this%err%equit(class//sname//' invalid order')
+  end select
+
+  call this%err%werrfl2(class//sname//' ended')
+
+end subroutine select_bfqp_src_new
 
 subroutine select_smoothf( this, rspace, dspace, order )
 

@@ -1887,7 +1887,7 @@ c rot2 = omzt
       real dx, dy, dz, ox, oy, oz, acx, acy, acz
       real omxt, omyt, omzt
       real edgelx, edgely, edgerx, edgery
-      real x, y, x_temp, y_temp, px_temp, py_temp, pz_temp
+      real x, y, px_temp, py_temp, pz_temp
       real sfxy, sbxy, spsit
       dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
       double precision sum1, sum2
@@ -1912,7 +1912,7 @@ c rot2 = omzt
 !$OMP PARALLEL DO                                                       &
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,mnoff,x,y,dxp,dyp,amx,amy,  &
 !$OMP& dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,sum1,sfxy,sbxy,     &
-!$OMP& spsit, x_temp, y_temp, px_temp, py_temp, pz_temp,                &
+!$OMP& spsit, px_temp, py_temp, pz_temp,                                &
 !$OMP& qtmh1,qtmh2,p6,p7,dtc1) REDUCTION(+:sum2)
       do 60 k = 1, mxyp1
       noffp = (k - 1)/mx1
@@ -1950,9 +1950,6 @@ c rot2 = omzt
       y = ppart(2,j,k)
       nn = x
       mm = y
-     
-      x_temp = ppart(1,j,k)
-      y_temp = ppart(2,j,k)
 
       px_temp = ppart(3,j,k) !p1
       py_temp = ppart(4,j,k)
@@ -2022,15 +2019,15 @@ c rot2 = omzt
       ppart(3,j,k) = dx
       ppart(4,j,k) = dy
       ppart(5,j,k) = dz
-      ppart(11,j,k) = 0.5*(dx + ppart(11,j,k)) 
-      ppart(12,j,k) = 0.5*(dy + ppart(12,j,k))
-      ppart(13,j,k) = 0.5*(dz + ppart(13,j,k))
+      ppart(11,j,k) = px_temp 
+      ppart(12,j,k) = py_temp
+      ppart(13,j,k) = pz_temp
 ! update inverse gamma
-      dtc1 = 2.0*dt/(p6 - pz_temp*dex)
+      dtc1 = dt/(p6 - pz_temp*dex)
       ppart(6,j,k) = sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)
 ! new position
-      dx = ppart(9,j,k) + px_temp*dtc1
-      dy = ppart(10,j,k) + py_temp*dtc1
+      dx = x + 0.5*(dx + px_temp)*dtc1
+      dy = y + 0.5*(dy + py_temp)*dtc1
 
 ! reflecting boundary conditions
       if (ipbc.eq.2) then
@@ -2052,8 +2049,6 @@ c rot2 = omzt
 ! set new position
       ppart(1,j,k) = dx
       ppart(2,j,k) = dy
-      ppart(9,j,k) =  x_temp
-      ppart(10,j,k) = y_temp
    50 continue
       sum2 = sum2 + sum1
    60 continue
@@ -2429,7 +2424,7 @@ c rot2 = omzt
       real dx, dy, dz, ox, oy, oz, acx, acy, acz
       real omxt, omyt, omzt
       real anx, any, edgelx, edgely, edgerx, edgery
-      real x, y, x_temp, y_temp, px_temp, py_temp, pz_temp
+      real x, y, px_temp, py_temp, pz_temp
       real sfxy, sbxy, spsit
       dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
       double precision sum1, sum2
@@ -2444,7 +2439,7 @@ c rot2 = omzt
 !$OMP PARALLEL DO                                                       &
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,&
 !$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,edgelx,edgely,  &
-!$OMP& edgerx,x_temp, y_temp, px_temp, py_temp, pz_temp,                &
+!$OMP& edgerx, px_temp, py_temp, pz_temp,                               &
 !$OMP& edgery,sum1,sfxy,sbxy,spsit,qtmh1,qtmh2,p6,p7,dtc1)              &
 !$OMP& REDUCTION(+:sum2)
       do 70 k = 1, mxyp1
@@ -2492,8 +2487,8 @@ c rot2 = omzt
       y = ppart(2,j,k)
       nn = x
       mm = y
-      x_temp = ppart(1,j,k)
-      y_temp = ppart(2,j,k)
+      !x_temp = ppart(1,j,k)
+      !y_temp = ppart(2,j,k)
 
       px_temp = ppart(3,j,k)
       py_temp = ppart(4,j,k)
@@ -2567,16 +2562,16 @@ c rot2 = omzt
       ppart(12,j,k) = 0.5*(dy + ppart(12,j,k))
       ppart(13,j,k) = 0.5*(dz + ppart(13,j,k))
 ! update inverse gamma
-      dtc1 = 2.0*dt / (p6 - pz_temp*dex)
+      dtc1 = dt / (p6 - pz_temp*dex)
       ppart(6,j,k) = sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)
 ! new position
-      dx = ppart(9,j,k) + px_temp*dtc1
-      dy = ppart(10,j,k) + py_temp*dtc1
+      dx = ppart(1,j,k) + 0.5*(dx + px_temp)*dtc1
+      dy = ppart(2,j,k) + 0.5*(dy + py_temp)*dtc1
 ! set new position
       ppart(1,j,k) = dx
       ppart(2,j,k) = dy
-      ppart(9,j,k) = x_temp 
-      ppart(10,j,k) = y_temp 
+      !ppart(9,j,k) = x_temp 
+      !ppart(10,j,k) = y_temp 
 ! find particles going out of bounds
       mm = 0
 ! count how many particles are going in each direction in ncl
