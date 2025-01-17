@@ -326,9 +326,9 @@ subroutine select_bfqp_src_new( this, cu, dcu, amu, src, dx, order )
                                      pamu => null(), psrc => null()
 
   character(len=18), save :: sname = 'select_bfqp_src_new:'
-  
+ 
   call this%err%werrfl2(class//sname//' started')
-
+  
   kstrt = this%p%getlkstrt()
   nvp   = this%p%getlnvp()
   pcu  => cu%getrf_gc()

@@ -47,6 +47,7 @@
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
          type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, damu_t, damu_r, dcu_r, fxy_t, psit_t, qe_t, div_vpot_t, amu_r_t
+         type(field2d), allocatable :: dcu2, amu_r2
          type(field3d), allocatable :: bexyz_t, bbxyz_t, cu3d_t
 
          contains
@@ -283,7 +284,7 @@
          allocate(this%amu_r, this%damu_1, this%damu1, this%damu2)         
          allocate(this%bexyz, this%bbxyz)
          allocate(this%bxyz_t, this%cu_t, this%dcu_t, this%amu_t, this%damu_t, this%dcu_r, this%fxy_t, this%psit_t)
-         allocate(this%qe_t,this%div_vpot_t, this%amu_r_t, this%damu_r, this%cu_r, this%bfqp_rhs)   
+         allocate(this%qe_t,this%div_vpot_t, this%amu_r_t, this%damu_r, this%cu_r, this%bfqp_rhs, this%dcu2, this%amu_r2)   
          allocate(this%bexyz_t, this%bbxyz_t, this%cu3d_t)
          
 
@@ -321,16 +322,21 @@
          call this%div_vpot_t%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)                
          call this%fxy_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%cu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)      
-         call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         ! call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%dcu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
+         call this%dcu2%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)         
          call this%dcu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
+         call this%amu_r2%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%amu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         call this%amu_r_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         ! call this%amu_r_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
+         call this%amu_r_t%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%bxyz_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)         
          ! call this%damu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          ! call this%damu_r%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%damu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%damu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%cu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)          
+         ! call this%cu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)          
+         call this%cu_r%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%bfqp_rhs%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
 
          call input%get('simulation.nspecies',n)
@@ -446,7 +452,9 @@
          call this%dcu_t%del()
          call this%dcu_r%del()
          call this%amu_t%del()
-         call this%amu_r_t%del()     
+         call this%amu_r_t%del()
+         call this%amu_r2%del()
+         call this%dcu2%del()     
          call this%damu_t%del() 
          call this%damu_r%del()   
          call this%cu_r%del()
@@ -968,6 +976,8 @@
                   call this%fields%cu_fd%cb(this%fields%cu3d,j+1,(/1,2,3/),(/1,2,3/))
                end if
                ! write(2,*) this%fields%cu%getsum() , "cu-r-N"
+               call this%fields%cu_r%as(0.0)
+               call this%fields%cu_r%as(this%fields%cu_fd)               
 !cu is the normalized unit in k space.
                call this%fields%cu_fd%fftrk(1)
                ! write(2,*) this%fields%cu%getsum() , "cu-k-N"
@@ -1007,48 +1017,51 @@
                ! write(2,*) this%fields%amu%getsum() , "amu-r-N/dex^2"
 !amu=amu*dex，the amu is the normalized unit/dex in r space.
                call this%fields%amu%mult(this%fields%amu,this%dex)
-               call this%fields%amu_r%as(0.0)               
-               call this%fields%amu_r%as(this%fields%amu)
+               call this%fields%amu_r2%as(0.0)               
+               call this%fields%amu_r2%as(this%fields%amu)
+!amu=amu*dex，the amu is the normalized unit in r space.               
+               call this%fields%amu_r2%mult(this%fields%amu_r2,this%dex)
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            
                call this%fields%dcu%mult(this%fields%dcu,this%dex)
+               call this%fields%dcu2%as(0.0)               
+               call this%fields%dcu2%as(this%fields%dcu)               
                ! write(2,*) this%fields%dcu%getsum() , "dcu-r-N" 
 !amu is the normalized unit/dex in k space.           
                call this%fields%amu%fftrk(3) 
                call this%fields%damu%as(0.0)             
                call this%fields%damu%fftrk(2)
-               call this%fields%damu1%as(0.0)             
-               call this%fields%damu2%as(0.0)             
-               call this%fields%damu1%fftrk(2)
-               call this%fields%damu2%fftrk(2)            
+               ! call this%fields%damu1%as(0.0)             
+               ! call this%fields%damu2%as(0.0)             
+               ! call this%fields%damu1%fftrk(2)
+               ! call this%fields%damu2%fftrk(2)            
 !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
                !call this%fields%cu%bfqpn(this%fields%dcu,this%fields%amu,this%fields%damu,this%dex)
                call this%fields%cu_fd%bfqpn(this%fields%amu,this%fields%damu,this%dex)
-               call this%fields%amu%bfqpn_1(this%fields%damu1,this%dex)
-               call this%fields%cu_fd%bfqpn_2(this%fields%damu2,this%dex)    
-               call this%fields%damu1%fftkr(2) 
-               call this%fields%damu2%fftkr(2)      
-               call this%fields%damu_1%as(0.0)                       
-               call this%fields%damu_1%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))   
+               call this%fields%bfqp_rhs%as(0.0)
+               call this%fields%cu_r%bfqp_src( this%fields%dcu2, this%fields%amu_r2, this%fields%bfqp_rhs, this%dex, 1 )               
+               ! call this%fields%amu%bfqpn_1(this%fields%damu1,this%dex)
+               ! call this%fields%cu_fd%bfqpn_2(this%fields%damu2,this%dex)    
+               ! call this%fields%damu1%fftkr(2) 
+               ! call this%fields%damu2%fftkr(2)      
+               ! call this%fields%damu_1%as(0.0)                       
+               ! call this%fields%damu_1%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))   
                ! call this%fields%damu_1%fftkr(2)                                      
 !damu is the normalized unit in r space.               
                call this%fields%damu%fftkr(2)                                                       
                call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
                call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
-               call this%fields%damu_1%sub(this%fields%damu_1,this%fields%dcu,(/1/),(/1/),(/2/))
-               call this%fields%damu_1%add(this%fields%damu_1,this%fields%dcu,(/2/),(/2/),(/1/))               
+               ! call this%fields%damu_1%sub(this%fields%damu_1,this%fields%dcu,(/1/),(/1/),(/2/))
+               ! call this%fields%damu_1%add(this%fields%damu_1,this%fields%dcu,(/2/),(/2/),(/1/))               
                ! if (allocated(this%fields%cu3d)) then
                !    call this%fields%damu%cb(this%fields%cu3d,j+1,(/1,2/),(/1,2/))
                ! end if
-               ! write(2,*) this%fields%damu%getsum() , "damu-r-N-1"
                call this%fields%bxyzfd%as(0.0)   
-               ! call this%fields%damu%sum_ele((/1/),this%damux)
-               ! write(2,*) this%damux , "damu1-1"
-               ! call this%fields%damu%sum_ele((/2/),this%damuy)
-               ! write(2,*) this%damuy , "damu1-2"
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-               call this%fields%damu%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
+               ! call this%fields%damu%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
+               call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex)
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
-               call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+               ! call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
+               call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
                ! write(2,*) this%fields%damu%getsum() , "damu-r-N-2"
                ! call this%fields%damu%sum_ele((/1/),this%damux1)
                ! write(2,*) this%damux1 , "damu2-1"
@@ -1831,6 +1844,24 @@
                   if (allocated(ss)) deallocate(ss)
                   call this%in%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ss)
                   select case (trim(ss))
+                  case ('bfqp_rhs_x')
+                     sn1 = 'bfqp_rhs_x'
+                     sn2 = 'bfqp_rhs_x'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in x_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%bfqp_rhs
+                     dim2 = 1
+                  case ('bfqp_rhs_y')
+                     sn1 = 'bfqp_rhs_y'
+                     sn2 = 'bfqp_rhs_y'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Source in y_t'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%bfqp_rhs
+                     dim2 = 2      
                   case ('damu_rx')
                      sn1 = 'Damu_rx'
                      sn2 = 'damu_rx'

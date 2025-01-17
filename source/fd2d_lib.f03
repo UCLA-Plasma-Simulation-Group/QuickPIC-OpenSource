@@ -813,7 +813,10 @@ subroutine bfqp_src_2order_new( cu, dcu, amu, src, m, n, dx, kstrt, nvp )
   kl = 1; ku = n
   if ( kstrt == 1 ) kl = 2
   if ( kstrt == nvp ) ku = n-1
-
+  ! write(*,*) "m=", m
+  ! write(*,*) "n=", n
+  ! write(*,*) "kstrt=", kstrt
+  ! write(*,*) "ku=", ku
   ! interior
   do k = kl, ku
     do j = 2, m-1

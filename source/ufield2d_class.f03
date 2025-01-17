@@ -34,6 +34,7 @@
          integer :: nd1, nvpx, nd1p
          integer :: nd2, nvpy, nd2p
          integer, dimension(2) :: gc = (/0,0/) !
+         ! integer, dimension(2) :: gc
          integer :: gc_dir, lindex=0
          real, dimension(:,:,:), pointer :: rf => null(), buff => null()
 
@@ -136,7 +137,7 @@
             this%noff = (pp%getlkstrt()-1)*nd2/nvpy
             allocate(this%rf(dim,this%nd1p+2,this%nd2p*2+psp%getinorder()))
             ! allocate(this%rf(dim,this%nd1p+2,this%nd2p+psp%getinorder()))
-            !write(*,*) "nd1p", this%nd1p, this%nd2p*2+psp%getinorder()
+            ! write(*,*) "nd1p=", this%nd1p, this%nd2p, psp%getinorder()
             this%rf(:,:,:) = 0.0         
          case (1)
             this%nd1p = nd2/nvpy
@@ -212,11 +213,10 @@
             this%nd1p = nd1
             this%nd2p = nd2/nvpy
             this%noff = (pp%getlkstrt()-1)*nd2/nvpy
-            ! gc2 = max( gc2, psp%getinorder() )
             allocate( this%rf( dim, 1:this%nd1p+2, 1-gc1:this%nd2p+gc2 ) )
             this%lindex = -gc1
-            !write(*,*) "gc1", gc1, gc2, this%nd1p, this%nd2p
-            ! allocate( this%rf( dim, this%nd1p+2, this%nd2p+psp%getinorder() ) )
+            ! write(*,*) "(fd)gc1=", gc1, gc2, this%nd1p, this%nd2p
+            ! write(*,*) "(fd)psp%getinorder=", psp%getinorder()            
             this%rf(:,:,:) = 0.0         
          case (1)
             this%nd1p = nd2/nvpy
@@ -709,7 +709,7 @@
          
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)
+         do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
                do i = 1, size(rf1,1)
                   rf1(i,j,k) = rf2(i,j,k) + rf3(i,j,k)

@@ -136,7 +136,7 @@
          indy = psp%getindy()         
          nd1 = 2**indx
          nd2 = 2**indy
-         ! write(*,*) "this%gcells=", this%gcells 
+         ! write(*,*) "init_field2d_this%gcells=", this%gcells 
          allocate(this%rs)
          
          call this%rs%new(pp,perr,psp,dim,0,0,nvpy)
@@ -873,15 +873,12 @@
 
          call cu%err%werrfl2(class//sname//' started')
          call cu%err%add_profile( 'solve_fd_start' )
-         write(*,*) "111"
          if ( (cu%state /= 0) .or. (dcu%state /= 0) .or. (amu%state /= 0) &
             ) then
             call cu%err%equit(class//sname//'data is in ks')
             return
-         endif
-         write(*,*) "222"
+         endif 
          call cu%fd%bfqp_src_new( cu%rs, dcu%rs, amu%rs, src%rs, dx, order )
-         write(*,*) "333"
          src%state = 0
 
          call cu%err%add_profile( 'solve_fd_end' )
