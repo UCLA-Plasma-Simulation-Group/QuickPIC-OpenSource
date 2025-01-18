@@ -142,9 +142,9 @@
 
          generic :: new => init_simulation
          generic :: del => end_simulation
-         ! generic :: go => go_simulation_2
+         generic :: go => go_simulation_2
          ! generic :: go => go_simulation_1
-         generic :: go => go_simulation_3
+         ! generic :: go => go_simulation_3
 
          procedure, private :: init_simulation, end_simulation
          procedure, private :: init_diag, diag_simulation
@@ -1681,6 +1681,15 @@
                      call this%in%get('species('//trim(s1)//').diag'//'('//trim(s2)//').name'&
                      &//'('//trim(s3)//')',ss)
                      select case (trim(ss))
+                     case ('cu_rz')
+                        sn1 = 'Cu_rz'
+                        sn2 = 'cu_rz'
+                        sn3 = 'mc\omega_p/e'
+                        sn4 = 'J in z'
+                        dim = 1
+                        obj => this%fields%cu3d
+                        obj2 => this%fields%cu_r
+                        dim2 = 3                         
                      case ('jx_t')
                         sn1 = 'Jx_t'
                         sn2 = 'jx_t'
@@ -1843,7 +1852,52 @@
                   write (s2, '(I4.4)') j
                   if (allocated(ss)) deallocate(ss)
                   call this%in%get('field.diag('//trim(s1)//').name('//trim(s2)//')',ss)
-                  select case (trim(ss))
+                  select case (trim(ss))    
+                  case ('amu_r2x')
+                     sn1 = 'Amu_r2x'
+                     sn2 = 'amu_r2x'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu_r2 in x'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_r2
+                     dim2 = 1
+                  case ('amu_r2y')
+                     sn1 = 'Amu_r2y'
+                     sn2 = 'amu_r2y'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu_r2 in y'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_r2
+                     dim2 = 2 
+                  case ('amu_r2z')
+                     sn1 = 'Amu_r2z'
+                     sn2 = 'amu_r2z'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Amu_r2 in z'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%amu_r2
+                     dim2 = 3             
+                  case ('dcu2x')
+                     sn1 = 'Dcu2x'
+                     sn2 = 'dcu2x'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Dcu2 in x'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%dcu2
+                     dim2 = 1
+                  case ('dcu2y')
+                     sn1 = 'Dcu2y'
+                     sn2 = 'dcu2y'
+                     sn3 = 'mc\omega_p/e'
+                     sn4 = 'Dcu2 in y'
+                     dim = 1
+                     obj => this%fields%bexyz
+                     obj2 => this%fields%dcu2
+                     dim2 = 2                                         
                   case ('bfqp_rhs_x')
                      sn1 = 'bfqp_rhs_x'
                      sn2 = 'bfqp_rhs_x'
