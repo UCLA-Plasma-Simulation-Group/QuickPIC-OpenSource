@@ -36,7 +36,7 @@ character(len=128), save :: erstr
 
 real, dimension(:), pointer :: values => null()
 
-public :: fpois2d_mg, get_poismg2table
+public :: fpois2d_mg, get_poismg2table, get_poismg2table_fd
 
 type :: fpois2d_mg
 
@@ -213,7 +213,8 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   this%order = order
   this%solver_type = solver_type
   this%tol = tol
-  dex = 0.046875
+  ! dex = 0.046875
+  dex = 0.023437
   if ( present(precond_type) ) then
     this%precond_type = precond_type
   else
@@ -235,7 +236,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   ! if (.not. associated(values)) allocate( values( ndp(1)*ndp(2)*this%stencil_num ) )
   if (.not. associated(values)) allocate( values( (ndp(1)+1)*(ndp(2)+1)*this%stencil_num ) )
   ! set up HYPRE matrix
-  j = 3
+  do j = 1, 3
     do i = 1, 4
       call HYPRE_StructMatrixCreate( this%p%getlgrp(), this%grid, this%stencil, this%A(i,j), ierr )
       call HYPRE_StructMatrixInitialize( this%A(i,j), ierr )
@@ -245,7 +246,7 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
       call setvalue_hypre_matrix_bnd( this%A(i,j), this%order, this%ilower, this%iupper, p_bnd(i), this%phys_bnd_flag, dex )
       call HYPRE_StructMatrixAssemble( this%A(i,j), ierr )
     enddo
-  
+  enddo
 
   ! set up HYPRE vector
   call HYPRE_StructVectorCreate( this%p%getlgrp(), this%grid, this%b, ierr )
@@ -255,11 +256,12 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   call HYPRE_StructVectorInitialize( this%x, ierr )
 
   ! set up solver
-  j = 3
+  do j = 1, 3
     do i = 1, 4
       call setup_hypre_solver( this%p%getlgrp(), this%solver(i,j), this%A(i,j), this%b, this%x, &
       solver_type, maxiter, n_pre, n_post, tol, this%precond(i,j), this%precond_type )
     enddo
+  enddo
 
   call perr%werrfl2( class//sname//' ended' )
 
@@ -1486,18 +1488,6 @@ subroutine set_hypre_src( this, rspace, dim )
   nd1p = rspace%getnd1p()
   nd2p = rspace%getnd2p()
 
-  ! nd1p = rspace%getnd1p() + 1
-  ! nd2p = rspace%getnd2p() + 1
-  ! write(*,*) "nd1p=", nd1p
-  ! write(*,*) "nd2p=", nd2p
-  ! f(1,1,:) = 0
-  ! f(1,257,:) = 0
-  ! f(1,:,1) = 0
-  ! f(1,:,257) = 0
-  ! f(2,1,:) = 0
-  ! f(2,257,:) = 0
-  ! f(2,:,1) = 0
-  ! f(2,:,257) = 0
   k = 1
   do j = 1, nd2p
     do i = 1, nd1p
@@ -1505,14 +1495,7 @@ subroutine set_hypre_src( this, rspace, dim )
       k = k + 1
     enddo
   enddo
-  ! write(2,*) "f(1,1,:)=", f(1,1,:) 
-  ! write(2,*) "f(1,257,:)=", f(1,257,:)
-  ! write(2,*) "f(1,:,1)=", f(1,:,1)  
-  ! write(2,*) "f(1,:,257)=", f(1,:,257)  
-  ! write(2,*) "f(2,1,:)=", f(2,1,:) 
-  ! write(2,*) "f(2,257,:)=", f(2,257,:)  
-  ! write(2,*) "f(2,:,1)=", f(2,:,1)
-  ! write(2,*) "f(2,:,257)=", f(2,:,257) 
+
   call HYPRE_StructVectorSetBoxValues( this%b, this%ilower, this%iupper, values, ierr )
 
   call this%err%werrfl2( class//sname//' ended' )
@@ -1533,16 +1516,22 @@ subroutine solve_hypre_poisson( this, src, sol, bnd_types, stencil_kind )
   character(len=18), save :: sname = 'solve_hypre_poisson:'
 
   call this%err%werrfl2( class//sname//' started' )
-  !write(*,*) "bnd_types",bnd_types
+  ! write(*,*) "bnd_types",bnd_types
   ndim = size( bnd_types )
-  !write(*,*) "ndim",ndim, stencil_kind
   l = stencil_kind
-  !write(*,*) "solve_hypre_poisson1"
+  ! write(*,*) "solve_hypre_poisson1"
   do dim = 1, ndim
 
     k = bnd_types(dim) 
     call this%set_src( src, dim )
-    !write(*,*) "solve_hypre_poisson2"
+    ! write(*,*) "A(k,l) = ", this%A(k,l)
+    ! write(*,*) "b = ", this%b
+    ! write(*,*) "x = ", this%x
+    ! write(*,*) "solver(k,l) = ", this%solver(k,l)
+    ! if (this%solver(k,l) == 0) then
+    !     write(*,*) "Error: Solver not initialized for k = ", k, ", l = ", l
+    !     stop
+    ! end if
     select case ( this%solver_type )
     case ( p_solver_smg )
       call HYPRE_StructSMGSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )
@@ -1555,7 +1544,7 @@ subroutine solve_hypre_poisson( this, src, sol, bnd_types, stencil_kind )
     case ( p_solver_bicgstab )
       call HYPRE_StructBICGSTABSolve( this%solver(k,l), this%A(k,l), this%b, this%x, ierr )            
     end select
-    
+    ! write(*,*) "ndim",ndim, stencil_kind
     call this%get_sol( sol, dim )
 
   enddo
@@ -1628,7 +1617,85 @@ end function reshape_array
 
 ! end subroutine print_x
 
-function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
+function get_poismg2table( pp, perr, psp, order ) result(table)
+! this function gets an fft table entry, either creates one or points
+! to one if the required table already exists for real to complex ffts
+  implicit none
+  class(perrors), intent(in), pointer :: perr
+  class(parallel_pipe), intent(in), pointer :: pp
+  class(spect2d), intent(in), pointer :: psp
+  integer, intent(in) :: order
+  type(fpois2d_mg), pointer :: table
+
+  ! local data
+  type(fpois2d_mg_link), pointer :: link => null()
+  type(fpois2d_mg), pointer :: ltable => null()
+  integer :: solver_type, precond_type
+  integer, dimension(2) :: nd, ndp, noff, nvp
+  real :: dex, mg_prec
+  character(len=18), save :: sname = 'get_poismg2table:'
+
+  call perr%werrfl2(class//sname//' started')
+
+  nvp(1) = 1
+  nvp(2) = pp%getlnvp()
+  nd(1) = 2**psp%getindx()
+  nd(2) = 2**psp%getindy()
+  ndp(1) = nd(1)/nvp(1)
+  ndp(2) = nd(2)/nvp(2)
+  noff(1) = 0
+  noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
+  dex = psp%getdex()
+  mg_prec = psp%getmg_prec()
+  solver_type = psp%getmg_type()
+  precond_type = 1 ! SMG preconditioner
+
+  nullify(table)         
+
+  if ( numtables == 0 ) then
+    nullify( table_list%next, table_list%table )         
+    table_list%refcount = 0
+  endif
+  link => table_list
+  table => link%table
+  ! search link list of table to see if required table already exists
+  do while ( associated(table) )
+  ! found it
+    if ( order == table%order &
+      .and. solver_type == table%solver_type &
+      .and. precond_type == table%precond_type &
+      .and. mg_prec == table%tol ) then
+
+      link%refcount = link%refcount + 1
+      call perr%werrfl2(class//sname//' ended')
+      return
+  ! check next table, create new empty table if end is reached
+    else
+      if (associated(link%next)) then
+        link => link%next
+      else
+        allocate(link%next)
+        link => link%next
+        nullify(link%next,link%table)
+        link%refcount = 0
+      endif
+      table => link%table
+    endif
+  end do
+  ! allocate table entries
+  allocate(ltable)
+  link%table => ltable
+  table => link%table
+  call table%new(pp, perr, noff, nd, ndp, order, dex, solver_type, &
+    precond_type, mg_prec)
+  link%refcount = 1
+  numtables = numtables + 1
+
+  call perr%werrfl2(class//sname//' ended')
+
+end function get_poismg2table
+
+function get_poismg2table_fd( pp, perr, psp, order, uqe, upsi ) result(table)
 ! this function gets an fft table entry, either creates one or points
 ! to one if the required table already exists for real to complex ffts
   implicit none
@@ -1649,7 +1716,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   
   integer, dimension(2) :: nd, ndp, noff, nvp
   real :: dex, mg_prec
-  character(len=18), save :: sname = 'get_poismg2table:'
+  character(len=18), save :: sname = 'get_poismg2table_fd:'
 
   call perr%werrfl2(class//sname//' started')
 
@@ -1661,12 +1728,7 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
   ndp(2) = nd(2)/nvp(2)
   noff(1) = 0
   noff(2) = ( pp%getlkstrt()-1 ) * ndp(2)
-  ! write(*,*) "nvp2", nvp(2) 2
-  !write(2,*) dex, "dexa" 0
-  ! write(*,*) "noff(2)", noff(2)
   dex = psp%getdex()
-  !write(2,*) dex, "dexb" 0
-  ! dex = 0.0468
   mg_prec = psp%getmg_prec()
   solver_type = psp%getmg_type()
   precond_type = 1 ! SMG preconditioner
@@ -1719,6 +1781,6 @@ function get_poismg2table( pp, perr, psp, order, uqe, upsi ) result(table)
 
   call perr%werrfl2(class//sname//' ended')
 
-end function get_poismg2table
+end function get_poismg2table_fd
 
 end module fpois2d_mg_class

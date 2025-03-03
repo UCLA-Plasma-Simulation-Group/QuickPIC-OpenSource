@@ -40,7 +40,7 @@
          contains
          
          generic :: new => init_field2d
-         ! generic :: new_ff => init_field2d_ff
+         generic :: new_ff => init_field2d_ff
          generic :: new_fd => init_field2d_fd
          generic :: renew_fd => renew_field2d_fd
          generic :: del => end_field2d
@@ -51,6 +51,7 @@
          generic :: div_fd => divf_field2d_fd
          generic :: grad_fd => gradf_field2d_fd         
          generic :: curl => curlf_field2d
+         generic :: curlz => curlfz_field2d_fd         
          generic :: pot => potential_field2d
          generic :: vpot => vpotential_field2d
          generic :: smooth => smoothf_field2d
@@ -78,9 +79,9 @@
          generic :: bfqp_src => bfield_qp_source_fd         
 
          ! procedure, private :: init_field2d, end_field2d
-         procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd
+         procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd, init_field2d_ff
          procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
-         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
+         procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, curlfz_field2d_fd
          ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d,divf_field2d_new_cu
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
          !procedure, private :: bfield_qp_field2d, copyguard_field2d
@@ -158,103 +159,103 @@
 
       end subroutine init_field2d
 !
-!       subroutine init_field2d_ff(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
+      subroutine init_field2d_ff(this,pp,perr,psp,dim,fftflag,state,gcells,algorithm)
 
-! ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
-!          implicit none
+! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
+         implicit none
          
-!          class(field2d), intent(inout) :: this
-!          class(spect2d), intent(in), pointer :: psp
-!          class(perrors), intent(in), pointer :: perr
-!          class(parallel_pipe), intent(in), pointer :: pp
-!          integer, intent(in) :: dim
-!          logical, intent(in) :: fftflag
-!          integer, intent(in), optional :: state, gcells, algorithm
-! ! local data
-!          character(len=18), save :: sname = 'init_field2d_ff:'
-!          integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
-!          integer, dimension(2) :: gc
-!          integer :: gc_dir
+         class(field2d), intent(inout) :: this
+         class(spect2d), intent(in), pointer :: psp
+         class(perrors), intent(in), pointer :: perr
+         class(parallel_pipe), intent(in), pointer :: pp
+         integer, intent(in) :: dim
+         logical, intent(in) :: fftflag
+         integer, intent(in), optional :: state, gcells, algorithm
+! local data
+         character(len=18), save :: sname = 'init_field2d_ff:'
+         integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
+         integer, dimension(2) :: gc
+         integer :: gc_dir
          
-!          inorder = psp%getinorder()
+         inorder = psp%getinorder()
 
-!          this%err => perr
-!          call this%err%werrfl2(class//sname//' started')
+         this%err => perr
+         call this%err%werrfl2(class//sname//' started')
 
-!          this%sp => psp
-!          this%p => pp
-!          if (present(state)) then
-!             this%state = state
-!          else
-!             this%state = 0
-!          endif
-!          if (present(gcells)) then
-!             this%gcells = gcells
-!          else
-!             this%gcells = 0
-!          endif
+         this%sp => psp
+         this%p => pp
+         if (present(state)) then
+            this%state = state
+         else
+            this%state = 0
+         endif
+         if (present(gcells)) then
+            this%gcells = gcells
+         else
+            this%gcells = 0
+         endif
 
-!          ! determine the guard cells according to solver type and interpolation order
-!          if (present(algorithm)) then
-!             select case (algorithm)
-!             ! spectral solver
-!             case (0)
-!                gc(1) = inorder - 1
-!                gc(2) = inorder
-!                gc_dir = 0
-!             ! second order finite difference
-!             case (1)
-!                gc(1) = max( inorder-1, 1 )
-!                gc(2) = max( inorder, 1 )
-!                gc_dir = 2
-!             ! fourth order finite difference
-!             case (2)
-!                gc(1) = max( inorder-1, 2 )
-!                gc(2) = max( inorder, 2 )
-!                gc_dir = 2
-!             case default
-!                call this%err%equit(class//sname//' invalid algorithm')
-!             end select
-!             alg = algorithm
-!          else
-!             gc(1) = inorder - 1
-!             gc(2) = inorder
-!             alg = 0
-!             gc_dir = 0
-!          endif
+         ! determine the guard cells according to solver type and interpolation order
+         if (present(algorithm)) then
+            select case (algorithm)
+            ! spectral solver
+            case (0)
+               gc(1) = inorder - 1
+               gc(2) = inorder
+               gc_dir = 0
+            ! second order finite difference
+            case (1)
+               gc(1) = max( inorder-1, 1 )
+               gc(2) = max( inorder, 1 )
+               gc_dir = 2
+            ! fourth order finite difference
+            case (2)
+               gc(1) = max( inorder-1, 2 )
+               gc(2) = max( inorder, 2 )
+               gc_dir = 2
+            case default
+               call this%err%equit(class//sname//' invalid algorithm')
+            end select
+            alg = algorithm
+         else
+            gc(1) = inorder - 1
+            gc(2) = inorder
+            alg = 0
+            gc_dir = 0
+         endif
             
-!          nvpy = pp%getlnvp()
-!          indx = psp%getindx()
-!          indy = psp%getindy()         
-!          nd1 = 2**indx
-!          nd2 = 2**indy
+         nvpy = pp%getlnvp()
+         indx = psp%getindx()
+         indy = psp%getindy()         
+         nd1 = 2**indx
+         nd2 = 2**indy
          
-!          allocate(this%rs)
-!          call this%rs%new(pp,perr,psp,dim,0,0,nvpy,gc,gc_dir)
+         allocate(this%rs)
+         call this%rs%new_fd(pp,perr,psp,dim,0,0,nvpy,gc,gc_dir)
 
-!          ! create finite difference
-!          allocate( this%fd )
-!          call this%fd%new( pp, perr, kind=0 )
+         ! create finite difference
+         allocate( this%fd )
+         call this%fd%new( pp, perr, kind=0 )
 
-!          ! 2nd order multigrid solver
-!          this%pt_mg => get_poismg2table( pp, perr, psp, 1 )
+         ! 2nd order multigrid solver
+         this%pt_mg => get_poismg2table( pp, perr, psp, 1 )
          
-!          if (fftflag) then
-!             allocate(this%ks)
-!             call this%ks%new(pp,perr,psp,dim,1,nd1,nd2,0,nvpy)
-!             select case (psp%getpsolver())
-!             case (1)
-!                this%ft => get_fft2table(pp,perr,psp,indx,indy)
-!                this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
-!             case default
-!                this%ft => get_fft2table(pp,perr,psp,indx,indy)
-!                this%pt => get_pois2table(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
-!             end select
-!          endif
+         if (fftflag) then
+            allocate(this%ks)
+            call this%ks%new(pp,perr,psp,dim,1,nd1,nd2,0,nvpy)
+            select case (psp%getpsolver())
+            case (1)
+               this%ft => get_fft2table(pp,perr,psp,indx,indy)
+               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+            case default
+               this%ft => get_fft2table(pp,perr,psp,indx,indy)
+               this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
+            end select
+         endif
 
-!          call this%err%werrfl2(class//sname//' ended')
+         call this%err%werrfl2(class//sname//' ended')
 
-!       end subroutine init_field2d_ff
+      end subroutine init_field2d_ff
 !
       subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,algorithm)
 
@@ -340,7 +341,7 @@
          ! 2nd order multigrid solver
          uqe => qe1%getrs()
          upsi => psi%getrs()
-         this%pt_mg => get_poismg2table( pp, perr, psp, 1, uqe, upsi)
+         this%pt_mg => get_poismg2table_fd( pp, perr, psp, 1, uqe, upsi)
          
          if (fftflag) then
             allocate(this%ks)
@@ -647,7 +648,33 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine curlf_field2d      
-!            
+!           
+      subroutine curlfz_field2d_fd(this,that,dx,order)
+      
+         implicit none
+         
+         class(field2d), intent(inout) :: this,that
+         real, intent(in) :: dx
+         integer, intent(in) :: order
+         character(len=18), save :: sname = 'curlfz_field2d_fd:'
+
+         call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'solve_fd_start' )
+         
+         if (this%state /= 0) then 
+            call this%err%equit(class//sname//'data is in ks')
+            return
+         endif
+         
+         call this%fd%curlfz(this%rs,that%rs,dx,order)
+
+         that%state = 0
+         
+         call this%err%add_profile( 'solve_fd_end' )
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine curlfz_field2d_fd
+!       
       subroutine potential_field2d(this,that)
       
          implicit none
@@ -710,9 +737,9 @@
             call this%err%equit( class//sname//'data is in ks' )
             return
          endif
-         !write(*,*) "solve1", bnd, stencil_kind
+         ! write(*,*) "solve1", bnd, stencil_kind
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
-         !write(*,*) "solve2"
+         ! write(*,*) "solve2"
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
 
