@@ -213,8 +213,8 @@ subroutine init_fpois2d_mg_explicit(this, pp, perr, noff, nd, ndp, order, dex, s
   this%order = order
   this%solver_type = solver_type
   this%tol = tol
-  ! dex = 0.046875
-  dex = 0.023437
+  dex = 0.046875 !indz=8
+  ! dex = 0.023437 !indz=9
   if ( present(precond_type) ) then
     this%precond_type = precond_type
   else

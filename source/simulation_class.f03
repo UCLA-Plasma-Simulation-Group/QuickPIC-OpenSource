@@ -309,9 +309,6 @@
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
 
-         ! call this%cu_curl_z%new_ff(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=0)   
-         ! call this%bz%new_ff(this%p,this%err,this%sp2,dim=1,fftflag=.false.,algorithm=0)
-
          call this%cu_curl_z%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,qe1=this%qe1,psi=this%psi,algorithm=1)   
          call this%bz%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
 
