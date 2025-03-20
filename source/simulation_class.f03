@@ -1003,22 +1003,22 @@
                call this%fields%psit%fftkr(1)
                !write(2,*) this%fields%psit%getsum() , "psit"
                call this%fields%bxyz%as(0.0)
-! !Bz of plasma, bxyz is the normalized unit/dex in k space.               
-!                call this%fields%cu_fd%bf(this%fields%bxyz)
-! !Bz is the normalized unit in k space.             
-!                call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
+!Bz of plasma, bxyz is the normalized unit/dex in k space.               
+               call this%fields%cu_fd%bf(this%fields%bxyz)
+!Bz is the normalized unit in k space.             
+               call this%fields%bxyz%mult(this%fields%bxyz,(/3/),(/3/),(/this%dex/))
 
-            ! solve B_z using Poisson solver (Eq.[17] in ref. [1])
-               call this%fields%cu_curl_z%as(0.0)
-               call this%fields%cu_r%curlz(this%fields%cu_curl_z, this%dex, 1)
-               call this%fields%bz%as(0.0)         
-               call this%fields%cu_curl_z%solve_mg(this%fields%bz,(/4/),1) ! Neumann-Neumann, Poisson
+            ! ! solve B_z using Poisson solver (Eq.[17] in ref. [1])
+            !    call this%fields%cu_curl_z%as(0.0)
+            !    call this%fields%cu_r%curlz(this%fields%cu_curl_z, this%dex, 1)
+            !    call this%fields%bz%as(0.0)         
+            !    call this%fields%cu_curl_z%solve_mg(this%fields%bz,(/4/),1) ! Neumann-Neumann, Poisson
 
 !Bx=-Ey(beam)=Bx(beam),By=Ex(beam)=By(beam),Bx and By are the normalized unit/dex in k space.               
                call this%fields%bxyz%mult(this%fields%epwb,(/1,2/),(/2,1/),(/-1.0,1.0/))
 !Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
                call this%fields%bxyz%fftkr(2)
-               call this%fields%bxyz%mult(this%fields%bz,(/3/),(/1/),(/-1.0/))
+               ! call this%fields%bxyz%mult(this%fields%bz,(/3/),(/1/),(/-1.0/))
 
                call this%fields%dcu%as(0.0)
                call this%fields%amu%as(0.0)              

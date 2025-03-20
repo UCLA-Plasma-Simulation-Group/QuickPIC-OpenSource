@@ -739,6 +739,7 @@
          endif
          ! write(*,*) "solve1", bnd, stencil_kind
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
+         call this%rs%cg()         
          ! write(*,*) "solve2"
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
