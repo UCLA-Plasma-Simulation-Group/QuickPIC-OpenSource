@@ -724,7 +724,7 @@
 
             do l =  1, this%nspecies
                this%tag_spe(l) = ntag()
-               call this%species%spe(l)%precv(this%tag_spe(l))
+               if (i /= 1) call this%species%spe(l)%precv(this%tag_spe(l))
             end do
             this%tag(3) = ntag()
             call this%fields%cu%precv(this%tag(3))
@@ -751,10 +751,14 @@
                      call MPI_WAIT(this%id_bq(m,2),istat,ierr)
                   end do
                endif
+
                call this%fields%qb%as(0.0)
-               do m = 1, this%nbeams
-                  call this%beams%beam(m)%qdp(this%fields%qb,j+1)
-               end do
+               if (i == 1) then 
+                  do m = 1, this%nbeams
+                     call this%beams%beam(m)%qdp(this%fields%qb,j+1)
+                  end do
+               endif
+
                call this%fields%qb%fftrk(1)
                call this%fields%qb%elf(this%fields%epwb)
                call this%fields%qe%as(0.0)
@@ -863,7 +867,7 @@
 
             do m = 1, this%nspecies
                call MPI_WAIT(this%id_spe(m),istat,ierr)
-               call this%species%spe(m)%renew(i*this%dt)
+               ! call this%species%spe(m)%renew(i*this%dt)
             end do
          end do
 

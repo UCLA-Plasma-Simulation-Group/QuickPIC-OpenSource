@@ -832,11 +832,15 @@
          call this%err%werrfl2(class//sname//' started')
          
          des = this%p%getidproc()+this%p%getlnvp()
-         
+
          if (des >= this%p%getnvp()) then
-            id = MPI_REQUEST_NULL         
-            call this%err%werrfl2(class//sname//' ended')
-            return
+            if (this%p%getnstage() == 1) then
+               id = MPI_REQUEST_NULL         
+               call this%err%werrfl2(class//sname//' ended')
+               return
+            else
+               des = des - this%p%getnvp()
+            endif
          endif
          
          call this%pcb()
@@ -872,8 +876,12 @@
          des = this%p%getidproc()-this%p%getlnvp()
          
          if (des < 0) then
-            call this%err%werrfl2(class//sname//' ended')
-            return
+            if (this%p%getnstage() == 1) then            
+               call this%err%werrfl2(class//sname//' ended')
+               return
+            else
+               des = des + this%p%getnvp()
+            endif
          endif
 
          call MPI_IRECV(this%part,this%npmax*this%xdim,this%p%getmreal(),&
