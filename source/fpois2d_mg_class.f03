@@ -1314,7 +1314,7 @@ subroutine setup_hypre_solver( comm, solver, A, b, x, type_, maxiter, n_pre, n_p
 
   case ( p_solver_pcg )
 
-    print *, 'Using PCG solver'
+    ! print *, 'Using PCG solver'
     call HYPRE_StructPCGCreate( comm, solver, ierr )
     call HYPRE_StructPCGSetMaxIter( solver, maxiter, ierr )
     call HYPRE_StructPCGSetTol( solver, tol, ierr )
