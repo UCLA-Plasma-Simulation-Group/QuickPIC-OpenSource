@@ -461,7 +461,6 @@
          pt => part2d
 ! initialize the particle positions
          if (noff < ny) then
-         print*,"1"
          do i=2, nx-1
             do j=2, ny
                do ix = 0, xppc-1
@@ -480,7 +479,6 @@
             enddo
          enddo
          else if (noff > (nx-ny-1)) then       
-         print*,"2"
          do i=2, nx-1
             do j=1, ny-1
                do ix = 0, xppc-1
@@ -499,7 +497,6 @@
             enddo
          enddo
          else
-         print*,"3"
          do i=2, nx-1
             do j=1, ny
                do ix = 0, xppc-1
