@@ -1209,8 +1209,12 @@ c find magnetic field
      2,lp,m) + amy*bxyz(2,np,mm,lp,m) + dyp*bxyz(2,nn,mp,lp,m) + dx1*bxy
      3z(2,np,mp,lp,m))
      
-      dx = dx - oy
-      dy = dy + ox
+c     dx = dx - oy
+c     dy = dy + ox
+
+      dx = 0
+      dy = -0.05577
+      dz = 0  
 
       delx = qtmh*dx
       dely = qtmh*dy
@@ -1367,8 +1371,12 @@ c find magnetic field
      2,lp,m) + amy*bxyz(2,np,mm,lp,m) + dyp*bxyz(2,nn,mp,lp,m) + dx1*bxy
      3z(2,np,mp,lp,m))
      
-      dx = dx - oy
-      dy = dy + ox
+c     dx = dx - oy
+c     dy = dy + ox
+
+      dx = 0
+      dy = -0.05577
+      dz = 0 
 
       delx = qtmh*dx
       dely = qtmh*dy
