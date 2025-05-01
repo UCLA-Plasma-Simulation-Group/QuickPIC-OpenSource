@@ -1750,14 +1750,7 @@ c nyd = first dimension of form factor array, must be >= ny
       ks = kstrt - 2
       ny1 = ny + 1
       dnx = 6.28318530717959/float(nx + nx)
-      dny = 6.28318530717959/float(ny + ny)
-      write(2,*) "nx1=", nx
-      write(2,*) "ny1=", ny
-      write(2,*) "dnx1=", dnx
-      write(2,*) "dny1=", dny    
-      write(2,*) "j1=", j
-      write(2,*) "joff1=", joff   
-      write(2,*) "k1=", k           
+      dny = 6.28318530717959/float(ny + ny)    
 
       do 160 l = 1, j2blok
 c mode numbers 0 < kx < nx and 0 < ky < ny

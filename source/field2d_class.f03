@@ -67,7 +67,7 @@
          generic :: precv => piperecv_field2d
          generic :: cp => copyfrom
          generic :: ca => copyadd
-         generic :: cb => copyto, copyto_2d
+         generic :: cb => copyto
          generic :: as => asc, asa
          generic :: add => sum1, sum2
          generic :: sub => minus1, minus2
@@ -75,7 +75,6 @@
          generic :: mult3 => multiply3
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
-         generic :: sum_ele => sum_elements
          generic :: bfqp_src => bfield_qp_source_fd         
 
          ! procedure, private :: init_field2d, end_field2d
@@ -89,9 +88,9 @@
          procedure, private :: acopyguard_field2d, pipesend_field2d, bfield_qp_new2_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2, multiply3
-         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d, copyto_2d
+         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
          procedure :: getstate, getgcells, getrs, getks, getsum
-         procedure, private :: solve_field2d_mg, sum_elements, bfield_qp_source_fd
+         procedure, private :: solve_field2d_mg, bfield_qp_source_fd
          procedure, private :: gradf_amu_field2d, gradf_cu_field2d, divf_field2d_fd, gradf_field2d_fd          
 
       end type 
@@ -1137,38 +1136,6 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyadd
-!
-      subroutine copyto_2d(this,a1,dim,dim1) 
-
-         implicit none
-         
-         class(field2d), intent(inout) :: this
-         class(field2d), intent(in) :: a1
-         integer, dimension(:), intent(in) :: dim, dim1
-         character(len=18), save :: sname = 'copyto_2d'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         if (this%state /= a1%state) then
-            call this%err%equit(class//sname//'states are different')
-            return
-         else if (this%state == 0) then
-            if (this%gcells /= a1%gcells) then
-               call this%err%equit(class//sname//'gcells are different')
-               return
-            else            
-               call this%rs%cb(a1%rs,dim,dim1)
-               this%state = 0
-               this%gcells = a1%gcells
-            endif
-         else
-            call this%ks%cb(a1%ks,dim,dim1)
-            this%state = 1         
-         endif
-         
-         call this%err%werrfl2(class//sname//' ended')
-                 
-      end subroutine copyto_2d
 !      
       subroutine asa(this,that) 
 
@@ -1407,27 +1374,6 @@
                  
       end subroutine writehdf5_field2d
 !
-      subroutine sum_elements(this,dim,result) 
-
-         implicit none
-         
-         class(field2d), intent(inout) :: this
-         integer, dimension(:), intent(in) :: dim
-         real, intent(out) :: result
-         character(len=18), save :: sname = 'sum_elements:'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         if (this%state == 0) then
-            call this%rs%sum_ele(dim,result)                       
-         else
-            call this%ks%sum_ele(dim,result)        
-         endif
-         
-         call this%err%werrfl2(class//sname//' ended')
-                 
-      end subroutine sum_elements
-!
       function getstate(this)
 
          implicit none
@@ -1486,18 +1432,4 @@
          endif
       end function getsum
 !     
-      ! function getsum(this)
-
-      !    implicit none
-
-      !    class(field2d), intent(in) :: this
-      !    real :: getsum
-
-      !    if (this%state == 0) then
-      !       getsum = sum(abs(this%rs%getrf()))            
-      !    else
-      !       getsum = sum(abs(this%ks%getrf())) 
-      !    endif
-      ! end function getsum
-!
     end module field2d_class
