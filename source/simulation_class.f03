@@ -43,10 +43,10 @@
          type(field2d), allocatable :: qb, qe, qe1, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
          type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, cu_fd, dcu, amu, damu, epw, epwb, vpot, cu_curl_z, bz 
-         type(field2d), allocatable :: amu_r, damu_1, damu1, damu2, cu_r, bfqp_rhs               
+         type(field2d), allocatable :: cu_r, bfqp_rhs               
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
-         type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, damu_t, damu_r, dcu_r, fxy_t, psit_t, qe_t, div_vpot_t, amu_r_t
+         type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, fxy_t, psit_t, qe_t, div_vpot_t, amu_r_t
          type(field2d), allocatable :: dcu2, amu_r2
          type(field3d), allocatable :: bexyz_t, bbxyz_t, cu3d_t
 
@@ -280,11 +280,10 @@
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%cu_fd, this%cu_curl_z, this%bz)
-         allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)
-         allocate(this%amu_r, this%damu_1, this%damu1, this%damu2)         
+         allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)       
          allocate(this%bexyz, this%bbxyz)
-         allocate(this%bxyz_t, this%cu_t, this%dcu_t, this%amu_t, this%damu_t, this%dcu_r, this%fxy_t, this%psit_t)
-         allocate(this%qe_t,this%div_vpot_t, this%amu_r_t, this%damu_r, this%cu_r, this%bfqp_rhs, this%dcu2, this%amu_r2)   
+         allocate(this%bxyz_t, this%cu_t, this%dcu_t, this%amu_t, this%fxy_t, this%psit_t)
+         allocate(this%qe_t,this%div_vpot_t, this%amu_r_t, this%cu_r, this%bfqp_rhs, this%dcu2, this%amu_r2)   
          allocate(this%bexyz_t, this%bbxyz_t, this%cu3d_t)
          
 
@@ -312,11 +311,6 @@
          call this%cu_curl_z%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,qe1=this%qe1,psi=this%psi,algorithm=1)   
          call this%bz%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
 
-         call this%amu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         call this%damu_1%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
-         call this%damu1%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%damu2%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-
          call this%bexyz_t%new(this%p,this%err,this%sp3,dim=3)
          call this%bbxyz_t%new(this%p,this%err,this%sp3,dim=3)
          call this%cu3d_t%new(this%p,this%err,this%sp3,dim=3)
@@ -328,16 +322,10 @@
          ! call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%dcu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%dcu2%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)         
-         call this%dcu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%amu_r2%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%amu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         ! call this%amu_r_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%amu_r_t%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%bxyz_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)         
-         ! call this%damu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
-         ! call this%damu_r%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe_t,psi=this%psi,algorithm=1)
-         call this%damu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%damu_r%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          ! call this%cu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)          
          call this%cu_r%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
          call this%bfqp_rhs%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
@@ -445,24 +433,16 @@
         call this%cu_curl_z%del() 
         call this%bz%del()          
 
-         call this%amu_r%del()    
-         call this%damu_1%del()
-         call this%damu1%del()                
-         call this%damu2%del()        
-
          call this%qe_t%del()
          call this%psit_t%del()
          call this%div_vpot_t%del()         
          call this%fxy_t%del()
          call this%cu_t%del()
          call this%dcu_t%del()
-         call this%dcu_r%del()
          call this%amu_t%del()
          call this%amu_r_t%del()
          call this%amu_r2%del()
          call this%dcu2%del()     
-         call this%damu_t%del() 
-         call this%damu_r%del()   
          call this%cu_r%del()
          call this%bfqp_rhs%del()            
          call this%bxyz_t%del()
@@ -1041,39 +1021,14 @@
                call this%fields%dcu2%as(this%fields%dcu)               
 !amu is the normalized unit/dex in k space.           
                call this%fields%amu%fftrk(3) 
-               call this%fields%damu%as(0.0)             
-               call this%fields%damu%fftrk(2)
-               ! call this%fields%damu1%as(0.0)             
-               ! call this%fields%damu2%as(0.0)             
-               ! call this%fields%damu1%fftrk(2)
-               ! call this%fields%damu2%fftrk(2)            
 !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
-               !call this%fields%cu%bfqpn(this%fields%dcu,this%fields%amu,this%fields%damu,this%dex)
-               call this%fields%cu_fd%bfqpn(this%fields%amu,this%fields%damu,this%dex)
                call this%fields%bfqp_rhs%as(0.0)
-               call this%fields%cu_r%bfqp_src( this%fields%dcu2, this%fields%amu_r2, this%fields%bfqp_rhs, this%dex, 1 )               
-               ! call this%fields%amu%bfqpn_1(this%fields%damu1,this%dex)
-               ! call this%fields%cu_fd%bfqpn_2(this%fields%damu2,this%dex)    
-               ! call this%fields%damu1%fftkr(2) 
-               ! call this%fields%damu2%fftkr(2)      
-               ! call this%fields%damu_1%as(0.0)                       
-               ! call this%fields%damu_1%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))   
-               ! call this%fields%damu_1%fftkr(2)                                      
+               call this%fields%cu_r%bfqp_src( this%fields%dcu2, this%fields%amu_r2, this%fields%bfqp_rhs, this%dex, 1 )                                                      
 !damu is the normalized unit in r space.               
-               call this%fields%damu%fftkr(2)                                                       
-               call this%fields%damu%sub(this%fields%damu,this%fields%dcu,(/1/),(/1/),(/2/))
-               call this%fields%damu%add(this%fields%damu,this%fields%dcu,(/2/),(/2/),(/1/))
-               ! call this%fields%damu_1%sub(this%fields%damu_1,this%fields%dcu,(/1/),(/1/),(/2/))
-               ! call this%fields%damu_1%add(this%fields%damu_1,this%fields%dcu,(/2/),(/2/),(/1/))               
-               ! if (allocated(this%fields%cu3d)) then
-               !    call this%fields%damu%cb(this%fields%cu3d,j+1,(/1,2/),(/1,2/))
-               ! end if
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-               ! call this%fields%damu%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
-               call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex)
+                 call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
-               ! call this%fields%damu%solve_mg(this%fields%bxyzfd,(/2,3/),3) !damu and bxyzfd are both in rspace.
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
@@ -1300,11 +1255,7 @@
                   call this%fields%cu%mult(this%fields%cu,this%dex)
                   !amu is the normalized unit/dex**2 in r space.
                   call this%fields%amu%mult(this%fields%amu,this%dex)
-                  call this%fields%dcu%mult(this%fields%dcu,this%dex)
-                  call this%fields%amu_r%as(0.0)               
-                  call this%fields%amu_r%as(this%fields%amu)
-                  call this%fields%dcu_r%as(0.0)               
-                  call this%fields%dcu_r%as(this%fields%dcu)            
+                  call this%fields%dcu%mult(this%fields%dcu,this%dex)          
                   if (l == this%iter) then
                      do m = 1, this%nspecies
                         call this%species%spe(m)%cbq(j+1)
@@ -1325,38 +1276,14 @@
                   call this%fields%psit%fftkr(1)
                   call this%fields%cu%bf(this%fields%bxyz)
                enddo
-               !循环结束
-               call this%fields%damu_t%as(0.0)             
-               call this%fields%damu_t%fftrk(2)                 
+               !循环结束             
                !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
-               ! call this%fields%cu_t%bfqpn(this%fields%amu_t,this%fields%damu_t,this%dex)
                call this%fields%bfqp_rhs%as(0.0)
-               call this%fields%cu_r%bfqp_src( this%fields%dcu_t, this%fields%amu_r_t, this%fields%bfqp_rhs, this%dex, 1 )               
-               ! call this%fields%amu_div%as(0.0)             
-               ! call this%fields%cu_grad%as(0.0)               
-               ! call this%fields%amu_t%%div_fd(this%fields%amu_div, this%dex, 1)
-               ! call this%fields%cu_t%grad_fd(this%fields%cu_grad,this%dex, 1)    
-               ! call this%fields%damu1%as(0.0)             
-               ! call this%fields%damu2%as(0.0)             
-               ! call this%fields%damu1%fftrk(2)
-               ! call this%fields%damu2%fftrk(2)     
-               ! call this%fields%amu_t%bfqpn_1(this%fields%damu1,this%dex)
-               ! call this%fields%cu_t%bfqpn_2(this%fields%damu2,this%dex)    
-               ! call this%fields%damu1%fftkr(2) 
-               ! call this%fields%damu2%fftkr(2)                           
-               ! call this%fields%damu_t%add(this%fields%damu1,this%fields%damu2,(/1,2/),(/1,2/),(/1,2/))
-!damu is the normalized unit in r space.               
-               ! call this%fields%damu_t%fftkr(2)      
-               ! call this%fields%damu_r%as(0.0)          
-               ! call this%fields%damu_r%as(this%fields%damu_t)                                                                
-               ! call this%fields%damu_t%sub(this%fields%damu_t,this%fields%dcu_t,(/1/),(/1/),(/2/))
-               ! call this%fields%damu_t%add(this%fields%damu_t,this%fields%dcu_t,(/2/),(/2/),(/1/))
+               call this%fields%cu_r%bfqp_src( this%fields%dcu_t, this%fields%amu_r_t, this%fields%bfqp_rhs, this%dex, 1 )                                      
                call this%fields%bxyzfd%as(0.0)
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-               ! call this%fields%damu_t%renew_fd(this%fields%qe_t,this%fields%psi,this%dex) !update stenci l when qe and psi change.
                call this%fields%bfqp_rhs%renew_fd(this%fields%qe_t,this%fields%psi,this%dex)
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
-               ! call this%fields%damu_t%solve_mg(this%fields%bxyzfd,(/2,3/),3)
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
@@ -1907,42 +1834,6 @@
                      obj => this%fields%bexyz
                      obj2 => this%fields%bfqp_rhs
                      dim2 = 2      
-                  case ('damu_rx')
-                     sn1 = 'Damu_rx'
-                     sn2 = 'damu_rx'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu_r in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_r
-                     dim2 = 1
-                  case ('damu_ry')
-                     sn1 = 'Damu_ry'
-                     sn2 = 'damu_ry'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu_r in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_r
-                     dim2 = 2 
-                  case ('sx_t')
-                     sn1 = 'Sx_t'
-                     sn2 = 'sx_t'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Source in x_t'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_t
-                     dim2 = 1
-                  case ('sy_t')
-                     sn1 = 'Sy_t'
-                     sn2 = 'sy_t'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Source in y_t'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_t
-                     dim2 = 2      
                   case ('dcux_t')
                      sn1 = 'Dcux_t'
                      sn2 = 'dcux_t'
@@ -2041,44 +1932,7 @@
                      dim = 3
                      obj => this%fields%bbxyz_t
                      obj2 => this%fields%bxyz_t
-                     dim2 = 3
-
-                  case ('sx')
-                     sn1 = 'Sx'
-                     sn2 = 'sx'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Source in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu
-                     dim2 = 1
-                  case ('sy')
-                     sn1 = 'Sy'
-                     sn2 = 'sy'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Source in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu
-                     dim2 = 2
-                  case ('damu_1x')
-                     sn1 = 'Damu_1x'
-                     sn2 = 'damu_1x'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'damu_1 in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_1
-                     dim2 = 1
-                  case ('damu_1y')
-                     sn1 = 'Damu_1y'
-                     sn2 = 'damu_1y'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'damu_1 in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu_1
-                     dim2 = 2                     
+                     dim2 = 3              
                   case ('dcux')
                      sn1 = 'Dcux'
                      sn2 = 'dcux'
@@ -2096,70 +1950,7 @@
                      dim = 1
                      obj => this%fields%bexyz
                      obj2 => this%fields%dcu
-                     dim2 = 2
-                  case ('amux')
-                     sn1 = 'Amux'
-                     sn2 = 'amux'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Amu in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%amu_r
-                     dim2 = 1
-                  case ('amuy')
-                     sn1 = 'Amuy'
-                     sn2 = 'amuy'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Amu in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%amu_r
-                     dim2 = 2 
-                  case ('amuz')
-                     sn1 = 'Amuz'
-                     sn2 = 'amuz'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Amu in z'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%amu_r
-                     dim2 = 3   
-                  case ('damu1x')
-                     sn1 = 'Damu1x'
-                     sn2 = 'damu1x'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu1 in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu1
-                     dim2 = 1
-                  case ('damu1y')
-                     sn1 = 'Damu1y'
-                     sn2 = 'damu1y'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu1 in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu1
-                     dim2 = 2 
-                  case ('damu2x')
-                     sn1 = 'Damu2x'
-                     sn2 = 'damu2x'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu2 in x'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu2
-                     dim2 = 1
-                  case ('damu2y')
-                     sn1 = 'Damu2y'
-                     sn2 = 'damu2y'
-                     sn3 = 'mc\omega_p/e'
-                     sn4 = 'Damu2 in y'
-                     dim = 1
-                     obj => this%fields%bexyz
-                     obj2 => this%fields%damu2
-                     dim2 = 2                                                                                                     
+                     dim2 = 2                                                                                               
                   case ('ex')
                      sn1 = 'Ex'
                      sn2 = 'ex'

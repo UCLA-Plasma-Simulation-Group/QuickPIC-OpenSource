@@ -47,9 +47,7 @@
          generic :: fftrk => fftrk_field2d
          generic :: fftkr => fftkr_field2d
          generic :: div => divf_field2d
-         generic :: grad => gradf_field2d
-         generic :: div_fd => divf_field2d_fd
-         generic :: grad_fd => gradf_field2d_fd         
+         generic :: grad => gradf_field2d     
          generic :: curl => curlf_field2d
          generic :: curlz => curlfz_field2d_fd         
          generic :: pot => potential_field2d
@@ -58,9 +56,6 @@
          generic :: elf => elfield_field2d
          generic :: bf => bfield_field2d
          generic :: bfqp => bfield_qp_field2d
-         generic :: bfqpn => bfield_qp_new_field2d, bfield_qp_new2_field2d
-         generic :: bfqpn_1 => gradf_amu_field2d
-         generic :: bfqpn_2 => gradf_cu_field2d
          generic :: cg => copyguard_field2d
          generic :: ag => acopyguard_field2d
          generic :: psend => pipesend_field2d
@@ -72,7 +67,6 @@
          generic :: add => sum1, sum2
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
-         generic :: mult3 => multiply3
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
          generic :: bfqp_src => bfield_qp_source_fd         
@@ -81,17 +75,15 @@
          procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd, init_field2d_ff
          procedure, private :: fftrk_field2d, fftkr_field2d, divf_field2d
          procedure, private :: gradf_field2d, curlf_field2d, potential_field2d, curlfz_field2d_fd
-         ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d,divf_field2d_new_cu
+         ! procedure, private :: gradf_field2d, curlf_field2d, potential_field2d
          procedure, private :: smoothf_field2d, elfield_field2d, bfield_field2d 
-         !procedure, private :: bfield_qp_field2d, copyguard_field2d
-         procedure, private :: bfield_qp_field2d, copyguard_field2d, bfield_qp_new_field2d
-         procedure, private :: acopyguard_field2d, pipesend_field2d, bfield_qp_new2_field2d
+         procedure, private :: bfield_qp_field2d, copyguard_field2d
+         procedure, private :: acopyguard_field2d, pipesend_field2d
          procedure, private :: piperecv_field2d, asc, asa, sum1, minus1, multiply1
-         procedure, private :: writehdf5_field2d, multiply2, sum2, minus2, multiply3
-         procedure, private :: copyfrom, copyto, copyadd, vpotential_field2d
+         procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
+         procedure, private :: copyfrom, copyadd, copyto, vpotential_field2d
          procedure :: getstate, getgcells, getrs, getks, getsum
-         procedure, private :: solve_field2d_mg, bfield_qp_source_fd
-         procedure, private :: gradf_amu_field2d, gradf_cu_field2d, divf_field2d_fd, gradf_field2d_fd          
+         procedure, private :: solve_field2d_mg, bfield_qp_source_fd         
 
       end type 
 
@@ -136,7 +128,6 @@
          indy = psp%getindy()         
          nd1 = 2**indx
          nd2 = 2**indy
-         ! write(*,*) "init_field2d_this%gcells=", this%gcells 
          allocate(this%rs)
          
          call this%rs%new(pp,perr,psp,dim,0,0,nvpy)
@@ -277,8 +268,6 @@
          class(ufield2d), pointer :: uqe, upsi
 
          inorder = psp%getinorder()
-         !write(*,*) psp%getdex(), "dexc" 0
-         ! write(*,*) "inorder=", inorder 
          this%err => perr
          call this%err%werrfl2(class//sname//' started')
 
@@ -294,7 +283,6 @@
          else
             this%gcells = 0
          endif
-         ! write(*,*) "(fd)this%gcells=", this%gcells 
          ! determine the guard cells according to solver type and interpolation order
          if (present(algorithm)) then
             select case (algorithm)
@@ -485,77 +473,6 @@
          
       end subroutine divf_field2d      
 ! 
-      subroutine divf_field2d_fd(this,that,dx,order)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'divf_field2d_fd:'
-
-         call this%err%werrfl2(class//sname//' started')
-         call this%err%add_profile( 'solve_fd_start' )
-         
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-         
-         call this%fd%divf(this%rs,that%rs,dx,order)
-
-         that%state = 0
-         
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-         
-      end subroutine divf_field2d_fd
-!            
-!       subroutine divf_field2d_new_cu(this,that,dex)
-      
-!          implicit none
-         
-!          class(field2d), intent(inout) :: this,that
-!          real, intent(in) :: dex
-!          character(len=18), save :: sname = 'divf_field2d_new_cu:'
-
-!          call this%err%werrfl2(class//sname//' started')
-         
-!          if (this%state /= 1) then 
-!             call this%err%equit(class//sname//'data is in rs')
-!             return
-!          endif
-         
-!          call this%ft%divf_new_cu(this%ks,that%ks,dex)
-
-!          that%state = 1
-         
-!          call this%err%werrfl2(class//sname//' ended')
-         
-!       end subroutine divf_field2d_new_cu 
-! !              
-!       subroutine divf_field2d_new_amu(this,that)
-      
-!          implicit none
-         
-!          class(field2d), intent(inout) :: this,that
-!          character(len=18), save :: sname = 'divf_field2d_new_amu:'
-
-!          call this%err%werrfl2(class//sname//' started')
-         
-!          if (this%state /= 1) then 
-!             call this%err%equit(class//sname//'data is in rs')
-!             return
-!          endif
-         
-!          call this%ft%divf_new_amu(this%ks,that%ks)
-
-!          that%state = 1
-         
-!          call this%err%werrfl2(class//sname//' ended')
-         
-!       end subroutine divf_field2d_new_amu 
-! 
       subroutine gradf_field2d(this,that)
       
          implicit none
@@ -577,55 +494,7 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine gradf_field2d      
-!            
-      ! subroutine gradf_field2d_new(this,that)
-      
-      !    implicit none
-         
-      !    class(field2d), intent(inout) :: this,that
-      !    character(len=18), save :: sname = 'gradf_field2d_new:'
-
-      !    call this%err%werrfl2(class//sname//' started')
-         
-      !    if (this%state /= 1) then 
-      !       call this%err%equit(class//sname//'data is in rs')
-      !       return
-      !    endif
-         
-      !    call this%ft%gradf_new(this%ks,that%ks)
-
-      !    that%state = 1
-         
-      !    call this%err%werrfl2(class//sname//' ended')
-         
-      ! end subroutine gradf_field2d_new      
-!            
-      subroutine gradf_field2d_fd( this, that, dx, order )
-
-         implicit none
-
-         class(field2d), intent(inout) :: this, that
-         real, intent(in) :: dx
-         integer, intent(in) :: order
-         character(len=18), save :: sname = 'gradf_field2d_fd:'
-
-         call this%err%werrfl2( class//sname//' started' )
-         call this%err%add_profile( 'solve_fd_start' )
-
-         if (this%state /= 0) then 
-            call this%err%equit(class//sname//'data is in ks')
-            return
-         endif
-
-         call this%fd%gradf( this%rs, that%rs, dx, order )
-
-         that%state = 0
-
-         call this%err%add_profile( 'solve_fd_end' )
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine gradf_field2d_fd
-!  
+!                  
       subroutine curlf_field2d(this,that)
       
          implicit none
@@ -736,10 +605,8 @@
             call this%err%equit( class//sname//'data is in ks' )
             return
          endif
-         ! write(*,*) "solve1", bnd, stencil_kind
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
          call this%rs%cg()         
-         ! write(*,*) "solve2"
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
 
@@ -838,56 +705,6 @@
          
       end subroutine bfield_qp_field2d      
 !            
-      subroutine bfield_qp_new_field2d(cu,dcu,amu,damu,dex)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: cu,dcu,amu,damu
-         !class(field2d), intent(inout) :: ,amu
-         ! class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dex
-         character(len=18), save :: sname = 'bfield_qp_new_field2d:'
-         !real :: we
-
-         call cu%err%werrfl2(class//sname//' started')
-         
-         if ((cu%state /= 1).or.(dcu%state /= 1).or.(amu%state /= 1))  then 
-            call cu%err%equit(class//sname//'data is in rs')
-            return
-         endif
-         call cu%pt%bfield_qp_new(cu%ks,dcu%ks,amu%ks,damu%ks,dex)
-
-         damu%state = 1
-         
-         call cu%err%werrfl2(class//sname//' ended')
-         
-      end subroutine bfield_qp_new_field2d      
-!
-      subroutine bfield_qp_new2_field2d(cu,amu,damu,dex)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: cu,amu,damu
-         ! class(field2d), intent(inout) :: this,amu,damu
-         ! class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dex
-         character(len=18), save :: sname = 'bfield_qp_new2_field2d:'
-         !real :: we
-
-         call cu%err%werrfl2(class//sname//' started')
-         
-         if ((cu%state /= 1).or.(amu%state /= 1))  then 
-            call cu%err%equit(class//sname//'data is in rs')
-            return
-         endif
-         call cu%pt%bfield_qp_new2(cu%ks,amu%ks,damu%ks,dex)
-
-         damu%state = 1
-         
-         call cu%err%werrfl2(class//sname//' ended')
-         
-      end subroutine bfield_qp_new2_field2d  
-!
       subroutine bfield_qp_source_fd( cu, dcu, amu, src, dx, order )
 
          implicit none
@@ -912,52 +729,6 @@
          call cu%err%werrfl2(class//sname//' ended')
 
       end subroutine bfield_qp_source_fd
-!
-      subroutine gradf_amu_field2d(amu,damu1,dex)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: amu, damu1
-         ! class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dex
-         character(len=18), save :: sname = 'gradf_amu_field2d:'
-
-         call amu%err%werrfl2(class//sname//' started')
-         
-         if ((amu%state /= 1).or.(damu1%state /= 1))  then 
-            call amu%err%equit(class//sname//'data is in rs')
-            return
-         endif
-         call amu%pt%bfield_amu(amu%ks,damu1%ks,dex)
-
-         damu1%state = 1
-         
-         call amu%err%werrfl2(class//sname//' ended')
-         
-      end subroutine gradf_amu_field2d  
-!
-      subroutine gradf_cu_field2d(cu,damu2,dex)
-      
-         implicit none
-         
-         class(field2d), intent(inout) :: cu, damu2
-         ! class(field2d), intent(inout) :: this,that
-         real, intent(in) :: dex
-         character(len=18), save :: sname = 'bfield_qp_new2_field2d:'
-
-         call cu%err%werrfl2(class//sname//' started')
-         
-         if ((cu%state /= 1).or.(damu2%state /= 1))  then 
-            call cu%err%equit(class//sname//'data is in rs')
-            return
-         endif
-         call cu%pt%bfield_cu(cu%ks,damu2%ks,dex)
-
-         damu2%state = 1
-         
-         call cu%err%werrfl2(class//sname//' ended')
-         
-      end subroutine gradf_cu_field2d  
 !
       subroutine copyguard_field2d(this) 
 
@@ -1136,7 +907,7 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyadd
-!      
+!
       subroutine asa(this,that) 
 
          implicit none
@@ -1332,30 +1103,6 @@
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine multiply2
-!
-      subroutine multiply3(this,a1,value) 
-
-         implicit none
-         
-         class(field2d), intent(inout) :: this
-         class(field2d), intent(in) :: a1
-         real, intent(in) :: value
-         character(len=18), save :: sname = 'multiply3:'
-
-         call this%err%werrfl2(class//sname//' started')
-         
-         if (a1%state == 0) then
-            call this%rs%mult3(a1%rs,value)
-            this%state = 0
-            this%gcells = a1%gcells            
-         else
-            call this%ks%mult3(a1%ks,value)
-            this%state = 1         
-         endif
-         
-         call this%err%werrfl2(class//sname//' ended')
-                 
-      end subroutine multiply3
 !
       subroutine writehdf5_field2d(this,file,dim) 
 

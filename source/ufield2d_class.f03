@@ -53,10 +53,8 @@
 !         generic :: operator(*) => mult1
          generic :: as => asc, asa
          generic :: add => sum1, sum2
-         generic :: cb => copyto_2d
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
-         generic :: mult3 => multiply3
          final :: final_ufield2d
          
          procedure, private :: init_ufield2d
@@ -71,7 +69,7 @@
          procedure, private :: copyguard, acopyguard, writehdf5
          procedure, private :: pipesend_ufield2d, piperecv_ufield2d
          procedure, private :: asc, asa, sum1, multiply1, multiply2, minus1
-         procedure, private :: sum2, minus2, multiply3, copyto_2d
+         procedure, private :: sum2, minus2
 !         procedure, private :: asc,asa,add,mult1
          
       end type 
@@ -657,37 +655,6 @@
          
       end subroutine piperecv_ufield2d
 !
-      subroutine copyto_2d(this,a1,dim,dim1)
-      
-         implicit none
-         
-         class(ufield2d),intent(inout) :: this
-         class(ufield2d), target, intent(in) :: a1
-! local data
-         character(len=18), save :: sname = 'copyto_2d:'
-         integer :: i,j,k
-         real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
-         integer, dimension(:), intent(in) :: dim,dim1
-         
-         call this%err%werrfl2(class//sname//' started')
-         
-         rf1 => this%rf         
-         rf2 => a1%rf
-         
-!$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)+this%lindex
-            do j = 1, size(rf1,2)
-               do i = 1, size(dim1)
-                  rf1(dim(i),j,k) = rf2(dim1(i),j,k)
-               enddo
-            enddo
-         enddo
-!$OMP END PARALLEL DO    
-
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine copyto_2d
-!
       subroutine sum1(this,a1,a2)
       
          implicit none
@@ -739,8 +706,6 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         !m = min(size(rf1,3),size(rf2,3),size(rf3,3)) 
-         !n = min(size(rf1,2),size(rf2,2),size(rf3,2))
          
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
@@ -752,7 +717,6 @@
             enddo
          enddo
 !$OMP END PARALLEL DO    
-         !write(*,*) "sum2-size(rf1)", size(rf1,2), size(rf1,3)+this%lindex, size(rf2,2), size(rf2,3), size(rf3,2), size(rf3,3)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine sum2
@@ -809,16 +773,6 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         ! write(*,*) "Array bounds for rf1: dimension 1 = ", lbound(rf1,1), "-", ubound(rf1,1)
-         ! write(*,*) "Array bounds for rf1: dimension 2 = ", lbound(rf1,2), "-", ubound(rf1,2)
-         ! write(*,*) "Array bounds for rf1: dimension 3 = ", lbound(rf1,3), "-", ubound(rf1,3)
-         ! write(*,*) "Array bounds for rf2: dimension 1 = ", lbound(rf2,1), "-", ubound(rf2,1)
-         ! write(*,*) "Array bounds for rf2: dimension 2 = ", lbound(rf2,2), "-", ubound(rf2,2)
-         ! write(*,*) "Array bounds for rf2: dimension 3 = ", lbound(rf2,3), "-", ubound(rf2,3)
-         ! write(*,*) "Array bounds for rf3: dimension 1 = ", lbound(rf3,1), "-", ubound(rf3,1)
-         ! write(*,*) "Array bounds for rf3: dimension 2 = ", lbound(rf3,2), "-", ubound(rf3,2)
-         ! write(*,*) "Array bounds for rf3: dimension 3 = ", lbound(rf3,3), "-", ubound(rf3,3)
-         ! write(*,*) "this%lindex = ", this%lindex
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
@@ -882,8 +836,6 @@
 
          rf1 => this%rf         
          rf2 => a1%rf
-         ! m = min(size(rf1,3),size(rf2,3))
-         ! n = min(size(rf1,2),size(rf2,2))
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
@@ -897,40 +849,6 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine multiply2
-!
-      subroutine multiply3(this,a1,value)
-      
-         implicit none
-         
-         class(ufield2d), intent(inout) :: this
-         class(ufield2d), target, intent(in) :: a1
-         real, intent(in) :: value
-! local data
-         character(len=18), save :: sname = 'multiply3:'
-         integer :: i,j,k
-         integer :: m,n
-         real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
-         
-         call this%err%werrfl2(class//sname//' started')
-
-         rf1 => this%rf         
-         rf2 => a1%rf
-         ! m = min(size(rf1,3),size(rf2,3))
-         ! n = min(size(rf1,1),size(rf2,1))
-
-!$OMP PARALLEL DO PRIVATE(i,j,k)         
-         !do k = 1, size(rf1,3) - this%gc(1)
-         do k = 1, size(rf1,3)+this%lindex
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
-                  rf1(i,j,k) = rf2(i,j,k) * value
-               enddo
-            enddo
-         enddo
-!$OMP END PARALLEL DO        
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine multiply3
 !
       subroutine asc(this,value)
       
@@ -948,7 +866,6 @@
          rf => this%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)      
-         ! do k = 1 - this%gc(1), size(rf,3) - this%gc(1) !y方向
          do k = 1, size(rf,3)+this%lindex !y方向
             do j = 1, size(rf,2)
                do i = 1, size(rf,1)
@@ -979,7 +896,6 @@
          rf2 => that%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         ! do k = 1 - this%gc(1), size(rf1,3) + this%gc(1)
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
                do i = 1, size(rf1,1)
