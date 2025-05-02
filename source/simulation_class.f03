@@ -1100,8 +1100,8 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
-            enddo
                write(2,*) "bxyz=", this%fields%bxyz%getsum()
+            enddo
 
             do m = 1, this%nspecies
                call this%species%spe(m)%psend(this%tag_spe(m),this%id_spe(m))
