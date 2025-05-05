@@ -707,9 +707,9 @@
                call this%species%spe(l)%precv(this%tag_spe(l))
             end do
             this%tag(3) = ntag()
-            call this%fields%cu%precv(this%tag(3))
+            call this%fields%cu%precv(this%tag(3)) 
             this%tag(4) = ntag()
-            call this%fields%epw%precv(this%tag(4))
+            call this%fields%epw%precv(this%tag(4)) !E⊥ of plasma
             this%tag(5) = ntag()
             call this%fields%fxy%precv(this%tag(5))
             this%tag(6) = ntag()
