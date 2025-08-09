@@ -49,6 +49,7 @@
          type(field2d), allocatable :: bxyz_t, cu_t, dcu_t, amu_t, fxy_t, psit_t, qe_t, div_vpot_t, amu_r_t
          type(field2d), allocatable :: dcu2, amu_r2
          type(field3d), allocatable :: bexyz_t, bbxyz_t, cu3d_t
+         type(field2d), dimension(:), allocatable :: qe_species
 
          contains
 
@@ -331,6 +332,10 @@
          call this%bfqp_rhs%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
 
          call input%get('simulation.nspecies',n)
+         allocate(this%qe_species(n))
+         do i = 1, n
+         call this%qe_species(i)%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
+         end do
 
          loop1: do i = 1, n
             write (s1, '(I4.4)') i
@@ -452,6 +457,11 @@
 
          if(allocated(this%psi3d)) call this%psi3d%del()
          if(allocated(this%cu3d)) call this%cu3d%del()
+         n = size(this%qe_species)
+
+         do i = 1, n
+            call this%qe_species(i)%del()
+         end do
 
          call this%err%werrfl2(class//sname//' ended')
 
@@ -924,10 +934,14 @@
                call this%fields%qb%elf(this%fields%epwb) !E⊥ of beam           
                call this%fields%qe%as(0.0)
                do l = 1, this%nspecies
-                  call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
+                  call this%fields%qe_species(l)%as(0.0)
                end do
-               call this%fields%qe1%as(0.0)
-               call this%species%spe(1)%cq(this%fields%qe1) !deposit rho-Jz
+               do l = 1, this%nspecies
+                  call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
+                  call this%species%spe(l)%cq(this%fields%qe_species(l)) 
+               end do
+               ! call this%fields%qe1%as(0.0)
+               ! call this%species%spe(1)%cq(this%fields%qe1) !deposit rho-Jz
 !qe is the normalized unit in k space.                
                call this%fields%qe%fftrk(1)
 !psi is the normalized unit/dex**2 in k space.             
@@ -954,7 +968,7 @@
                end do
 !cu is the normalized unit in r space.               
                call this%fields%cu_fd%mult(this%fields%cu_fd,this%dex)
-               write(2,*) "cu_fd=", this%fields%cu_fd%getsum() 
+               ! write(2,*) "cu_fd=", this%fields%cu_fd%getsum() 
                do m = 1, this%nspecies
                   call this%species%spe(m)%cbq(j+1)
                end do  
@@ -1027,7 +1041,10 @@
 !damu is the normalized unit in r space.               
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-                 call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
+               ! call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
+               do m = 1, this%nspecies 
+                  call this%fields%bfqp_rhs%renew_fd(this%fields%qe_species(m),this%fields%psi,this%dex)
+               end do   
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
