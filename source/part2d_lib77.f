@@ -3834,113 +3834,19 @@ c rot2 = omzt
    40 continue
       return
       end
-!-----------------------------------------------------------------------         
-!      subroutine PPGPPOST2L_G(ppart,q,kpic,noff,idimp,nppmx,mx,my,nxv,ny
-c      + pmx,mx1,mxyp1,qbm)
-c !deposite q/m(1-q/m \psi) onto the grid to to calculate the gamma_coeff
-c ! input: all, output: q
-c       implicit none
-c       integer noff, idimp, nppmx, mx, my, nxv, nypmx, mx1, mxyp1
-c       real ppart, q
-c       integer kpic
-c       dimension ppart(idimp,nppmx,mxyp1),
-c      + q(nxv,nypmx), kpic(mxyp1)
-c ! local data
-c !      integer MXV, MYV
-c !      parameter(MXV=33,MYV=33)
-c       integer noffp, moffp, nppp
-c       integer mnoff, i, j, k, nn, mm
-c       real x, y, dxp, dyp, amx, amy
-c       real sq, qm, qbm, p7
-c !     dimension sq(MXV,MYV)
-c       dimension sq(mx+1,my+1)
-c ! error if local array is too small
-c !     if ((mx.ge.MXV).or.(my.ge.MYV)) return
-c ! loop over tiles
-c !$OMP PARALLEL DO
-c !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,mnoff,nn,mm,x,y,dxp,dyp,amx,amy,
-c !$OMP& sq,p7,qm)
-c       do 80 k = 1, mxyp1
-c       noffp = (k - 1)/mx1
-c       moffp = my*noffp
-c       noffp = mx*(k - mx1*noffp - 1)
-c       nppp = kpic(k)
-c       mnoff = moffp + noff - 1
-c ! zero out local accumulator
-c       do 20 j = 1, my+1
-c       do 10 i = 1, mx+1
-c       sq(i,j) = 0.0
-c    10 continue
-c    20 continue
-c ! loop over particles in tile
-c       do 30 j = 1, nppp
-c ! find interpolation weights
-c       x = ppart(1,j,k)
-c       y = ppart(2,j,k)
-c       p7 = ppart(7,j,k)
-c       qm = qbm / p7
-c       nn = x
-c       mm = y
-c       dxp = qm*(x - real(nn))
-c       dyp = y - real(mm)
-c       nn = nn - noffp + 1
-c       mm = mm - mnoff
-c       amx = qm - dxp
-c       amy = 1.0 - dyp
-c ! deposit charge within tile to local accumulator
-c       x = sq(nn,mm) + amx*amy
-c       y = sq(nn+1,mm) + dxp*amy
-c       sq(nn,mm) = x
-c       sq(nn+1,mm) = y
-c       x = sq(nn,mm+1) + amx*dyp
-c       y = sq(nn+1,mm+1) + dxp*dyp
-c       sq(nn,mm+1) = x
-c       sq(nn+1,mm+1) = y
-c    30 continue
-c ! deposit charge to interior points in global array
-c       nn = min(mx,nxv-noffp)
-c       mm = min(my,nypmx-moffp)
-c       do 50 j = 2, mm
-c       do 40 i = 2, nn
-c       q(i+noffp,j+moffp) = q(i+noffp,j+moffp) + sq(i,j) 
-c    40 continue
-c    50 continue
-c ! deposit charge to edge points in global array
-c       mm = min(my+1,nypmx-moffp)
-c       do 60 i = 2, nn
-c !$OMP ATOMIC
-c       q(i+noffp,1+moffp) = q(i+noffp,1+moffp) + sq(i,1)
-c       if (mm > my) then
-c !$OMP ATOMIC
-c          q(i+noffp,mm+moffp) = q(i+noffp,mm+moffp) + sq(i,mm) 
-c       endif
-c    60 continue
-c       nn = min(mx+1,nxv-noffp)
-c       do 70 j = 1, mm
-c !$OMP ATOMIC
-c       q(1+noffp,j+moffp) = q(1+noffp,j+moffp) + sq(1,j) 
-c       if (nn > mx) then
-c !$OMP ATOMIC
-c          q(nn+noffp,j+moffp) = q(nn+noffp,j+moffp) + sq(nn,j) 
-c       endif
-c    70 continue
-c    80 continue
-c !$OMP END PARALLEL DO
-c       return
-c       end
-!-----------------------------------------------------------------------         
-      subroutine GAMMA_COEFF(q,psi,nxv,nypmx,qbm)
+!-----------------------------------------------------------------------               
+      subroutine GAMMA_COEFF(q,qe_species,psi,nxv,nypmx,qbm)
 !
 ! Calculates a new grid quantity 'q' based on the formula:
-!   q(i,j) = qbm / (1.0 - qbm * psi(i,j))
+!   q(i,j) = qbm * qe_species / (1.0 - qbm * psi(i,j))
 !
 ! input: psi, qbm
 ! output: q
 !
       implicit none
       integer nxv, nypmx
-      real q, psi, qbm
-      dimension q(nxv,nypmx), psi(nxv,nypmx)
+      real q, qe_species, psi, qbm
+      dimension q(nxv,nypmx), qe_species(nxv,nypmx), psi(nxv,nypmx)
 !
 ! local data
       integer i, j
@@ -3959,7 +3865,7 @@ c       end
             endif
 !
             q(i,j) = qbm / denominator
-!
+            q(i,j) = q(i,j) * qe_species(i,j)
    10    continue
    20 continue
 !

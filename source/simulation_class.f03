@@ -40,7 +40,7 @@
          class(perrors),pointer :: err => null()
          class(spect3d), pointer :: sp3 => null()
          class(spect2d), pointer :: sp2 => null()
-         type(field2d), allocatable :: qb, qe, qe1, psit, psi, div_vpot, reg
+         type(field2d), allocatable :: qb, qe, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
          type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, cu_fd, dcu, amu, damu, epw, epwb, vpot, cu_curl_z, bz 
          ! type(field2d), allocatable :: cu_r, bfqp_rhs      
@@ -278,7 +278,7 @@
 
          call this%err%werrfl2(class//sname//' started')
 
-         allocate(this%qb, this%qe, this%qe1, this%psit, this%psi)
+         allocate(this%qb, this%qe, this%psit, this%psi)
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%cu_fd, this%cu_curl_z, this%bz)
@@ -295,7 +295,6 @@
 
          call this%qb%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.,gcells=1)
          call this%qe%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
-         call this%qe1%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
          call this%psit%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%div_vpot%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
          call this%psi%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)
@@ -310,11 +309,11 @@
 
          call this%coeff_k%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)!必须在call new_fd前初始化好
 
-         call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,qe1=this%qe1,psi=this%psi,algorithm=1)
+         call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,coeff_k=this%coeff_k,algorithm=1)
          call this%bxyz%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
 
-         call this%cu_curl_z%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,qe1=this%qe1,psi=this%psi,algorithm=1)   
+         call this%cu_curl_z%new_fd(this%p,this%err,this%sp2,dim=1,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)     
          call this%bz%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
 
          call this%bexyz_t%new(this%p,this%err,this%sp3,dim=3)
@@ -325,16 +324,14 @@
          call this%div_vpot_t%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)                
          call this%fxy_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
          call this%cu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)      
-         ! call this%dcu_t%new(this%p,this%err,this%sp2,dim=2,fftflag=.true.)
-         call this%dcu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
-         call this%dcu2%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)         
-         call this%amu_r2%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
+         call this%dcu_t%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
+         call this%dcu2%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)         
+         call this%amu_r2%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
          call this%amu_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)
-         call this%amu_r_t%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
+         call this%amu_r_t%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
          call this%bxyz_t%new(this%p,this%err,this%sp2,dim=3,fftflag=.true.)         
-         ! call this%cu_r%new(this%p,this%err,this%sp2,dim=3,fftflag=.false.)          
-         call this%cu_r%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
-         call this%bfqp_rhs%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,qe1=this%qe_t,psi=this%psi,algorithm=1)
+         call this%cu_r%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
+         call this%bfqp_rhs%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
 
          call input%get('simulation.nspecies',n)
          allocate(this%qe_species(n))
@@ -424,7 +421,6 @@
          call this%bbxyz%del()
          call this%qb%del()
          call this%qe%del()
-         call this%qe1%del()
          call this%psit%del()
          call this%div_vpot%del()
          call this%psi%del()
@@ -945,8 +941,6 @@
                   call this%species%spe(l)%qdp(this%fields%qe) !deposit rho-Jz
                   call this%species%spe(l)%cq(this%fields%qe_species(l)) 
                end do
-               ! call this%fields%qe1%as(0.0)
-               ! call this%species%spe(1)%cq(this%fields%qe1) !deposit rho-Jz
 !qe is the normalized unit in k space.                
                call this%fields%qe%fftrk(1)
 !psi is the normalized unit/dex**2 in k space.             
@@ -956,7 +950,6 @@
                call this%fields%psi%grad(this%fields%fxy)
 !fxy is the normalized unit/dex in r space.               
                call this%fields%fxy%fftkr(1)
-               write(2,*) "fxy=", this%fields%fxy%getsum() 
 !psi is the normalized unit/dex**2 in r space.               
                call this%fields%psi%fftkr(1)
                do l = 1, this%nspecies
@@ -964,7 +957,6 @@
                end do
 !psi is the normalized unit in r space.               
                call this%fields%psi%mult(this%fields%psi,this%dex*this%dex)
-               write(2,*) "psi=", this%fields%psi%getsum() 
                if (allocated(this%fields%psi3d)) call this%fields%psi%cb(this%fields%psi3d,j+1,(/1/),(/1/))
                call this%fields%cu_fd%as(0.0)
 !J, cu is the normalized unit/dex in r space.              
@@ -973,7 +965,6 @@
                end do
 !cu is the normalized unit in r space.               
                call this%fields%cu_fd%mult(this%fields%cu_fd,this%dex)
-               ! write(2,*) "cu_fd=", this%fields%cu_fd%getsum() 
                do m = 1, this%nspecies
                   call this%species%spe(m)%cbq(j+1)
                end do  
@@ -999,7 +990,6 @@
                call this%fields%psit%mult(this%fields%psit,-this%dex)
 !psit is the normalized unit in r space.               
                call this%fields%psit%fftkr(1)
-               write(2,*) "psit=", this%fields%psit%getsum()
                call this%fields%bxyz%as(0.0)
 !Bz of plasma, bxyz is the normalized unit/dex in k space.               
                call this%fields%cu_fd%bf(this%fields%bxyz)
@@ -1028,14 +1018,12 @@
                end do 
 !amu=amu*dex，the amu is the normalized unit/dex in r space.
                call this%fields%amu%mult(this%fields%amu,this%dex)
-               write(2,*) "amu=", this%fields%amu%getsum()
                call this%fields%amu_r2%as(0.0)               
                call this%fields%amu_r2%as(this%fields%amu)
 !amu=amu*dex，the amu is the normalized unit in r space.               
                call this%fields%amu_r2%mult(this%fields%amu_r2,this%dex)
 !dcu=dcu*dex，the dcu is the normalized unit in r space.            
                call this%fields%dcu%mult(this%fields%dcu,this%dex)
-               write(2,*) "dcu=", this%fields%dcu%getsum()
                call this%fields%dcu2%as(0.0)               
                call this%fields%dcu2%as(this%fields%dcu)               
 !amu is the normalized unit/dex in k space.           
@@ -1043,32 +1031,18 @@
 !cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
                call this%fields%bfqp_rhs%as(0.0)
                call this%fields%cu_r%bfqp_src( this%fields%dcu2, this%fields%amu_r2, this%fields%bfqp_rhs, this%dex, 1 )                                                      
-               call this%fields%coeff_k%as(0.0) ! 将 coeff_k 设为 0.0
-               ! do m = 1, this%nspecies  
-               !    call this%species%spe(m)%gdp(this%fields%coeff_k)
-               ! end do
+               call this%fields%coeff_k%as(0.0) ! 将 coeff_k 设为 0.0             
                do m = 1, this%nspecies  
-                  call this%species%spe(m)%getcoeff(this%fields%coeff_k,this%fields%psi)
-               end do               
-               ! do l = 1, this%nspecies  
-               !    call this%species%spe(m)%get_qbm(qbm_spe)
-               !    call this%fields%coeff_k%mult(this%fields%psi,qbm_spe)   
-               !    call this%fields%coeff_k%mult(this%fields%coeff_k,-1.0)    
-               !    call this%fields%coeff_k%add(this%fields%coeff_k,1.0)      
-               !    call this%fields%coeff_k%mult(1.0/this%fields%coeff_k,qbm_spe)       
-               ! end do
+                  call this%species%spe(m)%getcoeff(this%fields%coeff_k,this%fields%qe_species(m),this%fields%psi)
+               end do
 !damu is the normalized unit in r space.               
                call this%fields%bxyzfd%as(0.0)   
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-               ! call this%fields%bfqp_rhs%renew_fd(this%fields%qe1,this%fields%psi,this%dex) !update stenci l when qe and psi change.
-               do m = 1, this%nspecies 
-                  call this%fields%bfqp_rhs%renew_fd(this%fields%qe_species(m),this%fields%coeff_k,this%dex)
-               end do   
+               call this%fields%bfqp_rhs%renew_fd(this%fields%coeff_k,this%dex)
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)
-               write(2,*) "bxyzfd=", this%fields%bxyzfd%getsum()
 !Bx= Bx(beam)+Bx(plasma), Bx is normalized unit/dex in rspace.     
                call this%fields%bxyz%add(this%fields%bxyz,this%fields%bxyzfd,(/1/),(/1/),(/1/))
 !By= By(beam)+By(plasma), By is the normalized unit/dex in rspace.              
@@ -1091,7 +1065,6 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
-               write(2,*) "bxyz=", this%fields%bxyz%getsum()
             enddo
 
             do m = 1, this%nspecies
@@ -1318,7 +1291,7 @@
                call this%fields%cu_r%bfqp_src( this%fields%dcu_t, this%fields%amu_r_t, this%fields%bfqp_rhs, this%dex, 1 )                                      
                call this%fields%bxyzfd%as(0.0)
 !qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
-               call this%fields%bfqp_rhs%renew_fd(this%fields%qe_t,this%fields%psi,this%dex)
+               ! call this%fields%bfqp_rhs%renew_fd(this%fields%qe_t,this%fields%psi,this%dex)
 !damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
@@ -2071,15 +2044,6 @@
                      sn4 = 'Vector Potential'
                      dim = 3
                      obj => this%fields%vpot3d
-                  case ('qe')
-                     sn1 = 'Qe'
-                     sn2 = 'Qe'
-                     sn3 = 'n_0'
-                     sn4 = '\Qe'
-                     dim = 1
-                     obj => this%fields%qe1
-                     obj2 => this%fields%qe1
-                     dim2 = 1
                   end select
                   if (this%in%found('field.diag('//trim(s1)//').slice')) then
                      call this%in%info('field.diag('//trim(s1)//').slice',n_children=l)

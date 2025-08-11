@@ -85,8 +85,6 @@
          generic :: psend => pipesend_part2d
          generic :: precv => piperecv_part2d
          generic :: wr => writehdf5_part2d
-         ! generic :: gdp => gdeposit
-         ! generic :: get_qbm => get_qbm_part2d
          generic :: getcoeff => getcoeff_part2d
 
          procedure, private :: init_part2d, renew_part2d
@@ -103,9 +101,7 @@
          procedure, private :: partcopyback
          procedure, private :: pipesend_part2d
          procedure, private :: piperecv_part2d, writehdf5_part2d
-         ! procedure, private :: gdeposit   
          procedure, private :: getcoeff_part2d        
-         ! procedure, public :: get_qbm_part2d        
       end type 
 
       save      
@@ -920,67 +916,33 @@
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_part2d
-      !      
-!       subroutine gdeposit(this,q)
-! ! deposit the charge density      
-      
-!          implicit none
-         
-!          class(part2d), intent(in) :: this
-!          class(ufield2d), pointer, intent(in) :: q
-
-! ! local data
-!          character(len=18), save :: sname = 'gdeposit:'
-!          real, dimension(:,:,:), pointer :: pq => null(),pq_species => null()
-!          integer :: noff, nxv, nypmx
-                  
-!          call this%err%werrfl2(class//sname//' started')
-         
-!          pq => q%getrf()
-!          noff = q%getnoff()
-!          nxv = size(pq,2)
-!          nypmx = size(pq,3)
-         
-!          call PPGPPOST2L_G(this%ppart,pq(1,:,:),this%kpic,noff,&
-!          &this%xdim,this%nppmx0,mx,my,nxv,nypmx,mx1,mxyp1,this%qbm)         
-         
-!          call this%err%werrfl2(class//sname//' ended')
-         
-!       end subroutine gdeposit
 !      
-      subroutine getcoeff_part2d(this,q,psi)
+      subroutine getcoeff_part2d(this,q,qe_species,psi)
 ! deposit the charge density      
       
          implicit none
          
          class(part2d), intent(inout) :: this
          class(ufield2d), pointer, intent(in) :: q
-         class(ufield2d), pointer, intent(in) :: psi
+         class(ufield2d), pointer, intent(in) :: qe_species,psi
 
 ! local data
          character(len=18), save :: sname = 'getcoeff_part2d:'
-         real, dimension(:,:,:), pointer :: pq => null(), ppsi => null()
+         real, dimension(:,:,:), pointer :: pq => null(), pqe_species => null(), ppsi => null()
          integer :: nxv, nypmx
                   
          call this%err%werrfl2(class//sname//' started')
          
          pq => q%getrf()
          ppsi => psi%getrf()
+         pqe_species => qe_species%getrf()
          nxv = size(ppsi,2)
          nypmx = size(ppsi,3)
          
-         call GAMMA_COEFF(pq(1,:,:),ppsi(1,:,:),nxv,nypmx,this%qbm)         
+         call GAMMA_COEFF(pq(1,:,:),pqe_species(1,:,:),ppsi(1,:,:),nxv,nypmx,this%qbm)         
          
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine getcoeff_part2d
-!      
-      ! subroutine get_qbm_part2d(this, qbm_spe)
-      !    implicit none
-      !    class(part2d), intent(in) :: this
-      !    real, intent(out) :: qbm_spe
-
-      !    qbm_spe = this%qbm
-      ! end subroutine get_qbm_part2d
 !      
       end module part2d_class

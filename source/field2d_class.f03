@@ -247,14 +247,14 @@
 
       end subroutine init_field2d_ff
 !
-      subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,qe1,psi,state,gcells,algorithm)
+      subroutine init_field2d_fd(this,pp,perr,psp,dim,fftflag,coeff_k,state,gcells,algorithm)
 
 ! fftflag = (.false.,.true.) = (no,yes) initial ks, fft and poisson solver table
          implicit none
          
          class(field2d), intent(inout) :: this
          class(spect2d), intent(in), pointer :: psp
-         class(field2d), intent(in) :: qe1, psi
+         class(field2d), intent(in) :: coeff_k
          class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          integer, intent(in) :: dim
@@ -265,7 +265,7 @@
          integer :: nvpy,indx,indy,nd1,nd2,inorder,alg
          integer, dimension(2) :: gc
          integer :: gc_dir 
-         class(ufield2d), pointer :: uqe, upsi
+         class(ufield2d), pointer :: ucoeff_k
 
          inorder = psp%getinorder()
          this%err => perr
@@ -326,9 +326,9 @@
          call this%fd%new( pp, perr, kind=0 )
 
          ! 2nd order multigrid solver
-         uqe => qe1%getrs()
-         upsi => psi%getrs()
-         this%pt_mg => get_poismg2table_fd( pp, perr, psp, 1, uqe, upsi)
+         ! uqe => qe1%getrs()
+         ucoeff_k => coeff_k%getrs()
+         this%pt_mg => get_poismg2table_fd( pp, perr, psp, 1, ucoeff_k)
          
          if (fftflag) then
             allocate(this%ks)
@@ -347,17 +347,17 @@
 
       end subroutine init_field2d_fd
 !
-      subroutine renew_field2d_fd(this, qe, psi, dex)
+      subroutine renew_field2d_fd(this, coeff_k, dex)
 
       implicit none
 
       class(field2d), intent(inout) :: this
-      class(field2d), intent(inout) :: qe, psi
+      class(field2d), intent(inout) :: coeff_k
       real, intent(in) :: dex
       character(len=18), save :: sname = 'renew_field2d_fd'
 
       call this%err%werrfl2(class//sname//' started')
-      call this%pt_mg%renew(qe%getrs(), psi%getrs(), dex)
+      call this%pt_mg%renew(coeff_k%getrs(), dex)
       call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_field2d_fd

@@ -27,12 +27,12 @@
          class(perrors), pointer, public :: err => null()
          class(parallel_pipe), pointer, public :: p => null()
          class(part2d), pointer :: pd => null()
-         ! class(field2d), pointer :: q => null(), qn => null(), cu => null()
+         class(field2d), pointer :: q => null(), qn => null(), cu => null()
          class(field2d), pointer :: amu => null(), dcu => null()
          class(field2d), pointer :: bsou => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
-         class(field2d), pointer :: q => null(), qn => null(), cu => null(), coeff_k => null()
+         class(field2d), pointer :: coeff_k => null()
 
          contains
          
@@ -55,8 +55,6 @@
          generic :: wrq => writeq_species2d, writeqslice_species2d
          generic :: cbq => cbq_species2d
          generic :: cq => cq_species2d
-         ! generic :: gdp => gdp_species2d
-         ! generic :: get_qbm => get_qbm_species2d
          generic :: getcoeff => getcoeff_species2d
 
          procedure, private :: init_species2d, renew_species2d
@@ -74,10 +72,8 @@
          procedure, private :: psend_species2d
          procedure, private :: precv_species2d, writehdf5_species2d
          procedure, private :: cbq_species2d, writeq_species2d, writeqslice_species2d
-         ! procedure, private :: cq_species2d
-         ! procedure, private :: cq_species2d, gdp_species2d
-         ! procedure, public :: get_qbm_species2d
-         procedure, private :: cq_species2d, getcoeff_species2d
+         procedure, private :: cq_species2d
+         procedure, private :: getcoeff_species2d
       end type 
 
       save      
@@ -569,46 +565,12 @@
          
       end subroutine cq_species2d
 !      
-!       subroutine gdp_species2d(this, coeff_k)
-! ! deposit the coeff_k      
-      
-!          implicit none
-         
-!          class(species2d), intent(in) :: this
-!          class(field2d), intent(inout) :: coeff_k
-
-! ! local data
-!          character(len=18), save :: sname = 'gdp_species2d:'
-!          logical :: ntd
-
-!          call this%err%werrfl2(class//sname//' started')
-!          ntd = this%pf%getntd()
-!          call this%coeff_k%as(0.0)
-!          ! call this%pd%gdp(this%coeff_k%getrs())
-!          call this%pd%gdp(coeff_k%getrs())
-!          call this%coeff_k%ag()
-!          ! call coeff_k%add(this%coeff_k,coeff_k)
-!          ! if (ntd) call q%add(this%qn,q)
-                  
-!          call this%err%werrfl2(class//sname//' ended')
-         
-!       end subroutine gdp_species2d
-!      
-      ! subroutine get_qbm_species2d(this, qbm_spe)
-
-      !    implicit none
-      !    class(species2d), intent(in) :: this
-      !    real, intent(out) :: qbm_spe
-
-      !    call this%pd%get_qbm(qbm_spe)
-      ! end subroutine get_qbm_species2d
-!      
-      subroutine getcoeff_species2d(this, coeff_k, psi)
+      subroutine getcoeff_species2d(this, coeff_k, qe_species, psi)
 
          implicit none
          class(species2d), intent(inout) :: this
          class(field2d), intent(inout) :: coeff_k
-         class(field2d), intent(in) :: psi
+         class(field2d), intent(in) :: qe_species, psi
 
 ! local data
          character(len=18), save :: sname = 'getcoeff_species2d:'
@@ -616,10 +578,8 @@
 
          call this%err%werrfl2(class//sname//' started')
          ntd = this%pf%getntd()
-         ! call this%coeff_k%as(0.0)
-         call coeff_k%as(0.0)
-         ! call this%pd%getcoeff(this%coeff_k%getrs(),psi%getrs())
-         call this%pd%getcoeff(coeff_k%getrs(), psi%getrs())
+         call this%coeff_k%as(0.0)
+         call this%pd%getcoeff(this%coeff_k%getrs(), qe_species%getrs(), psi%getrs())
          call this%coeff_k%ag()
          call coeff_k%add(this%coeff_k,coeff_k)
          ! if (ntd) call q%add(this%qn,q)
