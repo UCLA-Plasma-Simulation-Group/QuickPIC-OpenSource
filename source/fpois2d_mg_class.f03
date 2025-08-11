@@ -528,7 +528,8 @@ subroutine setvalue_hypre_matrix_inter_explicit( matrix, order, ilower, iupper, 
       i = 1
       do y = 1, nd2p
         do x = 1, nd1p 
-          values(i)   = 4.0 * idex2 - pqe(1, x, y) / (1 + ppsi(1, x, y))
+          ! values(i)   = 4.0 * idex2 - pqe(1, x, y) / (1 + ppsi(1, x, y))
+          values(i)   = 4.0 * idex2 + pqe(1, x, y) * ppsi(1, x, y)
           values(i+1) = -1.0 * idex2
           values(i+2) = -1.0 * idex2
           values(i+3) = -1.0 * idex2
