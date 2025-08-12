@@ -185,16 +185,16 @@
          call this%in%get('simulation.indy',indy)
          call this%in%get('simulation.indz',indz)
 
-         call this%in%get('simulation.box.x(1)',min)
-         call this%in%get('simulation.box.x(2)',max)
-         dx=(max-min)/real(2**indx)
+         ! call this%in%get('simulation.box.x(1)',min)
+         ! call this%in%get('simulation.box.x(2)',max)
+         ! dx=(max-min)/real(2**indx)
+         dx = this%in%sp%getdex()
          call this%in%get('simulation.box.y(1)',min)
          call this%in%get('simulation.box.y(2)',max)
          dy=(max-min)/real(2**indy)
          call this%in%get('simulation.box.z(1)',min)
          call this%in%get('simulation.box.z(2)',max)
          dz=(max-min)/real(2**indz)
-
          this%dex = dx
          this%dxi = dz
          this%dex2 = dx * dx
@@ -273,7 +273,6 @@
          this%p => input%pp
          this%sp3 => input%sp
          this%sp2 => input%sp
-         ! write(*,*) input%sp%getdex(), "dexe"
 
 
          call this%err%werrfl2(class//sname//' started')

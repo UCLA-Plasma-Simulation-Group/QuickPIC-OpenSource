@@ -917,29 +917,29 @@
       
       end subroutine writehdf5_part2d
 !      
-      subroutine getcoeff_part2d(this,q,qe_species,psi)
+      subroutine getcoeff_part2d(this,coeff_k,qe_species,psi)
 ! deposit the charge density      
       
          implicit none
          
          class(part2d), intent(inout) :: this
-         class(ufield2d), pointer, intent(in) :: q
+         class(ufield2d), pointer, intent(in) :: coeff_k
          class(ufield2d), pointer, intent(in) :: qe_species,psi
 
 ! local data
          character(len=18), save :: sname = 'getcoeff_part2d:'
-         real, dimension(:,:,:), pointer :: pq => null(), pqe_species => null(), ppsi => null()
+         real, dimension(:,:,:), pointer :: pcoeff_k => null(), pqe_species => null(), ppsi => null()
          integer :: nxv, nypmx
                   
          call this%err%werrfl2(class//sname//' started')
          
-         pq => q%getrf()
+         pcoeff_k => coeff_k%getrf()
          ppsi => psi%getrf()
          pqe_species => qe_species%getrf()
          nxv = size(ppsi,2)
          nypmx = size(ppsi,3)
          
-         call GAMMA_COEFF(pq(1,:,:),pqe_species(1,:,:),ppsi(1,:,:),nxv,nypmx,this%qbm)         
+         call GAMMA_COEFF(pcoeff_k(1,:,:),pqe_species(1,:,:),ppsi(1,:,:),nxv,nypmx,this%qbm)         
          
          call this%err%werrfl2(class//sname//' ended')
          
