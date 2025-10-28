@@ -580,7 +580,7 @@
          ntd = this%pf%getntd()
          call this%coeff_k%as(0.0)
          call this%pd%getcoeff(this%coeff_k%getrs(), qe_species%getrs(), psi%getrs())
-         call this%coeff_k%ag()
+         call this%coeff_k%cg()
          call coeff_k%add(this%coeff_k,coeff_k)
          ! if (ntd) call q%add(this%qn,q)
                   
