@@ -56,7 +56,8 @@
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
          final :: final_ufield2d
-         
+         generic :: cg_fd => copyguard_fd
+
          procedure, private :: init_ufield2d
          procedure, private :: init_ufield2d_fd
          procedure, private :: init_ufield2d_k
@@ -70,6 +71,8 @@
          procedure, private :: pipesend_ufield2d, piperecv_ufield2d
          procedure, private :: asc, asa, sum1, multiply1, multiply2, minus1
          procedure, private :: sum2, minus2
+         procedure, private :: copyguard_fd
+         procedure :: getgc         
 !         procedure, private :: asc,asa,add,mult1
          
       end type 
@@ -444,6 +447,18 @@
 
       end function getrf_gc
 !     
+      function getgc( this )
+
+         implicit none
+
+         class(ufield2d), intent(in) :: this
+
+         integer, dimension(2) :: getgc
+
+         getgc = this%gc
+
+      end function getgc
+!      
       subroutine copyguard(this)
       
          implicit none
@@ -481,6 +496,54 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyguard
+!      
+      subroutine copyguard_fd(this)
+      
+         implicit none
+         
+         class(ufield2d), intent(inout) :: this
+         character(len=18), save :: sname = 'copyguard_fd'
+! local data         
+         integer :: nxv, nypmx, nyp
+         real, dimension(:,:,:), pointer :: rf => null()
+         
+         integer, save :: counter = 0
+         character(len=32) :: name
+
+         rf => this%getrf_gc()
+         
+         call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'cpgc_start' )
+
+         nxv = size(rf,1)*size(rf,2)
+         nypmx = size(rf,3)
+         nyp = this%nd2p
+
+         if (this%layout /= 0) then
+            write (erstr,*) 'invalid layout = ', this%layout
+            call this%err%equit(class//sname//erstr); return
+         endif
+
+         select case (this%sp%getpsolver())
+         case (1)
+            select case (this%sp%getinorder())
+            case (1)
+! copy data to guard cells in distributed direction
+               call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+            case default
+               call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+            end select
+         case default
+            call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+            &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+         end select
+
+         call this%err%add_profile( 'cpgc_end' )
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine copyguard_fd
 !      
       subroutine acopyguard(this)
       

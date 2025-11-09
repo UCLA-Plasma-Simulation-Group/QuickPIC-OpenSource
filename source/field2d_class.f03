@@ -70,6 +70,7 @@
          generic :: wr => writehdf5_field2d
          generic :: solve_mg => solve_field2d_mg
          generic :: bfqp_src => bfield_qp_source_fd         
+         generic :: cg_fd => copyguard_field2d_fd
 
          ! procedure, private :: init_field2d, end_field2d
          procedure, private :: init_field2d, end_field2d, init_field2d_fd, renew_field2d_fd, init_field2d_ff
@@ -83,7 +84,7 @@
          procedure, private :: writehdf5_field2d, multiply2, sum2, minus2
          procedure, private :: copyfrom, copyadd, copyto, vpotential_field2d
          procedure :: getstate, getgcells, getrs, getks, getsum
-         procedure, private :: solve_field2d_mg, bfield_qp_source_fd         
+         procedure, private :: solve_field2d_mg, bfield_qp_source_fd, copyguard_field2d_fd         
 
       end type 
 
@@ -722,8 +723,15 @@
             call cu%err%equit(class//sname//'data is in ks')
             return
          endif 
+
+         call cu%rs%cg_fd()
+         call dcu%rs%cg_fd()
+         call amu%rs%cg_fd()
+
          call cu%fd%bfqp_src_new( cu%rs, dcu%rs, amu%rs, src%rs, dx, order )
          src%state = 0
+
+         call src%rs%cg_fd()
 
          call cu%err%add_profile( 'solve_fd_end' )
          call cu%err%werrfl2(class//sname//' ended')
@@ -752,6 +760,28 @@
                  
       end subroutine copyguard_field2d
 !
+      subroutine copyguard_field2d_fd(this) 
+
+         implicit none
+         
+         class(field2d), intent(inout) :: this
+         character(len=18), save :: sname = 'copyguard_field2d_fd:'
+
+         call this%err%werrfl2(class//sname//' started')
+         if (this%state /= 0) then 
+            call this%err%equit(class//sname//'data is in ks')
+            return
+         endif
+         
+         call this%rs%cg_fd()
+         
+         ! this%gcells = 1
+         this%state = 0
+         
+         call this%err%werrfl2(class//sname//' ended')
+                 
+      end subroutine copyguard_field2d_fd
+!      
       subroutine acopyguard_field2d(this) 
 
          implicit none
