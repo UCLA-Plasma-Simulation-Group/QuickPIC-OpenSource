@@ -33,8 +33,7 @@
          integer :: layout, dim, noff
          integer :: nd1, nvpx, nd1p
          integer :: nd2, nvpy, nd2p
-         integer, dimension(2) :: gc = (/0,0/) !
-         ! integer, dimension(2) :: gc
+         integer, dimension(2) :: gc
          integer :: gc_dir, lindex=0
          real, dimension(:,:,:), pointer :: rf => null(), buff => null()
 
@@ -98,7 +97,7 @@
 ! local data
          character(len=18), save :: sname = 'init_ufield2d:'
          integer :: nd1,nd2
-         
+         this%lindex = 0
          call perr%werrfl2(class//sname//' started')
          this%sp => psp
          this%err => perr
@@ -927,7 +926,7 @@
          call this%err%werrfl2(class//sname//' started')
          
          rf => this%rf
-
+         ! write(*,*) "this%lindex",this%lindex
 !$OMP PARALLEL DO PRIVATE(i,j,k)      
          do k = 1, size(rf,3)+this%lindex !y方向
             do j = 1, size(rf,2)
@@ -937,7 +936,7 @@
             enddo
          enddo
 !$OMP END PARALLEL DO
-                    
+        
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine asc
