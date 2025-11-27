@@ -42,7 +42,7 @@
          class(spect2d), pointer :: sp2 => null()
          type(field2d), allocatable :: qb, qe, psit, psi, div_vpot, reg
          !type(field2d), allocatable :: fxy, bxyz, cu, dcu, amu, epw, epwb,vpot 
-         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, damu, epw, epwb, vpot, cu_curl_z, bz   
+         type(field2d), allocatable :: fxy, bxyz, bxyzfd, cu, dcu, amu, epw, epwb, vpot, cu_curl_z, bz   
          type(field2d), allocatable :: cu_fd, bfqp_rhs, coeff_k           
          type(field3d), allocatable :: bexyz, bbxyz
          type(field3d), allocatable :: psi3d,cu3d,vpot3d
@@ -277,7 +277,7 @@
          !allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%cu)
          !allocate(this%dcu, this%amu, this%epw, this%epwb)
          allocate(this%div_vpot, this%reg, this%fxy, this%bxyz, this%bxyzfd, this%cu, this%bz)
-         allocate(this%dcu, this%amu, this%damu, this%epw, this%epwb)       
+         allocate(this%dcu, this%amu, this%epw, this%epwb)       
          allocate(this%bexyz, this%bbxyz)
          allocate(this%coeff_k)
          allocate(this%cu_fd, this%bfqp_rhs, this%dcu_fd, this%amu_fd)   
@@ -302,8 +302,8 @@
          call this%bxyzfd%new(this%p,this%err,this%sp2,dim=2,fftflag=.false.)
          call this%coeff_k%new(this%p,this%err,this%sp2,dim=1,fftflag=.true.)!必须在call new_fd前初始化好
          call this%bz%new(this%p,this%err,this%sp2,dim=1,fftflag=.false.)
-
-         call this%damu%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.true.,coeff_k=this%coeff_k,algorithm=1)                        
+                       
+         ! call this%bxyzfd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)              
          call this%dcu_fd%new_fd(this%p,this%err,this%sp2,dim=2,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)         
          call this%amu_fd%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
          call this%cu_fd%new_fd(this%p,this%err,this%sp2,dim=3,fftflag=.false.,coeff_k=this%coeff_k,algorithm=1)
@@ -404,8 +404,7 @@
          call this%fxy%del()
          call this%cu%del()    
          call this%dcu%del()
-         call this%amu%del()     
-         call this%damu%del()                 
+         call this%amu%del()                   
          call this%epw%del()
          call this%epwb%del()
          call this%bxyz%del()
@@ -971,7 +970,6 @@
 !Bx and By are the normalized unit/dex and Bz is the normalized unit in r space.
                call this%fields%bxyz%fftkr(2)
                ! call this%fields%bxyz%mult(this%fields%bz,(/3/),(/1/),(/-1.0/))
-               write(*,*) "3"
                call this%fields%dcu%as(0.0)
                call this%fields%amu%as(0.0)              
 !partial J⊥/partial n; psit and Bz(bxyz) are the normalized unit. bxy、fxy.    
@@ -992,18 +990,18 @@
                call this%fields%dcu_fd%as(this%fields%dcu)               
 !amu is the normalized unit/dex in k space.           
                call this%fields%amu%fftrk(3) 
-!cu(k) is the normalized unit,amu(k) is the normalized unit/dex, damu is the normalized unit in k space.
+!cu is the normalized unit,amu is the normalized unit/dex, dcu is the normalized unit in k space.
                call this%fields%bfqp_rhs%as(0.0)
                call this%fields%cu_fd%bfqp_src( this%fields%dcu_fd, this%fields%amu_fd, this%fields%bfqp_rhs, this%dex, 1 )                                                      
                call this%fields%coeff_k%as(0.0) ! 将 coeff_k 设为 0.0             
                do m = 1, this%nspecies  
                   call this%species%spe(m)%getcoeff(this%fields%coeff_k,this%fields%qe_species(m),this%fields%psi)
                end do
-!damu is the normalized unit in r space.               
+              
                call this%fields%bxyzfd%as(0.0)   
-!qe1 and psi are the normalized unit, damu is the normalized unit in r space.                            
+!qe1 and psi are the normalized unit, is the normalized unit in r space.                            
                call this%fields%bfqp_rhs%renew_fd(this%fields%coeff_k,this%dex)
-!damu and bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
+! bxyzfd are the normalized unit. The bxyzfd is the B⊥. fd does not change units.   
                call this%fields%bfqp_rhs%solve_mg(this%fields%bxyzfd,(/2,3/),3)
 !bxyzfd is the normalized uni/dex in r space.
                call this%fields%bxyzfd%mult(this%fields%bxyzfd,-1.0/this%dex)

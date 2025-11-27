@@ -35,6 +35,7 @@
          class(fpois2d), pointer :: pt => null()
          class(fpois2d_mg), pointer :: pt_mg => null()
          class(fd2d), pointer :: fd => null()
+         logical :: if_fd = .false.
          integer :: state, gcells
                   
          contains
@@ -343,7 +344,7 @@
                this%pt => get_pois2table_fd(pp,perr,psp,ax=0.912871,ay=0.912871,affp=1.0,algorithm=alg)
             end select
          endif
-
+         this%if_fd = .true.
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine init_field2d_fd
@@ -729,9 +730,8 @@
          call amu%rs%cg_fd()
 
          call cu%fd%bfqp_src_new( cu%rs, dcu%rs, amu%rs, src%rs, dx, order )
+         
          src%state = 0
-
-         call src%rs%cg_fd()
 
          call cu%err%add_profile( 'solve_fd_end' )
          call cu%err%werrfl2(class//sname//' ended')
@@ -1017,7 +1017,11 @@
             call this%ks%add(a1%ks,a2%ks,dim,dim1,dim2)
             this%state = 1         
          endif
-         
+         if(this%if_fd ) then
+            call this%cg_fd()
+         else
+            call this%cg()
+         endif
          call this%err%werrfl2(class//sname//' ended')
                  
       end subroutine sum2

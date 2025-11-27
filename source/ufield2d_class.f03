@@ -768,10 +768,11 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         
+         ! write(*,*) "this%nd2p=",this%nd2p
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
+         ! do k = 1, this%nd2p
             do j = 1, size(rf1,2)
                do i = 1, size(dim1)
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) + rf3(dim2(i),j,k)
