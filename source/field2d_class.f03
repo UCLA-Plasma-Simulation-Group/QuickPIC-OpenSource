@@ -608,7 +608,8 @@
             return
          endif
          call this%pt_mg%solve( this%rs, that%rs, bnd, stencil_kind )
-         call this%rs%cg()         
+         ! call this%rs%cg()     
+         call that%rs%cg()    
          call this%err%add_profile( 'solve_mg_end' )
          call this%err%werrfl2( class//sname//' ended' )
 
@@ -730,7 +731,7 @@
          call amu%rs%cg_fd()
 
          call cu%fd%bfqp_src_new( cu%rs, dcu%rs, amu%rs, src%rs, dx, order )
-         
+
          src%state = 0
 
          call cu%err%add_profile( 'solve_fd_end' )
