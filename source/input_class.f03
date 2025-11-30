@@ -69,7 +69,8 @@
          logical :: found, stat
          character(len=:), allocatable :: ff, boundary, error_msg
          integer :: length, num_stages, verbose, indx, indy, indz, psolve, ierr
-         real :: mg_prec = 1.0d-6
+         ! real :: mg_prec = 1.0d-6
+         real :: mg_prec = 1.0d-6, min_x, max_x
          integer :: mg_type = 3
          real :: dx
 
@@ -124,6 +125,11 @@
 
          call this%get('simulation.indz',indz)
 
+         ! 计算 dx
+         call this%get('simulation.box.x(1)', min_x)
+         call this%get('simulation.box.x(2)', max_x)
+         dx = (max_x - min_x) / real(2**indx)
+
          call this%get('simulation.boundary',boundary)
          
          select case (trim(boundary))
@@ -135,7 +141,6 @@
          
          ! call sp%new(this%pp,this%err,indx,indy,indz,psolve,1)
          call sp%new(this%pp,this%err,indx,indy,indz,dx,psolve,1,mg_prec,mg_type)
-         ! write(*,*) sp%getdex()
          this%sp => sp
 
          call this%err%werrfl0(ff)

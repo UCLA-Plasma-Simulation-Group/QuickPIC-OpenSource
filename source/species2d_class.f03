@@ -32,6 +32,7 @@
          class(field2d), pointer :: bsou => null()
          class(field3d), pointer :: q3 => null()
          class(fdist2d), pointer :: pf => null()
+         class(field2d), pointer :: coeff_k => null()
 
          contains
          
@@ -54,6 +55,8 @@
          generic :: wrq => writeq_species2d, writeqslice_species2d
          generic :: cbq => cbq_species2d
          generic :: cq => cq_species2d
+         generic :: getcoeff => getcoeff_species2d
+
          procedure, private :: init_species2d, renew_species2d
          procedure, private :: end_species2d
          procedure, private :: qdp_species2d
@@ -70,6 +73,7 @@
          procedure, private :: precv_species2d, writehdf5_species2d
          procedure, private :: cbq_species2d, writeq_species2d, writeqslice_species2d
          procedure, private :: cq_species2d
+         procedure, private :: getcoeff_species2d
       end type 
 
       save      
@@ -104,13 +108,15 @@
          
          ntd = this%pf%getntd()
          if (ntd) allocate(this%qn)
-         allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3)
+         ! allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3)
+         allocate(this%pd,this%q,this%cu,this%amu,this%dcu,this%q3,this%coeff_k)
          call this%q%new(this%p,this%err,this%sp,dim=1,fftflag=.true.)
          call this%q3%new(this%p,this%err,psp,dim=1)
          if (ntd) call this%qn%new(this%p,this%err,this%sp,dim=1,fftflag=.false.)
          call this%cu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
          call this%dcu%new(this%p,this%err,this%sp,dim=2,fftflag=.false.)
          call this%amu%new(this%p,this%err,this%sp,dim=3,fftflag=.false.)
+         call this%coeff_k%new(this%p,this%err,this%sp,dim=1,fftflag=.false.)
          call this%pd%new(pp,perr,this%sp,pf,this%q%getrs(),qbm,dt,ci,xdim,s)
          if (ntd) then
             call this%qn%as(0.0)!有问题
@@ -158,6 +164,7 @@
          call this%cu%del()
          call this%dcu%del()
          call this%amu%del()
+         call this%coeff_k%del()
          call this%err%werrfl2(class//sname//' ended')
                   
       end subroutine end_species2d
@@ -557,5 +564,28 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine cq_species2d
+!      
+      subroutine getcoeff_species2d(this, coeff_k, qe_species, psi)
+
+         implicit none
+         class(species2d), intent(inout) :: this
+         class(field2d), intent(inout) :: coeff_k
+         class(field2d), intent(in) :: qe_species, psi
+
+! local data
+         character(len=18), save :: sname = 'getcoeff_species2d:'
+         logical :: ntd
+
+         call this%err%werrfl2(class//sname//' started')
+         ntd = this%pf%getntd()
+         call this%coeff_k%as(0.0)
+         call this%pd%getcoeff(this%coeff_k%getrs(), qe_species%getrs(), psi%getrs())
+         call this%coeff_k%cg()
+         call coeff_k%add(this%coeff_k,coeff_k)
+         ! if (ntd) call q%add(this%qn,q)
+                  
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine getcoeff_species2d
 !      
       end module species2d_class

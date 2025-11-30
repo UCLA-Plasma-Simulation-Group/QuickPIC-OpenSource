@@ -3834,3 +3834,40 @@ c rot2 = omzt
    40 continue
       return
       end
+!-----------------------------------------------------------------------               
+      subroutine GAMMA_COEFF(q,qe_species,psi,nxv,nypmx,qbm)
+!
+! Calculates a new grid quantity 'q' based on the formula:
+!   q(i,j) = qbm * qe_species / (1.0 - qbm * psi(i,j))
+!
+! input: psi, qbm
+! output: q
+!
+      implicit none
+      integer nxv, nypmx
+      real q, qe_species, psi, qbm
+      dimension q(nxv,nypmx), qe_species(nxv,nypmx), psi(nxv,nypmx)
+!
+! local data
+      integer i, j
+      real denominator
+      real small_val
+      parameter (small_val=1.0e-20)
+!
+! Loop through all grid points to apply the formula
+      do 20 j = 1, nypmx
+         do 10 i = 1, nxv
+            denominator = 1.0 - qbm * psi(i,j)
+!
+!           Handle potential division by zero
+            if (abs(denominator) .lt. small_val) then
+               denominator = small_val
+            endif
+!
+            q(i,j) = qbm / denominator
+            q(i,j) = q(i,j) * qe_species(i,j)
+   10    continue
+   20 continue
+!
+      return
+      end

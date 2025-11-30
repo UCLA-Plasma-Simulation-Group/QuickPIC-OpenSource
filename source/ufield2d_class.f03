@@ -33,8 +33,7 @@
          integer :: layout, dim, noff
          integer :: nd1, nvpx, nd1p
          integer :: nd2, nvpy, nd2p
-         integer, dimension(2) :: gc = (/0,0/) !
-         ! integer, dimension(2) :: gc
+         integer, dimension(2) :: gc
          integer :: gc_dir, lindex=0
          real, dimension(:,:,:), pointer :: rf => null(), buff => null()
 
@@ -53,13 +52,11 @@
 !         generic :: operator(*) => mult1
          generic :: as => asc, asa
          generic :: add => sum1, sum2
-         generic :: cb => copyto_2d
          generic :: sub => minus1, minus2
          generic :: mult => multiply1, multiply2
-         generic :: mult3 => multiply3
-         generic :: sum_ele => sum_specific_dim
          final :: final_ufield2d
-         
+         generic :: cg_fd => copyguard_fd
+
          procedure, private :: init_ufield2d
          procedure, private :: init_ufield2d_fd
          procedure, private :: init_ufield2d_k
@@ -72,7 +69,9 @@
          procedure, private :: copyguard, acopyguard, writehdf5
          procedure, private :: pipesend_ufield2d, piperecv_ufield2d
          procedure, private :: asc, asa, sum1, multiply1, multiply2, minus1
-         procedure, private :: sum2, minus2, multiply3, copyto_2d, sum_specific_dim
+         procedure, private :: sum2, minus2
+         procedure, private :: copyguard_fd
+         procedure :: getgc         
 !         procedure, private :: asc,asa,add,mult1
          
       end type 
@@ -98,7 +97,7 @@
 ! local data
          character(len=18), save :: sname = 'init_ufield2d:'
          integer :: nd1,nd2
-         
+         this%lindex = 0
          call perr%werrfl2(class//sname//' started')
          this%sp => psp
          this%err => perr
@@ -447,6 +446,18 @@
 
       end function getrf_gc
 !     
+      function getgc( this )
+
+         implicit none
+
+         class(ufield2d), intent(in) :: this
+
+         integer, dimension(2) :: getgc
+
+         getgc = this%gc
+
+      end function getgc
+!      
       subroutine copyguard(this)
       
          implicit none
@@ -484,6 +495,54 @@
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine copyguard
+!      
+      subroutine copyguard_fd(this)
+      
+         implicit none
+         
+         class(ufield2d), intent(inout) :: this
+         character(len=18), save :: sname = 'copyguard_fd'
+! local data         
+         integer :: nxv, nypmx, nyp
+         real, dimension(:,:,:), pointer :: rf => null()
+         
+         integer, save :: counter = 0
+         character(len=32) :: name
+
+         rf => this%getrf_gc()
+         
+         call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'cpgc_start' )
+
+         nxv = size(rf,1)*size(rf,2)
+         nypmx = size(rf,3)
+         nyp = this%nd2p
+
+         if (this%layout /= 0) then
+            write (erstr,*) 'invalid layout = ', this%layout
+            call this%err%equit(class//sname//erstr); return
+         endif
+
+         select case (this%sp%getpsolver())
+         case (1)
+            select case (this%sp%getinorder())
+            case (1)
+! copy data to guard cells in distributed direction
+               call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+            case default
+               call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+               &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+            end select
+         case default
+            call PPNCGUARD2L_FD(rf,nyp,this%p%getlkstrt(),this%p%getlnvp(),&
+            &nxv,nypmx,this%p%getlgrp(),this%p%getmreal(),this%getgc(),this%gc_dir)
+         end select
+
+         call this%err%add_profile( 'cpgc_end' )
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine copyguard_fd
 !      
       subroutine acopyguard(this)
       
@@ -658,37 +717,6 @@
          
       end subroutine piperecv_ufield2d
 !
-      subroutine copyto_2d(this,a1,dim,dim1)
-      
-         implicit none
-         
-         class(ufield2d),intent(inout) :: this
-         class(ufield2d), target, intent(in) :: a1
-! local data
-         character(len=18), save :: sname = 'copyto_2d:'
-         integer :: i,j,k
-         real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
-         integer, dimension(:), intent(in) :: dim,dim1
-         
-         call this%err%werrfl2(class//sname//' started')
-         
-         rf1 => this%rf         
-         rf2 => a1%rf
-         
-!$OMP PARALLEL DO PRIVATE(i,j,k)         
-         do k = 1, size(rf1,3)+this%lindex
-            do j = 1, size(rf1,2)
-               do i = 1, size(dim1)
-                  rf1(dim(i),j,k) = rf2(dim1(i),j,k)
-               enddo
-            enddo
-         enddo
-!$OMP END PARALLEL DO    
-
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine copyto_2d
-!
       subroutine sum1(this,a1,a2)
       
          implicit none
@@ -740,12 +768,11 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         !m = min(size(rf1,3),size(rf2,3),size(rf3,3)) 
-         !n = min(size(rf1,2),size(rf2,2),size(rf3,2))
-         
+         ! write(*,*) "this%nd2p=",this%nd2p
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
+         ! do k = 1, this%nd2p
             do j = 1, size(rf1,2)
                do i = 1, size(dim1)
                   rf1(dim(i),j,k) = rf2(dim1(i),j,k) + rf3(dim2(i),j,k)
@@ -753,7 +780,6 @@
             enddo
          enddo
 !$OMP END PARALLEL DO    
-         !write(*,*) "sum2-size(rf1)", size(rf1,2), size(rf1,3)+this%lindex, size(rf2,2), size(rf2,3), size(rf3,2), size(rf3,3)
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine sum2
@@ -810,16 +836,6 @@
          rf1 => this%rf         
          rf2 => a1%rf
          rf3 => a2%rf
-         ! write(*,*) "Array bounds for rf1: dimension 1 = ", lbound(rf1,1), "-", ubound(rf1,1)
-         ! write(*,*) "Array bounds for rf1: dimension 2 = ", lbound(rf1,2), "-", ubound(rf1,2)
-         ! write(*,*) "Array bounds for rf1: dimension 3 = ", lbound(rf1,3), "-", ubound(rf1,3)
-         ! write(*,*) "Array bounds for rf2: dimension 1 = ", lbound(rf2,1), "-", ubound(rf2,1)
-         ! write(*,*) "Array bounds for rf2: dimension 2 = ", lbound(rf2,2), "-", ubound(rf2,2)
-         ! write(*,*) "Array bounds for rf2: dimension 3 = ", lbound(rf2,3), "-", ubound(rf2,3)
-         ! write(*,*) "Array bounds for rf3: dimension 1 = ", lbound(rf3,1), "-", ubound(rf3,1)
-         ! write(*,*) "Array bounds for rf3: dimension 2 = ", lbound(rf3,2), "-", ubound(rf3,2)
-         ! write(*,*) "Array bounds for rf3: dimension 3 = ", lbound(rf3,3), "-", ubound(rf3,3)
-         ! write(*,*) "this%lindex = ", this%lindex
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
@@ -883,8 +899,6 @@
 
          rf1 => this%rf         
          rf2 => a1%rf
-         ! m = min(size(rf1,3),size(rf2,3))
-         ! n = min(size(rf1,2),size(rf2,2))
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
          do k = 1, size(rf1,3)+this%lindex
@@ -898,40 +912,6 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine multiply2
-!
-      subroutine multiply3(this,a1,value)
-      
-         implicit none
-         
-         class(ufield2d), intent(inout) :: this
-         class(ufield2d), target, intent(in) :: a1
-         real, intent(in) :: value
-! local data
-         character(len=18), save :: sname = 'multiply3:'
-         integer :: i,j,k
-         integer :: m,n
-         real, dimension(:,:,:), pointer :: rf1 => null(), rf2 => null()
-         
-         call this%err%werrfl2(class//sname//' started')
-
-         rf1 => this%rf         
-         rf2 => a1%rf
-         ! m = min(size(rf1,3),size(rf2,3))
-         ! n = min(size(rf1,1),size(rf2,1))
-
-!$OMP PARALLEL DO PRIVATE(i,j,k)         
-         !do k = 1, size(rf1,3) - this%gc(1)
-         do k = 1, size(rf1,3)+this%lindex
-            do j = 1, size(rf1,2)
-               do i = 1, size(rf1,1)
-                  rf1(i,j,k) = rf2(i,j,k) * value
-               enddo
-            enddo
-         enddo
-!$OMP END PARALLEL DO        
-         call this%err%werrfl2(class//sname//' ended')
-
-      end subroutine multiply3
 !
       subroutine asc(this,value)
       
@@ -947,9 +927,8 @@
          call this%err%werrfl2(class//sname//' started')
          
          rf => this%rf
-
+         ! write(*,*) "this%lindex",this%lindex
 !$OMP PARALLEL DO PRIVATE(i,j,k)      
-         ! do k = 1 - this%gc(1), size(rf,3) - this%gc(1) !y方向
          do k = 1, size(rf,3)+this%lindex !y方向
             do j = 1, size(rf,2)
                do i = 1, size(rf,1)
@@ -958,7 +937,7 @@
             enddo
          enddo
 !$OMP END PARALLEL DO
-                    
+        
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine asc
@@ -980,7 +959,6 @@
          rf2 => that%rf
 
 !$OMP PARALLEL DO PRIVATE(i,j,k)         
-         ! do k = 1 - this%gc(1), size(rf1,3) + this%gc(1)
          do k = 1, size(rf1,3)+this%lindex
             do j = 1, size(rf1,2)
                do i = 1, size(rf1,1)
@@ -1101,41 +1079,5 @@
          call this%err%werrfl2(class//sname//' ended')
 
       end function mult2
-!
-      subroutine sum_specific_dim(this, dim, result)
-         implicit none
-    
-         class(ufield2d), intent(in) :: this
-         integer, dimension(:), intent(in) :: dim
-         real, intent(out) :: result
-! local data
-         character(len=18), save :: sname = 'sum_specific_dim:'
-         integer :: i, j, k
-         real, dimension(:,:,:), pointer :: rf1 => null()
-         real :: sum_value
-
-         call this%err%werrfl2(class//sname//' started')
-
-         rf1 => this%rf
-         ! write(*,*) "Size of dimension 3: ", size(rf1, 3)
-         ! write(*,*) "Array bounds for rf1: dimension 1 = ", lbound(rf1,1), "-", ubound(rf1,1)
-         ! write(*,*) "Array bounds for rf1: dimension 2 = ", lbound(rf1,2), "-", ubound(rf1,2)
-         ! write(*,*) "Array bounds for rf1: dimension 3 = ", lbound(rf1,3), "-", ubound(rf1,3)
-
-         sum_value = 0.0
-
-!$OMP PARALLEL DO PRIVATE(i, j, k) REDUCTION(+:sum_value)
-         do k = 1, size(rf1, 3) + this%lindex!数组 rf1 的第3维度的大小
-            do j = 1, size(rf1, 2)
-                  do i = 1, size(dim, 1)
-                     sum_value = sum_value + rf1(dim(i), j, k)
-                  end do
-            end do
-         end do
-!$OMP END PARALLEL DO
-
-         result = sum_value
-         call this%err%werrfl2(class//sname//' ended')
-      end subroutine sum_specific_dim
 !
       end module ufield2d_class

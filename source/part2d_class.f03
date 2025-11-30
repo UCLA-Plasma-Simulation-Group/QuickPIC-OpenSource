@@ -85,6 +85,8 @@
          generic :: psend => pipesend_part2d
          generic :: precv => piperecv_part2d
          generic :: wr => writehdf5_part2d
+         generic :: getcoeff => getcoeff_part2d
+
          procedure, private :: init_part2d, renew_part2d
          procedure, private :: end_part2d
          procedure, private :: qdeposit
@@ -99,7 +101,7 @@
          procedure, private :: partcopyback
          procedure, private :: pipesend_part2d
          procedure, private :: piperecv_part2d, writehdf5_part2d
-                           
+         procedure, private :: getcoeff_part2d        
       end type 
 
       save      
@@ -922,5 +924,33 @@
          call this%err%werrfl2(class//sname//' ended')
       
       end subroutine writehdf5_part2d
+!      
+      subroutine getcoeff_part2d(this,coeff_k,qe_species,psi)
+! deposit the charge density      
+      
+         implicit none
+         
+         class(part2d), intent(inout) :: this
+         class(ufield2d), pointer, intent(in) :: coeff_k
+         class(ufield2d), pointer, intent(in) :: qe_species,psi
+
+! local data
+         character(len=18), save :: sname = 'getcoeff_part2d:'
+         real, dimension(:,:,:), pointer :: pcoeff_k => null(), pqe_species => null(), ppsi => null()
+         integer :: nxv, nypmx
+                  
+         call this%err%werrfl2(class//sname//' started')
+         
+         pcoeff_k => coeff_k%getrf()
+         ppsi => psi%getrf()
+         pqe_species => qe_species%getrf()
+         nxv = size(ppsi,2)
+         nypmx = size(ppsi,3)
+         
+         call GAMMA_COEFF(pcoeff_k(1,:,:),pqe_species(1,:,:),ppsi(1,:,:),nxv,nypmx,this%qbm)         
+         
+         call this%err%werrfl2(class//sname//' ended')
+         
+      end subroutine getcoeff_part2d
 !      
       end module part2d_class
