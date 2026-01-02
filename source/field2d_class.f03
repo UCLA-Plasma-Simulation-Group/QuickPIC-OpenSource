@@ -359,7 +359,11 @@
       character(len=18), save :: sname = 'renew_field2d_fd'
 
       call this%err%werrfl2(class//sname//' started')
+      call this%err%add_profile( 'renew_start' )
+
       call this%pt_mg%renew(coeff_k%getrs(), dex)
+
+      call this%err%add_profile( 'renew_end' )
       call this%err%werrfl2(class//sname//' ended')
 
       end subroutine renew_field2d_fd

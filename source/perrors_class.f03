@@ -14,6 +14,7 @@
 
       type timing
 
+           double precision :: trenew = 0
            double precision :: tfft = 0
            double precision :: tpush = 0
            double precision :: tqdeposit = 0
@@ -264,6 +265,11 @@
                   
          call dtimer(dtime,itime,1)
          select case (event)
+         case ('renew_start')
+            this%time%trenew = this%time%trenew - dtime
+            return
+         case ('renew_end')
+            this%time%trenew = this%time%trenew + dtime
          case ('fft_start')
             this%time%tfft = this%time%tfft - dtime
             this%time%nfft = this%time%nfft + 1
@@ -355,7 +361,9 @@
          character(len=20) :: tstr
 
          if ( this%enable_timing == 0 ) return
-                  
+         
+         write (tstr,'(f16.4)') this%time%trenew
+         call werrfl(this,'renew time: '//trim(tstr))
          write (tstr,'(f16.4)') this%time%tfft
          call werrfl(this,'fft time: '//trim(tstr))
          write (tstr,'(i16)') this%time%nfft

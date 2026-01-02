@@ -359,10 +359,12 @@
          character(len=18), save :: sname = 'push_species2d_fd'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'push_start' )
 
          call this%pd%push_fd(ef%getrs(),bf%getrs(),psit%getrs(),dex)         
          call this%pmv(psit)
-         
+
+         call this%err%add_profile( 'push_start' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine push_species2d_fd
