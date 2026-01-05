@@ -15,6 +15,9 @@
       type timing
 
            double precision :: trenew = 0
+           double precision :: tgetcoeff = 0
+           double precision :: tjdeposit = 0
+           double precision :: tbdeposit = 0
            double precision :: tfft = 0
            double precision :: tpush = 0
            double precision :: tqdeposit = 0
@@ -270,6 +273,25 @@
             return
          case ('renew_end')
             this%time%trenew = this%time%trenew + dtime
+            return
+         case ('getcoeff_start')
+            this%time%tgetcoeff = this%time%tgetcoeff - dtime
+            return
+         case ('getcoeff_end')
+            this%time%tgetcoeff = this%time%tgetcoeff + dtime
+            return
+         case ('jdeposit_start')
+            this%time%tjdeposit = this%time%tjdeposit - dtime
+            return
+         case ('jdeposit_end')
+            this%time%tjdeposit = this%time%tjdeposit + dtime
+            return
+         case ('bdeposit_start')
+            this%time%tbdeposit = this%time%tbdeposit - dtime
+            return
+         case ('bdeposit_end')
+            this%time%tbdeposit = this%time%tbdeposit + dtime
+            return
          case ('fft_start')
             this%time%tfft = this%time%tfft - dtime
             this%time%nfft = this%time%nfft + 1
@@ -364,6 +386,12 @@
          
          write (tstr,'(f16.4)') this%time%trenew
          call werrfl(this,'renew time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tjdeposit
+         call werrfl(this,'jdeposit time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tbdeposit
+         call werrfl(this,'bdeposit time: '//trim(tstr))
+         write (tstr,'(f16.4)') this%time%tgetcoeff
+         call werrfl(this,'getcoeff time: '//trim(tstr))
          write (tstr,'(f16.4)') this%time%tfft
          call werrfl(this,'fft time: '//trim(tstr))
          write (tstr,'(i16)') this%time%nfft
