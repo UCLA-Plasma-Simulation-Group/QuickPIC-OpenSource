@@ -317,11 +317,14 @@
                      pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
                      pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
-                     pt(9,nps) = pt(1,nps)
-                     pt(10,nps) = pt(2,nps)
-                     pt(11,nps) = pt(3,nps)
-                     pt(12,nps) = pt(4,nps)
-                     pt(13,nps) = pt(5,nps)
+                     ! pt(9,nps) = pt(1,nps)
+                     ! pt(10,nps) = pt(2,nps)
+                     ! pt(11,nps) = pt(3,nps)
+                     pt(9,nps) = 0
+                     pt(10,nps) = 0
+                     pt(11,nps) = 0
+                     ! pt(12,nps) = pt(4,nps)
+                     ! pt(13,nps) = pt(5,nps)
                      nps = nps + 1
                   enddo
                enddo
@@ -340,11 +343,14 @@
                      pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
                      pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
-                     pt(9,nps) = pt(1,nps)
-                     pt(10,nps) = pt(2,nps)
-                     pt(11,nps) = pt(3,nps)
-                     pt(12,nps) = pt(4,nps)
-                     pt(13,nps) = pt(5,nps)
+                     ! pt(9,nps) = pt(1,nps)
+                     ! pt(10,nps) = pt(2,nps)
+                     ! pt(11,nps) = pt(3,nps)
+                     pt(9,nps) = 0
+                     pt(10,nps) = 0
+                     pt(11,nps) = 0
+                     ! pt(12,nps) = pt(4,nps)
+                     ! pt(13,nps) = pt(5,nps)
                      nps = nps + 1
                   enddo
                enddo
@@ -363,11 +369,14 @@
                      pt(6,nps) = sqrt(1.0+pt(3,nps)**2+pt(4,nps)**2+pt(5,nps)**2)
                      pt(7,nps) = pt(6,nps)-pt(5,nps)
                      pt(8,nps) = qm
-                     pt(9,nps) = pt(1,nps)
-                     pt(10,nps) = pt(2,nps)
-                     pt(11,nps) = pt(3,nps)
-                     pt(12,nps) = pt(4,nps)
-                     pt(13,nps) = pt(5,nps)
+                     ! pt(9,nps) = pt(1,nps)
+                     ! pt(10,nps) = pt(2,nps)
+                     ! pt(11,nps) = pt(3,nps)
+                     pt(9,nps) = 0
+                     pt(10,nps) = 0
+                     pt(11,nps) = 0
+                     ! pt(12,nps) = pt(4,nps)
+                     ! pt(13,nps) = pt(5,nps)
                      nps = nps + 1
                   enddo
                enddo
