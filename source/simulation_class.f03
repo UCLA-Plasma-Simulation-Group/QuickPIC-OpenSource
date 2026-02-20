@@ -840,7 +840,7 @@
          ! real :: qm,qbm
          real :: qbm_spe
          call this%err%werrfl2(class//sname//' started')
-
+         call this%err%settiming(1)
          ! dump initialization data
          if (this%start3d == 1) then
             this%tstep = 0
@@ -884,6 +884,7 @@
             do j = 1, this%nstep2d
                write (erstr,*) '2D step:', j
                call this%err%werrfl0(erstr)
+               call this%err%add_profile('2d_start')
                this%tstep2 = j+this%noffstep2d
                call this%diag2_simulation()               
                if (j == this%nstep2d) then
@@ -1032,6 +1033,7 @@
                call this%fields%bxyz%mult(this%fields%bxyz,(/1,2/),(/1,2/),(/this%dex,this%dex/))
 !bxyz is the normalized unit.               
                call this%fields%bxyz%cb(this%fields%bbxyz,j+1,(/1,2,3/),(/1,2,3/))
+               call this%err%add_profile('2d_end')
             enddo
 
             do m = 1, this%nspecies
@@ -1063,7 +1065,7 @@
                ! call this%species%spe(m)%renew(i*this%dt)
             end do
          end do
-
+         call this%err%wprof()
          call this%err%werrfl2(class//sname//' ended')
 
       end subroutine go_simulation_2

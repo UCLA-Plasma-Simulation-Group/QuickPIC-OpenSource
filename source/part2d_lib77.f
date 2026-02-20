@@ -2634,9 +2634,11 @@ c rot2 = omzt
       return
       end
 !-----------------------------------------------------------------------
-      subroutine PPGRBPPUSHF23L_QP_NEW_test(ppart,fxy,bxy,psit,kpic,ncl,&
-     &ihole,noff,nyp,qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,&
-     &mxyp1,ntmax,irc,dex)
+! 二阶 Adams-Bashforth Pusher (显式、非迭代、二阶精度)
+!-----------------------------------------------------------------------
+      subroutine PPGRBPPUSHF23L_QP_AB2(ppart,fxy,bxy,psit,kpic,ncl,ihole&
+     &,noff,nyp,qbm,dt,ci,ek,idimp,nppmx,nx,ny,mx,my,nxv,nypmx,mx1,mxyp1&
+     &,ntmax,irc,dex)
 ! optimized version
       implicit none
       integer noff, nyp, idimp, nppmx, nx, ny, mx, my, nxv, nypmx
@@ -2656,13 +2658,15 @@ c rot2 = omzt
       real dx, dy, dz, ox, oy, oz, acx, acy, acz
       real omxt, omyt, omzt
       real anx, any, edgelx, edgely, edgerx, edgery
-      real x, y, x_temp, y_temp, px_temp, py_temp, pz_temp
+      real x, y, px_temp, py_temp, pz_temp
+! Added declarations
+      real px, py, pz, fx_old, fy_old, fz_old
       real sfxy, sbxy, spsit
       dimension sfxy(2,mx+1,my+1), sbxy(3,mx+1,my+1), spsit(mx+1,my+1)
       double precision sum1, sum2
       real idex,dtc1,qtmh1,qtmh2,p6,p7
       idex = 1.0/dex
-      qtmh = 2.0*qbm*dt
+      qtmh = qbm*dt
       ci2 = ci*ci
       anx = real(nx)
       any = real(ny)
@@ -2671,7 +2675,8 @@ c rot2 = omzt
 !$OMP PARALLEL DO                                                       &
 !$OMP& PRIVATE(i,j,k,noffp,moffp,nppp,nn,mm,ih,nh,mnoff,x,y,dxp,dyp,amx,&
 !$OMP& amy,dx,dy,dz,ox,oy,oz,acx,acy,acz,omxt,omyt,omzt,edgelx,edgely,  &
-!$OMP& edgerx,x_temp, y_temp, px_temp, py_temp, pz_temp,                &
+!$OMP& edgerx, px_temp, py_temp, pz_temp,                               &
+!$OMP& px, py, pz, fx_old, fy_old, fz_old,                              &
 !$OMP& edgery,sum1,sfxy,sbxy,spsit,qtmh1,qtmh2,p6,p7,dtc1)              &
 !$OMP& REDUCTION(+:sum2)
       do 70 k = 1, mxyp1
@@ -2719,18 +2724,14 @@ c rot2 = omzt
       y = ppart(2,j,k)
       nn = x
       mm = y
-      x_temp = ppart(1,j,k)
-      y_temp = ppart(2,j,k)
-
       px_temp = ppart(3,j,k)
       py_temp = ppart(4,j,k)
       pz_temp = ppart(5,j,k)
 
       p6 = ppart(6,j,k)
-      ! = ppart(7,j,k)
 
       qtmh1 = qtmh / (p6 - pz_temp*dex) 
-      qtmh2 = qtmh1 * p6
+      qtmh2 = qtmh1 * p6 
 
       dxp = x - real(nn)
       dyp = y - real(mm)
@@ -2738,7 +2739,7 @@ c rot2 = omzt
       mm = mm - mnoff
       amx = 1.0 - dxp
       amy = 1.0 - dyp
-! find electric field
+!electric field
       dx = amx*sfxy(1,nn,mm)
       dy = amx*sfxy(2,nn,mm)
       dz = amx*spsit(nn,mm)
@@ -2754,7 +2755,7 @@ c rot2 = omzt
       
       dz = dz * idex
 
-! find magnetic field
+!magnetic field
       ox = amx*sbxy(1,nn,mm)
       oy = amx*sbxy(2,nn,mm)
       oz = amx*sbxy(3,nn,mm)
@@ -2775,60 +2776,73 @@ c rot2 = omzt
       dx = qtmh2*dx
       dy = qtmh2*dy
       dz = qtmh2*dz
-! half acceleration
-      acx = ppart(11,j,k) + dx
-      acy = ppart(12,j,k) + dy
-      acz = ppart(13,j,k) + dz
 ! calculate cyclotron frequency
       omxt = qtmh1*(py_temp*oz - pz_temp*oy)
       omyt = qtmh1*(pz_temp*ox - px_temp*oz)
       omzt = qtmh1*(px_temp*oy - py_temp*ox)
-! new momentum
-      dx = acx + omxt
-      dy = acy + omyt
-      dz = acz + omzt
-      ppart(3,j,k) = dx
-      ppart(4,j,k) = dy
-      ppart(5,j,k) = dz
-      ppart(11,j,k) = px_temp 
-      ppart(12,j,k) = py_temp
-      ppart(13,j,k) = pz_temp
-! update inverse gamma
-      dtc1 = 2.0*dt / (p6 - pz_temp*dex)
-      ppart(6,j,k) = sqrt(1+(dx*dx+dy*dy+dz*dz)*dex*dex)
-! new position
-      dx = ppart(9,j,k) + px_temp*dtc1
-      dy = ppart(10,j,k) + py_temp*dtc1
+! Force calculation (dx, dy, dz now hold the NEW force F_n)
+      dx = dx + omxt
+      dy = dy + omyt
+      dz = dz + omzt
+      fx_old = ppart(9,j,k)
+      fy_old = ppart(10,j,k)
+      fz_old = ppart(11,j,k)
+      if (fx_old .eq. 0.0 .and. fy_old .eq. 0.0 .and. 
+     &    fz_old .eq. 0.0) then
+          fx_old = dx
+          fy_old = dy
+          fz_old = dz
+      endif
+! new momentum:p_new = p_old + 1.5*F_new - 0.5*F_old
+      px = px_temp + 1.5*dx - 0.5*fx_old
+      py = py_temp + 1.5*dy - 0.5*fy_old
+      pz = pz_temp + 1.5*dz - 0.5*fz_old
+! Save current force for next step
+      ppart(9,j,k)  = dx
+      ppart(10,j,k) = dy
+      ppart(11,j,k) = dz
+! set new momentum
+      ppart(3,j,k) = px 
+      ppart(4,j,k) = py
+      ppart(5,j,k) = pz 
+      dtc1 = dt / (p6 - pz_temp*dex)
+!First half step using OLD velocity (v_old)
+      x = x + 0.5*px_temp*dtc1
+      y = y + 0.5*py_temp*dtc1
+      p6 = sqrt(1+(px*px+py*py+pz*pz)*dex*dex)
+      ppart(6,j,k) = p6
+      dtc1 = dt / (p6 - pz*dex)
+! Second half step using NEW velocity (v_new)      
+      x = x + 0.5*px*dtc1
+      y = y + 0.5*py*dtc1
 ! set new position
-      ppart(1,j,k) = dx
-      ppart(2,j,k) = dy
-      ppart(9,j,k) = x_temp
-      ppart(10,j,k) = y_temp
+      ppart(1,j,k) = x
+      ppart(2,j,k) = y
 ! find particles going out of bounds
       mm = 0
 ! count how many particles are going in each direction in ncl
 ! save their address and destination in ihole
 ! check for roundoff error
 ! mm = direction particle is going
-      if (dx.ge.edgerx) then
+      if (x.ge.edgerx) then
          mm = 2
-      else if (dx.lt.edgelx) then
+      else if (x.lt.edgelx) then
          mm = 1
-         if (dx.lt.0.0) then
-            dx = dx + anx
-            if (dx.ge.anx) then
+         if (x.lt.0.0) then
+            x = x + anx
+            if (x.ge.anx) then
                ppart(1,j,k) = 0.0
                mm = 0
             endif
          endif
       endif
-      if (dy.ge.edgery) then
+      if (y.ge.edgery) then
          mm = mm + 6
-      else if (dy.lt.edgely) then
+      else if (y.lt.edgely) then
          mm = mm + 3
-         if (dy.lt.0.0) then
-            dy = dy + any
-            if (dy.ge.any) then
+         if (y.lt.0.0) then
+            y = y + any
+            if (y.ge.any) then
                ppart(2,j,k) = 0.0
                mm = mm - 3
             endif

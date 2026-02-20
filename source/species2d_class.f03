@@ -226,13 +226,14 @@
          logical :: ntd
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'qdeposit_start' )
          ntd = this%pf%getntd()
          call this%q%as(0.0)
          call this%pd%qdp(this%q%getrs())
          call this%q%ag()
          call q%add(this%q,q)
          if (ntd) call q%add(this%qn,q)
-                  
+         call this%err%add_profile( 'qdeposit_end' )         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine qdp_species2d
@@ -283,6 +284,7 @@
          character(len=18), save :: sname = 'jdp_species2d'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'jdeposit_start' )
          call this%cu%as(0.0)
          
          call this%pd%jdp(this%cu%getrs())
@@ -290,7 +292,7 @@
          call this%cu%ag()
          call cu%add(this%cu,cu)
          call this%cu%mult(this%cu,dex)
-
+         call this%err%add_profile( 'jdeposit_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine jdp_species2d
@@ -308,6 +310,7 @@
          character(len=18), save :: sname = 'bdp_species2d'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'bdeposit_start' )
          !call this%cu%as(0.0)
          call this%dcu%as(0.0)
          call this%amu%as(0.0)
@@ -324,7 +327,7 @@
 !         call this%cu%mult(this%cu,dex)
          call this%dcu%mult(this%dcu,dex)
          call this%amu%mult(this%amu,dex)
-
+         call this%err%add_profile( 'bdeposit_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine bdp_species2d
@@ -359,10 +362,12 @@
          character(len=18), save :: sname = 'push_species2d_fd'
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'push_start' )
 
          call this%pd%push_fd(ef%getrs(),bf%getrs(),psit%getrs(),dex)         
          call this%pmv(psit)
-         
+
+         call this%err%add_profile( 'push_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine push_species2d_fd
@@ -377,9 +382,9 @@
          character(len=18), save :: sname = 'pmove_species2d:'
          
          call this%err%werrfl2(class//sname//' started')
-         
+         call this%err%add_profile( '2dpmove_start' )
          call this%pd%pmv(this%q%getrs())
-
+         call this%err%add_profile( '2dpmove_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine pmove_species2d
@@ -395,9 +400,11 @@
          character(len=18), save :: sname = 'extpsi_species2d:'
          
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'extractpsi_start' )
          
          call this%pd%extpsi(psi%getrs(),dex)
 
+         call this%err%add_profile( 'extractpsi_end' )
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine extpsi_species2d
@@ -577,13 +584,14 @@
          logical :: ntd
 
          call this%err%werrfl2(class//sname//' started')
+         call this%err%add_profile( 'getcoeff_start' )
          ntd = this%pf%getntd()
          call this%coeff_k%as(0.0)
          call this%pd%getcoeff(this%coeff_k%getrs(), qe_species%getrs(), psi%getrs())
          call this%coeff_k%cg()
          call coeff_k%add(this%coeff_k,coeff_k)
          ! if (ntd) call q%add(this%qn,q)
-                  
+         call this%err%add_profile( 'getcoeff_end' )         
          call this%err%werrfl2(class//sname//' ended')
          
       end subroutine getcoeff_species2d
